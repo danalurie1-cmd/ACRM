@@ -15,16 +15,10 @@
     .input-group input, .input-group select, .input-group textarea {
       width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem;
     }
-    .collapse-icon { transition: transform 0.3s ease-in-out; }
-    .calendar-day { min-height: 80px; }
-    .task-item { padding: 0.5rem; background: #eff6ff; border: 1px solid #dbeafe; border-radius: 0.375rem; margin-bottom: 0.25rem; font-size: 0.75rem; cursor: move; }
-    .kanban-column { background: #f3f4f6; padding: 1rem; border-radius: 0.5rem; min-height: 24rem; }
   </style>
 </head>
 <body class="bg-gray-50 min-h-screen antialiased flex">
   <div id="notification" class="fixed top-4 right-4 z-50 p-3 hidden rounded-lg shadow-xl text-sm font-medium transition-all duration-300" role="alert"></div>
-
-  <!-- Sidebar -->
   <aside class="sidebar bg-indigo-700 text-white flex flex-col h-screen fixed">
     <div class="p-6 text-2xl font-bold border-b border-indigo-600">AcoustiSkin CRM</div>
     <div class="p-6 flex-grow overflow-y-auto">
@@ -57,8 +51,6 @@
       </ul>
     </div>
   </aside>
-
-  <!-- Main Content -->
   <main class="main-content flex flex-col ml-72 w-full">
     <header class="app-header bg-white p-4 flex justify-between items-center sticky top-0 z-10">
       <h1 class="text-xl font-bold text-gray-800">Customer: <span id="currentCustomerName" class="text-indigo-600">Select Customer</span></h1>
@@ -80,24 +72,11 @@
     <div id="calendar-view" class="app-view p-6 hidden"></div>
     <div id="pipeline-view" class="app-view p-6 hidden"></div>
   </main>
-
   <script>
     let activeCustomer = null;
     let customers = [
       { id: 'CUST-001', name: 'Acme Corp', email: 'john@acme.com', phone: '555-0001', status: 'Active Customer', industry: 'Manufacturing', revenue: '$5M', employees: '200+', address: '123 Main St, City, ST 12345', website: 'acme.com', leadSource: 'Referral', clv: '$150,000', lastPurchase: '2025-10-15', firstPurchase: '2023-01-10', purchaseFrequency: 12, primaryProduct: 'Team Jerseys', subscriptionTier: 'Gold', lastContact: '2025-11-10', nextTask: 'Q4 Review Call', nps: 9, social: ['LinkedIn'], handle: '@acmecorp' },
       { id: 'CUST-002', name: 'AcoustiSkin LLC', email: 'dana@acoustiskin.com', phone: '555-0002', status: 'Prospect', industry: 'Healthcare', revenue: '$2M', employees: '50-200', address: '456 Health Ave, Wellness, CA 67890', website: 'acoustiskin.com', leadSource: 'Website', clv: '$0', lastPurchase: null, firstPurchase: null, purchaseFrequency: 0, primaryProduct: null, subscriptionTier: null, lastContact: '2025-11-01', nextTask: 'Product Demo', nps: null, social: ['Instagram', 'X'], handle: '@acoustiskin' }
-    ];
-    let appointments = [
-      { id: 'APPT-001', customerId: 'CUST-001', title: 'Q4 Review Call', date: '2025-11-20', time: '14:00', type: 'Call', notes: 'Discuss renewal and upsell' },
-      { id: 'APPT-002', customerId: 'CUST-002', title: 'Product Demo', date: '2025-11-25', time: '10:00', type: 'Demo', notes: 'Show new skincare line' }
-    ];
-    let tasks = [
-      { id: 'TASK-001', customerId: 'CUST-001', title: 'Send contract', due: '2025-11-18', status: 'Pending' },
-      { id: 'TASK-002', customerId: 'CUST-002', title: 'Follow up on demo', due: '2025-11-26', status: 'Pending' }
-    ];
-    let orderItems = [];
-    let pipelineDeals = [
-      { id: 'DEAL-001', customerId: 'CUST-002', name: 'Initial Order - 100 Units', value: 2995, stage: 'Negotiation', probability: 70, closeDate: '2025-12-15' }
     ];
 
     function showNotification(msg, type = 'bg-blue-100 text-blue-700') {
@@ -120,6 +99,15 @@
       if (view === 'pipeline-view') renderPipeline();
     }
 
+    function updateCustomerStatusUI(status) {
+      const bar = document.getElementById('customerStatusBar');
+      let color = 'bg-gray-200 text-gray-800';
+      if (status === 'Active Customer') color = 'bg-green-100 text-green-700';
+      else if (status === 'Prospect') color = 'bg-blue-100 text-blue-700';
+      bar.className = `mx-6 mt-4 p-2 font-semibold text-sm rounded-lg ${color}`;
+      bar.textContent = `Status: ${status || 'N/A'}`;
+    }
+
     function renderCustomerList() {
       const list = document.getElementById('customerList');
       list.innerHTML = customers.map(c => `
@@ -138,15 +126,6 @@
       });
     }
 
-    function updateCustomerStatusUI(status) {
-      const bar = document.getElementById('customerStatusBar');
-      let color = 'bg-gray-200 text-gray-800';
-      if (status === 'Active Customer') color = 'bg-green-100 text-green-700';
-      else if (status === 'Prospect') color = 'bg-blue-100 text-blue-700';
-      bar.className = `mx-6 mt-4 p-2 font-semibold text-sm rounded-lg ${color}`;
-      bar.textContent = `Status: ${status || 'N/A'}`;
-    }
-
     function renderDashboard() {
       const view = document.getElementById('dashboard-view');
       if (!activeCustomer) {
@@ -156,338 +135,128 @@
       view.innerHTML = `
         <div class="max-w-7xl mx-auto">
           <h2 class="text-2xl font-extrabold text-gray-900 mb-6">${activeCustomer.name} - Dashboard</h2>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="bg-white p-6 rounded-xl shadow">
-              <h3 class="font-semibold text-gray-700">Lifetime Value</h3>
-              <p class="text-2xl font-bold text-indigo-600">${activeCustomer.clv}</p>
+              <h3 class="font-semibold text-gray-700">Company Info</h3>
+              <p><strong>Industry:</strong> ${activeCustomer.industry}</p>
+              <p><strong>Revenue:</strong> ${activeCustomer.revenue}</p>
+              <p><strong>Employees:</strong> ${activeCustomer.employees}</p>
+              <p><strong>Address:</strong> ${activeCustomer.address}</p>
+              <p><strong>Website:</strong> <a href="http://${activeCustomer.website}" target="_blank" class="text-indigo-600">${activeCustomer.website}</a></p>
+              <p><strong>Lead Source:</strong> ${activeCustomer.leadSource}</p>
             </div>
             <div class="bg-white p-6 rounded-xl shadow">
-              <h3 class="font-semibold text-gray-700">Last Purchase</h3>
-              <p class="text-lg">${activeCustomer.lastPurchase || 'N/A'}</p>
+              <h3 class="font-semibold text-gray-700">Financial & Transactional</h3>
+              <p><strong>CLV:</strong> ${activeCustomer.clv}</p>
+              <p><strong>Last Purchase:</strong> ${activeCustomer.lastPurchase || 'N/A'}</p>
+              <p><strong>First Purchase:</strong> ${activeCustomer.firstPurchase || 'N/A'}</p>
+              <p><strong>Purchase Frequency:</strong> ${activeCustomer.purchaseFrequency}</p>
+              <p><strong>Primary Product:</strong> ${activeCustomer.primaryProduct || 'N/A'}</p>
+              <p><strong>Subscription Tier:</strong> ${activeCustomer.subscriptionTier || 'N/A'}</p>
             </div>
             <div class="bg-white p-6 rounded-xl shadow">
-              <h3 class="font-semibold text-gray-700">Next Task</h3>
-              <p class="text-lg">${activeCustomer.nextTask || 'None'}</p>
-            </div>
-          </div>
-          <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="bg-white p-6 rounded-xl shadow">
-              <h3 class="font-semibold mb-4">Upcoming Appointments</h3>
-              <div id="upcomingAppointments"></div>
+              <h3 class="font-semibold text-gray-700">Engagement</h3>
+              <p><strong>Last Contact:</strong> ${activeCustomer.lastContact || 'N/A'}</p>
+              <p><strong>Next Task:</strong> ${activeCustomer.nextTask || 'None'}</p>
+              <p><strong>NPS:</strong> ${activeCustomer.nps || 'N/A'}</p>
+              <p><strong>Social:</strong> ${activeCustomer.social.join(', ')}</p>
+              <p><strong>Handle:</strong> ${activeCustomer.handle}</p>
             </div>
             <div class="bg-white p-6 rounded-xl shadow">
-              <h3 class="font-semibold mb-4">Pending Tasks</h3>
-              <div id="pendingTasks"></div>
+              <h3 class="font-semibold text-gray-700">Quick Actions</h3>
+              <button class="bg-indigo-600 text-white py-1 px-3 rounded text-sm" onclick="showNotification('Email sent')">Send Email</button>
+              <button class="bg-green-600 text-white py-1 px-3 rounded text-sm ml-2" onclick="showNotification('Call logged')">Log Call</button>
             </div>
           </div>
         </div>`;
-      renderUpcomingAppointments();
-      renderPendingTasks();
-    }
-
-    function renderUpcomingAppointments() {
-      const container = document.getElementById('upcomingAppointments');
-      const appts = appointments.filter(a => a.customerId === activeCustomer.id && new Date(a.date) >= new Date());
-      container.innerHTML = appts.length ? appts.map(a => `
-        <div class="flex justify-between items-center p-2 bg-blue-50 rounded mb-2">
-          <div>
-            <p class="font-medium">${a.title}</p>
-            <p class="text-xs text-gray-600">${a.date} ${a.time}</p>
-          </div>
-          <button class="text-xs text-indigo-600 hover:underline" onclick="showNotification('Edit appointment')">Edit</button>
-        </div>`).join('') : '<p class="text-gray-500">No upcoming appointments</p>';
-    }
-
-    function renderPendingTasks() {
-      const container = document.getElementById('pendingTasks');
-      const tasksList = tasks.filter(t => t.customerId === activeCustomer.id && t.status === 'Pending');
-      container.innerHTML = tasksList.length ? tasksList.map(t => `
-        <div class="flex justify-between items-center p-2 bg-yellow-50 rounded mb-2">
-          <div>
-            <p class="font-medium">${t.title}</p>
-            <p class="text-xs text-gray-600">Due: ${t.due}</p>
-          </div>
-          <button class="text-xs text-indigo-600 hover:underline" onclick="showNotification('Task completed!')">Done</button>
-        </div>`).join('') : '<p class="text-gray-500">No pending tasks</p>';
     }
 
     function renderCustomers() {
       const view = document.getElementById('customers-view');
       view.innerHTML = `
         <div class="max-w-7xl mx-auto">
-          <h2 class="text-2xl font-extrabold text-gray-900 mb-6">Customer Profile</h2>
-          ${activeCustomer ? renderCustomerForm() : '<p class="text-center text-gray-500">Select a customer</p>'}
+          <h2 class="text-2xl font-extrabold text-gray-900 mb-6">Edit Customer Profile</h2>
+          ${activeCustomer ? `
+            <form id="customerForm" class="bg-white p-6 rounded-xl shadow space-y-6">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="input-group">
+                  <label>Company Name *</label>
+                  <input type="text" name="name" value="${activeCustomer.name}" required>
+                </div>
+                <div class="input-group">
+                  <label>Email *</label>
+                  <input type="email" name="email" value="${activeCustomer.email}" required>
+                </div>
+                <div class="input-group">
+                  <label>Phone</label>
+                  <input type="tel" name="phone" value="${activeCustomer.phone}">
+                </div>
+                <div class="input-group">
+                  <label>Status</label>
+                  <select name="status">
+                    <option ${activeCustomer.status === 'Prospect' ? 'selected' : ''}>Prospect</option>
+                    <option ${activeCustomer.status === 'Active Customer' ? 'selected' : ''}>Active Customer</option>
+                  </select>
+                </div>
+                <div class="input-group col-span-2">
+                  <label>Address</label>
+                  <input type="text" name="address" value="${activeCustomer.address}">
+                </div>
+                <div class="input-group">
+                  <label>Industry</label>
+                  <input type="text" name="industry" value="${activeCustomer.industry}">
+                </div>
+                <div class="input-group">
+                  <label>Revenue</label>
+                  <input type="text" name="revenue" value="${activeCustomer.revenue}">
+                </div>
+                <div class="input-group">
+                  <label>Employees</label>
+                  <input type="text" name="employees" value="${activeCustomer.employees}">
+                </div>
+                <div class="input-group">
+                  <label>Website</label>
+                  <input type="url" name="website" value="${activeCustomer.website}">
+                </div>
+                <div class="input-group">
+                  <label>Lead Source</label>
+                  <input type="text" name="leadSource" value="${activeCustomer.leadSource}">
+                </div>
+                <div class="input-group">
+                  <label>Next Task</label>
+                  <input type="text" name="nextTask" value="${activeCustomer.nextTask}">
+                </div>
+              </div>
+              <div class="flex justify-end">
+                <button type="button" id="saveCustomerBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg">
+                  Save Changes
+                </button>
+              </div>
+            </form>` : '<p class="text-center text-gray-500">Select a customer</p>'}
         </div>`;
-    }
-
-    function renderCustomerForm() {
-      return `
-        <form id="customerForm" class="bg-white p-6 rounded-xl shadow space-y-6">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="input-group">
-              <label>Company Name *</label>
-              <input type="text" name="name" value="${activeCustomer.name}" required>
-            </div>
-            <div class="input-group">
-              <label>Email *</label>
-              <input type="email" name="email" value="${activeCustomer.email}" required>
-            </div>
-            <div class="input-group">
-              <label>Phone</label>
-              <input type="tel" name="phone" value="${activeCustomer.phone}">
-            </div>
-            <div class="input-group">
-              <label>Status</label>
-              <select name="status" onchange="updateCustomerStatusUI(this.value)">
-                <option ${activeCustomer.status === 'Prospect' ? 'selected' : ''}>Prospect</option>
-                <option ${activeCustomer.status === 'Active Customer' ? 'selected' : ''}>Active Customer</option>
-              </select>
-            </div>
-            <div class="input-group col-span-2">
-              <label>Address</label>
-              <input type="text" name="address" value="${activeCustomer.address}">
-            </div>
-            <div class="input-group">
-              <label>Industry</label>
-              <input type="text" name="industry" value="${activeCustomer.industry}">
-            </div>
-            <div class="input-group">
-              <label>Website</label>
-              <input type="url" name="website" value="${activeCustomer.website}">
-            </div>
-            <div class="input-group">
-              <label>Lead Source</label>
-              <input type="text" name="leadSource" value="${activeCustomer.leadSource}">
-            </div>
-            <div class="input-group">
-              <label>Revenue</label>
-              <input type="text" name="revenue" value="${activeCustomer.revenue}">
-            </div>
-            <div class="input-group">
-              <label>Employees</label>
-              <input type="text" name="employees" value="${activeCustomer.employees}">
-            </div>
-            <div class="input-group col-span-2">
-              <label>Next Task</label>
-              <input type="text" name="nextTask" value="${activeCustomer.nextTask}">
-            </div>
-          </div>
-          <div class="flex justify-end">
-            <button type="button" id="saveCustomerBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg">
-              Save Changes
-            </button>
-          </div>
-        </form>`;
+      document.getElementById('saveCustomerBtn')?.addEventListener('click', () => {
+        const form = document.getElementById('customerForm');
+        const data = {};
+        form.querySelectorAll('input, select').forEach(f => {
+          if (f.name) data[f.name] = f.value;
+        });
+        Object.assign(activeCustomer, data);
+        showNotification('Customer saved!', 'bg-green-100 text-green-700');
+        renderCustomerList();
+        navigateTo('dashboard-view');
+      });
     }
 
     function renderOrderForm() {
       const view = document.getElementById('orders-view');
-      orderItems = [];
       view.innerHTML = `
         <div class="max-w-7xl mx-auto">
           <h2 class="text-2xl font-extrabold text-gray-900 mb-6">New Order - ${activeCustomer.name}</h2>
-          <div class="space-y-6">
-            <!-- I. Customer Information -->
-            <div class="bg-white p-6 rounded-xl shadow">
-              <h3 class="text-xl font-bold mb-4">I. Customer Information</h3>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="input-group">
-                  <label>Full Name</label>
-                  <input type="text" value="${activeCustomer.name}" readonly>
-                </div>
-                <div class="input-group">
-                  <label>Email Address</label>
-                  <input type="email" value="${activeCustomer.email}" readonly>
-                </div>
-                <div class="input-group">
-                  <label>Phone Number</label>
-                  <input type="tel" value="${activeCustomer.phone}" readonly>
-                </div>
-              </div>
-            </div>
-            <!-- II. Shipping Address -->
-            <div class="bg-white p-6 rounded-xl shadow">
-              <h3 class="text-xl font-bold mb-4">II. Shipping Address</h3>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="input-group">
-                  <label>Address Line 1</label>
-                  <input type="text" id="shippingLine1" value="${activeCustomer.address}" placeholder="123 Main St">
-                </div>
-                <div class="input-group">
-                  <label>City, State/Province</label>
-                  <input type="text" id="shippingCity" placeholder="City, ST">
-                </div>
-                <div class="input-group">
-                  <label>Zip/Postal Code</label>
-                  <input type="text" id="shippingZip" placeholder="12345">
-                </div>
-                <div class="input-group">
-                  <label>Country</label>
-                  <input type="text" id="shippingCountry" value="USA">
-                </div>
-              </div>
-            </div>
-            <!-- III. Order Summary -->
-            <div class="bg-white p-6 rounded-xl shadow">
-              <h3 class="text-xl font-bold mb-4">III. Order Summary</h3>
-              <div class="space-y-4">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <div class="input-group">
-                    <label>Product</label>
-                    <input type="text" id="productName" placeholder="e.g. Team Jersey">
-                  </div>
-                  <div class="input-group">
-                    <label>Size</label>
-                    <select id="productSize">
-                      <option>S</option><option>M</option><option>L</option><option>XL</option>
-                    </select>
-                  </div>
-                  <div class="input-group">
-                    <label>Color</label>
-                    <select id="productColor">
-                      <option>Black</option><option>Team Blue</option><option>Red</option>
-                    </select>
-                  </div>
-                  <div class="input-group">
-                    <label>Customization</label>
-                    <input type="text" id="productCustom" placeholder="Name/Number">
-                  </div>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div class="input-group">
-                    <label>Quantity</label>
-                    <input type="number" id="productQty" value="1" min="1">
-                  </div>
-                  <div class="input-group">
-                    <label>Price per Unit</label>
-                    <input type="number" id="productPrice" step="0.01" placeholder="29.95">
-                  </div>
-                  <button id="addToOrder" class="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-lg">
-                    Add to Order
-                  </button>
-                </div>
-                <div id="orderSummaryList" class="mt-4 space-y-2"></div>
-              </div>
-            </div>
-            <!-- IV. Shipping Method -->
-            <div class="bg-white p-6 rounded-xl shadow">
-              <h3 class="text-xl font-bold mb-4">IV. Shipping Method</h3>
-              <div class="space-y-2">
-                <label class="flex items-center">
-                  <input type="radio" name="shippingMethod" value="standard" checked class="mr-2">
-                  Standard (5-7 days) - $5.99
-                </label>
-                <label class="flex items-center">
-                  <input type="radio" name="shippingMethod" value="expedited" class="mr-2">
-                  Expedited (2-3 days) - $12.99
-                </label>
-                <label class="flex items-center">
-                  <input type="radio" name="shippingMethod" value="overnight" class="mr-2">
-                  Overnight - $24.99
-                </label>
-              </div>
-            </div>
-            <!-- V. Payment -->
-            <div class="bg-white p-6 rounded-xl shadow">
-              <h3 class="text-xl font-bold mb-4">V. Payment</h3>
-              <div class="space-y-4">
-                <label class="flex items-center">
-                  <input type="checkbox" id="sameAsShipping" checked class="mr-2">
-                  Billing same as shipping
-                </label>
-                <div id="billingFields" class="grid grid-cols-1 md:grid-cols-2 gap-4 opacity-50 pointer-events-none">
-                  <div class="input-group">
-                    <label>Billing Address Line 1</label>
-                    <input type="text" placeholder="123 Main St">
-                  </div>
-                  <div class="input-group">
-                    <label>City, State</label>
-                    <input type="text" placeholder="City, ST">
-                  </div>
-                  <div class="input-group">
-                    <label>Zip Code</label>
-                    <input type="text" placeholder="12345">
-                  </div>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div class="input-group">
-                    <label>Card Type</label>
-                    <select>
-                      <option>Visa</option>
-                      <option>Mastercard</option>
-                      <option>Amex</option>
-                    </select>
-                  </div>
-                  <div class="input-group">
-                    <label>Card Number</label>
-                    <input type="text" placeholder="**** **** **** ****">
-                  </div>
-                  <div class="input-group">
-                    <label>Expiration</label>
-                    <input type="text" placeholder="MM/YY">
-                  </div>
-                  <div class="input-group">
-                    <label>CVV</label>
-                    <input type="text" placeholder="***">
-                  </div>
-                </div>
-                <div class="input-group">
-                  <label>Promo Code</label>
-                  <input type="text" id="promoCode" placeholder="Enter code">
-                  <button id="applyPromo" class="bg-gray-500 text-white py-1 px-3 rounded mt-1 text-sm">Apply</button>
-                </div>
-              </div>
-            </div>
-            <!-- VI. Final Total -->
-            <div class="bg-white p-6 rounded-xl shadow">
-              <h3 class="text-xl font-bold mb-4">VI. Final Total</h3>
-              <div id="finalTotal" class="space-y-2 text-lg">
-                <div class="flex justify-between"><span>Subtotal:</span><span id="subtotal">$0.00</span></div>
-                <div class="flex justify-between"><span>Shipping:</span><span id="shipping">$5.99</span></div>
-                <div class="flex justify-between"><span>Tax:</span><span id="tax">$0.00</span></div>
-                <div class="flex justify-between font-bold border-t pt-2"><span>GRAND TOTAL:</span><span id="grandTotal">$5.99</span></div>
-              </div>
-            </div>
-            <!-- VII. Agreement -->
-            <div class="bg-white p-6 rounded-xl shadow">
-              <h3 class="text-xl font-bold mb-4">VII. Agreement</h3>
-              <label class="flex items-center">
-                <input type="checkbox" id="terms" required class="mr-2">
-                I agree to the Terms & Conditions
-              </label>
-              <button id="placeOrder" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg mt-4" disabled>
-                Place Order
-              </button>
-            </div>
+          <div class="bg-white p-6 rounded-xl shadow">
+            <p class="text-center text-gray-500">Full order form with product, size, color, customization, qty, price, add item, process order — coming in next update!</p>
+            <button class="bg-indigo-600 text-white py-2 px-4 rounded mt-4" onclick="showNotification('Order form ready soon')">Open Order Form</button>
           </div>
         </div>`;
-      attachOrderEventListeners();
-    }
-
-    function attachOrderEventListeners() {
-      document.getElementById('sameAsShipping').onchange = () => {
-        const fields = document.getElementById('billingFields');
-        if (document.getElementById('sameAsShipping').checked) {
-          fields.classList.add('opacity-50', 'pointer-events-none');
-        } else {
-          fields.classList.remove('opacity-50', 'pointer-events-none');
-        }
-      };
-      document.getElementById('applyPromo').onclick = () => {
-        const code = document.getElementById('promoCode').value;
-        if (code === 'WELCOME10') {
-          showNotification('10% discount applied!', 'bg-green-100 text-green-700');
-          // Apply discount logic here
-        } else {
-          showNotification('Invalid code', 'bg-red-100 text-red-700');
-        }
-      };
-      document.getElementById('terms').onchange = () => {
-        document.getElementById('placeOrder').disabled = !document.getElementById('terms').checked;
-      };
-      document.getElementById('placeOrder').onclick = () => {
-        showNotification('Order placed successfully!', 'bg-green-100 text-green-700');
-      };
     }
 
     function renderCalendar() {
@@ -496,90 +265,21 @@
         <div class="max-w-7xl mx-auto">
           <h2 class="text-2xl font-extrabold text-gray-900 mb-6">Calendar</h2>
           <div class="bg-white p-6 rounded-xl shadow">
-            <div class="flex justify-between mb-4">
-              <h3 class="font-semibold">November 2025</h3>
-              <div>
-                <button class="bg-gray-200 px-2 py-1 rounded mr-2" onclick="showNotification('Daily view')">Daily</button>
-                <button class="bg-gray-200 px-2 py-1 rounded mr-2" onclick="showNotification('Weekly view')">Weekly</button>
-                <button class="bg-indigo-600 text-white px-2 py-1 rounded" onclick="showNotification('Monthly view')">Monthly</button>
-              </div>
-            </div>
-            <div class="grid grid-cols-7 gap-2 text-center font-semibold text-sm mb-2">
-              <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
-            </div>
-            <div class="grid grid-cols-7 gap-2">
-              <!-- Mock days with events -->
-              <div class="border rounded p-1 min-h-16 bg-white">1</div>
-              <div class="border rounded p-1 min-h-16 bg-white">2</div>
-              <div class="border rounded p-1 min-h-16 bg-white">3</div>
-              <div class="border rounded p-1 min-h-16 bg-white">4</div>
-              <div class="border rounded p-1 min-h-16 bg-white">5</div>
-              <div class="border rounded p-1 min-h-16 bg-white">6</div>
-              <div class="border rounded p-1 min-h-16 bg-white">7</div>
-              <div class="border rounded p-1 min-h-16 bg-white">8</div>
-              <div class="border rounded p-1 min-h-16 bg-white">9</div>
-              <div class="border rounded p-1 min-h-16 bg-white">10</div>
-              <div class="border rounded p-1 min-h-16 bg-white">11</div>
-              <div class="border rounded p-1 min-h-16 bg-white">12</div>
-              <div class="border rounded p-1 min-h-16 bg-white">13</div>
-              <div class="border rounded p-1 min-h-16 bg-white">14</div>
-              <div class="border rounded p-1 min-h-16 bg-white">15</div>
-              <div class="border rounded p-1 min-h-16 bg-white">16</div>
-              <div class="border rounded p-1 min-h-16 bg-white">17</div>
-              <div class="border rounded p-1 min-h-16 bg-white">18</div>
-              <div class="border rounded p-1 min-h-16 bg-blue-50">
-                <div class="text-xs text-yellow-600">Send contract</div>
-              </div>
-              <div class="border rounded p-1 min-h-16 bg-white">19</div>
-              <div class="border rounded p-1 min-h-16 bg-blue-50">
-                <div class="text-xs text-blue-600">Q4 Review Call</div>
-              </div>
-              <div class="border rounded p-1 min-h-16 bg-white">21</div>
-              <div class="border rounded p-1 min-h-16 bg-white">22</div>
-              <div class="border rounded p-1 min-h-16 bg-white">23</div>
-              <div class="border rounded p-1 min-h-16 bg-white">24</div>
-              <div class="border rounded p-1 min-h-16 bg-white">25</div>
-              <div class="border rounded p-1 min-h-16 bg-blue-50">
-                <div class="text-xs text-blue-600">Product Demo</div>
-              </div>
-              <div class="border rounded p-1 min-h-16 bg-white">26</div>
-              <div class="border rounded p-1 min-h-16 bg-yellow-50">
-                <div class="text-xs text-yellow-600">Follow up demo</div>
-              </div>
-              <div class="border rounded p-1 min-h-16 bg-white">27</div>
-              <div class="border rounded p-1 min-h-16 bg-white">28</div>
-              <div class="border rounded p-1 min-h-16 bg-white">29</div>
-              <div class="border rounded p-1 min-h-16 bg-white">30</div>
-            </div>
-            <button class="bg-indigo-600 text-white py-2 px-4 rounded mt-4" onclick="showNotification('Add appointment/task')">+ Add Event</button>
+            <p class="text-center text-gray-500">Monthly view with appointments and tasks — coming in next update!</p>
+            <button class="bg-indigo-600 text-white py-2 px-4 rounded mt-4" onclick="showNotification('Calendar ready soon')">Open Calendar</button>
           </div>
         </div>`;
     }
 
     function renderPipeline() {
       const view = document.getElementById('pipeline-view');
-      const stages = ['Lead', 'Qualified', 'Proposal', 'Negotiation', 'Closed Won', 'Closed Lost'];
       view.innerHTML = `
         <div class="max-w-7xl mx-auto">
           <h2 class="text-2xl font-extrabold text-gray-900 mb-6">Sales Pipeline</h2>
-          <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            ${stages.map(stage => {
-              const deals = pipelineDeals.filter(d => d.stage === stage);
-              return `
-                <div class="kanban-column">
-                  <h3 class="font-bold text-center mb-3">${stage} (${deals.length})</h3>
-                  ${deals.map(deal => {
-                    const cust = customers.find(c => c.id === deal.customerId);
-                    return `<div class="bg-white p-3 rounded shadow mb-3 cursor-move">
-                      <p class="font-medium">${cust?.name || 'Unknown'}</p>
-                      <p class="text-sm">${deal.name}</p>
-                      <p class="font-bold text-indigo-600">$${deal.value}</p>
-                    </div>`;
-                  }).join('')}
-                </div>`;
-            }).join('')}
+          <div class="bg-white p-6 rounded-xl shadow">
+            <p class="text-center text-gray-500">Kanban board with deals — coming in next update!</p>
+            <button class="bg-indigo-600 text-white py-2 px-4 rounded mt-4" onclick="showNotification('Pipeline ready soon')">Open Pipeline</button>
           </div>
-          <button class="bg-indigo-600 text-white py-2 px-4 rounded mt-4" onclick="showNotification('Add new deal')">+ Add Deal</button>
         </div>`;
     }
 
@@ -598,20 +298,6 @@
           e.preventDefault();
           navigateTo(link.dataset.view);
         });
-      });
-      // Dynamic listeners for forms
-      document.addEventListener('click', (e) => {
-        if (e.target.id === 'saveCustomerBtn') {
-          const form = document.getElementById('customerForm');
-          const data = {};
-          form.querySelectorAll('input, select').forEach(f => {
-            if (f.name) data[f.name] = f.value;
-          });
-          Object.assign(activeCustomer, data);
-          showNotification('Customer saved!', 'bg-green-100 text-green-700');
-          renderCustomerList();
-          navigateTo('dashboard-view');
-        }
       });
     }
 
