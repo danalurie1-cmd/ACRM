@@ -1,494 +1,625 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2685.2">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; -webkit-text-stroke: #000000}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; -webkit-text-stroke: #000000; min-height: 14.0px}
-    span.s1 {font-kerning: none}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AcoustiSkin CRM</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #f9fafb; }
+    .sidebar { width: 280px; }
+    .main-content { flex-grow: 1; }
+    .app-header { box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .input-group label { font-weight: 500; font-size: 0.875rem; color: #4b5563; margin-bottom: 0.25rem; display: block; }
+    .input-group input, .input-group select, .input-group textarea {
+      width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem;
+    }
+    .collapse-icon { transition: transform 0.3s ease-in-out; }
+    .calendar-day { min-height: 80px; }
+    .task-item { padding: 0.5rem; background: #eff6ff; border: 1px solid #dbeafe; border-radius: 0.375rem; margin-bottom: 0.25rem; font-size: 0.75rem; cursor: move; }
+    .kanban-column { background: #f3f4f6; padding: 1rem; border-radius: 0.5rem; min-height: 24rem; }
   </style>
 </head>
-<body>
-<p class="p1"><span class="s1">&lt;!DOCTYPE html&gt;</span></p>
-<p class="p1"><span class="s1">&lt;html lang="en"&gt;</span></p>
-<p class="p1"><span class="s1">&lt;head&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;meta charset="UTF-8"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;title&gt;AcoustiSkin CRM&lt;/title&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;style&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>body { font-family: 'Inter', sans-serif; background-color: #f9fafb; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.sidebar { width: 280px; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.main-content { flex-grow: 1; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.app-header { box-shadow: 0 1px 3px rgba(0,0,0,0.1); }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.input-group label { font-weight: 500; font-size: 0.875rem; color: #4b5563; margin-bottom: 0.25rem; display: block; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.input-group input, .input-group select, .input-group textarea {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.collapse-icon { transition: transform 0.3s ease-in-out; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.calendar-day { min-height: 80px; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.task-item { padding: 0.5rem; background: #eff6ff; border: 1px solid #dbeafe; border-radius: 0.375rem; margin-bottom: 0.25rem; font-size: 0.75rem; cursor: move; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.kanban-column { background: #f3f4f6; padding: 1rem; border-radius: 0.5rem; min-height: 24rem; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;/style&gt;</span></p>
-<p class="p1"><span class="s1">&lt;/head&gt;</span></p>
-<p class="p1"><span class="s1">&lt;body class="bg-gray-50 min-h-screen antialiased flex"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;div id="notification" class="fixed top-4 right-4 z-50 p-3 hidden rounded-lg shadow-xl text-sm font-medium transition-all duration-300" role="alert"&gt;&lt;/div&gt;</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;!-- Sidebar --&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;aside class="sidebar bg-indigo-700 text-white flex flex-col h-screen fixed"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div class="p-6 text-2xl font-bold border-b border-indigo-600"&gt;AcoustiSkin CRM&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div class="p-6 flex-grow overflow-y-auto"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;h3 class="text-sm font-semibold mb-2 text-indigo-300 uppercase tracking-wider"&gt;Navigation&lt;/h3&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;nav class="space-y-1"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="dashboard-view"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"&gt;&lt;path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"&gt;&lt;/path&gt;&lt;/svg&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>Dashboard</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/a&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="customers-view"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"&gt;&lt;path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"&gt;&lt;/path&gt;&lt;/svg&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>Customers</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/a&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="orders-view"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"&gt;&lt;path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 4h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"&gt;&lt;/path&gt;&lt;/svg&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>Orders</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/a&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="calendar-view"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"&gt;&lt;path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"&gt;&lt;/path&gt;&lt;/svg&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>Calendar</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/a&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="pipeline-view"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"&gt;&lt;path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"&gt;&lt;/path&gt;&lt;/svg&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>Pipeline</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/a&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/nav&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;button id="newCustomerButton" class="w-full mt-6 bg-indigo-500 hover:bg-indigo-400 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 shadow-md"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>+ New Customer</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/button&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div class="p-6 border-t border-indigo-600"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;h3 class="text-sm font-semibold mb-2 text-indigo-300 uppercase tracking-wider"&gt;Customers&lt;/h3&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;ul id="customerList" class="space-y-1 max-h-64 overflow-y-auto"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;li class="p-3 text-center text-gray-400"&gt;Loading...&lt;/li&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/ul&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;/aside&gt;</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;!-- Main Content --&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;main class="main-content flex flex-col ml-72 w-full"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;header class="app-header bg-white p-4 flex justify-between items-center sticky top-0 z-10"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;h1 class="text-xl font-bold text-gray-800"&gt;Customer: &lt;span id="currentCustomerName" class="text-indigo-600"&gt;Select Customer&lt;/span&gt;&lt;/h1&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;div class="flex items-center space-x-4"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;button id="backToDashboard" class="hidden bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg text-sm transition-colors"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>Back to Dashboard</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/button&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;button id="editCustomerButton" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg text-sm transition-colors"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>Edit Profile</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/button&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/header&gt;</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;!-- Views --&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div id="dashboard-view" class="app-view p-6"&gt;&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div id="customers-view" class="app-view p-6 hidden"&gt;&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div id="orders-view" class="app-view p-6 hidden"&gt;&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div id="calendar-view" class="app-view p-6 hidden"&gt;&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div id="pipeline-view" class="app-view p-6 hidden"&gt;&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;/main&gt;</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;script type="module"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const MOCK_MODE = true;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>let activeCustomer = null;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>let customers = [];</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>let appointments = [];</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>let tasks = [];</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>let orderItems = [];</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>let pipelineDeals = [];</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>function initMockData() {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>customers = [</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>{ id: 'CUST-001', name: 'Acme Corp', email: 'john@acme.com', phone: '555-0001', status: 'Active Customer', industry: 'Manufacturing', revenue: '$5M', employees: '200+', address: '123 Main St, City, ST 12345', website: 'acme.com', leadSource: 'Referral', clv: '$150,000', lastPurchase: '2025-10-15', firstPurchase: '2023-01-10', purchaseFrequency: 12, primaryProduct: 'Team Jerseys', subscriptionTier: 'Gold', lastContact: '2025-11-10', nextTask: 'Q4 Review Call', nps: 9, social: ['LinkedIn'], handle: '@acmecorp' },</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>{ id: 'CUST-002', name: 'AcoustiSkin LLC', email: 'dana@acoustiskin.com', phone: '555-0002', status: 'Prospect', industry: 'Healthcare', revenue: '$2M', employees: '50-200', address: '456 Health Ave, Wellness, CA 67890', website: 'acoustiskin.com', leadSource: 'Website', clv: '$0', lastPurchase: null, firstPurchase: null, purchaseFrequency: 0, primaryProduct: null, subscriptionTier: null, lastContact: '2025-11-01', nextTask: 'Product Demo', nps: null, social: ['Instagram', 'X'], handle: '@acoustiskin' }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>];</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>appointments = [</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>{ id: 'APPT-001', customerId: 'CUST-001', title: 'Q4 Review Call', date: '2025-11-20', time: '14:00', type: 'Call', notes: 'Discuss renewal and upsell' },</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>{ id: 'APPT-002', customerId: 'CUST-002', title: 'Product Demo', date: '2025-11-25', time: '10:00', type: 'Demo', notes: 'Show new skincare line' }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>];</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>tasks = [</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>{ id: 'TASK-001', customerId: 'CUST-001', title: 'Send contract', due: '2025-11-18', status: 'Pending' },</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>{ id: 'TASK-002', customerId: 'CUST-002', title: 'Follow up on demo', due: '2025-11-26', status: 'Pending' }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>];</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>pipelineDeals = [</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>{ id: 'DEAL-001', customerId: 'CUST-002', name: 'Initial Order - 100 Units', value: 2995, stage: 'Negotiation', probability: 70, closeDate: '2025-12-15' }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>];</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>function showNotification(msg, type = 'bg-blue-100 text-blue-700') {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>const n = document.getElementById('notification');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>n.textContent = msg;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>n.className = `fixed top-4 right-4 z-50 p-3 rounded-lg shadow-xl text-sm font-medium ${type} transition-all duration-300`;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>n.classList.remove('hidden');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>setTimeout(() =&gt; n.classList.add('hidden'), 4000);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>function navigateTo(view) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>document.querySelectorAll('.app-view').forEach(v =&gt; v.classList.add('hidden'));</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>document.getElementById(view)?.classList.remove('hidden');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>document.getElementById('editCustomerButton')?.classList[view === 'customers-view' ? 'remove' : 'add']('hidden');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>document.getElementById('backToDashboard')?.classList[view === 'dashboard-view' ? 'add' : 'remove']('hidden');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>if (view === 'dashboard-view') renderDashboard();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>if (view === 'customers-view') renderCustomers();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>if (view === 'orders-view' &amp;&amp; activeCustomer) renderOrderForm();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>if (view === 'calendar-view') renderCalendar();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>if (view === 'pipeline-view') renderPipeline();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>function renderCustomerList() {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>const list = document.getElementById('customerList');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>list.innerHTML = customers.map(c =&gt; `</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;li class="customer-item p-3 cursor-pointer hover:bg-indigo-600 rounded-lg text-sm ${activeCustomer?.id === c.id ? 'bg-indigo-600' : ''}" data-customer-id="${c.id}"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>${c.name}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/li&gt;`).join('');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>document.querySelectorAll('.customer-item').forEach(item =&gt; {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>item.onclick = () =&gt; {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>document.querySelectorAll('.customer-item').forEach(i =&gt; i.classList.remove('bg-indigo-600'));</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>item.classList.add('bg-indigo-600');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>activeCustomer = customers.find(c =&gt; c.id === item.dataset.customerId);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>document.getElementById('currentCustomerName').textContent = activeCustomer.name;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>updateCustomerStatusUI(activeCustomer.status);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>navigateTo('dashboard-view');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>};</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>});</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>function updateCustomerStatusUI(status) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>const bar = document.createElement('div');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>bar.id = 'customerStatusBar';</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>bar.className = `mx-6 mt-4 p-2 font-semibold text-sm rounded-lg ${status === 'Active Customer' ? 'bg-green-100 text-green-700' : status === 'Prospect' ? 'bg-blue-100 text-blue-700' : 'bg-gray-200 text-gray-800'}`;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>bar.textContent = `Status: ${status || 'N/A'}`;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>const existing = document.getElementById('customerStatusBar');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>if (existing) existing.replaceWith(bar);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>else document.querySelector('main').insertBefore(bar, document.querySelector('.app-view'));</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>function renderDashboard() {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>const view = document.getElementById('dashboard-view');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>if (!activeCustomer) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>view.innerHTML = `&lt;div class="text-center text-gray-500 mt-20"&gt;Select a customer to view dashboard&lt;/div&gt;`;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>return;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>view.innerHTML = `</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="max-w-7xl mx-auto"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;h2 class="text-2xl font-extrabold text-gray-900 mb-6"&gt;${activeCustomer.name} - Dashboard&lt;/h2&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div class="grid grid-cols-1 md:grid-cols-3 gap-6"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="bg-white p-6 rounded-xl shadow"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;h3 class="font-semibold text-gray-700"&gt;Lifetime Value&lt;/h3&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;p class="text-2xl font-bold text-indigo-600"&gt;${activeCustomer.clv}&lt;/p&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="bg-white p-6 rounded-xl shadow"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;h3 class="font-semibold text-gray-700"&gt;Last Purchase&lt;/h3&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;p class="text-lg"&gt;${activeCustomer.lastPurchase || 'N/A'}&lt;/p&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="bg-white p-6 rounded-xl shadow"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;h3 class="font-semibold text-gray-700"&gt;Next Task&lt;/h3&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;p class="text-lg"&gt;${activeCustomer.nextTask || 'None'}&lt;/p&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="bg-white p-6 rounded-xl shadow"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;h3 class="font-semibold mb-4"&gt;Upcoming Appointments&lt;/h3&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;div id="upcomingAppointments"&gt;&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="bg-white p-6 rounded-xl shadow"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;h3 class="font-semibold mb-4"&gt;Pending Tasks&lt;/h3&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;div id="pendingTasks"&gt;&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;`;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>renderUpcomingAppointments();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>renderPendingTasks();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>function renderUpcomingAppointments() {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>const container = document.getElementById('upcomingAppointments');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>const appts = appointments.filter(a =&gt; a.customerId === activeCustomer.id &amp;&amp; new Date(a.date) &gt;= new Date());</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>container.innerHTML = appts.length ? appts.map(a =&gt; `</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="flex justify-between items-center p-2 bg-blue-50 rounded mb-2"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;p class="font-medium"&gt;${a.title}&lt;/p&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;p class="text-xs text-gray-600"&gt;${a.date} ${a.time}&lt;/p&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;button class="text-xs text-indigo-600 hover:underline" onclick="showNotification('Edit coming soon')"&gt;Edit&lt;/button&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;`).join('') : '&lt;p class="text-gray-500"&gt;No upcoming appointments&lt;/p&gt;';</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>function renderPendingTasks() {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>const container = document.getElementById('pendingTasks');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>const tasksList = tasks.filter(t =&gt; t.customerId === activeCustomer.id &amp;&amp; t.status === 'Pending');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>container.innerHTML = tasksList.length ? tasksList.map(t =&gt; `</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="flex justify-between items-center p-2 bg-yellow-50 rounded mb-2"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;p class="font-medium"&gt;${t.title}&lt;/p&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;p class="text-xs text-gray-600"&gt;Due: ${t.due}&lt;/p&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;button class="text-xs text-indigo-600 hover:underline" onclick="showNotification('Task completed!')"&gt;Done&lt;/button&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;`).join('') : '&lt;p class="text-gray-500"&gt;No pending tasks&lt;/p&gt;';</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>function renderCustomers() {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>const view = document.getElementById('customers-view');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>view.innerHTML = `</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="max-w-7xl mx-auto"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;h2 class="text-2xl font-extrabold text-gray-900 mb-6"&gt;Customer Profile&lt;/h2&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>${activeCustomer ? renderCustomerForm() : '&lt;p class="text-center text-gray-500"&gt;Select a customer&lt;/p&gt;'}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;`;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>function renderCustomerForm() {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>return `</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;form id="customerForm" class="bg-white p-6 rounded-xl shadow space-y-6"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div class="grid grid-cols-1 md:grid-cols-2 gap-6"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="input-group"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;label&gt;Company Name *&lt;/label&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;input type="text" name="name" value="${activeCustomer.name}" required&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="input-group"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;label&gt;Email *&lt;/label&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;input type="email" name="email" value="${activeCustomer.email}" required&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="input-group"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;label&gt;Phone&lt;/label&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;input type="tel" name="phone" value="${activeCustomer.phone}"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="input-group"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;label&gt;Status&lt;/label&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;select name="status" onchange="updateCustomerStatusUI(this.value)"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;option ${activeCustomer.status === 'Prospect' ? 'selected' : ''}&gt;Prospect&lt;/option&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;option ${activeCustomer.status === 'Active Customer' ? 'selected' : ''}&gt;Active Customer&lt;/option&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;/select&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="input-group col-span-2"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;label&gt;Address&lt;/label&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;input type="text" name="address" value="${activeCustomer.address}"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="input-group"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;label&gt;Industry&lt;/label&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;input type="text" name="industry" value="${activeCustomer.industry}"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="input-group"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;label&gt;Website&lt;/label&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;input type="url" name="website" value="${activeCustomer.website}"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div class="flex justify-end"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;button type="button" id="saveCustomerBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>Save Changes</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/button&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/form&gt;`;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>function renderOrderForm() {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>const view = document.getElementById('orders-view');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>orderItems = [];</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>view.innerHTML = `</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="max-w-7xl mx-auto"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;h2 class="text-2xl font-extrabold text-gray-900 mb-6"&gt;New Order - ${activeCustomer.name}&lt;/h2&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div class="grid grid-cols-1 lg:grid-cols-3 gap-8"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="lg:col-span-2 bg-white p-6 rounded-xl shadow"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;h3 class="text-xl font-bold mb-4 border-b pb-2"&gt;Order Items&lt;/h3&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;div class="space-y-4"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;div class="grid grid-cols-1 md:grid-cols-3 gap-4"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                  </span>&lt;div class="input-group"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;label&gt;Product&lt;/label&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;input type="text" id="orderProduct" placeholder="e.g. Team Jersey"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                  </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                  </span>&lt;div class="input-group"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;label&gt;Size&lt;/label&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;select id="orderSize"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                      </span>&lt;option&gt;S&lt;/option&gt;&lt;option&gt;M&lt;/option&gt;&lt;option&gt;L&lt;/option&gt;&lt;option&gt;XL&lt;/option&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;/select&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                  </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                  </span>&lt;div class="input-group"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;label&gt;Color&lt;/label&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;select id="orderColor"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                      </span>&lt;option&gt;Black&lt;/option&gt;&lt;option&gt;Team Blue&lt;/option&gt;&lt;option&gt;Red&lt;/option&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;/select&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                  </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;div class="grid grid-cols-1 md:grid-cols-3 gap-4"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                  </span>&lt;div class="input-group"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;label&gt;Customization&lt;/label&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;input type="text" id="orderCustom" placeholder="Name/Number"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                  </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                  </span>&lt;div class="input-group"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;label&gt;Quantity&lt;/label&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;input type="number" id="orderQty" value="1" min="1"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                  </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                  </span>&lt;div class="input-group"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;label&gt;Price&lt;/label&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;input type="number" id="orderPrice" step="0.01" placeholder="29.95"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                  </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;button id="addOrderItem" class="bg-indigo-500 hover:bg-indigo-600 text-white py-2 px-4 rounded-lg"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                  </span>Add Item</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;/button&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;div id="orderItemsList" class="mt-6 space-y-2"&gt;&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="bg-white p-6 rounded-xl shadow"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;h3 class="text-xl font-bold mb-4 border-b pb-2"&gt;Summary&lt;/h3&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;div id="orderSummary" class="space-y-2"&gt;&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;button id="processOrderBtn" class="w-full mt-6 bg-green-600 hover:bg-green-700 text-white font-extrabold py-3 rounded-lg"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>PROCESS ORDER</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>&lt;/button&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;`;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>attachOrderListeners();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>function attachOrderListeners() {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>document.getElementById('addOrderItem')?.addEventListener('click', () =&gt; {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const product = document.getElementById('orderProduct').value;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const size = document.getElementById('orderSize').value;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const color = document.getElementById('orderColor').value;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const custom = document.getElementById('orderCustom').value;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const qty = parseInt(document.getElementById('orderQty').value) || 1;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const price = parseFloat(document.getElementById('orderPrice').value) || 0;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>if (product &amp;&amp; price &gt; 0) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>orderItems.push({ product, size, color, custom, qty, price: price * qty });</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>document.getElementById('orderProduct').value = '';</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>document.getElementById('orderCustom').value = '';</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>document.getElementById('orderPrice').value = '';</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>updateOrderDisplay();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>});</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>document.getElementById('processOrderBtn')?.addEventListener('click', () =&gt; {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>if (orderItems.length === 0) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>showNotification('Add items first!', 'bg-red-100 text-red-700');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>return;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>showNotification(`Order processed! Total: $${orderItems.reduce((s,i)=&gt;s+i.price,0).toFixed(2)}`, 'bg-green-100 text-green-700');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>orderItems = [];</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>renderOrderForm();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>});</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>function updateOrderDisplay() {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>const list = document.getElementById('orderItemsList');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>list.innerHTML = orderItems.map((item, i) =&gt; `</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="p-3 bg-gray-50 rounded flex justify-between"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;p class="font-medium"&gt;${item.qty}x ${item.product} (${item.size}, ${item.color})&lt;/p&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>${item.custom ? `&lt;p class="text-xs text-gray-600"&gt;Custom: ${item.custom}&lt;/p&gt;` : ''}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;p class="font-medium"&gt;$${item.price.toFixed(2)}&lt;/p&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;`).join('');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>const total = orderItems.reduce((s,i)=&gt;s+i.price,0);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>document.getElementById('orderSummary').innerHTML = `</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="flex justify-between"&gt;&lt;span&gt;Subtotal:&lt;/span&gt;&lt;span&gt;$${total.toFixed(2)}&lt;/span&gt;&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="flex justify-between font-bold text-lg mt-2"&gt;&lt;span&gt;Total:&lt;/span&gt;&lt;span class="text-indigo-600"&gt;$${total.toFixed(2)}&lt;/span&gt;&lt;/div&gt;`;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>function renderCalendar() {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>const view = document.getElementById('calendar-view');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>const today = new Date();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>const year = today.getFullYear();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>const month = today.getMonth();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>const firstDay = new Date(year, month, 1).getDay();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>const daysInMonth = new Date(year, month + 1, 0).getDate();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>let html = `</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="max-w-7xl mx-auto"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;h2 class="text-2xl font-extrabold text-gray-900 mb-6"&gt;Calendar - ${today.toLocaleString('default', { month: 'long' })} ${year}&lt;/h2&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div class="grid grid-cols-7 gap-2 text-center font-semibold text-sm"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div&gt;Sun&lt;/div&gt;&lt;div&gt;Mon&lt;/div&gt;&lt;div&gt;Tue&lt;/div&gt;&lt;div&gt;Wed&lt;/div&gt;&lt;div&gt;Thu&lt;/div&gt;&lt;div&gt;Fri&lt;/div&gt;&lt;div&gt;Sat&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div class="grid grid-cols-7 gap-2 mt-2"&gt;`;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>for (let i = 0; i &lt; firstDay; i++) html += `&lt;div&gt;&lt;/div&gt;`;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>for (let day = 1; day &lt;= daysInMonth; day++) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const dayAppts = appointments.filter(a =&gt; a.date === dateStr);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const dayTasks = tasks.filter(t =&gt; t.due === dateStr);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>html += `</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div class="border rounded-lg p-2 min-h-24 bg-white ${day === today.getDate() ? 'ring-2 ring-indigo-600' : ''}"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="font-semibold text-sm"&gt;${day}&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>${dayAppts.map(a =&gt; `&lt;div class="text-xs bg-blue-100 p-1 rounded mt-1"&gt;${a.title}&lt;/div&gt;`).join('')}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>${dayTasks.map(t =&gt; `&lt;div class="text-xs bg-yellow-100 p-1 rounded mt-1"&gt;${t.title}&lt;/div&gt;`).join('')}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;/div&gt;`;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>html += `&lt;/div&gt;&lt;/div&gt;`;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>view.innerHTML = html;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>function renderPipeline() {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>const view = document.getElementById('pipeline-view');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>const stages = ['Lead', 'Qualified', 'Proposal', 'Negotiation', 'Closed Won', 'Closed Lost'];</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>view.innerHTML = `</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="max-w-7xl mx-auto"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;h2 class="text-2xl font-extrabold text-gray-900 mb-6"&gt;Sales Pipeline&lt;/h2&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>${stages.map(stage =&gt; {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>const deals = pipelineDeals.filter(d =&gt; d.stage === stage);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">              </span>return `</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;div class="kanban-column"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                  </span>&lt;h3 class="font-bold text-center mb-3"&gt;${stage} (${deals.length})&lt;/h3&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                  </span>${deals.map(deal =&gt; {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>const cust = customers.find(c =&gt; c.id === deal.customerId);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>return `&lt;div class="bg-white p-3 rounded shadow mb-3 cursor-move"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                      </span>&lt;p class="font-medium"&gt;${cust?.name || 'Unknown'}&lt;/p&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                      </span>&lt;p class="text-sm"&gt;${deal.name}&lt;/p&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                      </span>&lt;p class="font-bold text-indigo-600"&gt;$${deal.value}&lt;/p&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;`;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                  </span>}).join('')}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;/div&gt;`;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}).join('')}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;`;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>function setupEventListeners() {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>document.getElementById('newCustomerButton')?.addEventListener('click', () =&gt; {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const id = 'CUST-' + Math.random().toString(36).substring(2, 9).toUpperCase();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>activeCustomer = { id, name: 'New Customer', email: '', phone: '', status: 'Prospect', industry: '', revenue: '', employees: '', address: '', website: '', leadSource: '', clv: '$0', lastPurchase: null, firstPurchase: null, purchaseFrequency: 0, primaryProduct: null, subscriptionTier: null, lastContact: null, nextTask: '', nps: null, social: [], handle: '' };</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>customers.push(activeCustomer);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>renderCustomerList();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>navigateTo('customers-view');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>});</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>document.getElementById('editCustomerButton')?.addEventListener('click', () =&gt; navigateTo('customers-view'));</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>document.getElementById('backToDashboard')?.addEventListener('click', () =&gt; navigateTo('dashboard-view'));</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>document.querySelectorAll('.nav-link').forEach(link =&gt; {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>link.addEventListener('click', e =&gt; {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>e.preventDefault();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>navigateTo(link.dataset.view);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>});</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>});</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>document.getElementById('customerForm')?.addEventListener('submit', e =&gt; e.preventDefault());</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>document.getElementById('saveCustomerBtn')?.addEventListener('click', () =&gt; {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const form = document.getElementById('customerForm');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const data = {};</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>form.querySelectorAll('input, select').forEach(f =&gt; {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>if (f.name) data[f.name] = f.value;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>});</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>Object.assign(activeCustomer, data);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>showNotification('Customer saved!', 'bg-green-100 text-green-700');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>renderCustomerList();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>navigateTo('dashboard-view');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>});</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>document.addEventListener('DOMContentLoaded', () =&gt; {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>initMockData();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>renderCustomerList();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>setupEventListeners();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>navigateTo('dashboard-view');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>});</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;/script&gt;</span></p>
-<p class="p1"><span class="s1">&lt;/body&gt;</span></p>
-<p class="p1"><span class="s1">&lt;/html&gt;</span></p>
+<body class="bg-gray-50 min-h-screen antialiased flex">
+  <div id="notification" class="fixed top-4 right-4 z-50 p-3 hidden rounded-lg shadow-xl text-sm font-medium transition-all duration-300" role="alert"></div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar bg-indigo-700 text-white flex flex-col h-screen fixed">
+    <div class="p-6 text-2xl font-bold border-b border-indigo-600">AcoustiSkin CRM</div>
+    <div class="p-6 flex-grow overflow-y-auto">
+      <h3 class="text-sm font-semibold mb-2 text-indigo-300 uppercase tracking-wider">Navigation</h3>
+      <nav class="space-y-1">
+        <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="dashboard-view">
+          Dashboard
+        </a>
+        <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="customers-view">
+          Customers
+        </a>
+        <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="orders-view">
+          Orders
+        </a>
+        <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="calendar-view">
+          Calendar
+        </a>
+        <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="pipeline-view">
+          Pipeline
+        </a>
+      </nav>
+      <button id="newCustomerButton" class="w-full mt-6 bg-indigo-500 hover:bg-indigo-400 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 shadow-md">
+        + New Customer
+      </button>
+    </div>
+    <div class="p-6 border-t border-indigo-600">
+      <h3 class="text-sm font-semibold mb-2 text-indigo-300 uppercase tracking-wider">Customers</h3>
+      <ul id="customerList" class="space-y-1 max-h-64 overflow-y-auto">
+        <li class="p-3 text-center text-gray-400">Loading...</li>
+      </ul>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content flex flex-col ml-72 w-full">
+    <header class="app-header bg-white p-4 flex justify-between items-center sticky top-0 z-10">
+      <h1 class="text-xl font-bold text-gray-800">Customer: <span id="currentCustomerName" class="text-indigo-600">Select Customer</span></h1>
+      <div class="flex items-center space-x-4">
+        <button id="backToDashboard" class="hidden bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg text-sm transition-colors">
+          Back to Dashboard
+        </button>
+        <button id="editCustomerButton" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg text-sm transition-colors">
+          Edit Profile
+        </button>
+      </div>
+    </header>
+    <div id="customerStatusBar" class="mx-6 mt-4 p-2 font-semibold text-sm rounded-lg bg-gray-200 text-gray-800">
+      Status: N/A
+    </div>
+    <div id="dashboard-view" class="app-view p-6"></div>
+    <div id="customers-view" class="app-view p-6 hidden"></div>
+    <div id="orders-view" class="app-view p-6 hidden"></div>
+    <div id="calendar-view" class="app-view p-6 hidden"></div>
+    <div id="pipeline-view" class="app-view p-6 hidden"></div>
+  </main>
+
+  <script>
+    let activeCustomer = null;
+    let customers = [
+      { id: 'CUST-001', name: 'Acme Corp', email: 'john@acme.com', phone: '555-0001', status: 'Active Customer', industry: 'Manufacturing', revenue: '$5M', employees: '200+', address: '123 Main St, City, ST 12345', website: 'acme.com', leadSource: 'Referral', clv: '$150,000', lastPurchase: '2025-10-15', firstPurchase: '2023-01-10', purchaseFrequency: 12, primaryProduct: 'Team Jerseys', subscriptionTier: 'Gold', lastContact: '2025-11-10', nextTask: 'Q4 Review Call', nps: 9, social: ['LinkedIn'], handle: '@acmecorp' },
+      { id: 'CUST-002', name: 'AcoustiSkin LLC', email: 'dana@acoustiskin.com', phone: '555-0002', status: 'Prospect', industry: 'Healthcare', revenue: '$2M', employees: '50-200', address: '456 Health Ave, Wellness, CA 67890', website: 'acoustiskin.com', leadSource: 'Website', clv: '$0', lastPurchase: null, firstPurchase: null, purchaseFrequency: 0, primaryProduct: null, subscriptionTier: null, lastContact: '2025-11-01', nextTask: 'Product Demo', nps: null, social: ['Instagram', 'X'], handle: '@acoustiskin' }
+    ];
+    let appointments = [
+      { id: 'APPT-001', customerId: 'CUST-001', title: 'Q4 Review Call', date: '2025-11-20', time: '14:00', type: 'Call', notes: 'Discuss renewal and upsell' },
+      { id: 'APPT-002', customerId: 'CUST-002', title: 'Product Demo', date: '2025-11-25', time: '10:00', type: 'Demo', notes: 'Show new skincare line' }
+    ];
+    let tasks = [
+      { id: 'TASK-001', customerId: 'CUST-001', title: 'Send contract', due: '2025-11-18', status: 'Pending' },
+      { id: 'TASK-002', customerId: 'CUST-002', title: 'Follow up on demo', due: '2025-11-26', status: 'Pending' }
+    ];
+    let orderItems = [];
+    let pipelineDeals = [
+      { id: 'DEAL-001', customerId: 'CUST-002', name: 'Initial Order - 100 Units', value: 2995, stage: 'Negotiation', probability: 70, closeDate: '2025-12-15' }
+    ];
+
+    function showNotification(msg, type = 'bg-blue-100 text-blue-700') {
+      const n = document.getElementById('notification');
+      n.textContent = msg;
+      n.className = `fixed top-4 right-4 z-50 p-3 rounded-lg shadow-xl text-sm font-medium ${type} transition-all duration-300`;
+      n.classList.remove('hidden');
+      setTimeout(() => n.classList.add('hidden'), 4000);
+    }
+
+    function navigateTo(view) {
+      document.querySelectorAll('.app-view').forEach(v => v.classList.add('hidden'));
+      document.getElementById(view)?.classList.remove('hidden');
+      document.getElementById('editCustomerButton')?.classList[view === 'customers-view' ? 'remove' : 'add']('hidden');
+      document.getElementById('backToDashboard')?.classList[view === 'dashboard-view' ? 'add' : 'remove']('hidden');
+      if (view === 'dashboard-view') renderDashboard();
+      if (view === 'customers-view') renderCustomers();
+      if (view === 'orders-view' && activeCustomer) renderOrderForm();
+      if (view === 'calendar-view') renderCalendar();
+      if (view === 'pipeline-view') renderPipeline();
+    }
+
+    function renderCustomerList() {
+      const list = document.getElementById('customerList');
+      list.innerHTML = customers.map(c => `
+        <li class="customer-item p-3 cursor-pointer hover:bg-indigo-600 rounded-lg text-sm ${activeCustomer?.id === c.id ? 'bg-indigo-600' : ''}" data-customer-id="${c.id}">
+          ${c.name}
+        </li>`).join('');
+      document.querySelectorAll('.customer-item').forEach(item => {
+        item.onclick = () => {
+          document.querySelectorAll('.customer-item').forEach(i => i.classList.remove('bg-indigo-600'));
+          item.classList.add('bg-indigo-600');
+          activeCustomer = customers.find(c => c.id === item.dataset.customerId);
+          document.getElementById('currentCustomerName').textContent = activeCustomer.name;
+          updateCustomerStatusUI(activeCustomer.status);
+          navigateTo('dashboard-view');
+        };
+      });
+    }
+
+    function updateCustomerStatusUI(status) {
+      const bar = document.getElementById('customerStatusBar');
+      let color = 'bg-gray-200 text-gray-800';
+      if (status === 'Active Customer') color = 'bg-green-100 text-green-700';
+      else if (status === 'Prospect') color = 'bg-blue-100 text-blue-700';
+      bar.className = `mx-6 mt-4 p-2 font-semibold text-sm rounded-lg ${color}`;
+      bar.textContent = `Status: ${status || 'N/A'}`;
+    }
+
+    function renderDashboard() {
+      const view = document.getElementById('dashboard-view');
+      if (!activeCustomer) {
+        view.innerHTML = `<div class="text-center text-gray-500 mt-20">Select a customer to view dashboard</div>`;
+        return;
+      }
+      view.innerHTML = `
+        <div class="max-w-7xl mx-auto">
+          <h2 class="text-2xl font-extrabold text-gray-900 mb-6">${activeCustomer.name} - Dashboard</h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white p-6 rounded-xl shadow">
+              <h3 class="font-semibold text-gray-700">Lifetime Value</h3>
+              <p class="text-2xl font-bold text-indigo-600">${activeCustomer.clv}</p>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow">
+              <h3 class="font-semibold text-gray-700">Last Purchase</h3>
+              <p class="text-lg">${activeCustomer.lastPurchase || 'N/A'}</p>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow">
+              <h3 class="font-semibold text-gray-700">Next Task</h3>
+              <p class="text-lg">${activeCustomer.nextTask || 'None'}</p>
+            </div>
+          </div>
+          <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white p-6 rounded-xl shadow">
+              <h3 class="font-semibold mb-4">Upcoming Appointments</h3>
+              <div id="upcomingAppointments"></div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow">
+              <h3 class="font-semibold mb-4">Pending Tasks</h3>
+              <div id="pendingTasks"></div>
+            </div>
+          </div>
+        </div>`;
+      renderUpcomingAppointments();
+      renderPendingTasks();
+    }
+
+    function renderUpcomingAppointments() {
+      const container = document.getElementById('upcomingAppointments');
+      const appts = appointments.filter(a => a.customerId === activeCustomer.id && new Date(a.date) >= new Date());
+      container.innerHTML = appts.length ? appts.map(a => `
+        <div class="flex justify-between items-center p-2 bg-blue-50 rounded mb-2">
+          <div>
+            <p class="font-medium">${a.title}</p>
+            <p class="text-xs text-gray-600">${a.date} ${a.time}</p>
+          </div>
+          <button class="text-xs text-indigo-600 hover:underline" onclick="showNotification('Edit appointment')">Edit</button>
+        </div>`).join('') : '<p class="text-gray-500">No upcoming appointments</p>';
+    }
+
+    function renderPendingTasks() {
+      const container = document.getElementById('pendingTasks');
+      const tasksList = tasks.filter(t => t.customerId === activeCustomer.id && t.status === 'Pending');
+      container.innerHTML = tasksList.length ? tasksList.map(t => `
+        <div class="flex justify-between items-center p-2 bg-yellow-50 rounded mb-2">
+          <div>
+            <p class="font-medium">${t.title}</p>
+            <p class="text-xs text-gray-600">Due: ${t.due}</p>
+          </div>
+          <button class="text-xs text-indigo-600 hover:underline" onclick="showNotification('Task completed!')">Done</button>
+        </div>`).join('') : '<p class="text-gray-500">No pending tasks</p>';
+    }
+
+    function renderCustomers() {
+      const view = document.getElementById('customers-view');
+      view.innerHTML = `
+        <div class="max-w-7xl mx-auto">
+          <h2 class="text-2xl font-extrabold text-gray-900 mb-6">Customer Profile</h2>
+          ${activeCustomer ? renderCustomerForm() : '<p class="text-center text-gray-500">Select a customer</p>'}
+        </div>`;
+    }
+
+    function renderCustomerForm() {
+      return `
+        <form id="customerForm" class="bg-white p-6 rounded-xl shadow space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="input-group">
+              <label>Company Name *</label>
+              <input type="text" name="name" value="${activeCustomer.name}" required>
+            </div>
+            <div class="input-group">
+              <label>Email *</label>
+              <input type="email" name="email" value="${activeCustomer.email}" required>
+            </div>
+            <div class="input-group">
+              <label>Phone</label>
+              <input type="tel" name="phone" value="${activeCustomer.phone}">
+            </div>
+            <div class="input-group">
+              <label>Status</label>
+              <select name="status" onchange="updateCustomerStatusUI(this.value)">
+                <option ${activeCustomer.status === 'Prospect' ? 'selected' : ''}>Prospect</option>
+                <option ${activeCustomer.status === 'Active Customer' ? 'selected' : ''}>Active Customer</option>
+              </select>
+            </div>
+            <div class="input-group col-span-2">
+              <label>Address</label>
+              <input type="text" name="address" value="${activeCustomer.address}">
+            </div>
+            <div class="input-group">
+              <label>Industry</label>
+              <input type="text" name="industry" value="${activeCustomer.industry}">
+            </div>
+            <div class="input-group">
+              <label>Website</label>
+              <input type="url" name="website" value="${activeCustomer.website}">
+            </div>
+            <div class="input-group">
+              <label>Lead Source</label>
+              <input type="text" name="leadSource" value="${activeCustomer.leadSource}">
+            </div>
+            <div class="input-group">
+              <label>Revenue</label>
+              <input type="text" name="revenue" value="${activeCustomer.revenue}">
+            </div>
+            <div class="input-group">
+              <label>Employees</label>
+              <input type="text" name="employees" value="${activeCustomer.employees}">
+            </div>
+            <div class="input-group col-span-2">
+              <label>Next Task</label>
+              <input type="text" name="nextTask" value="${activeCustomer.nextTask}">
+            </div>
+          </div>
+          <div class="flex justify-end">
+            <button type="button" id="saveCustomerBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg">
+              Save Changes
+            </button>
+          </div>
+        </form>`;
+    }
+
+    function renderOrderForm() {
+      const view = document.getElementById('orders-view');
+      orderItems = [];
+      view.innerHTML = `
+        <div class="max-w-7xl mx-auto">
+          <h2 class="text-2xl font-extrabold text-gray-900 mb-6">New Order - ${activeCustomer.name}</h2>
+          <div class="space-y-6">
+            <!-- I. Customer Information -->
+            <div class="bg-white p-6 rounded-xl shadow">
+              <h3 class="text-xl font-bold mb-4">I. Customer Information</h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="input-group">
+                  <label>Full Name</label>
+                  <input type="text" value="${activeCustomer.name}" readonly>
+                </div>
+                <div class="input-group">
+                  <label>Email Address</label>
+                  <input type="email" value="${activeCustomer.email}" readonly>
+                </div>
+                <div class="input-group">
+                  <label>Phone Number</label>
+                  <input type="tel" value="${activeCustomer.phone}" readonly>
+                </div>
+              </div>
+            </div>
+            <!-- II. Shipping Address -->
+            <div class="bg-white p-6 rounded-xl shadow">
+              <h3 class="text-xl font-bold mb-4">II. Shipping Address</h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="input-group">
+                  <label>Address Line 1</label>
+                  <input type="text" id="shippingLine1" value="${activeCustomer.address}" placeholder="123 Main St">
+                </div>
+                <div class="input-group">
+                  <label>City, State/Province</label>
+                  <input type="text" id="shippingCity" placeholder="City, ST">
+                </div>
+                <div class="input-group">
+                  <label>Zip/Postal Code</label>
+                  <input type="text" id="shippingZip" placeholder="12345">
+                </div>
+                <div class="input-group">
+                  <label>Country</label>
+                  <input type="text" id="shippingCountry" value="USA">
+                </div>
+              </div>
+            </div>
+            <!-- III. Order Summary -->
+            <div class="bg-white p-6 rounded-xl shadow">
+              <h3 class="text-xl font-bold mb-4">III. Order Summary</h3>
+              <div class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <div class="input-group">
+                    <label>Product</label>
+                    <input type="text" id="productName" placeholder="e.g. Team Jersey">
+                  </div>
+                  <div class="input-group">
+                    <label>Size</label>
+                    <select id="productSize">
+                      <option>S</option><option>M</option><option>L</option><option>XL</option>
+                    </select>
+                  </div>
+                  <div class="input-group">
+                    <label>Color</label>
+                    <select id="productColor">
+                      <option>Black</option><option>Team Blue</option><option>Red</option>
+                    </select>
+                  </div>
+                  <div class="input-group">
+                    <label>Customization</label>
+                    <input type="text" id="productCustom" placeholder="Name/Number">
+                  </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div class="input-group">
+                    <label>Quantity</label>
+                    <input type="number" id="productQty" value="1" min="1">
+                  </div>
+                  <div class="input-group">
+                    <label>Price per Unit</label>
+                    <input type="number" id="productPrice" step="0.01" placeholder="29.95">
+                  </div>
+                  <button id="addToOrder" class="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-lg">
+                    Add to Order
+                  </button>
+                </div>
+                <div id="orderSummaryList" class="mt-4 space-y-2"></div>
+              </div>
+            </div>
+            <!-- IV. Shipping Method -->
+            <div class="bg-white p-6 rounded-xl shadow">
+              <h3 class="text-xl font-bold mb-4">IV. Shipping Method</h3>
+              <div class="space-y-2">
+                <label class="flex items-center">
+                  <input type="radio" name="shippingMethod" value="standard" checked class="mr-2">
+                  Standard (5-7 days) - $5.99
+                </label>
+                <label class="flex items-center">
+                  <input type="radio" name="shippingMethod" value="expedited" class="mr-2">
+                  Expedited (2-3 days) - $12.99
+                </label>
+                <label class="flex items-center">
+                  <input type="radio" name="shippingMethod" value="overnight" class="mr-2">
+                  Overnight - $24.99
+                </label>
+              </div>
+            </div>
+            <!-- V. Payment -->
+            <div class="bg-white p-6 rounded-xl shadow">
+              <h3 class="text-xl font-bold mb-4">V. Payment</h3>
+              <div class="space-y-4">
+                <label class="flex items-center">
+                  <input type="checkbox" id="sameAsShipping" checked class="mr-2">
+                  Billing same as shipping
+                </label>
+                <div id="billingFields" class="grid grid-cols-1 md:grid-cols-2 gap-4 opacity-50 pointer-events-none">
+                  <div class="input-group">
+                    <label>Billing Address Line 1</label>
+                    <input type="text" placeholder="123 Main St">
+                  </div>
+                  <div class="input-group">
+                    <label>City, State</label>
+                    <input type="text" placeholder="City, ST">
+                  </div>
+                  <div class="input-group">
+                    <label>Zip Code</label>
+                    <input type="text" placeholder="12345">
+                  </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="input-group">
+                    <label>Card Type</label>
+                    <select>
+                      <option>Visa</option>
+                      <option>Mastercard</option>
+                      <option>Amex</option>
+                    </select>
+                  </div>
+                  <div class="input-group">
+                    <label>Card Number</label>
+                    <input type="text" placeholder="**** **** **** ****">
+                  </div>
+                  <div class="input-group">
+                    <label>Expiration</label>
+                    <input type="text" placeholder="MM/YY">
+                  </div>
+                  <div class="input-group">
+                    <label>CVV</label>
+                    <input type="text" placeholder="***">
+                  </div>
+                </div>
+                <div class="input-group">
+                  <label>Promo Code</label>
+                  <input type="text" id="promoCode" placeholder="Enter code">
+                  <button id="applyPromo" class="bg-gray-500 text-white py-1 px-3 rounded mt-1 text-sm">Apply</button>
+                </div>
+              </div>
+            </div>
+            <!-- VI. Final Total -->
+            <div class="bg-white p-6 rounded-xl shadow">
+              <h3 class="text-xl font-bold mb-4">VI. Final Total</h3>
+              <div id="finalTotal" class="space-y-2 text-lg">
+                <div class="flex justify-between"><span>Subtotal:</span><span id="subtotal">$0.00</span></div>
+                <div class="flex justify-between"><span>Shipping:</span><span id="shipping">$5.99</span></div>
+                <div class="flex justify-between"><span>Tax:</span><span id="tax">$0.00</span></div>
+                <div class="flex justify-between font-bold border-t pt-2"><span>GRAND TOTAL:</span><span id="grandTotal">$5.99</span></div>
+              </div>
+            </div>
+            <!-- VII. Agreement -->
+            <div class="bg-white p-6 rounded-xl shadow">
+              <h3 class="text-xl font-bold mb-4">VII. Agreement</h3>
+              <label class="flex items-center">
+                <input type="checkbox" id="terms" required class="mr-2">
+                I agree to the Terms & Conditions
+              </label>
+              <button id="placeOrder" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg mt-4" disabled>
+                Place Order
+              </button>
+            </div>
+          </div>
+        </div>`;
+      attachOrderEventListeners();
+    }
+
+    function attachOrderEventListeners() {
+      document.getElementById('sameAsShipping').onchange = () => {
+        const fields = document.getElementById('billingFields');
+        if (document.getElementById('sameAsShipping').checked) {
+          fields.classList.add('opacity-50', 'pointer-events-none');
+        } else {
+          fields.classList.remove('opacity-50', 'pointer-events-none');
+        }
+      };
+      document.getElementById('applyPromo').onclick = () => {
+        const code = document.getElementById('promoCode').value;
+        if (code === 'WELCOME10') {
+          showNotification('10% discount applied!', 'bg-green-100 text-green-700');
+          // Apply discount logic here
+        } else {
+          showNotification('Invalid code', 'bg-red-100 text-red-700');
+        }
+      };
+      document.getElementById('terms').onchange = () => {
+        document.getElementById('placeOrder').disabled = !document.getElementById('terms').checked;
+      };
+      document.getElementById('placeOrder').onclick = () => {
+        showNotification('Order placed successfully!', 'bg-green-100 text-green-700');
+      };
+    }
+
+    function renderCalendar() {
+      const view = document.getElementById('calendar-view');
+      view.innerHTML = `
+        <div class="max-w-7xl mx-auto">
+          <h2 class="text-2xl font-extrabold text-gray-900 mb-6">Calendar</h2>
+          <div class="bg-white p-6 rounded-xl shadow">
+            <div class="flex justify-between mb-4">
+              <h3 class="font-semibold">November 2025</h3>
+              <div>
+                <button class="bg-gray-200 px-2 py-1 rounded mr-2" onclick="showNotification('Daily view')">Daily</button>
+                <button class="bg-gray-200 px-2 py-1 rounded mr-2" onclick="showNotification('Weekly view')">Weekly</button>
+                <button class="bg-indigo-600 text-white px-2 py-1 rounded" onclick="showNotification('Monthly view')">Monthly</button>
+              </div>
+            </div>
+            <div class="grid grid-cols-7 gap-2 text-center font-semibold text-sm mb-2">
+              <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+            </div>
+            <div class="grid grid-cols-7 gap-2">
+              <!-- Mock days with events -->
+              <div class="border rounded p-1 min-h-16 bg-white">1</div>
+              <div class="border rounded p-1 min-h-16 bg-white">2</div>
+              <div class="border rounded p-1 min-h-16 bg-white">3</div>
+              <div class="border rounded p-1 min-h-16 bg-white">4</div>
+              <div class="border rounded p-1 min-h-16 bg-white">5</div>
+              <div class="border rounded p-1 min-h-16 bg-white">6</div>
+              <div class="border rounded p-1 min-h-16 bg-white">7</div>
+              <div class="border rounded p-1 min-h-16 bg-white">8</div>
+              <div class="border rounded p-1 min-h-16 bg-white">9</div>
+              <div class="border rounded p-1 min-h-16 bg-white">10</div>
+              <div class="border rounded p-1 min-h-16 bg-white">11</div>
+              <div class="border rounded p-1 min-h-16 bg-white">12</div>
+              <div class="border rounded p-1 min-h-16 bg-white">13</div>
+              <div class="border rounded p-1 min-h-16 bg-white">14</div>
+              <div class="border rounded p-1 min-h-16 bg-white">15</div>
+              <div class="border rounded p-1 min-h-16 bg-white">16</div>
+              <div class="border rounded p-1 min-h-16 bg-white">17</div>
+              <div class="border rounded p-1 min-h-16 bg-white">18</div>
+              <div class="border rounded p-1 min-h-16 bg-blue-50">
+                <div class="text-xs text-yellow-600">Send contract</div>
+              </div>
+              <div class="border rounded p-1 min-h-16 bg-white">19</div>
+              <div class="border rounded p-1 min-h-16 bg-blue-50">
+                <div class="text-xs text-blue-600">Q4 Review Call</div>
+              </div>
+              <div class="border rounded p-1 min-h-16 bg-white">21</div>
+              <div class="border rounded p-1 min-h-16 bg-white">22</div>
+              <div class="border rounded p-1 min-h-16 bg-white">23</div>
+              <div class="border rounded p-1 min-h-16 bg-white">24</div>
+              <div class="border rounded p-1 min-h-16 bg-white">25</div>
+              <div class="border rounded p-1 min-h-16 bg-blue-50">
+                <div class="text-xs text-blue-600">Product Demo</div>
+              </div>
+              <div class="border rounded p-1 min-h-16 bg-white">26</div>
+              <div class="border rounded p-1 min-h-16 bg-yellow-50">
+                <div class="text-xs text-yellow-600">Follow up demo</div>
+              </div>
+              <div class="border rounded p-1 min-h-16 bg-white">27</div>
+              <div class="border rounded p-1 min-h-16 bg-white">28</div>
+              <div class="border rounded p-1 min-h-16 bg-white">29</div>
+              <div class="border rounded p-1 min-h-16 bg-white">30</div>
+            </div>
+            <button class="bg-indigo-600 text-white py-2 px-4 rounded mt-4" onclick="showNotification('Add appointment/task')">+ Add Event</button>
+          </div>
+        </div>`;
+    }
+
+    function renderPipeline() {
+      const view = document.getElementById('pipeline-view');
+      const stages = ['Lead', 'Qualified', 'Proposal', 'Negotiation', 'Closed Won', 'Closed Lost'];
+      view.innerHTML = `
+        <div class="max-w-7xl mx-auto">
+          <h2 class="text-2xl font-extrabold text-gray-900 mb-6">Sales Pipeline</h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            ${stages.map(stage => {
+              const deals = pipelineDeals.filter(d => d.stage === stage);
+              return `
+                <div class="kanban-column">
+                  <h3 class="font-bold text-center mb-3">${stage} (${deals.length})</h3>
+                  ${deals.map(deal => {
+                    const cust = customers.find(c => c.id === deal.customerId);
+                    return `<div class="bg-white p-3 rounded shadow mb-3 cursor-move">
+                      <p class="font-medium">${cust?.name || 'Unknown'}</p>
+                      <p class="text-sm">${deal.name}</p>
+                      <p class="font-bold text-indigo-600">$${deal.value}</p>
+                    </div>`;
+                  }).join('')}
+                </div>`;
+            }).join('')}
+          </div>
+          <button class="bg-indigo-600 text-white py-2 px-4 rounded mt-4" onclick="showNotification('Add new deal')">+ Add Deal</button>
+        </div>`;
+    }
+
+    function setupEventListeners() {
+      document.getElementById('newCustomerButton').addEventListener('click', () => {
+        const id = 'CUST-' + Math.random().toString(36).substring(2, 9).toUpperCase();
+        activeCustomer = { id, name: 'New Customer', email: '', phone: '', status: 'Prospect', industry: '', revenue: '', employees: '', address: '', website: '', leadSource: '', clv: '$0', lastPurchase: null, firstPurchase: null, purchaseFrequency: 0, primaryProduct: null, subscriptionTier: null, lastContact: null, nextTask: '', nps: null, social: [], handle: '' };
+        customers.push(activeCustomer);
+        renderCustomerList();
+        navigateTo('customers-view');
+      });
+      document.getElementById('editCustomerButton').addEventListener('click', () => navigateTo('customers-view'));
+      document.getElementById('backToDashboard').addEventListener('click', () => navigateTo('dashboard-view'));
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', e => {
+          e.preventDefault();
+          navigateTo(link.dataset.view);
+        });
+      });
+      // Dynamic listeners for forms
+      document.addEventListener('click', (e) => {
+        if (e.target.id === 'saveCustomerBtn') {
+          const form = document.getElementById('customerForm');
+          const data = {};
+          form.querySelectorAll('input, select').forEach(f => {
+            if (f.name) data[f.name] = f.value;
+          });
+          Object.assign(activeCustomer, data);
+          showNotification('Customer saved!', 'bg-green-100 text-green-700');
+          renderCustomerList();
+          navigateTo('dashboard-view');
+        }
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderCustomerList();
+      setupEventListeners();
+      navigateTo('dashboard-view');
+    });
+  </script>
 </body>
 </html>
