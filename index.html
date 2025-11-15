@@ -161,6 +161,15 @@
 
     document.getElementById('customerSearch').addEventListener('input', renderCustomerList);
 
+    function updateCustomerStatusUI(status) {
+      const bar = document.getElementById('customerStatusBar');
+      let color = 'bg-gray-200 text-gray-800';
+      if (status === 'Active Customer') color = 'bg-green-100 text-green-700';
+      else if (status === 'Prospect') color = 'bg-blue-100 text-blue-700';
+      bar.className = `mx-6 mt-4 p-2 font-semibold text-sm rounded-lg ${color}`;
+      bar.textContent = `Status: ${status || 'N/A'}`;
+    }
+
     function renderDashboard() {
       const view = document.getElementById('dashboard-view');
       if (!activeCustomer) {
@@ -213,53 +222,182 @@
           <h2 class="text-2xl font-extrabold text-gray-900 mb-6">Edit Customer Profile</h2>
           ${activeCustomer ? `
             <form id="customerForm" class="bg-white p-6 rounded-xl shadow space-y-6">
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="input-group">
-                  <label>Company Name *</label>
-                  <input type="text" name="name" value="${activeCustomer.name}" required>
+              <div class="section">
+                <h3 class="font-semibold text-gray-700 mb-4">Identity & Firmographics</h3>
+                <div class="field-grid">
+                  <div class="input-group">
+                    <label>Company Name *</label>
+                    <input type="text" name="name" value="${activeCustomer.name}" required>
+                  </div>
+                  <div class="input-group">
+                    <label>Email *</label>
+                    <input type="email" name="email" value="${activeCustomer.email}" required>
+                  </div>
+                  <div class="input-group">
+                    <label>Phone</label>
+                    <input type="tel" name="phone" value="${activeCustomer.phone}">
+                  </div>
+                  <div class="input-group">
+                    <label>Status</label>
+                    <select name="status">
+                      <option ${activeCustomer.status === 'Prospect' ? 'selected' : ''}>Prospect</option>
+                      <option ${activeCustomer.status === 'Active Customer' ? 'selected' : ''}>Active Customer</option>
+                    </select>
+                  </div>
+                  <div class="input-group col-span-2">
+                    <label>Address</label>
+                    <input type="text" name="address" value="${activeCustomer.address}">
+                  </div>
+                  <div class="input-group">
+                    <label>Industry</label>
+                    <input type="text" name="industry" value="${activeCustomer.industry}">
+                  </div>
+                  <div class="input-group">
+                    <label>Revenue</label>
+                    <input type="text" name="revenue" value="${activeCustomer.revenue}">
+                  </div>
+                  <div class="input-group">
+                    <label>Employees</label>
+                    <input type="text" name="employees" value="${activeCustomer.employees}">
+                  </div>
+                  <div class="input-group">
+                    <label>Website</label>
+                    <input type="url" name="website" value="${activeCustomer.website}">
+                  </div>
+                  <div class="input-group">
+                    <label>Lead Source</label>
+                    <input type="text" name="leadSource" value="${activeCustomer.leadSource}">
+                  </div>
                 </div>
-                <div class="input-group">
-                  <label>Email *</label>
-                  <input type="email" name="email" value="${activeCustomer.email}" required>
+              </div>
+              <div class="section">
+                <h3 class="font-semibold text-gray-700 mb-4">Financial & Transactional</h3>
+                <div class="field-grid">
+                  <div class="input-group">
+                    <label>CLV</label>
+                    <input type="text" name="clv" value="${activeCustomer.clv}">
+                  </div>
+                  <div class="input-group">
+                    <label>Last Purchase</label>
+                    <input type="date" name="lastPurchase" value="${activeCustomer.lastPurchase}">
+                  </div>
+                  <div class="input-group">
+                    <label>First Purchase</label>
+                    <input type="date" name="firstPurchase" value="${activeCustomer.firstPurchase}">
+                  </div>
+                  <div class="input-group">
+                    <label>Purchase Frequency</label>
+                    <input type="number" name="purchaseFrequency" value="${activeCustomer.purchaseFrequency}">
+                  </div>
+                  <div class="input-group">
+                    <label>Primary Product</label>
+                    <input type="text" name="primaryProduct" value="${activeCustomer.primaryProduct}">
+                  </div>
+                  <div class="input-group">
+                    <label>Subscription Tier</label>
+                    <input type="text" name="subscriptionTier" value="${activeCustomer.subscriptionTier}">
+                  </div>
                 </div>
-                <div class="input-group">
-                  <label>Phone</label>
-                  <input type="tel" name="phone" value="${activeCustomer.phone}">
+              </div>
+              <div class="section">
+                <h3 class="font-semibold text-gray-700 mb-4">Engagement</h3>
+                <div class="field-grid">
+                  <div class="input-group">
+                    <label>Last Contact</label>
+                    <input type="date" name="lastContact" value="${activeCustomer.lastContact}">
+                  </div>
+                  <div class="input-group">
+                    <label>Next Task</label>
+                    <input type="text" name="nextTask" value="${activeCustomer.nextTask}">
+                  </div>
+                  <div class="input-group">
+                    <label>NPS</label>
+                    <input type="number" name="nps" value="${activeCustomer.nps}">
+                  </div>
+                  <div class="input-group">
+                    <label>Social</label>
+                    <input type="text" name="social" value="${activeCustomer.social.join(', ')}">
+                  </div>
+                  <div class="input-group">
+                    <label>Handle</label>
+                    <input type="text" name="handle" value="${activeCustomer.handle}">
+                  </div>
                 </div>
-                <div class="input-group">
-                  <label>Status</label>
-                  <select name="status">
-                    <option ${activeCustomer.status === 'Prospect' ? 'selected' : ''}>Prospect</option>
-                    <option ${activeCustomer.status === 'Active Customer' ? 'selected' : ''}>Active Customer</option>
-                  </select>
-                </div>
-                <div class="input-group col-span-2">
-                  <label>Address</label>
-                  <input type="text" name="address" value="${activeCustomer.address}">
-                </div>
-                <div class="input-group">
-                  <label>Industry</label>
-                  <input type="text" name="industry" value="${activeCustomer.industry}">
-                </div>
-                <div class="input-group">
-                  <label>Revenue</label>
-                  <input type="text" name="revenue" value="${activeCustomer.revenue}">
-                </div>
-                <div class="input-group">
-                  <label>Employees</label>
-                  <input type="text" name="employees" value="${activeCustomer.employees}">
-                </div>
-                <div class="input-group">
-                  <label>Website</label>
-                  <input type="url" name="website" value="${activeCustomer.website}">
-                </div>
-                <div class="input-group">
-                  <label>Lead Source</label>
-                  <input type="text" name="leadSource" value="${activeCustomer.leadSource}">
-                </div>
-                <div class="input-group">
-                  <label>Next Task</label>
-                  <input type="text" name="nextTask" value="${activeCustomer.nextTask}">
+              </div>
+              <div class="section">
+                <h3 class="font-semibold text-gray-700 mb-4">CRM Team & Notes</h3>
+                <div class="field-grid">
+                  <div class="input-group">
+                    <label>Account Owner</label>
+                    <input type="text" name="accountOwner" value="${activeCustomer.accountOwner}">
+                  </div>
+                  <div class="input-group">
+                    <label>Team Division</label>
+                    <input type="text" name="teamDivision" value="${activeCustomer.teamDivision}">
+                  </div>
+                  <div class="input-group col-span-2">
+                    <label>Notes</label>
+                    <textarea name="notes">${activeCustomer.notes}</textarea>
+                  </div>
+                  <div class="input-group">
+                    <label>Tags</label>
+                    <input type="text" name="tags" value="${activeCustomer.tags.join(', ')}">
+                  </div>
+                  <div class="input-group">
+                    <label>Special Handling</label>
+                    <input type="text" name="specialHandling" value="${activeCustomer.specialHandling}">
+                  </div>
+                  <div class="input-group">
+                    <label>PO Required</label>
+                    <select name="poRequired">
+                      <option value="true" ${activeCustomer.poRequired ? 'selected' : ''}>Yes</option>
+                      <option value="false" ${!activeCustomer.poRequired ? 'selected' : ''}>No</option>
+                    </select>
+                  </div>
+                  <div class="input-group">
+                    <label>Preferred Shipping</label>
+                    <input type="text" name="preferredShipping" value="${activeCustomer.preferredShipping}">
+                  </div>
+                  <div class="input-group">
+                    <label>Preferred Carrier</label>
+                    <input type="text" name="preferredCarrier" value="${activeCustomer.preferredCarrier}">
+                  </div>
+                  <div class="input-group">
+                    <label>Payment Terms</label>
+                    <input type="text" name="paymentTerms" value="${activeCustomer.paymentTerms}">
+                  </div>
+                  <div class="input-group">
+                    <label>Credit Limit</label>
+                    <input type="number" name="creditLimit" value="${activeCustomer.creditLimit}">
+                  </div>
+                  <div class="input-group">
+                    <label>Billing Cycle</label>
+                    <input type="text" name="billingCycle" value="${activeCustomer.billingCycle}">
+                  </div>
+                  <div class="input-group">
+                    <label>Currency</label>
+                    <input type="text" name="currency" value="${activeCustomer.currency}">
+                  </div>
+                  <div class="input-group">
+                    <label>AOV</label>
+                    <input type="number" name="aov" value="${activeCustomer.aov}">
+                  </div>
+                  <div class="input-group">
+                    <label>Last Order Date</label>
+                    <input type="date" name="lastOrderDate" value="${activeCustomer.lastOrderDate}">
+                  </div>
+                  <div class="input-group">
+                    <label>Lifetime Spend</label>
+                    <input type="number" name="lifetimeSpend" value="${activeCustomer.lifetimeSpend}">
+                  </div>
+                  <div class="input-group">
+                    <label>Orders Placed</label>
+                    <input type="number" name="ordersPlaced" value="${activeCustomer.ordersPlaced}">
+                  </div>
+                  <div class="input-group">
+                    <label>Return Rate (%)</label>
+                    <input type="number" name="returnRate" value="${activeCustomer.returnRate}">
+                  </div>
                 </div>
               </div>
               <div class="flex justify-end">
@@ -272,17 +410,21 @@
       document.getElementById('saveCustomerBtn')?.addEventListener('click', () => {
         const form = document.getElementById('customerForm');
         const data = {};
-        form.querySelectorAll('input, select').forEach(f => {
-          if (f.name) data[f.name] = f.value;
+        form.querySelectorAll('input, select, textarea').forEach(f => {
+          if (f.name) {
+            if (f.type === 'checkbox') data[f.name] = f.checked;
+            else if (f.name === 'tags' || f.name === 'social') data[f.name] = f.value.split(',').map(s => s.trim());
+            else if (f.name === 'poRequired') data[f.name] = f.value === 'true';
+            else if (f.type === 'number') data[f.name] = parseFloat(f.value) || 0;
+            else data[f.name] = f.value;
+          }
         });
         Object.assign(activeCustomer, data);
         showNotification('Customer saved!', 'bg-green-100 text-green-700');
         renderCustomerList();
         navigateTo('dashboard-view');
       });
-    }
-
-    function renderOrderForm() {
+    }function renderOrderForm() {
       const view = document.getElementById('orders-view');
       orderItems = [];
       view.innerHTML = `
@@ -328,7 +470,9 @@
           </div>
         </div>`;
       attachOrderListeners();
-    }function attachOrderListeners() {
+    }
+
+    function attachOrderListeners() {
       document.getElementById('addLine').addEventListener('click', () => {
         const line = document.createElement('div');
         line.className = 'line-item mb-4';
@@ -673,6 +817,121 @@
         showNotification(`Deal moved to ${stage}!`);
         renderPipeline();
       }
+    }
+
+    function renderCRMTeam() {
+      const view = document.getElementById('crmteam-view');
+      if (!activeCustomer) {
+        view.innerHTML = `<div class="text-center text-gray-500 mt-20">Select a customer to view CRM Team info</div>`;
+        return;
+      }
+      view.innerHTML = `
+        <div class="max-w-7xl mx-auto">
+          <h2 class="text-2xl font-extrabold text-gray-900 mb-6">${activeCustomer.name} - CRM Team Assignment & Notes</h2>
+          <div class="bg-white p-6 rounded-xl shadow space-y-6">
+            <div class="section">
+              <h3 class="font-semibold text-gray-700 mb-4">Assignment</h3>
+              <div class="field-grid">
+                <div class="input-group">
+                  <label>Account Owner / Sales / Service Rep</label>
+                  <input type="text" value="${activeCustomer.accountOwner || ''}" readonly>
+                </div>
+                <div class="input-group">
+                  <label>Team or Division</label>
+                  <input type="text" value="${activeCustomer.teamDivision || ''}" readonly>
+                </div>
+              </div>
+            </div>
+            <div class="section">
+              <h3 class="font-semibold text-gray-700 mb-4">Notes</h3>
+              <div class="field-grid">
+                <div class="input-group col-span-2">
+                  <label>Notes / Additional Info</label>
+                  <textarea rows="3" readonly>${activeCustomer.notes || ''}</textarea>
+                </div>
+                <div class="input-group">
+                  <label>Custom Tags / Labels</label>
+                  <input type="text" value="${activeCustomer.tags.join(', ')}" readonly>
+                </div>
+                <div class="input-group">
+                  <label>Special Handling Instructions</label>
+                  <input type="text" value="${activeCustomer.specialHandling || ''}" readonly>
+                </div>
+              </div>
+            </div>
+            <div class="section">
+              <h3 class="font-semibold text-gray-700 mb-4">Purchasing Rules</h3>
+              <div class="field-grid">
+                <div class="input-group">
+                  <label>Purchase Order (PO) Requirement</label>
+                  <input type="text" value="${activeCustomer.poRequired ? 'Yes' : 'No'}" readonly>
+                </div>
+                <div class="input-group">
+                  <label>Preferred Shipping Method</label>
+                  <input type="text" value="${activeCustomer.preferredShipping || ''}" readonly>
+                </div>
+                <div class="input-group">
+                  <label>Preferred Carrier</label>
+                  <input type="text" value="${activeCustomer.preferredCarrier || ''}" readonly>
+                </div>
+                <div class="input-group">
+                  <label>Payment Terms</label>
+                  <input type="text" value="${activeCustomer.paymentTerms || ''}" readonly>
+                </div>
+                <div class="input-group">
+                  <label>Credit Limit</label>
+                  <input type="text" value="${activeCustomer.creditLimit || ''}" readonly>
+                </div>
+                <div class="input-group">
+                  <label>Billing Cycle / Invoice Frequency</label>
+                  <input type="text" value="${activeCustomer.billingCycle || ''}" readonly>
+                </div>
+                <div class="input-group">
+                  <label>Currency</label>
+                  <input type="text" value="${activeCustomer.currency || ''}" readonly>
+                </div>
+              </div>
+            </div>
+            <div class="section">
+              <h3 class="font-semibold text-gray-700 mb-4">Metrics</h3>
+              <div class="field-grid">
+                <div class="input-group">
+                  <label>Average Order Value (AOV)</label>
+                  <input type="text" value="${activeCustomer.aov || ''}" readonly>
+                </div>
+                <div class="input-group">
+                  <label>Last Order Date</label>
+                  <input type="text" value="${activeCustomer.lastOrderDate || 'N/A'}" readonly>
+                </div>
+                <div class="input-group">
+                  <label>Total Lifetime Spend</label>
+                  <input type="text" value="${activeCustomer.lifetimeSpend || ''}" readonly>
+                </div>
+                <div class="input-group">
+                  <label>Number of Orders Placed</label>
+                  <input type="text" value="${activeCustomer.ordersPlaced || ''}" readonly>
+                </div>
+                <div class="input-group">
+                  <label>Return Rate</label>
+                  <input type="text" value="${activeCustomer.returnRate}%" readonly>
+                </div>
+              </div>
+            </div>
+            <div class="section">
+              <h3 class="font-semibold text-gray-700 mb-4">History Links</h3>
+              <div class="field-grid">
+                <div class="input-group">
+                  <label>Order History</label>
+                  <button class="bg-indigo-600 text-white py-1 px-3 rounded text-sm" onclick="showNotification('Opening order history...')">View</button>
+                </div>
+                <div class="input-group">
+                  <label>Current Open Orders</label>
+                  <button class="bg-indigo-600 text-white py-1 px-3 rounded text-sm" onclick="showNotification('Opening open orders...')">View</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>`;
     }
 
     function setupEventListeners() {
