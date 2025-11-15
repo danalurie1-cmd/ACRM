@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -34,6 +33,8 @@
     .alpha-letter.active { background: #3b82f6; color: white; }
     .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; }
     .modal-content { background: white; padding: 2rem; border-radius: 0.5rem; max-width: 500px; width: 90%; }
+    .line-item { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr auto; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem; }
+    .line-total { font-weight: bold; }
   </style>
 </head>
 <body class="bg-gray-50 min-h-screen antialiased flex">
@@ -112,8 +113,8 @@
     let orderItems = [];
     let pipelineDeals = [];
 
+    const affiliates = ['Allyson', 'Sindi', 'Lori', 'Wen', 'Janine', 'Winnie'];
     const paddleBrands = ['Selkirk', 'Joola', 'Paddletek', 'Onix', 'Gamma', 'Engage', 'ProKennex', 'Diadem', 'CRBN', 'Vatic Pro'];
-
     const stateTax = { 'AL': 0.04, 'AK': 0.00, 'AZ': 0.056, 'AR': 0.065, 'CA': 0.0725, 'CO': 0.029, 'CT': 0.0635, 'DE': 0.00, 'FL': 0.06, 'GA': 0.04, 'HI': 0.04, 'ID': 0.06, 'IL': 0.0625, 'IN': 0.07, 'IA': 0.06, 'KS': 0.065, 'KY': 0.06, 'LA': 0.045, 'ME': 0.055, 'MD': 0.06, 'MA': 0.0625, 'MI': 0.06, 'MN': 0.06875, 'MS': 0.07, 'MO': 0.04225, 'MT': 0.00, 'NE': 0.055, 'NV': 0.0685, 'NH': 0.00, 'NJ': 0.06625, 'NM': 0.05125, 'NY': 0.04, 'NC': 0.0475, 'ND': 0.05, 'OH': 0.0575, 'OK': 0.045, 'OR': 0.00, 'PA': 0.06, 'RI': 0.07, 'SC': 0.06, 'SD': 0.042, 'TN': 0.07, 'TX': 0.0625, 'UT': 0.0485, 'VT': 0.06, 'VA': 0.043, 'WA': 0.065, 'WV': 0.06, 'WI': 0.05, 'WY': 0.04 };
 
     let calendarView = 'month';
@@ -290,58 +291,35 @@
           <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow">
               <h3 class="text-xl font-bold mb-4 border-b pb-2">Order Items</h3>
-              <div class="space-y-4">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div class="input-group">
-                    <label>Pickleball Paddle Brand</label>
-                    <select id="orderBrand">
-                      ${paddleBrands.map(b => `<option>${b}</option>`).join('')}
-                    </select>
-                  </div>
-                  <div class="input-group">
-                    <label>Size</label>
-                    <select id="orderSize">
-                      <option>S</option><option>M</option><option>L</option><option>XL</option>
-                    </select>
-                  </div>
-                  <div class="input-group">
-                    <label>Color</label>
-                    <select id="orderColor">
-                      <option>Black</option><option>Team Blue</option><option>Red</option>
-                    </select>
-                  </div>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div class="input-group">
-                    <label>Customization</label>
-                    <input type="text" id="orderCustom" placeholder="Name/Number">
-                  </div>
-                  <div class="input-group">
-                    <label>Quantity</label>
-                    <input type="number" id="orderQty" value="1" min="1">
-                  </div>
-                  <div class="input-group">
-                    <label>Price</label>
-                    <input type="number" id="orderPrice" step="0.01" placeholder="29.95">
-                  </div>
-                </div>
-                <button id="addOrderItem" class="bg-indigo-500 hover:bg-indigo-600 text-white py-2 px-4 rounded-lg">
-                  Add Item
-                </button>
+              <div class="line-item mb-4">
+                <select id="orderProduct">
+                  <option>AcoustiSkin Paddle Skin</option>
+                </select>
+                <input type="number" id="orderQty" value="1" min="1" placeholder="Qty">
+                <input type="number" id="orderPrice" value="29.95" step="0.01" placeholder="Price">
+                <input type="text" id="orderDiscount" placeholder="Discount Code">
+                <select id="orderAffiliate">
+                  <option>None</option>
+                  ${affiliates.map(a => `<option>${a}</option>`).join('')}
+                </select>
+                <span id="lineTotal" class="line-total">$29.95</span>
+                <button class="text-xs text-red-600" onclick="removeLine(this)">Remove</button>
               </div>
-              <div id="orderItemsList" class="mt-6 space-y-2"></div>
+              <button id="addLine" class="bg-indigo-500 hover:bg-indigo-600 text-white py-2 px-4 rounded-lg">
+                + Add Line
+              </button>
+              <div id="orderItemsList" class="mt-6"></div>
             </div>
             <div class="bg-white p-6 rounded-xl shadow">
               <h3 class="text-xl font-bold mb-4 border-b pb-2">Summary</h3>
               <div id="orderSummary" class="space-y-2"></div>
               <div class="mt-4">
-                <label>Shipping Cost <button class="text-xs text-indigo-600" onclick="editShipping()">Edit</button></label>
+                <label>Shipping Cost</label>
                 <input type="number" id="shippingCost" value="5.99" step="0.01" class="mt-1">
               </div>
               <div class="mt-4">
                 <label>ZIP Code (for tax)</label>
                 <input type="text" id="zipCode" placeholder="12345" class="mt-1">
-                <button class="text-xs text-indigo-600" onclick="calculateTax()">Calculate Tax</button>
               </div>
               <button id="processOrderBtn" class="w-full mt-6 bg-green-600 hover:bg-green-700 text-white font-extrabold py-3 rounded-lg">
                 PROCESS ORDER
@@ -350,70 +328,46 @@
           </div>
         </div>`;
       attachOrderListeners();
-    }function editShipping() {
-      const cost = prompt("Enter new shipping cost:", document.getElementById('shippingCost').value);
-      if (cost) {
-        document.getElementById('shippingCost').value = cost;
-        updateOrderDisplay();
-      }
+    }function attachOrderListeners() {
+      document.getElementById('addLine').addEventListener('click', () => {
+        const line = document.createElement('div');
+        line.className = 'line-item mb-4';
+        line.innerHTML = `
+          <select class="orderProduct">
+            <option>AcoustiSkin Paddle Skin</option>
+          </select>
+          <input type="number" class="orderQty" value="1" min="1" placeholder="Qty">
+          <input type="number" class="orderPrice" value="29.95" step="0.01" placeholder="Price">
+          <input type="text" class="orderDiscount" placeholder="Discount Code">
+          <select class="orderAffiliate">
+            <option>None</option>
+            ${affiliates.map(a => `<option>${a}</option>`).join('')}
+          </select>
+          <span class="line-total">$29.95</span>
+          <button class="text-xs text-red-600" onclick="removeLine(this)">Remove</button>`;
+        document.getElementById('orderItemsList').appendChild(line);
+        line.querySelectorAll('input, select').forEach(el => el.addEventListener('input', updateOrderDisplay));
+      });
+      document.getElementById('processOrderBtn').addEventListener('click', () => {
+        showNotification('Order processed!', 'bg-green-100 text-green-700');
+      });
     }
 
-    function calculateTax() {
-      const zip = document.getElementById('zipCode').value;
-      const state = zipToState(zip);
-      const rate = stateTax[state] || 0;
-      const subtotal = orderItems.reduce((s, i) => s + i.price, 0);
-      const tax = subtotal * rate;
-      document.getElementById('orderSummary').innerHTML += `
-        <div class="flex justify-between"><span>Tax (${state || 'N/A'}):</span><span>$${tax.toFixed(2)}</span></div>`;
+    function removeLine(btn) {
+      btn.parentElement.remove();
       updateOrderDisplay();
     }
 
-    function zipToState(zip) {
-      if (zip.startsWith('9')) return 'CA';
-      if (zip.startsWith('1')) return 'NY';
-      return 'TX';
-    }
-
-    function attachOrderListeners() {
-      document.getElementById('addOrderItem').addEventListener('click', () => {
-        const brand = document.getElementById('orderBrand').value;
-        const product = brand + ' Paddle';
-        const size = document.getElementById('orderSize').value;
-        const color = document.getElementById('orderColor').value;
-        const custom = document.getElementById('orderCustom').value;
-        const qty = parseInt(document.getElementById('orderQty').value) || 1;
-        const price = parseFloat(document.getElementById('orderPrice').value) || 0;
-        if (product && price > 0) {
-          orderItems.push({ product, size, color, custom, qty, price: price * qty });
-          document.getElementById('orderCustom').value = '';
-          document.getElementById('orderPrice').value = '';
-          updateOrderDisplay();
-        }
-      });
-      document.getElementById('processOrderBtn').addEventListener('click', () => {
-        if (orderItems.length === 0) {
-          showNotification('Add items first!', 'bg-red-100 text-red-700');
-          return;
-        }
-        showNotification(`Order processed! Total: $${orderItems.reduce((s,i)=>s+i.price,0).toFixed(2)}`, 'bg-green-100 text-green-700');
-        orderItems = [];
-        renderOrderForm();
-      });
-    }
-
     function updateOrderDisplay() {
-      const list = document.getElementById('orderItemsList');
-      list.innerHTML = orderItems.map((item, i) => `
-        <div class="p-3 bg-gray-50 rounded flex justify-between">
-          <div>
-            <p class="font-medium">${item.qty}x ${item.product} (${item.size}, ${item.color})</p>
-            ${item.custom ? `<p class="text-xs text-gray-600">Custom: ${item.custom}</p>` : ''}
-          </div>
-          <p class="font-medium">$${item.price.toFixed(2)}</p>
-          <button class="text-xs text-red-600 hover:underline ml-2" onclick="orderItems.splice(${i}, 1); updateOrderDisplay();">Remove</button>
-        </div>`).join('');
-      const subtotal = orderItems.reduce((s,i)=>s+i.price,0);
+      const lines = document.querySelectorAll('.line-item');
+      let subtotal = 0;
+      lines.forEach(line => {
+        const qty = parseFloat(line.querySelector('.orderQty').value) || 0;
+        const price = parseFloat(line.querySelector('.orderPrice').value) || 0;
+        const total = qty * price;
+        line.querySelector('.line-total').textContent = `$${total.toFixed(2)}`;
+        subtotal += total;
+      });
       const shipping = parseFloat(document.getElementById('shippingCost').value) || 0;
       const total = subtotal + shipping;
       document.getElementById('orderSummary').innerHTML = `
