@@ -15,12 +15,17 @@
     .input-group input, .input-group select, .input-group textarea {
       width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem;
     }
-    .section { margin-bottom: 2rem; }
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.25rem; }
+    .calendar-day { min-height: 80px; border: 1px solid #e5e7eb; padding: 0.5rem; border-radius: 0.25rem; }
+    .kanban-column { background: #f3f4f6; padding: 1rem; border-radius: 0.5rem; min-height: 24rem; }
+    .deal-card { @apply bg-white p-3 rounded shadow mb-3 cursor-move; }
     .field-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
   </style>
 </head>
 <body class="bg-gray-50 min-h-screen antialiased flex">
   <div id="notification" class="fixed top-4 right-4 z-50 p-3 hidden rounded-lg shadow-xl text-sm font-medium transition-all duration-300" role="alert"></div>
+
+  <!-- Sidebar -->
   <aside class="sidebar bg-indigo-700 text-white flex flex-col h-screen fixed">
     <div class="p-6 text-2xl font-bold border-b border-indigo-600">AcoustiSkin CRM</div>
     <div class="p-6 flex-grow overflow-y-auto">
@@ -53,6 +58,8 @@
       </ul>
     </div>
   </aside>
+
+  <!-- Main Content -->
   <main class="main-content flex flex-col ml-72 w-full">
     <header class="app-header bg-white p-4 flex justify-between items-center sticky top-0 z-10">
       <h1 class="text-xl font-bold text-gray-800">Customer: <span id="currentCustomerName" class="text-indigo-600">Select Customer</span></h1>
@@ -74,11 +81,12 @@
     <div id="calendar-view" class="app-view p-6 hidden"></div>
     <div id="pipeline-view" class="app-view p-6 hidden"></div>
   </main>
+
   <script>
     let activeCustomer = null;
     let customers = [
-      { id: 'CUST-001', name: 'Acme Corp', email: 'john@acme.com', phone: '555-0001', status: 'Active Customer', industry: 'Manufacturing', revenue: '$5M', employees: '200+', address: '123 Main St, City, ST 12345', website: 'acme.com', leadSource: 'Referral', clv: '$150,000', lastPurchase: '2025-10-15', firstPurchase: '2023-01-10', purchaseFrequency: 12, primaryProduct: 'Team Jerseys', subscriptionTier: 'Gold', lastContact: '2025-11-10', nextTask: 'Q4 Review Call', nps: 9, social: ['LinkedIn'], handle: '@acmecorp' },
-      { id: 'CUST-002', name: 'AcoustiSkin LLC', email: 'dana@acoustiskin.com', phone: '555-0002', status: 'Prospect', industry: 'Healthcare', revenue: '$2M', employees: '50-200', address: '456 Health Ave, Wellness, CA 67890', website: 'acoustiskin.com', leadSource: 'Website', clv: '$0', lastPurchase: null, firstPurchase: null, purchaseFrequency: 0, primaryProduct: null, subscriptionTier: null, lastContact: '2025-11-01', nextTask: 'Product Demo', nps: null, social: ['Instagram', 'X'], handle: '@acoustiskin' }
+      { id: 'CUST-001', name: 'Acme Corp', email: 'john@acme.com', phone: '555-0001', status: 'Active Customer', industry: 'Manufacturing', revenue: '$5M', employees: '200+', address: '123 Main St, City, ST 12345', website: 'acme.com', leadSource: 'Referral', clv: '$150,000', lastPurchase: '2025-10-15', firstPurchase: '2023-01-10', purchaseFrequency: 12, primaryProduct: 'Team Jerseys', subscriptionTier: 'Gold', lastContact: '2025-11-10', nextTask: 'Q4 Review Call', nps: 9, social: ['LinkedIn'], handle: '@acmecorp', companyType: 'Private', fiscalYearEnd: 'December', accountOwner: 'Dana Lurie', companyDescription: 'Manufacturing leader in widgets', firstName: 'John', lastName: 'Doe', jobTitle: 'CEO', directPhone: '555-0001', linkedIn: 'linkedin.com/in/johndoe', contactRole: 'Decision Maker', reportsTo: 'Board', preferredCommunication: 'Email', timeZone: 'PST', personalNotes: 'Likes golf', leadStatus: 'SQL', lifecycleStage: 'Customer', totalRevenueToDate: '$120,000', averageOrderValue: '$10,000', contractRenewalDate: '2026-01-01', healthScore: 85, customerStatus: 'Active', feedbackNPSDate: '2025-11-01', csatScore: 9, totalSupportTickets: 5, lastSupportTicketDate: '2025-10-20', socialPlatforms: ['LinkedIn'], preferredContentType: ['Webinars', 'Case Studies'], websiteActivity: 'High', emailEngagement: '80%', customerPersona: 'Technical Buyer', motivationsPainPoints: 'Cost reduction', referralPotential: 'Yes', internalChampion: 'John Doe', technologiesUsed: ['Salesforce', 'Slack'], languagePreference: 'English', preferredTimeZone: 'PST' },
+      { id: 'CUST-002', name: 'AcoustiSkin LLC', email: 'dana@acoustiskin.com', phone: '555-0002', status: 'Prospect', industry: 'Healthcare', revenue: '$2M', employees: '50-200', address: '456 Health Ave, Wellness, CA 67890', website: 'acoustiskin.com', leadSource: 'Website', clv: '$0', lastPurchase: null, firstPurchase: null, purchaseFrequency: 0, primaryProduct: null, subscriptionTier: null, lastContact: '2025-11-01', nextTask: 'Product Demo', nps: null, social: ['Instagram', 'X'], handle: '@acoustiskin', companyType: 'Private', fiscalYearEnd: 'June', accountOwner: 'Dana Lurie', companyDescription: 'Skincare innovation company', firstName: 'Dana', lastName: 'Lurie', jobTitle: 'Founder', directPhone: '555-0002', linkedIn: 'linkedin.com/in/danalurie', contactRole: 'Decision Maker', reportsTo: 'Self', preferredCommunication: 'Email', timeZone: 'PST', personalNotes: 'Coffee lover', leadStatus: 'MQL', lifecycleStage: 'Lead', totalRevenueToDate: '$0', averageOrderValue: '$0', contractRenewalDate: null, healthScore: 50, customerStatus: 'Prospect', feedbackNPSDate: null, csatScore: null, totalSupportTickets: 0, lastSupportTicketDate: null, socialPlatforms: ['Instagram', 'X'], preferredContentType: ['Videos', 'Blog Posts'], websiteActivity: 'Medium', emailEngagement: '50%', customerPersona: 'Budget Approver', motivationsPainPoints: 'Scalability', referralPotential: 'Maybe', internalChampion: 'Dana Lurie', technologiesUsed: ['HubSpot', 'Zoom'], languagePreference: 'English', preferredTimeZone: 'PST' }
     ];
 
     function showNotification(msg, type = 'bg-blue-100 text-blue-700') {
@@ -183,56 +191,342 @@
       const view = document.getElementById('customers-view');
       view.innerHTML = `
         <div class="max-w-7xl mx-auto">
-          <h2 class="text-2xl font-extrabold text-gray-900 mb-6">Edit Customer Profile</h2>
+          <h2 class="text-2xl font-extrabold text-gray-900 mb-6">Edit Customer Profile (30+ Fields)</h2>
           ${activeCustomer ? `
             <form id="customerForm" class="bg-white p-6 rounded-xl shadow space-y-6">
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="input-group">
-                  <label>Company Name *</label>
-                  <input type="text" name="name" value="${activeCustomer.name}" required>
+              <!-- I. Identity -->
+              <div class="section">
+                <h3 class="text-lg font-bold mb-4">I. Identity</h3>
+                <div class="field-grid">
+                  <div class="input-group">
+                    <label>Company Name *</label>
+                    <input type="text" name="name" value="${activeCustomer.name}" required>
+                  </div>
+                  <div class="input-group">
+                    <label>First Name / Last Name</label>
+                    <input type="text" name="firstName" value="${activeCustomer.firstName || ''}" placeholder="John Doe">
+                  </div>
+                  <div class="input-group">
+                    <label>Job Title</label>
+                    <input type="text" name="jobTitle" value="${activeCustomer.jobTitle || ''}" placeholder="CEO">
+                  </div>
+                  <div class="input-group">
+                    <label>Email Address</label>
+                    <input type="email" name="email" value="${activeCustomer.email}" required>
+                  </div>
+                  <div class="input-group">
+                    <label>Direct Phone</label>
+                    <input type="tel" name="directPhone" value="${activeCustomer.directPhone || ''}" placeholder="555-0001">
+                  </div>
+                  <div class="input-group">
+                    <label>LinkedIn Profile URL</label>
+                    <input type="url" name="linkedIn" value="${activeCustomer.linkedIn || ''}" placeholder="linkedin.com/in/user">
+                  </div>
                 </div>
-                <div class="input-group">
-                  <label>Email *</label>
-                  <input type="email" name="email" value="${activeCustomer.email}" required>
+              </div>
+              <!-- II. Firmographics -->
+              <div class="section">
+                <h3 class="text-lg font-bold mb-4">II. Firmographics</h3>
+                <div class="field-grid">
+                  <div class="input-group">
+                    <label>Industry</label>
+                    <input type="text" name="industry" value="${activeCustomer.industry}">
+                  </div>
+                  <div class="input-group">
+                    <label>Annual Revenue</label>
+                    <input type="text" name="revenue" value="${activeCustomer.revenue}">
+                  </div>
+                  <div class="input-group">
+                    <label>Number of Employees</label>
+                    <input type="text" name="employees" value="${activeCustomer.employees}">
+                  </div>
+                  <div class="input-group">
+                    <label>Company Type</label>
+                    <select name="companyType">
+                      <option ${activeCustomer.companyType === 'Private' ? 'selected' : ''}>Private</option>
+                      <option ${activeCustomer.companyType === 'Public' ? 'selected' : ''}>Public</option>
+                      <option ${activeCustomer.companyType === 'Non-Profit' ? 'selected' : ''}>Non-Profit</option>
+                      <option ${activeCustomer.companyType === 'Government' ? 'selected' : ''}>Government</option>
+                    </select>
+                  </div>
+                  <div class="input-group">
+                    <label>Fiscal Year End</label>
+                    <input type="text" name="fiscalYearEnd" value="${activeCustomer.fiscalYearEnd || ''}" placeholder="December">
+                  </div>
+                  <div class="input-group col-span-1">
+                    <label>Company Description</label>
+                    <textarea name="companyDescription" rows="3">${activeCustomer.companyDescription || ''}</textarea>
+                  </div>
                 </div>
-                <div class="input-group">
-                  <label>Phone</label>
-                  <input type="tel" name="phone" value="${activeCustomer.phone}">
+              </div>
+              <!-- III. Relationship -->
+              <div class="section">
+                <h3 class="text-lg font-bold mb-4">III. Relationship</h3>
+                <div class="field-grid">
+                  <div class="input-group">
+                    <label>Account Owner</label>
+                    <input type="text" name="accountOwner" value="${activeCustomer.accountOwner || ''}" placeholder="Dana Lurie">
+                  </div>
+                  <div class="input-group">
+                    <label>Account Status</label>
+                    <select name="status">
+                      <option ${activeCustomer.status === 'Prospect' ? 'selected' : ''}>Prospect</option>
+                      <option ${activeCustomer.status === 'Customer' ? 'selected' : ''}>Customer</option>
+                      <option ${activeCustomer.status === 'Partner' ? 'selected' : ''}>Partner</option>
+                      <option ${activeCustomer.status === 'Vendor' ? 'selected' : ''}>Vendor</option>
+                      <option ${activeCustomer.status === 'Former Customer' ? 'selected' : ''}>Former Customer</option>
+                    </select>
+                  </div>
+                  <div class="input-group">
+                    <label>Lead Source</label>
+                    <input type="text" name="leadSource" value="${activeCustomer.leadSource}">
+                  </div>
+                  <div class="input-group">
+                    <label>Total Value (CLV)</label>
+                    <input type="text" name="clv" value="${activeCustomer.clv}">
+                  </div>
+                  <div class="input-group">
+                    <label>Last Activity Date</label>
+                    <input type="date" name="lastContact" value="${activeCustomer.lastContact || ''}">
+                  </div>
+                  <div class="input-group">
+                    <label>Next Task/Action</label>
+                    <input type="text" name="nextTask" value="${activeCustomer.nextTask}">
+                  </div>
                 </div>
-                <div class="input-group">
-                  <label>Status</label>
-                  <select name="status">
-                    <option ${activeCustomer.status === 'Prospect' ? 'selected' : ''}>Prospect</option>
-                    <option ${activeCustomer.status === 'Active Customer' ? 'selected' : ''}>Active Customer</option>
-                  </select>
+              </div>
+              <!-- IV. Contact Information -->
+              <div class="section">
+                <h3 class="text-lg font-bold mb-4">IV. Contact (Person) Information</h3>
+                <div class="field-grid">
+                  <div class="input-group">
+                    <label>First Name</label>
+                    <input type="text" name="firstName" value="${activeCustomer.firstName || ''}">
+                  </div>
+                  <div class="input-group">
+                    <label>Last Name</label>
+                    <input type="text" name="lastName" value="${activeCustomer.lastName || ''}">
+                  </div>
+                  <div class="input-group">
+                    <label>Job Title</label>
+                    <input type="text" name="jobTitle" value="${activeCustomer.jobTitle || ''}">
+                  </div>
+                  <div class="input-group">
+                    <label>Contact Role</label>
+                    <select name="contactRole">
+                      <option>Decision Maker</option>
+                      <option>Influencer</option>
+                      <option>End User</option>
+                      <option>Champion</option>
+                      <option>Technical Contact</option>
+                    </select>
+                  </div>
+                  <div class="input-group">
+                    <label>Reports To / Manager</label>
+                    <input type="text" name="reportsTo" value="${activeCustomer.reportsTo || ''}">
+                  </div>
+                  <div class="input-group">
+                    <label>Preferred Communication</label>
+                    <select name="preferredCommunication">
+                      <option>Email</option>
+                      <option>Phone</option>
+                      <option>Text</option>
+                    </select>
+                  </div>
+                  <div class="input-group">
+                    <label>Time Zone</label>
+                    <input type="text" name="timeZone" value="${activeCustomer.timeZone || ''}" placeholder="PST">
+                  </div>
+                  <div class="input-group col-span-1">
+                    <label>Personal Notes</label>
+                    <textarea name="personalNotes" rows="3">${activeCustomer.personalNotes || ''}</textarea>
+                  </div>
+                  <div class="input-group">
+                    <label>Lead Status</label>
+                    <select name="leadStatus">
+                      <option>MQL</option>
+                      <option>SQL</option>
+                    </select>
+                  </div>
+                  <div class="input-group">
+                    <label>Lifecycle Stage</label>
+                    <select name="lifecycleStage">
+                      <option>Subscriber</option>
+                      <option>Lead</option>
+                      <option>MQL</option>
+                      <option>SQL</option>
+                      <option>Customer</option>
+                    </select>
+                  </div>
                 </div>
-                <div class="input-group col-span-2">
-                  <label>Address</label>
-                  <input type="text" name="address" value="${activeCustomer.address}">
+              </div>
+              <!-- V. Financial & Transactional -->
+              <div class="section">
+                <h3 class="text-lg font-bold mb-4">V. Financial & Transactional History</h3>
+                <div class="field-grid">
+                  <div class="input-group">
+                    <label>Customer Lifetime Value (CLV)</label>
+                    <input type="text" name="clv" value="${activeCustomer.clv}">
+                  </div>
+                  <div class="input-group">
+                    <label>Total Revenue to Date</label>
+                    <input type="text" name="totalRevenueToDate" value="${activeCustomer.totalRevenueToDate || ''}">
+                  </div>
+                  <div class="input-group">
+                    <label>Average Order Value (AOV)</label>
+                    <input type="text" name="averageOrderValue" value="${activeCustomer.averageOrderValue || ''}">
+                  </div>
+                  <div class="input-group">
+                    <label>Last Purchase Date</label>
+                    <input type="date" name="lastPurchase" value="${activeCustomer.lastPurchase || ''}">
+                  </div>
+                  <div class="input-group">
+                    <label>First Purchase Date</label>
+                    <input type="date" name="firstPurchase" value="${activeCustomer.firstPurchase || ''}">
+                  </div>
+                  <div class="input-group">
+                    <label>Purchase Frequency</label>
+                    <input type="number" name="purchaseFrequency" value="${activeCustomer.purchaseFrequency}">
+                  </div>
+                  <div class="input-group">
+                    <label>Contract/Renewal Date</label>
+                    <input type="date" name="contractRenewalDate" value="${activeCustomer.contractRenewalDate || ''}">
+                  </div>
+                  <div class="input-group">
+                    <label>Primary Product/Service</label>
+                    <input type="text" name="primaryProduct" value="${activeCustomer.primaryProduct || ''}">
+                  </div>
+                  <div class="input-group">
+                    <label>Subscription Tier/Plan</label>
+                    <select name="subscriptionTier">
+                      <option>Standard</option>
+                      <option>Gold</option>
+                      <option>Enterprise</option>
+                    </select>
+                  </div>
                 </div>
-                <div class="input-group">
-                  <label>Industry</label>
-                  <input type="text" name="industry" value="${activeCustomer.industry}">
+              </div>
+              <!-- VI. Engagement & Retention -->
+              <div class="section">
+                <h3 class="text-lg font-bold mb-4">VI. Engagement & Retention Data</h3>
+                <div class="field-grid">
+                  <div class="input-group">
+                    <label>Last Contact Date</label>
+                    <input type="date" name="lastContact" value="${activeCustomer.lastContact || ''}">
+                  </div>
+                  <div class="input-group">
+                    <label>Contact Frequency Goal</label>
+                    <input type="number" name="contactFrequencyGoal" value="${activeCustomer.contactFrequencyGoal || ''}" placeholder="4 per quarter">
+                  </div>
+                  <div class="input-group">
+                    <label>Health Score</label>
+                    <input type="number" name="healthScore" value="${activeCustomer.healthScore || ''}" min="0" max="100">
+                  </div>
+                  <div class="input-group">
+                    <label>Customer Status</label>
+                    <select name="customerStatus">
+                      <option>Active</option>
+                      <option>At-Risk</option>
+                      <option>Lapsed</option>
+                      <option>Churn Risk</option>
+                      <option>Brand Advocate</option>
+                    </select>
+                  </div>
+                  <div class="input-group">
+                    <label>NPS Score</label>
+                    <input type="number" name="nps" value="${activeCustomer.nps || ''}" min="0" max="10">
+                  </div>
+                  <div class="input-group">
+                    <label>CSAT Score</label>
+                    <input type="number" name="csatScore" value="${activeCustomer.csatScore || ''}" min="0" max="10">
+                  </div>
+                  <div class="input-group">
+                    <label>Total Support Tickets</label>
+                    <input type="number" name="totalSupportTickets" value="${activeCustomer.totalSupportTickets || ''}">
+                  </div>
+                  <div class="input-group">
+                    <label>Last Support Ticket Date</label>
+                    <input type="date" name="lastSupportTicketDate" value="${activeCustomer.lastSupportTicketDate || ''}">
+                  </div>
                 </div>
-                <div class="input-group">
-                  <label>Revenue</label>
-                  <input type="text" name="revenue" value="${activeCustomer.revenue}">
+              </div>
+              <!-- VII. Behavioral & Social -->
+              <div class="section">
+                <h3 class="text-lg font-bold mb-4">VII. Behavioral & Social Data</h3>
+                <div class="field-grid">
+                  <div class="input-group">
+                    <label>Social Media Platforms</label>
+                    <select name="socialPlatforms" multiple>
+                      <option>LinkedIn</option>
+                      <option>X/Twitter</option>
+                      <option>Instagram</option>
+                      <option>Facebook</option>
+                    </select>
+                  </div>
+                  <div class="input-group">
+                    <label>Social Media Handle(s)</label>
+                    <input type="text" name="handle" value="${activeCustomer.handle}">
+                  </div>
+                  <div class="input-group">
+                    <label>Preferred Content Type</label>
+                    <select name="preferredContentType" multiple>
+                      <option>Blog Posts</option>
+                      <option>Webinars</option>
+                      <option>Video</option>
+                      <option>Case Studies</option>
+                      <option>Whitepapers</option>
+                    </select>
+                  </div>
+                  <div class="input-group">
+                    <label>Website Activity</label>
+                    <input type="text" name="websiteActivity" value="${activeCustomer.websiteActivity || ''}" placeholder="High/Medium/Low">
+                  </div>
+                  <div class="input-group">
+                    <label>Email Engagement</label>
+                    <input type="text" name="emailEngagement" value="${activeCustomer.emailEngagement || ''}" placeholder="80%">
+                  </div>
                 </div>
-                <div class="input-group">
-                  <label>Employees</label>
-                  <input type="text" name="employees" value="${activeCustomer.employees}">
-                </div>
-                <div class="input-group">
-                  <label>Website</label>
-                  <input type="url" name="website" value="${activeCustomer.website}">
-                </div>
-                <div class="input-group">
-                  <label>Lead Source</label>
-                  <input type="text" name="leadSource" value="${activeCustomer.leadSource}">
-                </div>
-                <div class="input-group">
-                  <label>Next Task</label>
-                  <input type="text" name="nextTask" value="${activeCustomer.nextTask}">
+              </div>
+              <!-- VIII. Enterprise-Level -->
+              <div class="section">
+                <h3 class="text-lg font-bold mb-4">VIII. Enterprise-Level Segmentation</h3>
+                <div class="field-grid">
+                  <div class="input-group">
+                    <label>Customer Persona</label>
+                    <select name="customerPersona">
+                      <option>The Technical Buyer</option>
+                      <option>The Budget Approver</option>
+                      <option>The Power User</option>
+                    </select>
+                  </div>
+                  <div class="input-group col-span-1">
+                    <label>Motivations/Pain Points</label>
+                    <textarea name="motivationsPainPoints" rows="3">${activeCustomer.motivationsPainPoints || ''}</textarea>
+                  </div>
+                  <div class="input-group">
+                    <label>Referral Potential</label>
+                    <select name="referralPotential">
+                      <option>Yes</option>
+                      <option>Maybe</option>
+                      <option>No</option>
+                    </select>
+                  </div>
+                  <div class="input-group">
+                    <label>Internal Champion</label>
+                    <input type="text" name="internalChampion" value="${activeCustomer.internalChampion || ''}">
+                  </div>
+                  <div class="input-group">
+                    <label>Technologies Used</label>
+                    <input type="text" name="technologiesUsed" value="${activeCustomer.technologiesUsed || ''}" placeholder="Salesforce, Slack">
+                  </div>
+                  <div class="input-group">
+                    <label>Language Preference</label>
+                    <input type="text" name="languagePreference" value="${activeCustomer.languagePreference || ''}" placeholder="English">
+                  </div>
+                  <div class="input-group">
+                    <label>Time Zone</label>
+                    <input type="text" name="preferredTimeZone" value="${activeCustomer.preferredTimeZone || ''}" placeholder="PST">
+                  </div>
                 </div>
               </div>
               <div class="flex justify-end">
@@ -245,7 +539,7 @@
       document.getElementById('saveCustomerBtn')?.addEventListener('click', () => {
         const form = document.getElementById('customerForm');
         const data = {};
-        form.querySelectorAll('input, select').forEach(f => {
+        form.querySelectorAll('input, select, textarea').forEach(f => {
           if (f.name) data[f.name] = f.value;
         });
         Object.assign(activeCustomer, data);
@@ -261,41 +555,457 @@
       view.innerHTML = `
         <div class="max-w-7xl mx-auto">
           <h2 class="text-2xl font-extrabold text-gray-900 mb-6">New Order - ${activeCustomer.name}</h2>
-          <div class="bg-white p-6 rounded-xl shadow">
-            <p class="text-center text-gray-500">Full order form with product, size, color, customization, qty, price, add item, process order — coming in next update!</p>
-            <button class="bg-indigo-600 text-white py-2 px-4 rounded mt-4" onclick="showNotification('Order form ready soon')">Open Order Form</button>
+          <div class="space-y-6">
+            <!-- I. Customer Information -->
+            <div class="bg-white p-6 rounded-xl shadow">
+              <h3 class="text-xl font-bold mb-4">I. Customer Information</h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="input-group">
+                  <label>Full Name</label>
+                  <input type="text" value="${activeCustomer.name}" readonly>
+                </div>
+                <div class="input-group">
+                  <label>Email Address</label>
+                  <input type="email" value="${activeCustomer.email}" readonly>
+                </div>
+                <div class="input-group">
+                  <label>Phone Number</label>
+                  <input type="tel" value="${activeCustomer.phone}" readonly>
+                </div>
+              </div>
+            </div>
+            <!-- II. Shipping Address -->
+            <div class="bg-white p-6 rounded-xl shadow">
+              <h3 class="text-xl font-bold mb-4">II. Shipping Address</h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="input-group">
+                  <label>Address Line 1 *</label>
+                  <input type="text" id="shippingLine1" value="${activeCustomer.address}" placeholder="123 Main St">
+                </div>
+                <div class="input-group">
+                  <label>City, State/Province *</label>
+                  <input type="text" id="shippingCity" placeholder="City, ST">
+                </div>
+                <div class="input-group">
+                  <label>Zip/Postal Code *</label>
+                  <input type="text" id="shippingZip" placeholder="12345">
+                </div>
+                <div class="input-group">
+                  <label>Country</label>
+                  <input type="text" id="shippingCountry" value="USA">
+                </div>
+              </div>
+            </div>
+            <!-- III. Order Summary -->
+            <div class="bg-white p-6 rounded-xl shadow">
+              <h3 class="text-xl font-bold mb-4">III. Order Summary</h3>
+              <div class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <div class="input-group">
+                    <label>Product</label>
+                    <input type="text" id="productName" placeholder="e.g. Team Jersey">
+                  </div>
+                  <div class="input-group">
+                    <label>Size *</label>
+                    <select id="productSize">
+                      <option>S</option><option>M</option><option>L</option><option>XL</option>
+                    </select>
+                  </div>
+                  <div class="input-group">
+                    <label>Color *</label>
+                    <select id="productColor">
+                      <option>Black</option><option>Team Blue</option><option>Red</option>
+                    </select>
+                  </div>
+                  <div class="input-group">
+                    <label>Customization (Optional)</label>
+                    <input type="text" id="productCustom" placeholder="Name/Number (e.g. J. Smith/10)">
+                  </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div class="input-group">
+                    <label>Quantity</label>
+                    <input type="number" id="productQty" value="1" min="1">
+                  </div>
+                  <div class="input-group">
+                    <label>Price per Unit</label>
+                    <input type="number" id="productPrice" step="0.01" placeholder="29.95">
+                  </div>
+                  <button id="addToOrder" class="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-lg">
+                    Add to Order
+                  </button>
+                </div>
+                <div id="orderSummaryList" class="mt-4 space-y-2"></div>
+              </div>
+            </div>
+            <!-- IV. Shipping Method -->
+            <div class="bg-white p-6 rounded-xl shadow">
+              <h3 class="text-xl font-bold mb-4">IV. Shipping Method *</h3>
+              <div class="space-y-2">
+                <label class="flex items-center">
+                  <input type="radio" name="shippingMethod" value="standard" checked class="mr-2">
+                  Standard (5-7 days) - $5.99
+                </label>
+                <label class="flex items-center">
+                  <input type="radio" name="shippingMethod" value="expedited" class="mr-2">
+                  Expedited (2-3 days) - $12.99
+                </label>
+                <label class="flex items-center">
+                  <input type="radio" name="shippingMethod" value="overnight" class="mr-2">
+                  Overnight - $24.99
+                </label>
+              </div>
+            </div>
+            <!-- V. Payment -->
+            <div class="bg-white p-6 rounded-xl shadow">
+              <h3 class="text-xl font-bold mb-4">V. Payment</h3>
+              <div class="space-y-4">
+                <label class="flex items-center">
+                  <input type="checkbox" id="sameAsShipping" checked class="mr-2">
+                  Billing same as shipping
+                </label>
+                <div id="billingFields" class="grid grid-cols-1 md:grid-cols-2 gap-4 opacity-50 pointer-events-none">
+                  <div class="input-group">
+                    <label>Billing Address Line 1</label>
+                    <input type="text" placeholder="123 Main St">
+                  </div>
+                  <div class="input-group">
+                    <label>City, State</label>
+                    <input type="text" placeholder="City, ST">
+                  </div>
+                  <div class="input-group">
+                    <label>Zip Code</label>
+                    <input type="text" placeholder="12345">
+                  </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="input-group">
+                    <label>Card Type</label>
+                    <select>
+                      <option>Visa</option>
+                      <option>Mastercard</option>
+                      <option>Amex</option>
+                    </select>
+                  </div>
+                  <div class="input-group">
+                    <label>Card Number</label>
+                    <input type="text" placeholder="**** **** **** ****">
+                  </div>
+                  <div class="input-group">
+                    <label>Expiration</label>
+                    <input type="text" placeholder="MM/YY">
+                  </div>
+                  <div class="input-group">
+                    <label>CVV</label>
+                    <input type="text" placeholder="***">
+                  </div>
+                </div>
+                <div class="input-group">
+                  <label>Promo Code (Optional)</label>
+                  <input type="text" id="promoCode" placeholder="Enter code">
+                  <button id="applyPromo" class="bg-gray-500 text-white py-1 px-3 rounded mt-1 text-sm">Apply</button>
+                </div>
+              </div>
+            </div>
+            <!-- VI. Final Total -->
+            <div class="bg-white p-6 rounded-xl shadow">
+              <h3 class="text-xl font-bold mb-4">VI. Final Total</h3>
+              <div id="finalTotal" class="space-y-2 text-lg">
+                <div class="flex justify-between"><span>Subtotal:</span><span id="subtotal">$0.00</span></div>
+                <div class="flex justify-between"><span>Shipping:</span><span id="shipping">$5.99</span></div>
+                <div class="flex justify-between"><span>Tax:</span><span id="tax">$0.00</span></div>
+                <div class="flex justify-between font-bold border-t pt-2"><span>GRAND TOTAL:</span><span id="grandTotal">$5.99</span></div>
+              </div>
+            </div>
+            <!-- VII. Agreement -->
+            <div class="bg-white p-6 rounded-xl shadow">
+              <h3 class="text-xl font-bold mb-4">VII. Agreement</h3>
+              <label class="flex items-center">
+                <input type="checkbox" id="terms" required class="mr-2">
+                I agree to the Terms & Conditions
+              </label>
+              <button id="placeOrder" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg mt-4" disabled>
+                Place Order
+              </button>
+            </div>
           </div>
         </div>`;
+      attachOrderEventListeners();
+    }
+
+    function attachOrderEventListeners() {
+      document.getElementById('sameAsShipping').onchange = () => {
+        const fields = document.getElementById('billingFields');
+        if (document.getElementById('sameAsShipping').checked) {
+          fields.classList.add('opacity-50', 'pointer-events-none');
+        } else {
+          fields.classList.remove('opacity-50', 'pointer-events-none');
+        }
+      };
+      document.getElementById('addToOrder').onclick = () => {
+        const product = document.getElementById('productName').value;
+        const size = document.getElementById('productSize').value;
+        const color = document.getElementById('productColor').value;
+        const custom = document.getElementById('productCustom').value;
+        const qty = parseInt(document.getElementById('productQty').value) || 1;
+        const price = parseFloat(document.getElementById('productPrice').value) || 0;
+        if (product && price > 0) {
+          orderItems.push({ product, size, color, custom, qty, price: price * qty });
+          document.getElementById('productName').value = '';
+          document.getElementById('productCustom').value = '';
+          document.getElementById('productPrice').value = '';
+          updateOrderSummaryList();
+        }
+      };
+      document.getElementById('applyPromo').onclick = () => {
+        const code = document.getElementById('promoCode').value;
+        if (code === 'WELCOME10') {
+          showNotification('10% discount applied!', 'bg-green-100 text-green-700');
+        } else {
+          showNotification('Invalid code', 'bg-red-100 text-red-700');
+        }
+      };
+      document.getElementById('terms').onchange = () => {
+        document.getElementById('placeOrder').disabled = !document.getElementById('terms').checked;
+      };
+      document.getElementById('placeOrder').onclick = () => {
+        showNotification('Order placed successfully!', 'bg-green-100 text-green-700');
+      };
+    }
+
+    function updateOrderSummaryList() {
+      const list = document.getElementById('orderSummaryList');
+      list.innerHTML = orderItems.map(item => `
+        <div class="p-3 bg-gray-50 rounded flex justify-between">
+          <div>
+            <p class="font-medium">${item.qty}x ${item.product} (${item.size}, ${item.color})</p>
+            ${item.custom ? `<p class="text-xs text-gray-600">Custom: ${item.custom}</p>` : ''}
+          </div>
+          <p class="font-medium">$${item.price.toFixed(2)}</p>
+        </div>`).join('');
+      const subtotal = orderItems.reduce((s,i)=>s+i.price,0);
+      const tax = subtotal * 0.08; // 8% tax
+      const shipping = 5.99; // Standard
+      const grandTotal = subtotal + tax + shipping;
+      document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
+      document.getElementById('tax').textContent = `$${tax.toFixed(2)}`;
+      document.getElementById('grandTotal').textContent = `$${grandTotal.toFixed(2)}`;
     }
 
     function renderCalendar() {
       const view = document.getElementById('calendar-view');
       view.innerHTML = `
         <div class="max-w-7xl mx-auto">
-          <h2 class="text-2xl font-extrabold text-gray-900 mb-6">Calendar</h2>
-          <div class="bg-white p-6 rounded-xl shadow">
-            <p class="text-center text-gray-500">Monthly view with appointments and tasks — coming in next update!</p>
-            <button class="bg-indigo-600 text-white py-2 px-4 rounded mt-4" onclick="showNotification('Calendar ready soon')">Open Calendar</button>
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-2xl font-extrabold text-gray-900">Calendar</h2>
+            <div>
+              <button class="bg-gray-200 px-3 py-1 rounded mr-2" onclick="switchCalendarView('daily')">Daily</button>
+              <button class="bg-gray-200 px-3 py-1 rounded mr-2" onclick="switchCalendarView('weekly')">Weekly</button>
+              <button class="bg-indigo-600 text-white px-3 py-1 rounded" onclick="switchCalendarView('monthly')">Monthly</button>
+            </div>
           </div>
+          <div id="calendarContent" class="bg-white p-6 rounded-xl shadow">
+            <p class="text-center text-gray-500">Loading calendar...</p>
+          </div>
+          <button class="bg-indigo-600 text-white py-2 px-4 rounded mt-4" onclick="addEvent()">+ Add Event</button>
         </div>`;
+      switchCalendarView('monthly');
+    }
+
+    let currentCalendarView = 'monthly';
+    let currentMonth = new Date().getMonth();
+    let currentYear = new Date().getFullYear();
+
+    function switchCalendarView(view) {
+      currentCalendarView = view;
+      if (view === 'daily') renderDailyCalendar();
+      else if (view === 'weekly') renderWeeklyCalendar();
+      else renderMonthlyCalendar();
+    }
+
+    function renderMonthlyCalendar() {
+      const content = document.getElementById('calendarContent');
+      const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+      const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+      let html = `
+        <h3 class="font-semibold mb-2">${new Date(currentYear, currentMonth, 1).toLocaleString('default', { month: 'long' })} ${currentYear}</h3>
+        <div class="calendar-grid">
+          <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>`;
+      for (let i = 0; i < firstDay; i++) html += '<div></div>';
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = `${currentYear}-${String(currentMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+        const dayAppts = appointments.filter(a => a.date === dateStr);
+        const dayTasks = tasks.filter(t => t.due === dateStr);
+        html += `
+          <div class="calendar-day">
+            <div class="font-semibold text-sm">${day}</div>
+            ${dayAppts.map(a => `<div class="text-xs bg-blue-100 p-1 rounded mt-1">${a.title} <button class="text-xs text-red-600" onclick="editAppointment('${a.id}')">Edit</button></div>`).join('')}
+            ${dayTasks.map(t => `<div class="text-xs bg-yellow-100 p-1 rounded mt-1">${t.title} <button class="text-xs text-red-600" onclick="editTask('${t.id}')">Edit</button></div>`).join('')}
+          </div>`;
+      }
+      html += `</div>
+        <div class="flex justify-center mt-4">
+          <button class="bg-gray-200 px-3 py-1 rounded mr-2" onclick="previousMonth()">Previous</button>
+          <button class="bg-indigo-600 text-white px-3 py-1 rounded" onclick="nextMonth()">Next</button>
+        </div>`;
+      content.innerHTML = html;
+    }
+
+    function renderWeeklyCalendar() {
+      const content = document.getElementById('calendarContent');
+      const today = new Date();
+      const startOfWeek = new Date(today.setDate(today.getDate() - today.getDay()));
+      let html = `<h3 class="font-semibold mb-2">Week of ${startOfWeek.toLocaleDateString()}</h3><div class="calendar-grid">`;
+      for (let i = 0; i < 7; i++) {
+        const date = new Date(startOfWeek);
+        date.setDate(startOfWeek.getDate() + i);
+        const dateStr = date.toISOString().split('T')[0];
+        const dayAppts = appointments.filter(a => a.date === dateStr);
+        const dayTasks = tasks.filter(t => t.due === dateStr);
+        html += `
+          <div class="calendar-day">
+            <div class="font-semibold text-sm">${date.getDate()}</div>
+            ${dayAppts.map(a => `<div class="text-xs bg-blue-100 p-1 rounded mt-1">${a.title} <button class="text-xs text-red-600" onclick="editAppointment('${a.id}')">Edit</button></div>`).join('')}
+            ${dayTasks.map(t => `<div class="text-xs bg-yellow-100 p-1 rounded mt-1">${t.title} <button class="text-xs text-red-600" onclick="editTask('${t.id}')">Edit</button></div>`).join('')}
+          </div>`;
+      }
+      html += '</div>';
+      content.innerHTML = html;
+    }
+
+    function renderDailyCalendar() {
+      const content = document.getElementById('calendarContent');
+      const today = new Date();
+      const dateStr = today.toISOString().split('T')[0];
+      const dayAppts = appointments.filter(a => a.date === dateStr);
+      const dayTasks = tasks.filter(t => t.due === dateStr);
+      let html = `<h3 class="font-semibold mb-2">Today: ${today.toLocaleDateString()}</h3><div class="space-y-2">`;
+      dayAppts.forEach(a => html += `<div class="text-xs bg-blue-100 p-1 rounded">${a.title} <button class="text-xs text-red-600" onclick="editAppointment('${a.id}')">Edit</button></div>`);
+      dayTasks.forEach(t => html += `<div class="text-xs bg-yellow-100 p-1 rounded">${t.title} <button class="text-xs text-red-600" onclick="editTask('${t.id}')">Edit</button></div>`);
+      html += '</div>';
+      content.innerHTML = html;
+    }
+
+    function previousMonth() {
+      currentMonth--;
+      if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear--;
+      }
+      renderMonthlyCalendar();
+    }
+
+    function nextMonth() {
+      currentMonth++;
+      if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear++;
+      }
+      renderMonthlyCalendar();
+    }
+
+    function addEvent() {
+      const title = prompt("Event Title:");
+      const date = prompt("Date (YYYY-MM-DD):");
+      const time = prompt("Time (HH:MM):");
+      if (title && date) {
+        appointments.push({ id: 'APPT-' + Date.now(), customerId: activeCustomer.id, title, date, time, type: 'Appointment', notes: '' });
+        showNotification('Event added!');
+        renderCalendar();
+      }
+    }
+
+    function editAppointment(id) {
+      const appt = appointments.find(a => a.id === id);
+      const newTitle = prompt("Edit Title:", appt.title);
+      if (newTitle) {
+        appt.title = newTitle;
+        showNotification('Appointment updated!');
+        renderCalendar();
+      }
+    }
+
+    function editTask(id) {
+      const task = tasks.find(t => t.id === id);
+      const newTitle = prompt("Edit Task:", task.title);
+      if (newTitle) {
+        task.title = newTitle;
+        showNotification('Task updated!');
+        renderCalendar();
+      }
     }
 
     function renderPipeline() {
       const view = document.getElementById('pipeline-view');
+      const stages = ['Lead', 'Qualified', 'Proposal', 'Negotiation', 'Closed Won', 'Closed Lost'];
       view.innerHTML = `
         <div class="max-w-7xl mx-auto">
           <h2 class="text-2xl font-extrabold text-gray-900 mb-6">Sales Pipeline</h2>
-          <div class="bg-white p-6 rounded-xl shadow">
-            <p class="text-center text-gray-500">Kanban board with deals — coming in next update!</p>
-            <button class="bg-indigo-600 text-white py-2 px-4 rounded mt-4" onclick="showNotification('Pipeline ready soon')">Open Pipeline</button>
+          <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            ${stages.map(stage => {
+              const deals = pipelineDeals.filter(d => d.stage === stage);
+              return `
+                <div class="kanban-column" ondrop="drop(event, '${stage}')" ondragover="allowDrop(event)">
+                  <h3 class="font-bold text-center mb-3">${stage} (${deals.length})</h3>
+                  ${deals.map(deal => {
+                    const cust = customers.find(c => c.id === deal.customerId);
+                    return `<div class="deal-card" draggable="true" ondragstart="drag(event, '${deal.id}')" id="${deal.id}">
+                      <p class="font-medium">${cust?.name || 'Unknown'}</p>
+                      <p class="text-sm">${deal.name}</p>
+                      <p class="font-bold text-indigo-600">$${deal.value}</p>
+                      <button class="text-xs text-red-600" onclick="editDeal('${deal.id}')">Edit</button>
+                    </div>`;
+                  }).join('')}
+                </div>`;
+            }).join('')}
           </div>
+          <button class="bg-indigo-600 text-white py-2 px-4 rounded mt-4" onclick="addDeal()">+ Add Deal</button>
         </div>`;
+    }
+
+    function addDeal() {
+      const name = prompt("Deal Name:");
+      const value = prompt("Value:");
+      if (name && value) {
+        pipelineDeals.push({ id: 'DEAL-' + Date.now(), customerId: activeCustomer.id, name, value: parseFloat(value), stage: 'Lead', probability: 10, closeDate: '' });
+        showNotification('Deal added!');
+        renderPipeline();
+      }
+    }
+
+    function editDeal(id) {
+      const deal = pipelineDeals.find(d => d.id === id);
+      const newName = prompt("Edit Name:", deal.name);
+      if (newName) {
+        deal.name = newName;
+        showNotification('Deal updated!');
+        renderPipeline();
+      }
+    }
+
+    function allowDrop(ev) {
+      ev.preventDefault();
+    }
+
+    function drag(ev, id) {
+      ev.dataTransfer.setData("text", id);
+    }
+
+    function drop(ev, stage) {
+      ev.preventDefault();
+      const id = ev.dataTransfer.getData("text");
+      const deal = pipelineDeals.find(d => d.id === id);
+      if (deal) {
+        deal.stage = stage;
+        showNotification(`Deal moved to ${stage}!`);
+        renderPipeline();
+      }
     }
 
     function setupEventListeners() {
       document.getElementById('newCustomerButton').addEventListener('click', () => {
         const id = 'CUST-' + Math.random().toString(36).substring(2, 9).toUpperCase();
-        activeCustomer = { id, name: 'New Customer', email: '', phone: '', status: 'Prospect', industry: '', revenue: '', employees: '', address: '', website: '', leadSource: '', clv: '$0', lastPurchase: null, firstPurchase: null, purchaseFrequency: 0, primaryProduct: null, subscriptionTier: null, lastContact: null, nextTask: '', nps: null, social: [], handle: '' };
+        activeCustomer = { id, name: 'New Customer', email: '', phone: '', status: 'Prospect', industry: '', revenue: '', employees: '', address: '', website: '', leadSource: '', clv: '$0', lastPurchase: null, firstPurchase: null, purchaseFrequency: 0, primaryProduct: null, subscriptionTier: null, lastContact: null, nextTask: '', nps: null, social: [], handle: '', companyType: 'Private', fiscalYearEnd: 'December', accountOwner: 'Dana Lurie', companyDescription: '', firstName: '', lastName: '', jobTitle: '', directPhone: '', linkedIn: '', contactRole: 'Decision Maker', reportsTo: '', preferredCommunication: 'Email', timeZone: 'PST', personalNotes: '', leadStatus: 'MQL', lifecycleStage: 'Lead', totalRevenueToDate: '$0', averageOrderValue: '$0', contractRenewalDate: null, healthScore: 50, customerStatus: 'Prospect', feedbackNPSDate: null, csatScore: null, totalSupportTickets: 0, lastSupportTicketDate: null, socialPlatforms: [], preferredContentType: [], websiteActivity: 'Medium', emailEngagement: '50%', customerPersona: 'Technical Buyer', motivationsPainPoints: '', referralPotential: 'Maybe', internalChampion: '', technologiesUsed: [], languagePreference: 'English', preferredTimeZone: 'PST' };
         customers.push(activeCustomer);
         renderCustomerList();
         navigateTo('customers-view');
