@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AcoustiSkin CRM</title>
+  <title>AcoustiSkin CRM Pro</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>AS</text></svg>">
@@ -32,7 +32,12 @@
     .task { background: #f59e0b; }
     .team-card { background: white; padding: 1rem; border-radius: 0.5rem; margin-bottom: 0.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
     .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-    .modal-content { background: white; padding: 2rem; border-radius: 0.5rem; max-width: 500px; width: 90%; }
+    .modal-content { background: white; padding: 2rem; border-radius: 0.5rem; max-width: 600px; width: 90%; }
+    .chart { height: 300px; }
+    .badge { @apply px-2 py-1 text-xs rounded-full font-medium; }
+    .low { @apply bg-red-100 text-red-700; }
+    .medium { @apply bg-yellow-100 text-yellow-700; }
+    .high { @apply bg-green-100 text-green-700; }
   </style>
 </head>
 <body class="bg-gray-50 min-h-screen antialiased flex">
@@ -40,22 +45,27 @@
 
   <!-- Sidebar -->
   <aside class="sidebar bg-indigo-700 text-white flex flex-col h-screen fixed">
-    <div class="p-6 text-2xl font-bold border-b border-indigo-600">AcoustiSkin CRM</div>
+    <div class="p-6 text-2xl font-bold border-b border-indigo-600">AcoustiSkin CRM Pro</div>
     <div class="p-6 flex-grow overflow-y-auto">
-      <h3 class="text-sm font-semibold mb-2 text-indigo-300 uppercase tracking-wider">Navigation</h3>
+      <h3 class="text-sm font-semibold mb-2 text-indigo-300 uppercase tracking-wider">Core</h3>
       <nav class="space-y-1">
         <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="dashboard-view">Dashboard</a>
         <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="customers-view">Customers</a>
         <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="new-order-view">New Order</a>
+        <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="inventory-view">Inventory</a>
+        <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="orders-view">Order Tracking</a>
         <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="calendar-view">Calendar</a>
         <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="pipeline-view">Pipeline</a>
+        <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="reports-view">Reports</a>
         <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="crmteam-view">CRM Team</a>
       </nav>
       <button id="newCustomerButton" class="w-full mt-6 bg-indigo-500 hover:bg-indigo-400 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 shadow-md">
         + New Customer
       </button>
       <div class="mt-6 space-y-2">
-        <button id="exportBtn" class="w-full bg-gray-600 hover:bg-gray-500 text-white py-2 rounded-lg text-sm">Export Data</button>
+        <button id="exportBtn" class="w-full bg-gray
+
+-600 hover:bg-gray-500 text-white py-2 rounded-lg text-sm">Export Data</button>
         <label class="w-full bg-gray-600 hover:bg-gray-500 text-white py-2 rounded-lg text-sm text-center block cursor-pointer">
           Import Data <input type="file" id="importFile" class="hidden" accept=".json">
         </label>
@@ -89,8 +99,11 @@
     <div id="dashboard-view" class="app-view p-6"></div>
     <div id="customers-view" class="app-view p-6 hidden"></div>
     <div id="new-order-view" class="app-view p-6 hidden"></div>
+    <div id="inventory-view" class="app-view p-6 hidden"></div>
+    <div id="orders-view" class="app-view p-6 hidden"></div>
     <div id="calendar-view" class="app-view p-6 hidden"></div>
     <div id="pipeline-view" class="app-view p-6 hidden"></div>
+    <div id="reports-view" class="app-view p-6 hidden"></div>
     <div id="crmteam-view" class="app-view p-6 hidden"></div>
   </main>
 
@@ -99,6 +112,18 @@
     let activeCustomer = null;
     let customers = [];
     let orders = [];
+    let inventory = [
+      { sku: 'ASKIN-001', name: 'AcoustiSkin Paddle Skin - Selkirk', brand: 'Selkirk', stock: 150, price: 29.95, reorder: 50 },
+      { sku: 'ASKIN-002', name: 'AcoustiSkin Paddle Skin - Joola', brand: 'Joola', stock: 80, price: 29.95, reorder: 40 },
+      { sku: 'ASKIN-003', name: 'AcoustiSkin Paddle Skin - Onix', brand: 'Onix', stock: 30, price: 29.95, reorder: 30 },
+      { sku: 'ASKIN-004', name: 'AcoustiSkin Paddle Skin - Gamma', brand: 'Gamma', stock: 60, price: 29.95, reorder: 30 },
+      { sku: 'ASKIN-005', name: 'AcoustiSkin Paddle Skin - Engage', brand: 'Engage', stock: 45, price: 29.95, reorder: 30 },
+      { sku: 'ASKIN-006', name: 'AcoustiSkin Paddle Skin - ProKennex', brand: 'ProKennex', stock: 20, price: 29.95, reorder: 20 },
+      { sku: 'ASKIN-007', name: 'AcoustiSkin Paddle Skin - Diadem', brand: 'Diadem', stock: 35, price: 29.95, reorder: 25 },
+      { sku: 'ASKIN-008', name: 'AcoustiSkin Paddle Skin - CRBN', brand: 'CRBN', stock: 50, price: 29.95, reorder: 30 },
+      { sku: 'ASKIN-009', name: 'AcoustiSkin Paddle Skin - Vatic Pro', brand: 'Vatic Pro', stock: 70, price: 29.95, reorder: 40 },
+      { sku: 'ASKIN-010', name: 'AcoustiSkin Paddle Skin - Paddletek', brand: 'Paddletek', stock: 90, price: 29.95, reorder: 50 }
+    ];
     let pipelineDeals = [];
     let appointments = [];
     let tasks = [];
@@ -110,12 +135,13 @@
 
     // === LOCALSTORAGE ===
     function loadData() {
-      const data = JSON.parse(localStorage.getItem('acoustiskin-crm') || '{}');
+      const data = JSON.parse(localStorage.getItem('acoustiskin-crm-pro') || '{}');
       customers = data.customers || [
         { id: 'CUST-001', name: 'Acme Corp', email: 'john@acme.com', phone: '555-0001', status: 'Active Customer', industry: 'Manufacturing', revenue: '$5M', employees: '200+', address: '123 Main St, City, ST 12345', website: 'acme.com', leadSource: 'Referral', clv: '$150,000', lastPurchase: '2025-10-15', firstPurchase: '2023-01-10', purchaseFrequency: 12, primaryProduct: 'Team Jerseys', subscriptionTier: 'Gold', lastContact: '2025-11-10', nextTask: 'Q4 Review Call', nps: 9, social: ['LinkedIn'], handle: '@acmecorp', accountOwner: 'Dana Lurie', teamDivision: 'Sales', notes: '', tags: ['VIP'], specialHandling: 'Email only', poRequired: true, preferredShipping: 'Standard', preferredCarrier: 'UPS', paymentTerms: 'Net 30', creditLimit: 50000, billingCycle: 'Monthly', currency: 'USD', aov: 1250, lastOrderDate: '2025-10-15', lifetimeSpend: 150000, ordersPlaced: 120, returnRate: 2.1, paddleBrandsUsed: ['Selkirk', 'Joola'] },
         { id: 'CUST-002', name: 'AcoustiSkin LLC', email: 'dana@acoustiskin.com', phone: '555-0002', status: 'Prospect', industry: 'Healthcare', revenue: '$2M', employees: '50-200', address: '456 Health Ave, Wellness, CA 67890', website: 'acoustiskin.com', leadSource: 'Website', clv: '$0', lastPurchase: null, firstPurchase: null, purchaseFrequency: 0, primaryProduct: null, subscriptionTier: null, lastContact: '2025-11-01', nextTask: 'Product Demo', nps: null, social: ['Instagram', 'X'], handle: '@acoustiskin', accountOwner: 'Dana Lurie', teamDivision: 'Sales', notes: '', tags: [], specialHandling: '', poRequired: false, preferredShipping: 'Expedited', preferredCarrier: 'FedEx', paymentTerms: 'Pre-paid', creditLimit: 0, billingCycle: 'Per-Order', currency: 'USD', aov: 0, lastOrderDate: null, lifetimeSpend: 0, ordersPlaced: 0, returnRate: 0, paddleBrandsUsed: [] }
       ];
       orders = data.orders || [];
+      inventory = data.inventory || inventory;
       pipelineDeals = data.pipelineDeals || [];
       appointments = data.appointments || [];
       tasks = data.tasks || [];
@@ -123,7 +149,7 @@
       if (customers.length > 0 && !activeCustomer) activeCustomer = customers[0];
     }
     function saveData() {
-      localStorage.setItem('acoustiskin-crm', JSON.stringify({ customers, orders, pipelineDeals, appointments, tasks, teamMembers }));
+      localStorage.setItem('acoustiskin-crm-pro', JSON.stringify({ customers, orders, inventory, pipelineDeals, appointments, tasks, teamMembers }));
     }
 
     // === UTILS ===
@@ -144,8 +170,11 @@
       if (view === 'dashboard-view') renderDashboard();
       if (view === 'customers-view') renderCustomers();
       if (view === 'new-order-view') renderNewOrderForm();
+      if (view === 'inventory-view') renderInventory();
+      if (view === 'orders-view') renderOrderTracking();
       if (view === 'calendar-view') renderCalendar();
       if (view === 'pipeline-view') renderPipeline();
+      if (view === 'reports-view') renderReports();
       if (view === 'crmteam-view') renderCRMTeam();
     }
 
@@ -181,7 +210,7 @@
       bar.textContent = `Status: ${status || 'N/A'}`;
     }
 
-    // === DASHBOARD ===
+    // === DASHBOARD (WITH SALES METRICS) ===
     function renderDashboard() {
       const view = document.getElementById('dashboard-view');
       if (!activeCustomer) {
@@ -189,9 +218,30 @@
         return;
       }
       const custOrders = orders.filter(o => o.customerId === activeCustomer.id);
+      const totalRevenue = orders.reduce((sum, o) => sum + o.total, 0);
+      const avgOrderValue = orders.length ? totalRevenue / orders.length : 0;
+      const lowStock = inventory.filter(i => i.stock <= i.reorder).length;
       view.innerHTML = `
         <div class="max-w-7xl mx-auto">
           <h2 class="text-2xl font-extrabold text-gray-900 mb-6">${activeCustomer.name} - Dashboard</h2>
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div class="bg-white p-4 rounded-xl shadow text-center">
+              <p class="text-2xl font-bold text-indigo-600">$${totalRevenue.toFixed(0)}</p>
+              <p class="text-sm text-gray-600">Total Revenue</p>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow text-center">
+              <p class="text-2xl font-bold text-green-600">${orders.length}</p>
+              <p class="text-sm text-gray-600">Orders Processed</p>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow text-center">
+              <p class="text-2xl font-bold text-blue-600">$${avgOrderValue.toFixed(0)}</p>
+              <p class="text-sm text-gray-600">Avg Order Value</p>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow text-center">
+              <p class="text-2xl font-bold ${lowStock ? 'text-red-600' : 'text-green-600'}">${lowStock}</p>
+              <p class="text-sm text-gray-600">Low Stock Items</p>
+            </div>
+          </div>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="bg-white p-6 rounded-xl shadow">
               <h3 class="font-semibold text-gray-700">Company Info</h3>
@@ -395,7 +445,8 @@
           date: new Date().toISOString().split('T')[0],
           items: [], subtotal: 0, shipping: 5.99, tax: 0, total: 0,
           shipAddress: document.getElementById('shipAddress').value,
-          paymentMethod: document.getElementById('paymentMethod').value
+          paymentMethod: document.getElementById('paymentMethod').value,
+          status: 'Processing'
         };
         lines.forEach(line => {
           const item = {
@@ -405,6 +456,16 @@
             price: parseFloat(line.querySelector('.orderPrice').value),
             affiliate: line.querySelector('.orderAffiliate').value
           };
+          const sku = inventory.find(i => i.brand === item.brand)?.sku;
+          if (sku) {
+            const stockItem = inventory.find(i => i.sku === sku);
+            if (stockItem.stock >= item.qty) {
+              stockItem.stock -= item.qty;
+            } else {
+              showNotification(`Not enough stock for ${item.brand}`, 'bg-red-100 text-red-700');
+              return;
+            }
+          }
           order.items.push(item);
           order.subtotal += item.qty * item.price;
         });
@@ -444,15 +505,143 @@
         <div class="flex justify-between font-bold text-lg mt-2"><span>Total:</span><span class="text-indigo-600">$${total.toFixed(2)}</span></div>`;
     }
 
+    // === INVENTORY MANAGEMENT ===
+    function renderInventory() {
+      const view = document.getElementById('inventory-view');
+      view.innerHTML = `
+        <div class="max-w-7xl mx-auto">
+          <h2 class="text-2xl font-extrabold text-gray-900 mb-6">Inventory Management</h2>
+          <button id="addInventoryBtn" class="bg-indigo-600 text-white py-2 px-4 rounded mb-4">+ Add Product</button>
+          <div class="bg-white rounded-xl shadow overflow-hidden">
+            <table class="w-full">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SKU</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Brand</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                ${inventory.map(item => `
+                  <tr>
+                    <td class="px-4 py-3 text-sm">${item.sku}</td>
+                    <td class="px-4 py-3 text-sm">${item.name}</td>
+                    <td class="px-4 py-3 text-sm">${item.brand}</td>
+                    <td class="px-4 py-3 text-sm">${item.stock}</td>
+                    <td class="px-4 py-3 text-sm">$${item.price}</td>
+                    <td class="px-4 py-3 text-sm"><span class="badge ${item.stock <= item.reorder ? 'low' : item.stock <= item.reorder * 2 ? 'medium' : 'high'}">
+                      ${item.stock <= item.reorder ? 'Low' : item.stock <= item.reorder * 2 ? 'Medium' : 'Healthy'}
+                    </span></td>
+                    <td class="px-4 py-3 text-sm">
+                      <button onclick="adjustStock('${item.sku}', 1)" class="text-green-600 mr-2">+1</button>
+                      <button onclick="adjustStock('${item.sku}', -1)" class="text-red-600">-1</button>
+                    </td>
+                  </tr>`).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>`;
+      document.getElementById('addInventoryBtn').addEventListener('click', () => {
+        const sku = prompt("SKU:");
+        const name = prompt("Product Name:");
+        const brand = prompt("Brand:");
+        const price = parseFloat(prompt("Price:"));
+        const reorder = parseInt(prompt("Reorder Level:"));
+        if (sku && name && brand && price && reorder) {
+          inventory.push({ sku, name, brand, stock: 0, price, reorder });
+          saveData();
+          renderInventory();
+        }
+      });
+    }
+    function adjustStock(sku, change) {
+      const item = inventory.find(i => i.sku === sku);
+      if (item) {
+        item.stock = Math.max(0, item.stock + change);
+        saveData();
+        renderInventory();
+      }
+    }
+
+    // === ORDER TRACKING ===
+    function renderOrderTracking() {
+      const view = document.getElementById('orders-view');
+      view.innerHTML = `
+        <div class="max-w-7xl mx-auto">
+          <h2 class="text-2xl font-extrabold text-gray-900 mb-6">Order Tracking</h2>
+          <div class="bg-white rounded-xl shadow overflow-hidden">
+            ${orders.map(o => {
+              const cust = customers.find(c => c.id === o.customerId);
+              return `<div class="border-b p-4">
+                <div class="flex justify-between">
+                  <strong>#${o.id}</strong>
+                  <span class="badge ${o.status === 'Shipped' ? 'high' : o.status === 'Processing' ? 'medium' : 'low'}">${o.status || 'Processing'}</span>
+                </div>
+                <p class="text-sm text-gray-600">${o.date} | ${cust?.name} | $${o.total.toFixed(2)}</p>
+                <button onclick="updateOrderStatus('${o.id}')" class="text-xs text-indigo-600">Update Status</button>
+              </div>`;
+            }).join('') || '<p class="p-4 text-gray-500">No orders yet</p>'}
+          </div>
+        </div>`;
+    }
+    function updateOrderStatus(id) {
+      const order = orders.find(o => o.id === id);
+      const status = prompt("New status:", order.status || "Processing");
+      if (status) {
+        order.status = status;
+        saveData();
+        renderOrderTracking();
+      }
+    }
+
+    // === SALES PERFORMANCE REPORTS ===
+    function renderReports() {
+      const view = document.getElementById('reports-view');
+      const brandSales = {};
+      orders.forEach(o => {
+        o.items.forEach(i => {
+          brandSales[i.brand] = (brandSales[i.brand] || 0) + i.qty;
+        });
+      });
+      view.innerHTML = `
+        <div class="max-w-7xl mx-auto">
+          <h2 class="text-2xl font-extrabold text-gray-900 mb-6">Sales Performance</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white p-6 rounded-xl shadow">
+              <h3 class="font-semibold mb-4">Brand Performance</h3>
+              <div class="space-y-2">
+                ${Object.entries(brandSales).sort((a,b) => b[1]-a[1]).map(([brand, qty]) => `
+                  <div class="flex justify-between">
+                    <span>${brand}</span>
+                    <span class="font-medium">${qty} units</span>
+                  </div>`).join('')}
+              </div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow">
+              <h3 class="font-semibold mb-4">Top Customers</h3>
+              <div class="space-y-2">
+                ${customers.sort((a,b) => b.lifetimeSpend - a.lifetimeSpend).slice(0,5).map(c => `
+                  <div class="flex justify-between">
+                    <span>${c.name}</span>
+                    <span class="font-medium">$${c.lifetimeSpend.toFixed(0)}</span>
+                  </div>`).join('')}
+              </div>
+            </div>
+          </div>
+        </div>`;
+    }
+
     // === FULL CALENDAR (Day/Week/Month + Scheduling) ===
     function renderCalendar() {
       const view = document.getElementById('calendar-view');
       const header = `<div class="calendar-nav">
         <button onclick="changeView('day')" class="${calendarView==='day'?'bg-indigo-600 text-white':'bg-gray-200'} px-3 py-1 rounded">Day</button>
         <button onclick="changeView('week')" class="${calendarView==='week'?'bg-indigo-600 text-white':'bg-gray-200'} px-3 py-1 rounded ml-2">Week</button>
-        <button onclick="changeView('month')" class="${calendarView==='month'?'bg-indigo-600 text-white':'bg-gray-200'} px-3 py-1 rounded ml-2">
-
-Month</button>
+        <button onclick="changeView('month')" class="${calendarView==='month'?'bg-indigo-600 text-white':'bg-gray-200'} px-3 py-1 rounded ml-2">Month</button>
         <div class="flex-1 text-center font-bold">${currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</div>
         <button onclick="currentDate.setDate(currentDate.getDate()-1); renderCalendar()" class="text-indigo-600">Prev</button>
         <button onclick="currentDate = new Date(); renderCalendar()" class="text-indigo-600 mx-2">Today</button>
@@ -580,7 +769,7 @@ Month</button>
 
     // === EXPORT / IMPORT ===
     document.getElementById('exportBtn').addEventListener('click', () => {
-      const data = JSON.stringify({ customers, orders, pipelineDeals, appointments, tasks, teamMembers }, null, 2);
+      const data = JSON.stringify({ customers, orders, inventory, pipelineDeals, appointments, tasks, teamMembers }, null, 2);
       const blob = new Blob([data], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -593,8 +782,9 @@ Month</button>
       reader.onload = (ev) => {
         try {
           const data = JSON.parse(ev.target.result);
-          customers = data.customers || []; orders = data.orders || []; pipelineDeals = data.pipelineDeals || [];
-          appointments = data.appointments || []; tasks = data.tasks || []; teamMembers = data.teamMembers || [];
+          customers = data.customers || []; orders = data.orders || []; inventory = data.inventory || [];
+          pipelineDeals = data.pipelineDeals || []; appointments = data.appointments || []; tasks = data.tasks || [];
+          teamMembers = data.teamMembers || [];
           activeCustomer = customers[0] || null;
           saveData(); renderCustomerList(); navigateTo('dashboard-view');
           showNotification('Data imported!');
