@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AcoustiSkin CRM Pro – Full Sync Edition</title>
+  <title>AcoustiSkin CRM Pro</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>AS</text></svg>">
@@ -18,115 +18,161 @@
     }
     .section { margin-bottom: 2rem; border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 1rem; }
     .field-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
-    .line-item { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr 1fr auto; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem; }
+    .search-bar { width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem; margin-bottom: 1rem; }
+    .line-item { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr auto; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem; }
     .line-total { font-weight: bold; }
-    .address-card { background: white; border: 1px solid #e5e7eb; border-radius: 0.75rem; padding: 1.25rem; margin-bottom: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.08); cursor: pointer; transition: all 0.2s ease; }
-    .address-card:hover { box-shadow: 0 12px 25px rgba(0,0,0,0.15); transform: translateY(-4px); border-color: #6366f1; }
-    .address-name { font-weight: 700; font-size: 1.2rem; color: #1e40af; margin-bottom: 0.5rem; }
-    .address-details { font-size: 0.925rem; color: #374151; line-height: 1.6; }
-    .sync-badge { display: inline-block; padding: 0.375rem 0.875rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 600; }
-    .sync-perfect { background: #d1fae5; color: #065f46; }
-    .sync-pending { background: #fef3c7; color: #92400e; }
+    .kanban-column { background: #f3f4f6; padding: 1rem; border-radius: 0.5rem; min-height: 200px; }
+    .deal-card { background: white; padding: 1rem; border-radius: 0.5rem; margin-bottom: 0.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); cursor: move; }
+    .calendar-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+    .calendar-grid { 
+      display: grid; 
+      gap: 0.5rem; 
+      grid-template-columns: repeat(7, 1fr); /* FIX: Ensure 7 columns for month view */
+    }
+    .calendar-day { 
+      min-height: 80px; 
+      border: 1px solid #e5e7eb; 
+      border-radius: 0.5rem; 
+      padding: 0.5rem; 
+      background: white; 
+      cursor: pointer; 
+      transition: background-color 0.1s;
+      overflow: hidden; /* Prevent text overflow from breaking layout */
+    }
+    .calendar-day:hover { background: #f5f5f5; }
+    .calendar-day.today { background: #eef2ff; border-color: #6366f1; }
+    .event { padding: 0.25rem 0.5rem; border-radius: 0.25rem; margin: 0.25rem 0; font-size: 0.75rem; color: white; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .appointment { background: #3b82f6; }
+    .task { background: #f59e0b; }
+    .team-card { background: white; padding: 1rem; border-radius: 0.5rem; margin-bottom: 0.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
     .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-    .modal-content { background: white; padding: 2.5rem; border-radius: 1rem; max-width: 800px; width: 95%; max-height: 95vh; overflow-y: auto; box-shadow: 0 25px 50px rgba(0,0,0,0.25); }
-    .badge { @apply px-3 py-1 text-xs rounded-full font-medium; }
+    .modal-content { background: white; padding: 2rem; border-radius: 0.5rem; max-width: 600px; width: 90%; }
+    .chart { height: 300px; }
+    .badge { @apply px-2 py-1 text-xs rounded-full font-medium; }
     .low { @apply bg-red-100 text-red-700; }
     .medium { @apply bg-yellow-100 text-yellow-700; }
     .high { @apply bg-green-100 text-green-700; }
   </style>
 </head>
 <body class="bg-gray-50 min-h-screen antialiased flex">
-  <div id="notification" class="fixed top-4 right-4 z-50 p-4 hidden rounded-xl shadow-2xl text-sm font-medium transition-all duration-300" role="alert"></div>
+  <div id="notification" class="fixed top-4 right-4 z-50 p-3 hidden rounded-lg shadow-xl text-sm font-medium transition-all duration-300" role="alert"></div>
 
-  <!-- Sidebar with Professional Address Book -->
-  <aside class="sidebar bg-gradient-to-b from-indigo-800 to-indigo-900 text-white flex flex-col h-screen fixed shadow-2xl">
-    <div class="p-8 text-3xl font-bold border-b border-indigo-700">AcoustiSkin CRM Pro</div>
+  <aside class="sidebar bg-indigo-700 text-white flex flex-col h-screen fixed">
+    <div class="p-6 text-2xl font-bold border-b border-indigo-600">AcoustiSkin CRM Pro</div>
     <div class="p-6 flex-grow overflow-y-auto">
-      <nav class="space-y-2">
-        <a href="#" class="nav-link flex items-center p-4 rounded-xl hover:bg-indigo-700 transition-all" data-view="dashboard-view">Dashboard</a>
-        <a href="#" class="nav-link flex items-center p-4 rounded-xl hover:bg-indigo-700 transition-all" data-view="customers-view">Customers</a>
-        <a href="#" class="nav-link flex items-center p-4 rounded-xl hover:bg-indigo-700 transition-all" data-view="new-order-view">New Order</a>
-        <a href="#" class="nav-link flex items-center p-4 rounded-xl hover:bg-indigo-700 transition-all" data-view="inventory-view">Inventory</a>
-        <a href="#" class="nav-link flex items-center p-4 rounded-xl hover:bg-indigo-700 transition-all" data-view="orders-view">Order Tracking</a>
-        <a href="#" class="nav-link flex items-center p-4 rounded-xl hover:bg-indigo-700 transition-all" data-view="calendar-view">Calendar</a>
-        <a href="#" class="nav-link flex items-center p-4 rounded-xl hover:bg-indigo-700 transition-all" data-view="pipeline-view">Pipeline</a>
-        <a href="#" class="nav-link flex items-center p-4 rounded-xl hover:bg-indigo-700 transition-all" data-view="reports-view">Reports</a>
-        <a href="#" class="nav-link flex items-center p-4 rounded-xl hover:bg-indigo-700 transition-all" data-view="crmteam-view">CRM Team</a>
+      <h3 class="text-sm font-semibold mb-2 text-indigo-300 uppercase tracking-wider">Core</h3>
+      <nav class="space-y-1">
+        <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="dashboard-view">Dashboard</a>
+        <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="customers-view">Customers</a>
+        <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="new-order-view">New Order</a>
+        <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="inventory-view">Inventory</a>
+        <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="orders-view">Order Tracking</a>
+        <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="calendar-view">Calendar</a>
+        <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="pipeline-view">Pipeline</a>
+        <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="reports-view">Reports</a>
+        <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="crmteam-view">CRM Team</a>
       </nav>
-      <button id="newCustomerButton" class="w-full mt-8 bg-gradient-to-r from-green-600 to-green-700 text-white font-bold py-4 px-6 rounded-xl shadow-lg hover:from-green-700 hover:to-green-800 transition-all">
+      <button id="newCustomerButton" class="w-full mt-6 bg-indigo-500 hover:bg-indigo-400 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 shadow-md">
         + New Customer
       </button>
+      <div class="mt-6 space-y-2">
+        <button id="exportBtn" class="w-full bg-gray-600 hover:bg-gray-500 text-white py-2 rounded-lg text-sm">Export Data</button>
+        <label class="w-full bg-gray-600 hover:bg-gray-500 text-white py-2 rounded-lg text-sm text-center block cursor-pointer">
+          Import Data <input type="file" id="importFile" class="hidden" accept=".json">
+        </label>
+      </div>
     </div>
-    <div class="p-6 border-t border-indigo-700 bg-indigo-800">
-      <h3 class="text-lg font-bold mb-4 text-indigo-200">Address Book</h3>
-      <input type="text" id="addressBookSearch" class="w-full px-5 py-3 rounded-xl bg-white/10 border border-indigo-600 placeholder-indigo-300 focus:outline-none focus:ring-4 focus:ring-indigo-500" placeholder="Search by name, email, phone, city, state, zip...">
-      <div id="addressBook" class="mt-6 space-y-4 max-h-96 overflow-y-auto"></div>
+    <div class="p-6 border-t border-indigo-600">
+      <h3 class="text-sm font-semibold mb-2 text-indigo-300 uppercase tracking-wider">Address Book</h3>
+      <input type="text" id="customerSearch" class="search-bar" placeholder="Search customers...">
+      <ul id="customerList" class="space-y-1 max-h-64 overflow-y-auto">
+        <li class="p-3 text-center text-gray-400">Loading...</li>
+      </ul>
     </div>
   </aside>
 
-  <!-- Main Content -->
   <main class="main-content flex flex-col ml-72 w-full">
-    <header class="app-header bg-white p-6 flex justify-between items-center sticky top-0 z-20 shadow-lg">
-      <h1 class="text-2xl font-bold text-gray-800">Customer: <span id="currentCustomerName" class="text-indigo-600">Select from Address Book</span></h1>
-      <div class="flex items-center space-x-6">
-        <button id="backToDashboard" class="hidden bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-8 rounded-xl transition-all">
-          ← Back to Dashboard
+    <header class="app-header bg-white p-4 flex justify-between items-center sticky top-0 z-10">
+      <h1 class="text-xl font-bold text-gray-800">Customer: <span id="currentCustomerName" class="text-indigo-600">Select Customer</span></h1>
+      <div class="flex items-center space-x-4">
+        <button id="backToDashboard" class="hidden bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg text-sm transition-colors">
+          Back to Dashboard
         </button>
-        <button id="editCustomerButton" class="bg-gradient-to-r from-indigo-600 to-indigo-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg hover:from-indigo-700 hover:to-indigo-800 transition-all">
+        <button id="editCustomerButton" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg text-sm transition-colors">
           Edit Profile
         </button>
       </div>
     </header>
-    <div id="customerStatusBar" class="mx-8 mt-6 px-6 py-3 font-bold text-lg rounded-xl bg-gray-200 text-gray-800">
+    <div id="customerStatusBar" class="mx-6 mt-4 p-2 font-semibold text-sm rounded-lg bg-gray-200 text-gray-800">
       Status: N/A
     </div>
-
-    <!-- All Views -->
-    <div id="dashboard-view" class="app-view p-8"></div>
-    <div id="customers-view" class="app-view p-8 hidden"></div>
-    <div id="new-order-view" class="app-view p-8 hidden"></div>
-    <div id="inventory-view" class="app-view p-8 hidden"></div>
-    <div id="orders-view" class="app-view p-8 hidden"></div>
-    <div id="calendar-view" class="app-view p-8 hidden"></div>
-    <div id="pipeline-view" class="app-view p-8 hidden"></div>
-    <div id="reports-view" class="app-view p-8 hidden"></div>
-    <div id="crmteam-view" class="app-view p-8 hidden"></div>
+    <div id="dashboard-view" class="app-view p-6"></div>
+    <div id="customers-view" class="app-view p-6 hidden"></div>
+    <div id="new-order-view" class="app-view p-6 hidden"></div>
+    <div id="inventory-view" class="app-view p-6 hidden"></div>
+    <div id="orders-view" class="app-view p-6 hidden"></div>
+    <div id="calendar-view" class="app-view p-6 hidden"></div>
+    <div id="pipeline-view" class="app-view p-6 hidden"></div>
+    <div id="reports-view" class="app-view p-6 hidden"></div>
+    <div id="crmteam-view" class="app-view p-6 hidden"></div>
   </main>
 
   <script>
-    // === FULL DATA WITH SYNC TRACKING ===
+    // === DATA & STATE ===
     let activeCustomer = null;
     let customers = [];
     let orders = [];
-    let inventory = [ /* same as before */ ];
+    let inventory = [
+      { sku: 'ASKIN-001', name: 'AcoustiSkin Paddle Skin - Selkirk', brand: 'Selkirk', stock: 150, price: 29.95, reorder: 50 },
+      { sku: 'ASKIN-002', name: 'AcoustiSkin Paddle Skin - Joola', brand: 'Joola', stock: 80, price: 29.95, reorder: 40 },
+      { sku: 'ASKIN-003', name: 'AcoustiSkin Paddle Skin - Onix', brand: 'Onix', stock: 30, price: 29.95, reorder: 30 },
+      { sku: 'ASKIN-004', name: 'AcoustiSkin Paddle Skin - Gamma', brand: 'Gamma', stock: 60, price: 29.95, reorder: 30 },
+      { sku: 'ASKIN-005', name: 'AcoustiSkin Paddle Skin - Engage', brand: 'Engage', stock: 45, price: 29.95, reorder: 30 },
+      { sku: 'ASKIN-006', name: 'AcoustiSkin Paddle Skin - ProKennex', brand: 'ProKennex', stock: 20, price: 29.95, reorder: 20 },
+      { sku: 'ASKIN-007', name: 'AcoustiSkin Paddle Skin - Diadem', brand: 'Diadem', stock: 35, price: 29.95, reorder: 25 },
+      { sku: 'ASKIN-008', name: 'AcoustiSkin Paddle Skin - CRBN', brand: 'CRBN', stock: 50, price: 29.95, reorder: 30 },
+      { sku: 'ASKIN-009', name: 'AcoustiSkin Paddle Skin - Vatic Pro', brand: 'Vatic Pro', stock: 70, price: 29.95, reorder: 40 },
+      { sku: 'ASKIN-010', name: 'AcoustiSkin Paddle Skin - Paddletek', brand: 'Paddletek', stock: 90, price: 29.95, reorder: 50 }
+    ];
     let pipelineDeals = [];
-    let events = [];
-    let teamMembers = [ /* same as before */ ];
+    let appointments = [];
+    let tasks = [];
+    let teamMembers = ['Allyson', 'Sindi', 'Lori', 'Wen', 'Janine', 'Winnie'];
+    const paddleBrands = ['Selkirk', 'Joola', 'Paddletek', 'Onix', 'Gamma', 'Engage', 'ProKennex', 'Diadem', 'CRBN', 'Vatic Pro'];
+    const stateTax = { 'AL': 0.04, 'AK': 0.00, 'AZ': 0.056, 'AR': 0.065, 'CA': 0.0725, 'CO': 0.029, 'CT': 0.0635, 'DE': 0.00, 'FL': 0.06, 'GA': 0.04, 'HI': 0.04, 'ID': 0.06, 'IL': 0.0625, 'IN': 0.07, 'IA': 0.06, 'KS': 0.065, 'KY': 0.06, 'LA': 0.045, 'ME': 0.055, 'MD': 0.06, 'MA': 0.0625, 'MI': 0.06, 'MN': 0.06875, 'MS': 0.07, 'MO': 0.04225, 'MT': 0.00, 'NE': 0.055, 'NV': 0.0685, 'NH': 0.00, 'NJ': 0.06625, 'NM': 0.05125, 'NY': 0.04, 'NC': 0.0475, 'ND': 0.05, 'OH': 0.0575, 'OK': 0.045, 'OR': 0.00, 'PA': 0.06, 'RI': 0.07, 'SC': 0.06, 'SD': 0.042, 'TN': 0.07, 'TX': 0.0625, 'UT': 0.0485, 'VT': 0.06, 'VA': 0.043, 'WA': 0.065, 'WV': 0.06, 'WI': 0.05, 'WY': 0.04 };
+    let calendarView = 'month';
+    let currentDate = new Date();
 
+    // === LOCALSTORAGE ===
     function loadData() {
       const data = JSON.parse(localStorage.getItem('acoustiskin-crm-pro') || '{}');
-      customers = (data.customers || []).map(c => ({
-        ...c,
-        syncStatus: c.syncStatus || 'synced',
-        lastSync: c.lastSync || null
-      }));
+      // Initialize with default data if localStorage is empty
+      customers = data.customers || [
+        { id: 'CUST-001', name: 'Acme Corp', email: 'john@acme.com', phone: '555-0001', status: 'Active Customer', industry: 'Manufacturing', revenue: '$5M', employees: '200+', address: '123 Main St, City, ST 12345', website: 'acme.com', leadSource: 'Referral', clv: '$150,000', lastPurchase: '2025-10-15', firstPurchase: '2023-01-10', purchaseFrequency: 12, primaryProduct: 'Team Jerseys', subscriptionTier: 'Gold', lastContact: '2025-11-10', nextTask: 'Q4 Review Call', nps: 9, social: ['LinkedIn'], handle: '@acmecorp', accountOwner: 'Dana Lurie', teamDivision: 'Sales', notes: '', tags: ['VIP'], specialHandling: 'Email only', poRequired: true, preferredShipping: 'Standard', preferredCarrier: 'UPS', paymentTerms: 'Net 30', creditLimit: 50000, billingCycle: 'Monthly', currency: 'USD', aov: 1250, lastOrderDate: '2025-10-15', lifetimeSpend: 150000, ordersPlaced: 120, returnRate: 2.1, paddleBrandsUsed: ['Selkirk', 'Joola'] },
+        { id: 'CUST-002', name: 'AcoustiSkin LLC', email: 'dana@acoustiskin.com', phone: '555-0002', status: 'Prospect', industry: 'Healthcare', revenue: '$2M', employees: '50-200', address: '456 Health Ave, Wellness, CA 67890', website: 'acoustiskin.com', leadSource: 'Website', clv: '$0', lastPurchase: null, firstPurchase: null, purchaseFrequency: 0, primaryProduct: null, subscriptionTier: null, lastContact: '2025-11-01', nextTask: 'Product Demo', nps: null, social: ['Instagram', 'X'], handle: '@acoustiskin', accountOwner: 'Dana Lurie', teamDivision: 'Sales', notes: '', tags: [], specialHandling: '', poRequired: false, preferredShipping: 'Expedited', preferredCarrier: 'FedEx', paymentTerms: 'Pre-paid', creditLimit: 0, billingCycle: 'Per-Order', currency: 'USD', aov: 0, lastOrderDate: null, lifetimeSpend: 0, ordersPlaced: 0, returnRate: 0, paddleBrandsUsed: [] }
+      ];
       orders = data.orders || [];
       inventory = data.inventory || inventory;
-      events = data.events || [];
-      if (customers.length && !activeCustomer) activeCustomer = customers[0];
+      pipelineDeals = data.pipelineDeals || [];
+      appointments = data.appointments || [];
+      tasks = data.tasks || [];
+      teamMembers = data.teamMembers || teamMembers;
+      if (customers.length > 0 && !activeCustomer) activeCustomer = customers[0];
     }
     function saveData() {
-      localStorage.setItem('acoustiskin-crm-pro', JSON.stringify({ customers, orders, inventory, events, teamMembers }));
+      localStorage.setItem('acoustiskin-crm-pro', JSON.stringify({ customers, orders, inventory, pipelineDeals, appointments, tasks, teamMembers }));
     }
 
+    // === UTILS ===
     function showNotification(msg, type = 'bg-blue-100 text-blue-700') {
       const n = document.getElementById('notification');
       n.textContent = msg;
-      n.className = `fixed top-4 right-4 z-50 p-5 rounded-xl shadow-2xl text-base font-medium ${type} transition-all duration-300`;
+      n.className = `fixed top-4 right-4 z-50 p-3 rounded-lg shadow-xl text-sm font-medium ${type} transition-all duration-300`;
       n.classList.remove('hidden');
-      setTimeout(() => n.classList.add('hidden'), 5000);
+      setTimeout(() => n.classList.add('hidden'), 4000);
     }
 
+    // === NAVIGATION ===
     function navigateTo(view) {
       document.querySelectorAll('.app-view').forEach(v => v.classList.add('hidden'));
       document.getElementById(view)?.classList.remove('hidden');
@@ -143,178 +189,787 @@
       if (view === 'crmteam-view') renderCRMTeam();
     }
 
-    // === PROFESSIONAL ADDRESS BOOK WITH SYNC STATUS ===
-    function renderAddressBook() {
-      const term = document.getElementById('addressBookSearch').value.toLowerCase();
-      const container = document.getElementById('addressBook');
-      
-      const filtered = customers.filter(c => {
-        const full = (c.name + c.email + c.phone + c.address).toLowerCase();
-        return full.includes(term);
+    // === CUSTOMER LIST ===
+    function renderCustomerList() {
+      const search = document.getElementById('customerSearch').value.toLowerCase();
+      const filtered = customers.filter(c => c.name.toLowerCase().includes(search));
+      const list = document.getElementById('customerList');
+      list.innerHTML = filtered.sort((a, b) => a.name.localeCompare(b.name)).map(c => `
+        <li class="customer-item p-3 cursor-pointer hover:bg-indigo-600 rounded-lg text-sm ${activeCustomer?.id === c.id ? 'bg-indigo-600' : ''}" data-customer-id="${c.id}">
+          ${c.name}
+        </li>`).join('');
+      document.querySelectorAll('.customer-item').forEach(item => {
+        item.onclick = () => {
+          document.querySelectorAll('.customer-item').forEach(i => i.classList.remove('bg-indigo-600'));
+          item.classList.add('bg-indigo-600');
+          activeCustomer = customers.find(c => c.id === item.dataset.customerId);
+          document.getElementById('currentCustomerName').textContent = activeCustomer.name;
+          updateCustomerStatusUI(activeCustomer.status);
+          saveData();
+          navigateTo('dashboard-view');
+        };
       });
+    }
+    document.getElementById('customerSearch').addEventListener('input', renderCustomerList);
 
-      container.innerHTML = filtered.map(c => `
-        <div class="address-card" onclick="selectCustomer('${c.id}')">
-          <div class="flex justify-between items-start">
-            <div>
-              <div class="address-name">${c.name}</div>
-              <div class="address-details">
-                ${c.email}<br>
-                ${c.phone}<br>
-                ${c.address.replace(/, /g, '<br>')}
-              </div>
-            </div>
-            <div class="sync-badge ${c.syncStatus === 'synced' ? 'sync-perfect' : 'sync-pending'}">
-              ${c.syncStatus === 'synced' ? '✓ Synced' : '⟳ Syncing...'}
-            </div>
-          </div>
-        </div>
-      `).join('') || '<p class="text-center text-gray-500 py-8">No contacts found</p>';
+    function updateCustomerStatusUI(status) {
+      const bar = document.getElementById('customerStatusBar');
+      let color = 'bg-gray-200 text-gray-800';
+      if (status === 'Active Customer') color = 'bg-green-100 text-green-700';
+      else if (status === 'Prospect') color = 'bg-blue-100 text-blue-700';
+      bar.className = `mx-6 mt-4 p-2 font-semibold text-sm rounded-lg ${color}`;
+      bar.textContent = `Status: ${status || 'N/A'}`;
     }
 
-    function selectCustomer(id) {
-      activeCustomer = customers.find(c => c.id === c.id === id);
-      document.getElementById('currentCustomerName').textContent = activeCustomer.name;
-      updateCustomerStatusUI(activeCustomer.status);
-      navigateTo('dashboard-view');
-    }
-
-    // === NEW ORDER – FULL SYNCED FORM ===
-    function renderNewOrderForm() {
+    // === DASHBOARD (WITH SALES METRICS) ===
+    function renderDashboard() {
+      const view = document.getElementById('dashboard-view');
       if (!activeCustomer) {
-        document.getElementById('new-order-view').innerHTML = `<div class="text-center text-gray-500 text-3xl mt-32 font-light">Please select a customer from the Address Book on the left</div>`;
+        view.innerHTML = `<div class="text-center text-gray-500 mt-20">Select a customer to view dashboard</div>`;
         return;
       }
-
-      const addrParts = activeCustomer.address.split(', ');
-      const cityStateZip = addrParts[1] || '';
-      const [city, stateZip] = cityStateZip.split(' ');
-      const state = stateZip ? stateZip.slice(0,2) : '';
-      const zip = stateZip ? stateZip.slice(2) : '';
-
-      const view = document.getElementById('new-order-view');
+      const custOrders = orders.filter(o => o.customerId === activeCustomer.id);
+      const totalRevenue = orders.reduce((sum, o) => sum + o.total, 0);
+      const avgOrderValue = orders.length ? totalRevenue / orders.length : 0;
+      const lowStock = inventory.filter(i => i.stock <= i.reorder).length;
       view.innerHTML = `
         <div class="max-w-7xl mx-auto">
-          <h2 class="text-4xl font-extrabold text-gray-900 mb-10">New Order – ${activeCustomer.name}</h2>
-
-          <div class="grid lg:grid-cols-3 gap-10">
-            <!-- Customer & Shipping -->
-            <div class="lg:col-span-2 space-y-8">
-              <div class="bg-white p-10 rounded-3xl shadow-xl">
-                <h3 class="text-2xl font-bold mb-8 text-indigo-700 border-b-2 border-indigo-200 pb-4">Customer & Shipping Address</h3>
-                <div class="grid grid-cols-2 gap-6 mb-8">
-                  <div><strong>Name:</strong> ${activeCustomer.name}</div>
-                  <div><strong>Email:</strong> ${activeCustomer.email}</div>
-                  <div><strong>Phone:</strong> ${activeCustomer.phone}</div>
-                  <div><strong>Account Owner:</strong> ${activeCustomer.accountOwner || 'Unassigned'}</div>
-                </div>
-                <div class="p-6 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-2xl">
-                  <h4 class="font-bold text-lg mb-4">Shipping Address (editable – will auto-sync to CRM)</h4>
-                  <div class="field-grid">
-                    <div class="input-group md:col-span-2">
-                      <label>Recipient Name</label>
-                      <input id="shipName" value="${activeCustomer.name}">
-                    </div>
-                    <div class="input-group md:col-span-2">
-                      <label>Street Address</label>
-                      <input id="shipStreet" value="${addrParts[0] || ''}">
-                    </div>
-                    <div class="input-group">
-                      <label>City</label>
-                      <input id="shipCity" value="${city || ''}">
-                    </div>
-                    <div class="input-group">
-                      <label>State</label>
-                      <input id="shipState" maxlength="2" value="${state}">
-                    </div>
-                    <div class="input-group">
-                      <label>ZIP Code</label>
-                      <input id="shipZip" value="${zip}">
-                    </div>
-                    <div class="input-group">
-                      <label>Country</label>
-                      <input id="shipCountry" value="USA">
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="bg-white p-10 rounded-3xl shadow-xl">
-                <h3 class="text-2xl font-bold mb-8 text-indigo-700 border-b-2 border-indigo-200 pb-4">Order Items</h3>
-                <div id="orderLines" class="space-y-4"></div>
-                <button id="addLine" class="mt-8 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white py-3 px-8 rounded-xl font-bold hover:from-indigo-700 hover:to-indigo-800 transition-all">
-                  + Add Product Line
-                </button>
-              </div>
+          <h2 class="text-2xl font-extrabold text-gray-900 mb-6">${activeCustomer.name} - Dashboard</h2>
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div class="bg-white p-4 rounded-xl shadow text-center">
+              <p class="text-2xl font-bold text-indigo-600">$${totalRevenue.toFixed(0)}</p>
+              <p class="text-sm text-gray-600">Total Revenue</p>
             </div>
-
-            <!-- Order Summary -->
-            <div class="bg-white p-10 rounded-3xl shadow-xl h-fit sticky top-32">
-              <h3 class="text-2xl font-bold mb-8 text-green-700 border-b-2 border-green-200 pb-4">Order Summary</h3>
-              <div id="orderSummary" class="text-xl space-y-4 font-medium"></div>
-              <div class="mt-10 pt-8 border-t-4 border-green-200">
-                <button id="processOrderBtn" class="w-full bg-gradient-to-r from-green-600 to-green-700 text-white font-bold py-6 rounded-2xl text-2xl shadow-2xl hover:from-green-700 hover:to-green-800 transition-all transform hover:scale-105">
-                  PLACE ORDER & AUTO-SYNC ADDRESS
-                </button>
-              </div>
+            <div class="bg-white p-4 rounded-xl shadow text-center">
+              <p class="text-2xl font-bold text-green-600">${orders.length}</p>
+              <p class="text-sm text-gray-600">Orders Processed</p>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow text-center">
+              <p class="text-2xl font-bold text-blue-600">$${avgOrderValue.toFixed(0)}</p>
+              <p class="text-sm text-gray-600">Avg Order Value</p>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow text-center">
+              <p class="text-2xl font-bold ${lowStock ? 'text-red-600' : 'text-green-600'}">${lowStock}</p>
+              <p class="text-sm text-gray-600">Low Stock Items</p>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white p-6 rounded-xl shadow">
+              <h3 class="font-semibold text-gray-700">Company Info</h3>
+              <p><strong>Industry:</strong> ${activeCustomer.industry}</p>
+              <p><strong>Revenue:</strong> ${activeCustomer.revenue}</p>
+              <p><strong>Employees:</strong> ${activeCustomer.employees}</p>
+              <p><strong>Address:</strong> ${activeCustomer.address}</p>
+              <p><strong>Website:</strong> <a href="http://${activeCustomer.website}" target="_blank" class="text-indigo-600">${activeCustomer.website}</a></p>
+              <p><strong>Paddle Brands Used:</strong> ${activeCustomer.paddleBrandsUsed?.join(', ') || 'None'}</p>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow">
+              <h3 class="font-semibold text-gray-700">Financial & Transactional</h3>
+              <p><strong>CLV:</strong> ${activeCustomer.clv}</p>
+              <p><strong>Last Purchase:</strong> ${activeCustomer.lastPurchase || 'N/A'}</p>
+              <p><strong>Orders:</strong> ${custOrders.length}</p>
+              <p><strong>Lifetime Spend:</strong> $${activeCustomer.lifetimeSpend.toFixed(2)}</p>
+              <p><strong>AOV:</strong> $${activeCustomer.aov.toFixed(2)}</p>
             </div>
           </div>
         </div>`;
-
-      addOrderLine();
-      attachNewOrderListeners();
-      updateNewOrderDisplay();
     }
 
-    // === AUTO-SYNC ON ORDER COMPLETION ===
-    function attachNewOrderListeners() {
-      document.getElementById('addLine').addEventListener('click', addOrderLine);
-      document.getElementById('processOrderBtn').addEventListener('click', () => {
-        const newAddress = `${document.getElementById('shipStreet').value}, ${document.getElementById('shipCity').value}, ${document.getElementById('shipState').value} ${document.getElementById('shipZip').value}`.trim();
+    // === FULL CUSTOMER PROFILE (30+ FIELDS) ===
+    function renderCustomers() {
+      const view = document.getElementById('customers-view');
+      if (!activeCustomer) {
+        view.innerHTML = '<p class="text-center text-gray-500">Select a customer</p>';
+        return;
+      }
+      view.innerHTML = `
+        <div class="max-w-7xl mx-auto">
+          <h2 class="text-2xl font-extrabold text-gray-900 mb-6">Edit Customer Profile</h2>
+          <form id="customerForm" class="bg-white p-6 rounded-xl shadow space-y-6">
+            <div class="section">
+              <h3 class="font-semibold text-gray-700 mb-4">Identity & Firmographics</h3>
+              <div class="field-grid">
+                <div class="input-group"><label>Company Name *</label><input type="text" name="name" value="${activeCustomer.name}" required></div>
+                <div class="input-group"><label>Email *</label><input type="email" name="email" value="${activeCustomer.email}" required></div>
+                <div class="input-group"><label>Phone</label><input type="tel" name="phone" value="${activeCustomer.phone}"></div>
+                <div class="input-group"><label>Status</label>
+                  <select name="status">
+                    <option value="Prospect" ${activeCustomer.status === 'Prospect' ? 'selected' : ''}>Prospect</option>
+                    <option value="Active Customer" ${activeCustomer.status === 'Active Customer' ? 'selected' : ''}>Active Customer</option>
+                  </select>
+                </div>
+                <div class="input-group md:col-span-2"><label>Address</label><input type="text" name="address" value="${activeCustomer.address}"></div>
+                <div class="input-group"><label>Industry</label><input type="text" name="industry" value="${activeCustomer.industry}"></div>
+                <div class="input-group"><label>Revenue</label><input type="text" name="revenue" value="${activeCustomer.revenue}"></div>
+                <div class="input-group"><label>Employees</label><input type="text" name="employees" value="${activeCustomer.employees}"></div>
+                <div class="input-group"><label>Website</label><input type="url" name="website" value="${activeCustomer.website}"></div>
+                <div class="input-group"><label>Lead Source</label><input type="text" name="leadSource" value="${activeCustomer.leadSource}"></div>
+                <div class="input-group col-span-full">
+                  <label>Paddle Brands Used</label>
+                  <select multiple name="paddleBrandsUsed" size="5" class="h-32">
+                    ${paddleBrands.map(b => `<option value="${b}" ${activeCustomer.paddleBrandsUsed?.includes(b) ? 'selected' : ''}>${b}</option>`).join('')}
+                  </select>
+                  <p class="text-xs text-gray-500 mt-1">Hold Ctrl/Cmd to select multiple</p>
+                </div>
+              </div>
+            </div>
+            <div class="section">
+              <h3 class="font-semibold text-gray-700 mb-4">Financial & Transactional</h3>
+              <div class="field-grid">
+                <div class="input-group"><label>CLV</label><input type="text" name="clv" value="${activeCustomer.clv}"></div>
+                <div class="input-group"><label>Last Purchase</label><input type="date" name="lastPurchase" value="${activeCustomer.lastPurchase}"></div>
+                <div class="input-group"><label>First Purchase</label><input type="date" name="firstPurchase" value="${activeCustomer.firstPurchase}"></div>
+                <div class="input-group"><label>Purchase Frequency</label><input type="number" name="purchaseFrequency" value="${activeCustomer.purchaseFrequency}"></div>
+                <div class="input-group"><label>Primary Product</label><input type="text" name="primaryProduct" value="${activeCustomer.primaryProduct}"></div>
+                <div class="input-group"><label>Subscription Tier</label><input type="text" name="subscriptionTier" value="${activeCustomer.subscriptionTier}"></div>
+                <div class="input-group"><label>AOV</label><input type="number" name="aov" value="${activeCustomer.aov}"></div>
+                <div class="input-group"><label>Lifetime Spend</label><input type="number" name="lifetimeSpend" value="${activeCustomer.lifetimeSpend}"></div>
+                <div class="input-group"><label>Orders Placed</label><input type="number" name="ordersPlaced" value="${activeCustomer.ordersPlaced}"></div>
+                <div class="input-group"><label>Return Rate (%)</label><input type="number" name="returnRate" value="${activeCustomer.returnRate}"></div>
+              </div>
+            </div>
+            <div class="section">
+              <h3 class="font-semibold text-gray-700 mb-4">Engagement & CRM</h3>
+              <div class="field-grid">
+                <div class="input-group"><label>Last Contact</label><input type="date" name="lastContact" value="${activeCustomer.lastContact}"></div>
+                <div class="input-group"><label>Next Task</label><input type="text" name="nextTask" value="${activeCustomer.nextTask}"></div>
+                <div class="input-group"><label>NPS</label><input type="number" name="nps" value="${activeCustomer.nps}"></div>
+                <div class="input-group"><label>Social</label><input type="text" name="social" value="${activeCustomer.social?.join(', ')}"></div>
+                <div class="input-group"><label>Handle</label><input type="text" name="handle" value="${activeCustomer.handle}"></div>
+                <div class="input-group"><label>Account Owner</label><input type="text" name="accountOwner" value="${activeCustomer.accountOwner}"></div>
+                <div class="input-group"><label>Team Division</label><input type="text" name="teamDivision" value="${activeCustomer.teamDivision}"></div>
+                <div class="input-group"><label>Notes</label><textarea name="notes">${activeCustomer.notes}</textarea></div>
+                <div class="input-group"><label>Tags</label><input type="text" name="tags" value="${activeCustomer.tags?.join(', ')}"></div>
+                <div class="input-group"><label>Special Handling</label><input type="text" name="specialHandling" value="${activeCustomer.specialHandling}"></div>
+                <div class="input-group"><label>PO Required</label>
+                  <select name="poRequired">
+                    <option value="true" ${activeCustomer.poRequired ? 'selected' : ''}>Yes</option>
+                    <option value="false" ${!activeCustomer.poRequired ? 'selected' : ''}>No</option>
+                  </select>
+                </div>
+                <div class="input-group"><label>Preferred Shipping</label><input type="text" name="preferredShipping" value="${activeCustomer.preferredShipping}"></div>
+                <div class="input-group"><label>Preferred Carrier</label><input type="text" name="preferredCarrier" value="${activeCustomer.preferredCarrier}"></div>
+                <div class="input-group"><label>Payment Terms</label><input type="text" name="paymentTerms" value="${activeCustomer.paymentTerms}"></div>
+                <div class="input-group"><label>Credit Limit</label><input type="number" name="creditLimit" value="${activeCustomer.creditLimit}"></div>
+                <div class="input-group"><label>Billing Cycle</label><input type="text" name="billingCycle" value="${activeCustomer.billingCycle}"></div>
+                <div class="input-group"><label>Currency</label><input type="text" name="currency" value="${activeCustomer.currency}"></div>
+              </div>
+            </div>
+            <div class="flex justify-end">
+              <button type="button" id="saveCustomerBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg">
+                Save Changes
+              </button>
+            </div>
+          </form>
+        </div>`;
 
-        // AUTO-SYNC: Update CRM address immediately
-        activeCustomer.address = newAddress;
-        activeCustomer.syncStatus = 'synced';
-        activeCustomer.lastSync = new Date().toISOString();
-
-        // Build order...
-        const order = {
-          id: 'ORD-' + Date.now().toString(36).toUpperCase(),
-          customerId: activeCustomer.id,
-          date: new Date().toISOString().split('T')[0],
-          items: [],
-          subtotal: 0,
-          shipping: 5.99,
-          tax: 0,
-          total: 0,
-          shipAddress: newAddress,
-          paymentMethod: document.getElementById('paymentMethod')?.value || 'Credit Card',
-          status: 'Processing',
-          syncedFrom: 'Order → CRM Address Updated'
-        };
-
-        // ... add items, calculate totals (same as before) ...
-
-        orders.push(order);
-        activeCustomer.ordersPlaced++;
-        activeCustomer.lifetimeSpend += order.total;
-        activeCustomer.aov = activeCustomer.lifetimeSpend / activeCustomer.ordersPlaced;
-        activeCustomer.lastOrderDate = order.date;
-
+      document.getElementById('saveCustomerBtn').addEventListener('click', () => {
+        const form = document.getElementById('customerForm');
+        if (!form.reportValidity()) return;
+        const data = {};
+        form.querySelectorAll('input, select, textarea').forEach(f => {
+          if (f.name) {
+            if (f.multiple) data[f.name] = Array.from(f.selectedOptions).map(o => o.value);
+            else if (f.name === 'tags' || f.name === 'social') data[f.name] = f.value.split(',').map(s => s.trim()).filter(Boolean);
+            else if (f.name === 'poRequired') data[f.name] = f.value === 'true';
+            else if (f.type === 'number') data[f.name] = parseFloat(f.value) || 0;
+            else data[f.name] = f.value;
+          }
+        });
+        Object.assign(activeCustomer, data);
         saveData();
-        renderAddressBook(); // instantly shows "Synced"
-        showNotification(`Order ${order.id} placed! Shipping address synced to CRM`, 'bg-green-100 text-green-700');
+        showNotification('Customer saved!', 'bg-green-100 text-green-700');
+        renderCustomerList();
         navigateTo('dashboard-view');
       });
     }
 
-    // === REST OF CRM (unchanged but working) ===
-    // All other functions (dashboard, customers, inventory, etc.) are the same as in the last working version
+    // === NEW ORDER (FULL E-COMMERCE) ===
+    function renderNewOrderForm() {
+      if (!activeCustomer) {
+        document.getElementById('new-order-view').innerHTML = `<div class="text-center text-gray-500 mt-20">Select a customer first</div>`;
+        return;
+      }
+      const view = document.getElementById('new-order-view');
+      view.innerHTML = `
+        <div class="max-w-7xl mx-auto">
+          <h2 class="text-2xl font-extrabold text-gray-900 mb-6">New Order - ${activeCustomer.name}</h2>
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow">
+              <h3 class="text-xl font-bold mb-4 border-b pb-2">Order Items</h3>
+              <div id="orderLines" class="space-y-4">
+                <div class="line-item font-semibold text-sm text-gray-600 border-b pb-2">
+                    <span>Brand</span>
+                    <span>Product</span>
+                    <span>Qty</span>
+                    <span>Price</span>
+                    <span>Affiliate</span>
+                    <span>Total</span>
+                    <span></span>
+                </div>
+              </div>
+              <button id="addLine" class="bg-indigo-500 hover:bg-indigo-600 text-white py-2 px-4 rounded-lg mt-4">+ Add Line</button>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow space-y-6">
+              <div>
+                <h3 class="text-xl font-bold mb-4 border-b pb-2">Shipping & Payment</h3>
+                <textarea id="shipAddress" class="w-full" rows="3">${activeCustomer.address}</textarea>
+                <select id="paymentMethod" class="w-full mt-2">
+                  <option>Credit Card</option>
+                  <option>Net 30</option>
+                  <option>Pre-paid</option>
+                </select>
+              </div>
+              <div id="orderSummary" class="space-y-1 text-sm"></div>
+              <button id="processOrderBtn" class="w-full mt-4 bg-green-600 hover:bg-green-700 text-white font-extrabold py-3 rounded-lg">
+                PLACE ORDER
+              </button>
+            </div>
+          </div>
+        </div>`;
+      addOrderLine();
+      attachNewOrderListeners();
+      updateNewOrderDisplay(); // Initial display update
+    }
+
+    function addOrderLine() {
+      const container = document.getElementById('orderLines');
+      const line = document.createElement('div');
+      line.className = 'line-item';
+      line.innerHTML = `
+        <select class="productBrand p-2 border rounded">
+          ${paddleBrands.map(b => `<option>${b}</option>`).join('')}
+        </select>
+        <input type="text" class="productName p-2 border rounded" value="AcoustiSkin Paddle Skin">
+        <input type="number" class="orderQty p-2 border rounded" value="1" min="1">
+        <input type="number" class="orderPrice p-2 border rounded" value="29.95" step="0.01">
+        <select class="orderAffiliate p-2 border rounded">
+          <option>None</option>
+          ${teamMembers.map(a => `<option>${a}</option>`).join('')}
+        </select>
+        <span class="line-total">$29.95</span>
+        <button type="button" class="text-red-600 hover:text-red-800 text-sm p-1" onclick="this.closest('.line-item').remove(); updateNewOrderDisplay()">X</button>`;
+      container.appendChild(line);
+      line.querySelectorAll('input, select').forEach(el => el.addEventListener('input', updateNewOrderDisplay));
+    }
+
+    function attachNewOrderListeners() {
+      document.getElementById('addLine').addEventListener('click', addOrderLine);
+      document.getElementById('shipAddress').addEventListener('input', updateNewOrderDisplay);
+      document.getElementById('paymentMethod').addEventListener('input', updateNewOrderDisplay);
+
+      document.getElementById('processOrderBtn').addEventListener('click', () => {
+        const lines = document.getElementById('orderLines').querySelectorAll('.line-item:not(:first-child)'); // Skip the header line
+        
+        if (lines.length === 0) {
+            showNotification('Order must contain at least one item.', 'bg-red-100 text-red-700');
+            return;
+        }
+
+        const order = {
+          id: 'ORD-' + Date.now().toString(36).toUpperCase(),
+          customerId: activeCustomer.id,
+          date: new Date().toISOString().split('T')[0],
+          items: [], subtotal: 0, shipping: 5.99, tax: 0, total: 0,
+          shipAddress: document.getElementById('shipAddress').value,
+          paymentMethod: document.getElementById('paymentMethod').value,
+          status: 'Processing'
+        };
+        
+        let inventorySufficient = true;
+        lines.forEach(line => {
+          const item = {
+            brand: line.querySelector('.productBrand').value,
+            name: line.querySelector('.productName').value,
+            qty: parseInt(line.querySelector('.orderQty').value) || 0,
+            price: parseFloat(line.querySelector('.orderPrice').value) || 0,
+            affiliate: line.querySelector('.orderAffiliate').value
+          };
+          
+          if (item.qty <= 0 || item.price <= 0) return; // Skip invalid lines
+
+          const sku = inventory.find(i => i.brand === item.brand)?.sku;
+          if (sku) {
+            const stockItem = inventory.find(i => i.sku === sku);
+            if (stockItem.stock >= item.qty) {
+              stockItem.stock -= item.qty; // Deduct stock
+            } else {
+              showNotification(`Not enough stock for ${item.brand}`, 'bg-red-100 text-red-700');
+              inventorySufficient = false;
+              return;
+            }
+          }
+          order.items.push(item);
+          order.subtotal += item.qty * item.price;
+        });
+
+        if (!inventorySufficient) return; // Stop if stock was insufficient
+
+        const state = order.shipAddress.split(', ').pop()?.split(' ')[0] || 'CA';
+        order.tax = order.subtotal * (stateTax[state] || 0);
+        order.total = order.subtotal + order.shipping + order.tax;
+
+        orders.push(order);
+        
+        // Update Customer Metrics
+        activeCustomer.ordersPlaced++;
+        activeCustomer.lifetimeSpend += order.total;
+        activeCustomer.aov = activeCustomer.lifetimeSpend / activeCustomer.ordersPlaced;
+        activeCustomer.lastOrderDate = order.date;
+        
+        saveData();
+        showNotification(`Order ${order.id} placed! Total: $${order.total.toFixed(2)}`, 'bg-green-100 text-green-700');
+        navigateTo('dashboard-view');
+      });
+    }
+
+    function updateNewOrderDisplay() {
+      const lines = document.getElementById('orderLines').querySelectorAll('.line-item:not(:first-child)'); // Skip header
+      let subtotal = 0;
+      lines.forEach(line => {
+        const qty = parseFloat(line.querySelector('.orderQty').value) || 0;
+        const price = parseFloat(line.querySelector('.orderPrice').value) || 0;
+        const total = qty * price;
+        line.querySelector('.line-total').textContent = `$${total.toFixed(2)}`;
+        subtotal += total;
+      });
+      const shipping = 5.99;
+      const state = document.getElementById('shipAddress').value.split(', ').pop()?.split(' ')[0] || 'CA';
+      const tax = subtotal * (stateTax[state] || 0);
+      const total = subtotal + shipping + tax;
+      document.getElementById('orderSummary').innerHTML = `
+        <div class="flex justify-between"><span>Subtotal:</span><span>$${subtotal.toFixed(2)}</span></div>
+        <div class="flex justify-between"><span>Shipping:</span><span>$${shipping.toFixed(2)}</span></div>
+        <div class="flex justify-between"><span>Tax (${stateTax[state]*100 || 0}%):</span><span>$${tax.toFixed(2)}</span></div>
+        <div class="flex justify-between font-bold text-lg mt-2"><span>Total:</span><span class="text-indigo-600">$${total.toFixed(2)}</span></div>`;
+    }
+
+    // === INVENTORY MANAGEMENT ===
+    function renderInventory() {
+      const view = document.getElementById('inventory-view');
+      view.innerHTML = `
+        <div class="max-w-7xl mx-auto">
+          <h2 class="text-2xl font-extrabold text-gray-900 mb-6">Inventory Management</h2>
+          <button id="addInventoryBtn" class="bg-indigo-600 text-white py-2 px-4 rounded mb-4">+ Add Product</button>
+          <div class="bg-white rounded-xl shadow overflow-hidden">
+            <table class="w-full">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SKU</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Brand</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                ${inventory.map(item => `
+                  <tr>
+                    <td class="px-4 py-3 text-sm">${item.sku}</td>
+                    <td class="px-4 py-3 text-sm">${item.name}</td>
+                    <td class="px-4 py-3 text-sm">${item.brand}</td>
+                    <td class="px-4 py-3 text-sm">${item.stock}</td>
+                    <td class="px-4 py-3 text-sm">$${item.price}</td>
+                    <td class="px-4 py-3 text-sm"><span class="badge ${item.stock <= item.reorder ? 'low' : item.stock <= item.reorder * 2 ? 'medium' : 'high'}">
+                      ${item.stock <= item.reorder ? 'Low' : item.stock <= item.reorder * 2 ? 'Medium' : 'Healthy'}
+                    </span></td>
+                    <td class="px-4 py-3 text-sm">
+                      <button onclick="adjustStock('${item.sku}', 1)" class="text-green-600 mr-2">+1</button>
+                      <button onclick="adjustStock('${item.sku}', -1)" class="text-red-600">-1</button>
+                    </td>
+                  </tr>`).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>`;
+      document.getElementById('addInventoryBtn').addEventListener('click', () => {
+        const sku = prompt("SKU:");
+        const name = prompt("Product Name:");
+        const brand = prompt("Brand:");
+        const price = parseFloat(prompt("Price:"));
+        const reorder = parseInt(prompt("Reorder Level:"));
+        if (sku && name && brand && price && reorder) {
+          inventory.push({ sku, name, brand, stock: 0, price, reorder });
+          saveData();
+          renderInventory();
+        }
+      });
+    }
+    function adjustStock(sku, change) {
+      const item = inventory.find(i => i.sku === sku);
+      if (item) {
+        item.stock = Math.max(0, item.stock + change);
+        saveData();
+        renderInventory();
+      }
+    }
+
+    // === ORDER TRACKING ===
+    function renderOrderTracking() {
+      const view = document.getElementById('orders-view');
+      view.innerHTML = `
+        <div class="max-w-7xl mx-auto">
+          <h2 class="text-2xl font-extrabold text-gray-900 mb-6">Order Tracking</h2>
+          <div class="bg-white rounded-xl shadow overflow-hidden">
+            ${orders.slice().reverse().map(o => { // Reverse to show latest first
+              const cust = customers.find(c => c.id === o.customerId);
+              return `<div class="border-b p-4">
+                <div class="flex justify-between">
+                  <strong>#${o.id}</strong>
+                  <span class="badge ${o.status === 'Shipped' ? 'high' : o.status === 'Processing' ? 'medium' : 'low'}">${o.status || 'Processing'}</span>
+                </div>
+                <p class="text-sm text-gray-600">${o.date} | ${cust?.name || 'N/A'} | $${o.total.toFixed(2)}</p>
+                <button onclick="updateOrderStatus('${o.id}')" class="text-xs text-indigo-600 hover:text-indigo-800">Update Status</button>
+              </div>`;
+            }).join('') || '<p class="p-4 text-gray-500">No orders yet</p>'}
+          </div>
+        </div>`;
+    }
+    function updateOrderStatus(id) {
+      const order = orders.find(o => o.id === id);
+      const newStatus = prompt("New status:", order.status || "Processing");
+      if (newStatus !== null) {
+        order.status = newStatus;
+        saveData();
+        renderOrderTracking();
+      }
+    }
+
+    // === SALES PERFORMANCE REPORTS ===
+    function renderReports() {
+      const view = document.getElementById('reports-view');
+      const brandSales = {};
+      orders.forEach(o => {
+        o.items.forEach(i => {
+          brandSales[i.brand] = (brandSales[i.brand] || 0) + i.qty;
+        });
+      });
+      view.innerHTML = `
+        <div class="max-w-7xl mx-auto">
+          <h2 class="text-2xl font-extrabold text-gray-900 mb-6">Sales Performance</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white p-6 rounded-xl shadow">
+              <h3 class="font-semibold mb-4">Brand Performance</h3>
+              <div class="space-y-2">
+                ${Object.entries(brandSales).sort((a,b) => b[1]-a[1]).map(([brand, qty]) => `
+                  <div class="flex justify-between">
+                    <span>${brand}</span>
+                    <span class="font-medium">${qty} units</span>
+                  </div>`).join('')}
+              </div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow">
+              <h3 class="font-semibold mb-4">Top Customers (Lifetime Spend)</h3>
+              <div class="space-y-2">
+                ${customers.slice().sort((a,b) => b.lifetimeSpend - a.lifetimeSpend).slice(0,5).map(c => `
+                  <div class="flex justify-between">
+                    <span>${c.name}</span>
+                    <span class="font-medium text-indigo-600">$${c.lifetimeSpend.toFixed(0)}</span>
+                  </div>`).join('')}
+              </div>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    // === FULL CALENDAR (Day/Week/Month + Scheduling) ===
+    function getCalendarDays(year, month) {
+      const firstDay = new Date(year, month, 1).getDay(); // 0 = Sunday, 6 = Saturday
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const today = new Date().toISOString().split('T')[0];
+      let daysHtml = '';
+
+      // Blank days for the start of the month
+      for (let i = 0; i < firstDay; i++) {
+        daysHtml += `<div></div>`;
+      }
+
+      // Days of the month
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const events = [...appointments, ...tasks].filter(e => e.date === dateStr).sort((a, b) => (a.time || '') > (b.time || '') ? 1 : -1);
+        const isToday = dateStr === today;
+
+        daysHtml += `<div class="calendar-day ${isToday ? 'today' : ''}" onclick="openEventModal('${dateStr}')">
+          <div class="font-medium text-right">${day}</div>
+          ${events.slice(0, 3).map(e => {
+            const timeDisplay = e.time ? e.time.substring(0, 5) + ' ' : '';
+            return `<div class="event ${e.type === 'appointment' ? 'appointment' : 'task'}" title="${timeDisplay}${e.title}">${timeDisplay}${e.title}</div>`;
+          }).join('')}
+          ${events.length > 3 ? `<div class="text-xs text-gray-500 mt-1 text-center">+${events.length - 3} more</div>` : ''}
+        </div>`;
+      }
+      return daysHtml;
+    }
+
+    function renderCalendar() {
+      const view = document.getElementById('calendar-view');
+      const monthName = currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+      
+      const header = `<div class="calendar-nav">
+        <div>
+          <button onclick="changeView('day')" class="${calendarView === 'day' ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-800'} px-3 py-1 rounded transition-colors text-sm">Day</button>
+          <button onclick="changeView('week')" class="${calendarView === 'week' ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-800'} px-3 py-1 rounded ml-2 transition-colors text-sm">Week</button>
+          <button onclick="changeView('month')" class="${calendarView === 'month' ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-800'} px-3 py-1 rounded ml-2 transition-colors text-sm">Month</button>
+        </div>
+        <div class="flex-1 text-center font-bold text-xl">${monthName}</div>
+        <div>
+          <button onclick="changeMonth(-1)" class="text-indigo-600 p-2 hover:bg-gray-100 rounded">◀</button>
+          <button onclick="currentDate = new Date(); renderCalendar()" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-1 px-3 rounded-lg text-sm mx-2">Today</button>
+          <button onclick="changeMonth(1)" class="text-indigo-600 p-2 hover:bg-gray-100 rounded">▶</button>
+        </div>
+      </div>`;
+
+      let body = '';
+      if (calendarView === 'month') {
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth();
+
+        body = `
+        <div class="calendar-grid text-center font-semibold text-sm border-b pb-2 mb-2">
+          <div class="text-red-500">Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div class="text-blue-500">Sat</div>
+        </div>
+        <div class="calendar-grid">
+          ${getCalendarDays(year, month)}
+        </div>`;
+      } else {
+        // Basic placeholders for other views
+        body = `<div class="text-center p-10 text-gray-500">View Not Implemented Yet (${calendarView} view)</div>`;
+      }
+
+      view.innerHTML = `<div class="max-w-7xl mx-auto bg-white p-6 rounded-xl shadow">${header}<div class="mt-4">${body}</div></div>`;
+    }
+
+    function changeView(view) { 
+      calendarView = view; 
+      renderCalendar(); 
+    }
+
+    function changeMonth(delta) {
+      const newMonth = currentDate.getMonth() + delta;
+      // Set the date to the 1st of the new month to avoid date overflow issues (e.g., jumping from Jan 31 to Mar 3)
+      currentDate = new Date(currentDate.getFullYear(), newMonth, 1);
+      renderCalendar();
+    }
+
+    function openEventModal(date) {
+      const eventsForDay = [...appointments, ...tasks].filter(e => e.date === date).sort((a, b) => (a.time || '') > (b.time || '') ? 1 : -1);
+
+      const modal = document.createElement('div');
+      modal.className = 'modal';
+      modal.innerHTML = `<div class="modal-content">
+        <h3 class="text-lg font-bold mb-4">Schedule for ${date}</h3>
+        
+        <div class="mb-4 space-y-2 max-h-40 overflow-y-auto border-b pb-2">
+          ${eventsForDay.length > 0 ? eventsForDay.map(e => {
+            const customerName = customers.find(c => c.id === e.customerId)?.name || 'N/A';
+            return `
+            <div class="flex justify-between items-center p-2 rounded-lg ${e.type === 'appointment' ? 'bg-blue-100' : 'bg-yellow-100'}">
+              <span class="text-sm font-medium">
+                ${e.time ? e.time.substring(0, 5) + ' ' : ''}${e.title} (${e.type === 'appointment' ? 'Appt' : 'Task'}) - ${customerName}
+              </span>
+              <button onclick="deleteEvent('${e.date}', '${e.title}', '${e.time}')" class="text-red-600 hover:text-red-800 text-xs">Delete</button>
+            </div>`;
+          }).join('') : '<p class="text-gray-500 text-sm">No events scheduled.</p>'}
+        </div>
+
+        <h4 class="font-semibold mb-2">Add New Event</h4>
+        <div class="space-y-2">
+          <input type="text" id="eventTitle" placeholder="Title (e.g., Call with John Doe)" class="w-full p-2 border rounded-lg">
+          <div class="flex space-x-2">
+            <select id="eventType" class="p-2 border rounded-lg flex-1">
+              <option>Appointment</option>
+              <option>Task</option>
+            </select>
+            <input type="time" id="eventTime" value="${new Date().toTimeString().substring(0, 5)}" class="p-2 border rounded-lg">
+          </div>
+          <select id="eventCustomer" class="w-full p-2 border rounded-lg">
+            <option value="">-- No Specific Customer --</option>
+            ${customers.map(c => `<option value="${c.id}" ${activeCustomer?.id === c.id ? 'selected' : ''}>${c.name}</option>`).join('')}
+          </select>
+        </div>
+
+        <div class="flex justify-end mt-4 space-x-2">
+          <button onclick="this.closest('.modal').remove()" class="bg-gray-300 hover:bg-gray-400 px-4 py-2 rounded-lg text-sm">Cancel</button>
+          <button onclick="saveEvent('${date}')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm">Save Event</button>
+        </div>
+      </div>`;
+      document.body.appendChild(modal);
+    }
+    
+    function saveEvent(date) {
+      const title = document.getElementById('eventTitle').value.trim();
+      const type = document.getElementById('eventType').value;
+      const time = document.getElementById('eventTime').value;
+      const customerId = document.getElementById('eventCustomer').value || null;
+      
+      if (!title) {
+        showNotification('Event title is required.', 'bg-red-100 text-red-700');
+        return;
+      }
+      
+      const newEvent = { date, title, time, type: type.toLowerCase(), customerId };
+
+      if (type === 'Appointment') {
+        appointments.push(newEvent);
+      } else {
+        tasks.push(newEvent);
+      }
+      
+      saveData();
+      document.querySelector('.modal').remove();
+      showNotification(`${type} "${title}" saved!`, 'bg-green-100 text-green-700');
+      renderCalendar();
+    }
+
+    function deleteEvent(date, title, time) {
+      // Find the event index
+      const appointmentIndex = appointments.findIndex(e => e.date === date && e.title === title && e.time === time);
+      const taskIndex = tasks.findIndex(e => e.date === date && e.title === title && e.time === time);
+
+      if (appointmentIndex !== -1) {
+        appointments.splice(appointmentIndex, 1);
+        showNotification('Appointment deleted.', 'bg-yellow-100 text-yellow-700');
+      } else if (taskIndex !== -1) {
+        tasks.splice(taskIndex, 1);
+        showNotification('Task deleted.', 'bg-yellow-100 text-yellow-700');
+      }
+      
+      saveData();
+      document.querySelector('.modal').remove(); 
+      // Re-open the modal to show the remaining events
+      openEventModal(date); 
+      renderCalendar();
+    }
+
+
+    // === CRM TEAM (Add/Remove) ===
+    function renderCRMTeam() {
+      const view = document.getElementById('crmteam-view');
+      view.innerHTML = `
+        <div class="max-w-4xl mx-auto">
+          <h2 class="text-2xl font-extrabold text-gray-900 mb-6">CRM Team & Affiliates</h2>
+          <button id="addTeamBtn" class="bg-indigo-600 text-white py-2 px-4 rounded mb-4">+ Add Member</button>
+          <div id="teamList"></div>
+        </div>`;
+      renderTeamList();
+      document.getElementById('addTeamBtn').addEventListener('click', () => {
+        const name = prompt("Enter team member name:");
+        if (name) {
+          teamMembers.push(name);
+          saveData();
+          renderTeamList();
+        }
+      });
+    }
+    function renderTeamList() {
+      const list = document.getElementById('teamList');
+      list.innerHTML = teamMembers.map((m, i) => `
+        <div class="team-card">
+          <span>${m}</span>
+          <button class="text-red-600 text-sm hover:text-red-800" onclick="teamMembers.splice(${i},1); saveData(); renderTeamList()">Remove</button>
+        </div>`).join('');
+    }
+
+    // === PIPELINE ===
+    function renderPipeline() {
+      const view = document.getElementById('pipeline-view');
+      const stages = ['Lead', 'Qualified', 'Proposal', 'Negotiation', 'Closed Won', 'Closed Lost'];
+      view.innerHTML = `<div class="max-w-7xl mx-auto">
+        <h2 class="text-2xl font-extrabold text-gray-900 mb-6">Sales Pipeline</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          ${stages.map(stage => {
+            const deals = pipelineDeals.filter(d => d.stage === stage);
+            const totalValue = deals.reduce((sum, d) => sum + d.value, 0).toFixed(0);
+            return `<div class="kanban-column" ondrop="drop(event, '${stage}')" ondragover="allowDrop(event)">
+              <h3 class="font-bold text-center mb-1">${stage}</h3>
+              <p class="text-xs text-gray-600 mb-3 text-center">(${deals.length} Deals, $${totalValue})</p>
+              ${deals.map(deal => `<div class="deal-card" draggable="true" ondragstart="drag(event, '${deal.id}')" id="${deal.id}">
+                <p class="font-medium">${customers.find(c=>c.id===deal.customerId)?.name || 'N/A'}</p>
+                <p class="text-sm">${deal.name}</p>
+                <p class="font-bold text-indigo-600">$${deal.value.toFixed(0)}</p>
+              </div>`).join('')}
+            </div>`;
+          }).join('')}
+        </div>
+        <button class="bg-indigo-600 text-white py-2 px-4 rounded mt-4 hover:bg-indigo-700" onclick="addDeal()">+ Add Deal</button>
+      </div>`;
+    }
+    function addDeal() {
+      if (!activeCustomer) return showNotification('Select customer first.', 'bg-red-100 text-red-700');
+      const name = prompt("Deal Name:"); 
+      const value = parseFloat(prompt("Value ($):"));
+      if (name && !isNaN(value) && value > 0) {
+        pipelineDeals.push({ id: 'DEAL-'+Date.now(), customerId: activeCustomer.id, name, value, stage: 'Lead' });
+        saveData(); 
+        renderPipeline();
+        showNotification(`Deal ${name} added.`, 'bg-green-100 text-green-700');
+      } else if (name) {
+         showNotification('Invalid value entered for deal.', 'bg-red-100 text-red-700');
+      }
+    }
+    function allowDrop(ev) { ev.preventDefault(); }
+    function drag(ev, id) { ev.dataTransfer.setData("text", id); }
+    function drop(ev, stage) { 
+      ev.preventDefault(); 
+      const id = ev.dataTransfer.getData("text"); 
+      const deal = pipelineDeals.find(d => d.id === id); 
+      if (deal) { 
+        deal.stage = stage; 
+        saveData(); 
+        renderPipeline(); 
+        showNotification(`Deal moved to ${stage}`, 'bg-blue-100 text-blue-700');
+      } 
+    }
+
+    // === EXPORT / IMPORT ===
+    document.getElementById('exportBtn').addEventListener('click', () => {
+      const data = JSON.stringify({ customers, orders, inventory, pipelineDeals, appointments, tasks, teamMembers }, null, 2);
+      const blob = new Blob([data], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'acoustiskin-crm-full.json'; a.click();
+    });
+    document.getElementById('importFile').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        try {
+          const data = JSON.parse(ev.target.result);
+          customers = data.customers || []; orders = data.orders || []; inventory = data.inventory || [];
+          pipelineDeals = data.pipelineDeals || []; appointments = data.appointments || []; tasks = data.tasks || [];
+          teamMembers = data.teamMembers || [];
+          activeCustomer = customers[0] || null;
+          saveData(); renderCustomerList(); navigateTo('dashboard-view');
+          showNotification('Data imported!');
+        } catch (err) { showNotification('Invalid file', 'bg-red-100 text-red-700'); }
+      };
+      reader.readAsText(file);
+    });
+
+    // === INIT ===
+    function setupEventListeners() {
+      document.getElementById('newCustomerButton').addEventListener('click', () => {
+        const id = 'CUST-' + Math.random().toString(36).substring(2, 9).toUpperCase();
+        activeCustomer = { id, name: 'New Customer', email: '', phone: '', status: 'Prospect', industry: '', revenue: '', employees: '', address: '', website: '', leadSource: '', clv: '$0', lastPurchase: null, firstPurchase: null, purchaseFrequency: 0, primaryProduct: null, subscriptionTier: null, lastContact: null, nextTask: '', nps: null, social: [], handle: '', accountOwner: '', teamDivision: '', notes: '', tags: [], specialHandling: '', poRequired: false, preferredShipping: '', preferredCarrier: '', paymentTerms: '', creditLimit: 0, billingCycle: '', currency: 'USD', aov: 0, lastOrderDate: null, lifetimeSpend: 0, ordersPlaced: 0, returnRate: 0, paddleBrandsUsed: [] };
+        customers.push(activeCustomer);
+        saveData();
+        renderCustomerList();
+        navigateTo('customers-view');
+      });
+      document.getElementById('editCustomerButton').addEventListener('click', () => navigateTo('customers-view'));
+      document.getElementById('backToDashboard').addEventListener('click', () => navigateTo('dashboard-view'));
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', e => { e.preventDefault(); navigateTo(link.dataset.view); });
+      });
+    }
 
     document.addEventListener('DOMContentLoaded', () => {
       loadData();
-      renderAddressBook();
-      document.getElementById('addressBookSearch').addEventListener('input', renderAddressBook);
+      renderCustomerList();
       setupEventListeners();
       if (activeCustomer) {
         document.getElementById('currentCustomerName').textContent = activeCustomer.name;
