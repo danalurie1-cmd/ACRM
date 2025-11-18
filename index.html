@@ -20,8 +20,7 @@
     .field-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
     .search-bar { width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem; margin-bottom: 1rem; }
     
-    /* FIX: Corrected .line-item for New Order alignment */
-    /* Template: Product Name | Specs (Brand/Dims) | Qty | Price | Affiliate | Total | Remove */
+    /* Updated .line-item for New Order (Product Name, Specs, Qty, Price, Affiliate, Total, Remove) */
     .line-item { 
         display: grid; 
         grid-template-columns: 1.5fr 1fr 0.5fr 1fr 1fr 1fr auto; 
@@ -145,7 +144,7 @@
     // === DATA & STATE ===
     let activeCustomer = null;
     let customers = [];
-    let vendors = []; // NEW: Separate storage for vendors
+    let vendors = []; 
     let orders = [];
     let inventory = [
       { sku: 'ASKIN-001', name: 'AcoustiSkin Paddle Skin - Selkirk', brand: 'Selkirk', stock: 150, price: 29.95, reorder: 50 },
@@ -165,7 +164,7 @@
     let teamMembers = ['Allyson', 'Sindi', 'Lori', 'Wen', 'Janine', 'Winnie'];
     const paddleBrands = ['Selkirk', 'Joola', 'Paddletek', 'Onix', 'Gamma', 'Engage', 'ProKennex', 'Diadem', 'CRBN', 'Vatic Pro'];
     
-    // Updated stateTax to include city/county level consideration (simplified to state rates)
+    // US Sales Tax Rates (State Level)
     const stateTax = { 'AL': 0.04, 'AK': 0.00, 'AZ': 0.056, 'AR': 0.065, 'CA': 0.0725, 'CO': 0.029, 'CT': 0.0635, 'DE': 0.00, 'FL': 0.06, 'GA': 0.04, 'HI': 0.04, 'ID': 0.06, 'IL': 0.0625, 'IN': 0.07, 'IA': 0.06, 'KS': 0.065, 'KY': 0.06, 'LA': 0.045, 'ME': 0.055, 'MD': 0.06, 'MA': 0.0625, 'MI': 0.06, 'MN': 0.06875, 'MS': 0.07, 'MO': 0.04225, 'MT': 0.00, 'NE': 0.055, 'NV': 0.0685, 'NH': 0.00, 'NJ': 0.06625, 'NM': 0.05125, 'NY': 0.04, 'NC': 0.0475, 'ND': 0.05, 'OH': 0.0575, 'OK': 0.045, 'OR': 0.00, 'PA': 0.06, 'RI': 0.07, 'SC': 0.06, 'SD': 0.042, 'TN': 0.07, 'TX': 0.0625, 'UT': 0.0485, 'VT': 0.06, 'VA': 0.043, 'WA': 0.065, 'WV': 0.06, 'WI': 0.05, 'WY': 0.04 };
     let calendarView = 'month';
     let currentDate = new Date();
@@ -173,12 +172,24 @@
     // === LOCALSTORAGE ===
     function loadData() {
       const data = JSON.parse(localStorage.getItem('acoustiskin-crm-pro') || '{}');
-      // Initialize with default data if localStorage is empty
-      customers = data.customers || [
+      
+      // Migration/Default Customer Data Setup
+      customers = (data.customers || [
         { id: 'CUST-001', name: 'Acme Corp', email: 'john@acme.com', phone: '555-0001', status: 'Active Customer', industry: 'Manufacturing', revenue: '$5M', employees: '200+', address: '123 Main St, City, CA 12345', website: 'acme.com', leadSource: 'Referral', clv: '$150,000', lastPurchase: '2025-10-15', firstPurchase: '2023-01-10', purchaseFrequency: 12, primaryProduct: 'Team Jerseys', subscriptionTier: 'Gold', lastContact: '2025-11-10', nextTask: 'Q4 Review Call', nps: 9, social: ['LinkedIn'], handle: '@acmecorp', accountOwner: 'Dana Lurie', teamDivision: 'Sales', notes: '', tags: ['VIP'], specialHandling: 'Email only', poRequired: true, preferredShipping: 'Standard', preferredCarrier: 'UPS', paymentTerms: 'Net 30', creditLimit: 50000, billingCycle: 'Monthly', currency: 'USD', aov: 1250, lastOrderDate: '2025-10-15', lifetimeSpend: 150000, ordersPlaced: 120, returnRate: 2.1, paddleBrandsUsed: ['Selkirk', 'Joola'] },
         { id: 'CUST-002', name: 'AcoustiSkin LLC', email: 'dana@acoustiskin.com', phone: '555-0002', status: 'Prospect', industry: 'Healthcare', revenue: '$2M', employees: '50-200', address: '456 Health Ave, Wellness, CA 67890', website: 'acoustiskin.com', leadSource: 'Website', clv: '$0', lastPurchase: null, firstPurchase: null, purchaseFrequency: 0, primaryProduct: null, subscriptionTier: null, lastContact: '2025-11-01', nextTask: 'Product Demo', nps: null, social: ['Instagram', 'X'], handle: '@acoustiskin', accountOwner: 'Dana Lurie', teamDivision: 'Sales', notes: '', tags: [], specialHandling: '', poRequired: false, preferredShipping: 'Expedited', preferredCarrier: 'FedEx', paymentTerms: 'Pre-paid', creditLimit: 0, billingCycle: 'Per-Order', currency: 'USD', aov: 0, lastOrderDate: null, lifetimeSpend: 0, ordersPlaced: 0, returnRate: 0, paddleBrandsUsed: [] }
-      ];
-      vendors = data.vendors || [{id: 'VEND-001', name: '3M Vinyls', contact: 'Bob', type: 'Supplier'}, {id: 'VEND-002', name: 'FedEx Ground', contact: 'Shipping Rep', type: 'Carrier'}];
+      ]).map(c => {
+          // Migrates old single fields to new detailed fields on load
+          c.primaryEmail = c.email || c.primaryEmail || '';
+          c.personalEmail = c.personalEmail || '';
+          c.workEmail = c.workEmail || '';
+          c.mobilePhone = c.phone || c.mobilePhone || '';
+          c.workPhone = c.workPhone || '';
+          delete c.email; // Remove old fields
+          delete c.phone;
+          return c;
+      });
+      
+      vendors = data.vendors || [{id: 'VEND-001', name: '3M Vinyls', primaryEmail: 'orders@3m.com', contact: 'Bob', type: 'Supplier'}, {id: 'VEND-002', name: 'FedEx Ground', primaryEmail: 'support@fedex.com', contact: 'Shipping Rep', type: 'Carrier'}];
       orders = data.orders || [];
       inventory = data.inventory || inventory;
       pipelineDeals = data.pipelineDeals || [];
@@ -240,7 +251,7 @@
         'calendar-view': renderCalendar,
         'pipeline-view': renderPipeline,
         'reports-view': renderReports,
-        'vendors-team-view': renderVendorsTeam // RENAMED
+        'vendors-team-view': renderVendorsTeam
       };
 
       if (views[view]) views[view]();
@@ -308,6 +319,55 @@
       showNotification('Customer deleted!', 'bg-red-100 text-red-700');
       navigateTo('dashboard-view');
     }
+    
+    // NEW FUNCTIONALITY: Toggle Customer to Vendor
+    function toggleCustomerType(customerId, isVendor) {
+        const sourceArray = isVendor ? vendors : customers;
+        const targetArray = isVendor ? customers : vendors;
+        const sourceName = isVendor ? 'Vendor' : 'Customer';
+        const targetName = isVendor ? 'Customer' : 'Vendor';
+
+        const index = sourceArray.findIndex(item => item.id === customerId);
+        if (index === -1) return showNotification(`Error: Could not find ${sourceName}.`, 'bg-red-100 text-red-700');
+
+        if (!confirm(`Are you sure you want to change ${sourceArray[index].name} from a ${sourceName} to a ${targetName}?`)) {
+            return;
+        }
+
+        const item = sourceArray.splice(index, 1)[0];
+        // Clean up or adjust fields for the new type (simplified)
+        if (isVendor) {
+             // Moving to Customer: Ensure default customer fields exist
+             item.id = item.id.replace('VEND', 'CUST');
+             if(!item.status) item.status = 'Prospect';
+        } else {
+             // Moving to Vendor: Simplify contact fields
+             item.id = item.id.replace('CUST', 'VEND');
+             item.contact = item.contact || item.accountOwner;
+             if(!item.type) item.type = 'Manufacturer';
+        }
+        
+        targetArray.push(item);
+        
+        // If moving the active item, update activeCustomer reference
+        if (activeCustomer && activeCustomer.id === customerId) {
+            activeCustomer = item;
+        } else if (!activeCustomer && targetName === 'Customer') {
+            activeCustomer = item;
+        } else if (targetName === 'Customer') {
+            activeCustomer = item;
+        }
+
+        saveData();
+        renderCustomerList(); // Refresh sidebar list
+        if (targetName === 'Customer') {
+            navigateTo('customers-view');
+        } else {
+            navigateTo('vendors-team-view');
+        }
+        showNotification(`${item.name} is now a ${targetName}.`, 'bg-green-100 text-green-700');
+    }
+
 
     // === DASHBOARD (WITH SALES METRICS) ===
     function renderDashboard() {
@@ -373,19 +433,36 @@
         view.innerHTML = '<p class="text-center text-gray-500">Select a customer</p>';
         return;
       }
+      
+      const isVendor = activeCustomer.id.startsWith('VEND');
+
       view.innerHTML = `
         <div class="max-w-7xl mx-auto">
           <h2 class="text-2xl font-extrabold text-gray-900 mb-6 flex justify-between items-center">
             Edit Customer Profile
             <button onclick="openEventModal(new Date().toISOString().split('T')[0], activeCustomer?.id, 'Review ${activeCustomer.name} Profile')" class="text-indigo-600 hover:text-indigo-800 text-xl">📅</button>
           </h2>
+          <div class="mb-4 flex justify-start items-center space-x-4">
+              <span class="font-semibold text-gray-700">Classification:</span>
+              ${isVendor ? 
+                `<span class="text-purple-600 font-bold">Vendor/Manufacturer</span> 
+                 <button onclick="toggleCustomerType('${activeCustomer.id}', true)" class="text-indigo-600 hover:text-indigo-800 text-sm border p-1 rounded">Switch to Customer</button>` : 
+                `<span class="text-indigo-600 font-bold">Standard Customer</span> 
+                 <button onclick="toggleCustomerType('${activeCustomer.id}', false)" class="text-purple-600 hover:text-purple-800 text-sm border p-1 rounded">Switch to Vendor</button>`
+              }
+          </div>
           <form id="customerForm" class="bg-white p-6 rounded-xl shadow space-y-6">
             <div class="section">
               <h3 class="font-semibold text-gray-700 mb-4">Identity & Firmographics</h3>
               <div class="field-grid">
                 <div class="input-group"><label>Company Name *</label><input type="text" name="name" value="${activeCustomer.name}" required></div>
-                <div class="input-group"><label>Email *</label><input type="email" name="email" value="${activeCustomer.email}" required></div>
-                <div class="input-group"><label>Phone</label><input type="tel" name="phone" value="${activeCustomer.phone}"></div>
+                <div class="input-group"><label>Primary Email *</label><input type="email" name="primaryEmail" value="${activeCustomer.primaryEmail}" required></div>
+                <div class="input-group"><label>Mobile Phone</label><input type="tel" name="mobilePhone" value="${activeCustomer.mobilePhone}"></div>
+
+                <div class="input-group"><label>Personal Email</label><input type="email" name="personalEmail" value="${activeCustomer.personalEmail}"></div>
+                <div class="input-group"><label>Work Email</label><input type="email" name="workEmail" value="${activeCustomer.workEmail}"></div>
+                <div class="input-group"><label>Work Phone</label><input type="tel" name="workPhone" value="${activeCustomer.workPhone}"></div>
+                
                 <div class="input-group"><label>Status</label>
                   <select name="status">
                     <option value="Prospect" ${activeCustomer.status === 'Prospect' ? 'selected' : ''}>Prospect</option>
@@ -428,7 +505,7 @@
                 <div class="input-group"><label>Last Contact</label><input type="date" name="lastContact" value="${activeCustomer.lastContact}"></div>
                 <div class="input-group"><label>Next Task</label><input type="text" name="nextTask" value="${activeCustomer.nextTask}"></div>
                 <div class="input-group"><label>NPS</label><input type="number" name="nps" value="${activeCustomer.nps}"></div>
-                <div class="input-group"><label>Social</label><input type="text" name="social" value="${activeCustomer.social?.join(', ')}"></div>
+                <div class="input-group"><label>Social (comma separated list)</label><input type="text" name="social" value="${activeCustomer.social?.join(', ')}"></div>
                 <div class="input-group"><label>Handle</label><input type="text" name="handle" value="${activeCustomer.handle}"></div>
                 <div class="input-group"><label>Account Owner</label><input type="text" name="accountOwner" value="${activeCustomer.accountOwner}"></div>
                 <div class="input-group"><label>Team Division</label><input type="text" name="teamDivision" value="${activeCustomer.teamDivision}"></div>
@@ -473,7 +550,14 @@
             else data[f.name] = f.value;
           }
         });
-        Object.assign(activeCustomer, data);
+        
+        // Find the index of the current active customer to update
+        const index = customers.findIndex(c => c.id === activeCustomer.id);
+        if (index > -1) {
+            Object.assign(customers[index], data);
+            activeCustomer = customers[index]; // Update activeCustomer reference
+        }
+
         saveData();
         showNotification('Customer saved!', 'bg-green-100 text-green-700');
         renderCustomerList();
@@ -578,8 +662,8 @@
           shipAddress: document.getElementById('shipAddress').value,
           paymentMethod: document.getElementById('paymentMethod').value,
           status: 'Processing',
-          trackingNumber: null, // NEW FIELD
-          notes: '' // NEW FIELD
+          trackingNumber: null, 
+          notes: '' 
         };
         
         let inventorySufficient = true;
@@ -864,7 +948,7 @@
       // Days of the month
       for (let day = 1; day <= daysInMonth; day++) {
         const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-        const events = [...appointments, ...tasks].filter(e => e.date === dateStr).sort((a, b) => (a.time || '') > (b.time || '') ? 1 : -1);
+        const events = getEventsForDate(dateStr);
         const isToday = dateStr === today;
 
         daysHtml += `<div class="calendar-day ${isToday ? 'today' : ''}" onclick="openEventModal('${dateStr}')">
@@ -908,9 +992,9 @@
       events.forEach(e => {
         if (e.time) {
           const [hour, minute] = e.time.split(':').map(Number);
-          const startHour = 8; 
+          const startHour = 8; // Start time of the displayed grid
           const totalMinutes = (hour * 60 + minute) - (startHour * 60);
-          const topPosition = (totalMinutes / 60) * 40; 
+          const topPosition = (totalMinutes / 60) * 40; // 40px per hour
           
           if (topPosition >= 0) { // Only render if within 8 AM to 6 PM range
             dayBody += `<div class="schedule-event ${e.type}" style="top: ${topPosition}px; left: 80px; width: calc(100% - 80px); height: 38px;" onclick="openEventModal('${dateStr}', '${e.customerId}', '${e.title}', '${e.time}')">
@@ -1182,9 +1266,12 @@
                         <div class="team-card bg-purple-50">
                             <div>
                                 <span class="font-bold">${v.name}</span>
-                                <p class="text-sm text-gray-600">${v.type} | Contact: ${v.contact}</p>
+                                <p class="text-sm text-gray-600">Contact: ${v.contact} | Type: ${v.type}</p>
                             </div>
-                            <button class="text-red-600 text-sm hover:text-red-800" onclick="deleteVendor(${i})">Remove</button>
+                            <div class="flex space-x-2">
+                                <button class="text-indigo-600 text-sm hover:text-indigo-800" onclick="toggleCustomerType('${v.id}', true)">Switch to Customer</button>
+                                <button class="text-red-600 text-sm hover:text-red-800" onclick="deleteVendor(${i})">Remove</button>
+                            </div>
                         </div>
                     `).join('')}
                 </div>
@@ -1209,7 +1296,7 @@
         const contact = prompt("Enter main contact name:");
         const type = prompt("Enter vendor type (e.g., Supplier, Manufacturer, Carrier):");
         if (name && type) {
-          vendors.push({ id: 'VEND-' + Date.now(), name, contact, type });
+          vendors.push({ id: 'VEND-' + Date.now(), name, primaryEmail: '', contact, type });
           saveData();
           renderVendorsTeam();
         }
@@ -1325,7 +1412,7 @@
       // NEW CUSTOMER button logic simplified
       document.getElementById('newCustomerButton').addEventListener('click', () => {
         const id = 'CUST-' + Math.random().toString(36).substring(2, 9).toUpperCase();
-        activeCustomer = { id, name: 'New Customer', email: '', phone: '', status: 'Prospect', industry: '', revenue: '', employees: '', address: '', website: '', leadSource: '', clv: '$0', lastPurchase: null, firstPurchase: null, purchaseFrequency: 0, primaryProduct: null, subscriptionTier: null, lastContact: null, nextTask: '', nps: null, social: [], handle: '', accountOwner: '', teamDivision: '', notes: '', tags: [], specialHandling: '', poRequired: false, preferredShipping: '', preferredCarrier: '', paymentTerms: '', creditLimit: 0, billingCycle: '', currency: 'USD', aov: 0, lastOrderDate: null, lifetimeSpend: 0, ordersPlaced: 0, returnRate: 0, paddleBrandsUsed: [] };
+        activeCustomer = { id, name: 'New Customer', primaryEmail: '', personalEmail: '', workEmail: '', mobilePhone: '', workPhone: '', status: 'Prospect', industry: '', revenue: '', employees: '', address: '', website: '', leadSource: '', clv: '$0', lastPurchase: null, firstPurchase: null, purchaseFrequency: 0, primaryProduct: null, subscriptionTier: null, lastContact: null, nextTask: '', nps: null, social: [], handle: '', accountOwner: '', teamDivision: '', notes: '', tags: [], specialHandling: '', poRequired: false, preferredShipping: '', preferredCarrier: '', paymentTerms: '', creditLimit: 0, billingCycle: '', currency: 'USD', aov: 0, lastOrderDate: null, lifetimeSpend: 0, ordersPlaced: 0, returnRate: 0, paddleBrandsUsed: [] };
         customers.push(activeCustomer);
         saveData();
         renderCustomerList();
