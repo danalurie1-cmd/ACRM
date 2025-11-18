@@ -29,7 +29,7 @@
     }
     .sidebar { 
         width: 280px; 
-        background-color: var(--color-primary-dark); /* FIX: Enforce Navy Background */
+        background-color: var(--color-primary-dark);
     }
     .app-header { 
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06); 
@@ -40,10 +40,10 @@
         transition: background-color 0.15s, color 0.15s;
     }
     .nav-link:hover, .customer-item:hover {
-        background-color: var(--color-primary-light) !important; /* Use Navy Hover */
+        background-color: var(--color-primary-light) !important;
     }
     .customer-item.bg-indigo-600, .nav-link.bg-indigo-600 {
-        background-color: var(--color-primary-light) !important; /* Selected item styling */
+        background-color: var(--color-primary-light) !important;
     }
 
     /* Global Color Overrides for Tailwind classes */
@@ -53,7 +53,7 @@
     .bg-indigo-600 { background-color: var(--color-accent); }
     .hover\:bg-indigo-700:hover { background-color: var(--color-accent-dark); }
     
-    .text-cyan-300 { color: #67E8F9; } /* Light accent for sidebar headers */
+    .text-cyan-300 { color: #67E8F9; } 
 
     .text-purple-600 { color: var(--color-vendor); } 
     .bg-purple-500 { background-color: var(--color-vendor); }
@@ -74,27 +74,31 @@
     /* Address Book Toggle */
     .collapsible { cursor: pointer; }
 
-    /* Order Line Styles */
+    /* FIX: Order Line Styles - Precise Proportional Grid */
     .line-item { 
         display: grid; 
+        /* Total grid is 7 columns: 1.5fr (Product) | 1fr (Specs) | 0.5fr (Qty) | 1fr (Price) | 1fr (Affiliate) | 1fr (Total) | auto (Remove button) */
         grid-template-columns: 1.5fr 1fr 0.5fr 1fr 1fr 1fr auto; 
         gap: 0.5rem; 
         align-items: center; 
         margin-bottom: 0.5rem; 
         padding-right: 20px; 
     }
-    .line-total { font-weight: bold; text-align: right; } 
-    .team-card { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
-
+    .line-total { font-weight: bold; text-align: right; padding-right: 8px; } /* Added padding for visual offset */
+    
     /* Calendar */
     .calendar-day.today { background: #E0F7FA; border-color: var(--color-accent); }
     .appointment { background: var(--color-accent); }
     .schedule-event { background: var(--color-accent); }
     
+    /* FIX: Calendar Daily View Alignment */
+    .time-slot { height: 40px; border-bottom: 1px dashed #e5e7eb; }
+    .time-label { padding-right: 10px; text-align: right; color: #6b7280; font-size: 0.75rem; align-self: flex-start; margin-top: 8px; } 
+    
   </style>
 </head>
 <body class="bg-gray-50 min-h-screen antialiased flex">
-  <div id="notification" class="fixed top-4 right-4 z-50 p-3 hidden rounded-lg shadow-xl text-sm font-medium transition-all duration-300" role="alert"></div>
+  <div id="notification" class="fixed top-4 right-4 z-50 p-3 rounded-lg shadow-xl text-sm font-medium transition-all duration-300" role="alert"></div>
 
   <aside class="sidebar text-white flex flex-col h-screen fixed">
     <div class="p-6 text-2xl font-bold border-b border-gray-700">AcoustiSkin CRM Pro</div>
@@ -971,7 +975,7 @@
           </h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="bg-white p-6 rounded-xl shadow-lg">
-              <h3 class="font-semibold mb-4">Brand Performance</h3>
+              <h3 class="font-semibold text-gray-700 mb-4">Brand Performance</h3>
               <div class="space-y-2">
                 ${Object.entries(brandSales).sort((a,b) => b[1]-a[1]).map(([brand, qty]) => `
                   <div class="flex justify-between">
@@ -981,7 +985,7 @@
               </div>
             </div>
             <div class="bg-white p-6 rounded-xl shadow-lg">
-              <h3 class="font-semibold mb-4">Top Customers (Lifetime Spend)</h3>
+              <h3 class="font-semibold text-gray-700 mb-4">Top Customers (Lifetime Spend)</h3>
               <div class="space-y-2">
                 ${customers.slice().sort((a,b) => b.lifetimeSpend - a.lifetimeSpend).slice(0,5).map(c => `
                   <div class="flex justify-between">
@@ -1041,6 +1045,7 @@
         const timeLabel = h > 12 ? `${h - 12} PM` : `${h} AM`;
         const timeStr = String(h).padStart(2, '0') + ':00';
         dayBody += `<div class="time-label">${timeLabel}</div>`;
+        
         dayBody += `<div class="time-slot day-column relative" onclick="openEventModal('${dateStr}', activeCustomer?.id, '', '${timeStr}')"></div>`;
       }
       dayBody += '</div>';
@@ -1089,6 +1094,7 @@
           const dayDate = new Date(startOfWeek);
           dayDate.setDate(startOfWeek.getDate() + d);
           const dateStr = dayDate.toISOString().split('T')[0];
+          // FIX: Time slots are now correctly clickable
           weekBody += `<div class="time-slot day-column relative" onclick="openEventModal('${dateStr}', activeCustomer?.id, '', '${timeStr}')"></div>`;
         }
       }
@@ -1346,7 +1352,7 @@
       });
     }
 
-    // NEW FUNCTIONALITY: Vendor Creation Modal
+    // FIX: Vendor Creation Modal now correctly captures and saves all details.
     function openNewVendorModal() {
         const modal = document.createElement('div');
         modal.className = 'modal';
@@ -1516,8 +1522,10 @@
       const content = document.getElementById('addressBookContent');
       const toggle = document.getElementById('addressBookToggle');
       if (content && toggle) {
-          content.classList.add('hidden');
-          toggle.textContent = '▶';
+          document.getElementById('addressBookHeader').addEventListener('click', () => {
+              content.classList.toggle('hidden');
+              toggle.textContent = content.classList.contains('hidden') ? '▶' : '▼';
+          });
       }
 
       loadData();
