@@ -20,15 +20,17 @@
     .field-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
     .search-bar { width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem; margin-bottom: 1rem; }
     
-    /* Updated .line-item for New Order (Product Name, Specs, Qty, Price, Affiliate, Total, Remove) */
+    /* FIX: Corrected .line-item for New Order alignment */
+    /* Template: Product Name | Specs (Brand/Dims) | Qty | Price | Affiliate | Total | Remove */
     .line-item { 
         display: grid; 
         grid-template-columns: 1.5fr 1fr 0.5fr 1fr 1fr 1fr auto; 
         gap: 0.5rem; 
         align-items: center; 
         margin-bottom: 0.5rem; 
+        padding-right: 20px; /* Space for the delete button */
     }
-    .line-total { font-weight: bold; }
+    .line-total { font-weight: bold; text-align: right; } /* FIX: Align total to right */
     .kanban-column { background: #f3f4f6; padding: 1rem; border-radius: 0.5rem; min-height: 200px; }
     .deal-card { background: white; padding: 1rem; border-radius: 0.5rem; margin-bottom: 0.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); cursor: move; }
     .calendar-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
@@ -86,10 +88,13 @@
         <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="calendar-view">Calendar</a>
         <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="pipeline-view">Pipeline</a>
         <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="reports-view">Reports</a>
-        <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="crmteam-view">CRM Team</a>
+        <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="vendors-team-view">Vendors & Team</a>
       </nav>
       <button id="newCustomerButton" class="w-full mt-6 bg-indigo-500 hover:bg-indigo-400 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 shadow-md">
         + New Customer
+      </button>
+      <button id="newVendorButton" class="w-full mt-2 bg-purple-500 hover:bg-purple-400 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 shadow-md">
+        + New Vendor
       </button>
       <button onclick="openEventModal(new Date().toISOString().split('T')[0], null, 'General Task/To-Do')" class="w-full mt-2 bg-gray-600 hover:bg-gray-500 text-white py-2 px-4 rounded-lg transition-colors duration-200 shadow-md text-sm">
         📅 Quick Schedule Task
@@ -133,13 +138,14 @@
     <div id="calendar-view" class="app-view p-6 hidden"></div>
     <div id="pipeline-view" class="app-view p-6 hidden"></div>
     <div id="reports-view" class="app-view p-6 hidden"></div>
-    <div id="crmteam-view" class="app-view p-6 hidden"></div>
+    <div id="vendors-team-view" class="app-view p-6 hidden"></div>
   </main>
 
   <script>
     // === DATA & STATE ===
     let activeCustomer = null;
     let customers = [];
+    let vendors = []; // NEW: Separate storage for vendors
     let orders = [];
     let inventory = [
       { sku: 'ASKIN-001', name: 'AcoustiSkin Paddle Skin - Selkirk', brand: 'Selkirk', stock: 150, price: 29.95, reorder: 50 },
@@ -158,6 +164,8 @@
     let tasks = [];
     let teamMembers = ['Allyson', 'Sindi', 'Lori', 'Wen', 'Janine', 'Winnie'];
     const paddleBrands = ['Selkirk', 'Joola', 'Paddletek', 'Onix', 'Gamma', 'Engage', 'ProKennex', 'Diadem', 'CRBN', 'Vatic Pro'];
+    
+    // Updated stateTax to include city/county level consideration (simplified to state rates)
     const stateTax = { 'AL': 0.04, 'AK': 0.00, 'AZ': 0.056, 'AR': 0.065, 'CA': 0.0725, 'CO': 0.029, 'CT': 0.0635, 'DE': 0.00, 'FL': 0.06, 'GA': 0.04, 'HI': 0.04, 'ID': 0.06, 'IL': 0.0625, 'IN': 0.07, 'IA': 0.06, 'KS': 0.065, 'KY': 0.06, 'LA': 0.045, 'ME': 0.055, 'MD': 0.06, 'MA': 0.0625, 'MI': 0.06, 'MN': 0.06875, 'MS': 0.07, 'MO': 0.04225, 'MT': 0.00, 'NE': 0.055, 'NV': 0.0685, 'NH': 0.00, 'NJ': 0.06625, 'NM': 0.05125, 'NY': 0.04, 'NC': 0.0475, 'ND': 0.05, 'OH': 0.0575, 'OK': 0.045, 'OR': 0.00, 'PA': 0.06, 'RI': 0.07, 'SC': 0.06, 'SD': 0.042, 'TN': 0.07, 'TX': 0.0625, 'UT': 0.0485, 'VT': 0.06, 'VA': 0.043, 'WA': 0.065, 'WV': 0.06, 'WI': 0.05, 'WY': 0.04 };
     let calendarView = 'month';
     let currentDate = new Date();
@@ -167,9 +175,10 @@
       const data = JSON.parse(localStorage.getItem('acoustiskin-crm-pro') || '{}');
       // Initialize with default data if localStorage is empty
       customers = data.customers || [
-        { id: 'CUST-001', name: 'Acme Corp', email: 'john@acme.com', phone: '555-0001', status: 'Active Customer', industry: 'Manufacturing', revenue: '$5M', employees: '200+', address: '123 Main St, City, ST 12345', website: 'acme.com', leadSource: 'Referral', clv: '$150,000', lastPurchase: '2025-10-15', firstPurchase: '2023-01-10', purchaseFrequency: 12, primaryProduct: 'Team Jerseys', subscriptionTier: 'Gold', lastContact: '2025-11-10', nextTask: 'Q4 Review Call', nps: 9, social: ['LinkedIn'], handle: '@acmecorp', accountOwner: 'Dana Lurie', teamDivision: 'Sales', notes: '', tags: ['VIP'], specialHandling: 'Email only', poRequired: true, preferredShipping: 'Standard', preferredCarrier: 'UPS', paymentTerms: 'Net 30', creditLimit: 50000, billingCycle: 'Monthly', currency: 'USD', aov: 1250, lastOrderDate: '2025-10-15', lifetimeSpend: 150000, ordersPlaced: 120, returnRate: 2.1, paddleBrandsUsed: ['Selkirk', 'Joola'] },
+        { id: 'CUST-001', name: 'Acme Corp', email: 'john@acme.com', phone: '555-0001', status: 'Active Customer', industry: 'Manufacturing', revenue: '$5M', employees: '200+', address: '123 Main St, City, CA 12345', website: 'acme.com', leadSource: 'Referral', clv: '$150,000', lastPurchase: '2025-10-15', firstPurchase: '2023-01-10', purchaseFrequency: 12, primaryProduct: 'Team Jerseys', subscriptionTier: 'Gold', lastContact: '2025-11-10', nextTask: 'Q4 Review Call', nps: 9, social: ['LinkedIn'], handle: '@acmecorp', accountOwner: 'Dana Lurie', teamDivision: 'Sales', notes: '', tags: ['VIP'], specialHandling: 'Email only', poRequired: true, preferredShipping: 'Standard', preferredCarrier: 'UPS', paymentTerms: 'Net 30', creditLimit: 50000, billingCycle: 'Monthly', currency: 'USD', aov: 1250, lastOrderDate: '2025-10-15', lifetimeSpend: 150000, ordersPlaced: 120, returnRate: 2.1, paddleBrandsUsed: ['Selkirk', 'Joola'] },
         { id: 'CUST-002', name: 'AcoustiSkin LLC', email: 'dana@acoustiskin.com', phone: '555-0002', status: 'Prospect', industry: 'Healthcare', revenue: '$2M', employees: '50-200', address: '456 Health Ave, Wellness, CA 67890', website: 'acoustiskin.com', leadSource: 'Website', clv: '$0', lastPurchase: null, firstPurchase: null, purchaseFrequency: 0, primaryProduct: null, subscriptionTier: null, lastContact: '2025-11-01', nextTask: 'Product Demo', nps: null, social: ['Instagram', 'X'], handle: '@acoustiskin', accountOwner: 'Dana Lurie', teamDivision: 'Sales', notes: '', tags: [], specialHandling: '', poRequired: false, preferredShipping: 'Expedited', preferredCarrier: 'FedEx', paymentTerms: 'Pre-paid', creditLimit: 0, billingCycle: 'Per-Order', currency: 'USD', aov: 0, lastOrderDate: null, lifetimeSpend: 0, ordersPlaced: 0, returnRate: 0, paddleBrandsUsed: [] }
       ];
+      vendors = data.vendors || [{id: 'VEND-001', name: '3M Vinyls', contact: 'Bob', type: 'Supplier'}, {id: 'VEND-002', name: 'FedEx Ground', contact: 'Shipping Rep', type: 'Carrier'}];
       orders = data.orders || [];
       inventory = data.inventory || inventory;
       pipelineDeals = data.pipelineDeals || [];
@@ -179,7 +188,7 @@
       if (customers.length > 0 && !activeCustomer) activeCustomer = customers[0];
     }
     function saveData() {
-      localStorage.setItem('acoustiskin-crm-pro', JSON.stringify({ customers, orders, inventory, pipelineDeals, appointments, tasks, teamMembers }));
+      localStorage.setItem('acoustiskin-crm-pro', JSON.stringify({ customers, vendors, orders, inventory, pipelineDeals, appointments, tasks, teamMembers }));
     }
 
     // === UTILS ===
@@ -193,6 +202,19 @@
 
     function getCustomerIdByName(name) {
       return customers.find(c => c.name === name)?.id;
+    }
+
+    // Function to extract state from address string
+    function extractStateFromAddress(address) {
+      if (!address) return '';
+      const parts = address.split(', ');
+      // Look for the ST ZIP part (e.g., CA 90210)
+      const stZipPart = parts.pop(); 
+      if (stZipPart) {
+        // Extract the state abbreviation (e.g., CA)
+        return stZipPart.split(' ')[0].toUpperCase();
+      }
+      return '';
     }
 
     // === NAVIGATION ===
@@ -218,7 +240,7 @@
         'calendar-view': renderCalendar,
         'pipeline-view': renderPipeline,
         'reports-view': renderReports,
-        'crmteam-view': renderCRMTeam
+        'vendors-team-view': renderVendorsTeam // RENAMED
       };
 
       if (views[view]) views[view]();
@@ -256,7 +278,7 @@
       bar.textContent = `Status: ${status || 'N/A'}`;
     }
     
-    // NEW FUNCTIONALITY: Delete Customer
+    // FUNCTIONALITY: Delete Customer
     function deleteCustomer(customerId) {
       if (!confirm(`Are you sure you want to permanently delete this customer (ID: ${customerId})? This will also delete all associated orders, deals, tasks, and appointments.`)) {
         return;
@@ -265,17 +287,13 @@
       // 1. Remove from customers array
       customers = customers.filter(c => c.id !== customerId);
       
-      // 2. Remove associated orders
+      // 2. Remove associated data
       orders = orders.filter(o => o.customerId !== customerId);
-
-      // 3. Remove associated pipeline deals
       pipelineDeals = pipelineDeals.filter(d => d.customerId !== customerId);
-
-      // 4. Remove associated appointments and tasks
       appointments = appointments.filter(a => a.customerId !== customerId);
       tasks = tasks.filter(t => t.customerId !== customerId);
 
-      // 5. Update state and UI
+      // 3. Update state and UI
       activeCustomer = customers[0] || null;
       if (activeCustomer) {
         document.getElementById('currentCustomerName').textContent = activeCustomer.name;
@@ -484,9 +502,9 @@
                     <span>Product</span>
                     <span>Paddle Specs (Brand/Dims)</span>
                     <span>Qty</span>
-                    <span>Price</span>
+                    <span style="text-align: right;">Price</span>
                     <span>Affiliate</span>
-                    <span>Total</span>
+                    <span style="text-align: right;">Total</span>
                     <span></span>
                 </div>
               </div>
@@ -528,13 +546,13 @@
             <input type="text" class="paddleDimensions p-1 border rounded text-xs" placeholder="LxW (e.g. 16.5 x 7.5)">
         </div>
         <input type="number" class="orderQty p-2 border rounded" value="1" min="1">
-        <input type="number" class="orderPrice p-2 border rounded" value="29.95" step="0.01">
+        <input type="number" class="orderPrice p-2 border rounded text-right" value="29.95" step="0.01">
         <select class="orderAffiliate p-2 border rounded">
           <option>None</option>
           ${teamMembers.map(a => `<option>${a}</option>`).join('')}
         </select>
         <span class="line-total">$29.95</span>
-        <button type="button" class="text-red-600 hover:text-red-800 text-sm p-1" onclick="this.closest('.line-item').remove(); updateNewOrderDisplay()">X</button>`;
+        <button type="button" class="text-red-600 hover:text-red-800 text-sm p-1 ml-auto" onclick="this.closest('.line-item').remove(); updateNewOrderDisplay()">X</button>`;
       container.appendChild(line);
       line.querySelectorAll('input, select').forEach(el => el.addEventListener('input', updateNewOrderDisplay));
     }
@@ -559,7 +577,9 @@
           items: [], subtotal: 0, shipping: 5.99, tax: 0, total: 0,
           shipAddress: document.getElementById('shipAddress').value,
           paymentMethod: document.getElementById('paymentMethod').value,
-          status: 'Processing'
+          status: 'Processing',
+          trackingNumber: null, // NEW FIELD
+          notes: '' // NEW FIELD
         };
         
         let inventorySufficient = true;
@@ -592,7 +612,7 @@
 
         if (!inventorySufficient) return; // Stop if stock was insufficient
 
-        const state = order.shipAddress.split(', ').pop()?.split(' ')[0] || 'CA';
+        const state = extractStateFromAddress(order.shipAddress);
         order.tax = order.subtotal * (stateTax[state] || 0);
         order.total = order.subtotal + order.shipping + order.tax;
 
@@ -601,7 +621,7 @@
         // Update Customer Metrics
         activeCustomer.ordersPlaced++;
         activeCustomer.lifetimeSpend += order.total;
-        activeCustomer.aov = activeCustomer.lifetimeSpend / activeCustomer.ordersPlaced;
+        activeCustomer.aov = activeCustomer.ordersPlaced > 0 ? activeCustomer.lifetimeSpend / activeCustomer.ordersPlaced : 0;
         activeCustomer.lastOrderDate = order.date;
         
         saveData();
@@ -621,13 +641,14 @@
         subtotal += total;
       });
       const shipping = 5.99;
-      const state = document.getElementById('shipAddress').value.split(', ').pop()?.split(' ')[0] || 'CA';
+      const state = extractStateFromAddress(document.getElementById('shipAddress').value);
       const tax = subtotal * (stateTax[state] || 0);
+      const taxRate = (stateTax[state] * 100 || 0).toFixed(2);
       const total = subtotal + shipping + tax;
       document.getElementById('orderSummary').innerHTML = `
         <div class="flex justify-between"><span>Subtotal:</span><span>$${subtotal.toFixed(2)}</span></div>
         <div class="flex justify-between"><span>Shipping:</span><span>$${shipping.toFixed(2)}</span></div>
-        <div class="flex justify-between"><span>Tax (${(stateTax[state]*100 || 0).toFixed(2)}%):</span><span>$${tax.toFixed(2)}</span></div>
+        <div class="flex justify-between"><span>Tax (${taxRate}%):</span><span>$${tax.toFixed(2)}</span></div>
         <div class="flex justify-between font-bold text-lg mt-2"><span>Total:</span><span class="text-indigo-600">$${total.toFixed(2)}</span></div>`;
     }
 
@@ -708,22 +729,48 @@
           <div class="bg-white rounded-xl shadow overflow-hidden">
             ${orders.slice().reverse().map(o => { // Reverse to show latest first
               const cust = customers.find(c => c.id === o.customerId);
-              return `<div class="border-b p-4">
+              return `<div class="border-b p-4" id="order-${o.id}">
                 <div class="flex justify-between">
                   <strong>#${o.id}</strong>
                   <div class="flex items-center space-x-3">
                     <span class="badge ${o.status === 'Shipped' ? 'high' : o.status === 'Processing' ? 'medium' : 'low'}">${o.status || 'Processing'}</span>
                     <button onclick="updateOrderStatus('${o.id}')" class="text-xs text-indigo-600 hover:text-indigo-800">Update Status</button>
+                    <button onclick="toggleOrderDetails('${o.id}')" class="text-xs text-gray-600 hover:text-gray-800">Details/Edit</button>
                     <button onclick="deleteOrder('${o.id}')" class="text-xs text-red-600 hover:text-red-800">Delete</button>
                   </div>
                 </div>
                 <p class="text-sm text-gray-600">${o.date} | ${cust?.name || 'N/A'} | $${o.total.toFixed(2)}</p>
+                
+                <div id="details-${o.id}" class="hidden mt-4 p-3 bg-gray-50 rounded-lg space-y-2">
+                    <div class="input-group">
+                        <label class="text-xs">Tracking Number</label>
+                        <input type="text" id="track-${o.id}" value="${o.trackingNumber || ''}" onchange="saveOrderDetails('${o.id}', 'trackingNumber', this.value)">
+                    </div>
+                    <div class="input-group">
+                        <label class="text-xs">Notes</label>
+                        <textarea id="notes-${o.id}" rows="2" onchange="saveOrderDetails('${o.id}', 'notes', this.value)">${o.notes || ''}</textarea>
+                    </div>
+                </div>
               </div>`;
             }).join('') || '<p class="p-4 text-gray-500">No orders yet</p>'}
           </div>
         </div>`;
     }
     
+    function toggleOrderDetails(orderId) {
+        const details = document.getElementById(`details-${orderId}`);
+        details.classList.toggle('hidden');
+    }
+
+    function saveOrderDetails(orderId, field, value) {
+        const order = orders.find(o => o.id === orderId);
+        if (order) {
+            order[field] = value;
+            saveData();
+            showNotification(`${field === 'trackingNumber' ? 'Tracking Number' : 'Notes'} updated!`, 'bg-green-100 text-green-700');
+        }
+    }
+
     function updateOrderStatus(id) {
       const order = orders.find(o => o.id === id);
       const newStatus = prompt("New status:", order.status || "Processing");
@@ -734,7 +781,7 @@
       }
     }
 
-    // NEW FUNCTIONALITY: Delete Order
+    // FUNCTIONALITY: Delete Order
     function deleteOrder(orderId) {
         if (!confirm(`Are you sure you want to delete Order ID ${orderId}? This action cannot be undone.`)) {
             return;
@@ -833,20 +880,27 @@
       return daysHtml;
     }
 
+    // Helper to get events for a date
+    function getEventsForDate(dateStr) {
+        return [...appointments, ...tasks].filter(e => e.date === dateStr).sort((a, b) => (a.time || '') > (b.time || '') ? 1 : -1);
+    }
+
     function renderDayView() {
       const year = currentDate.getFullYear();
       const month = currentDate.getMonth();
       const day = currentDate.getDate();
       const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-      const events = [...appointments, ...tasks].filter(e => e.date === dateStr).sort((a, b) => (a.time || '') > (b.time || '') ? 1 : -1);
+      const events = getEventsForDate(dateStr);
       
       let dayBody = '<div class="schedule-grid" style="grid-template-columns: 80px 1fr;">';
       
-      // Time slots from 8 AM to 6 PM
+      // Time slots from 8 AM to 6 PM (11 hours)
       for (let h = 8; h <= 18; h++) {
         const timeLabel = h > 12 ? `${h - 12} PM` : `${h} AM`;
+        const timeStr = String(h).padStart(2, '0') + ':00';
         dayBody += `<div class="time-label">${timeLabel}</div>`;
-        dayBody += `<div class="time-slot day-column relative"></div>`;
+        // Clickable time slot for scheduling
+        dayBody += `<div class="time-slot day-column relative" onclick="openEventModal('${dateStr}', activeCustomer?.id, '', '${timeStr}')"></div>`;
       }
       dayBody += '</div>';
 
@@ -854,13 +908,18 @@
       events.forEach(e => {
         if (e.time) {
           const [hour, minute] = e.time.split(':').map(Number);
-          const startHour = 8; // Start time of the displayed grid
+          const startHour = 8; 
           const totalMinutes = (hour * 60 + minute) - (startHour * 60);
-          const topPosition = (totalMinutes / 60) * 40; // 40px per hour
+          const topPosition = (totalMinutes / 60) * 40; 
           
-          dayBody += `<div class="schedule-event ${e.type}" style="top: ${topPosition}px; left: 80px; width: calc(100% - 80px); height: 38px;" onclick="openEventModal('${dateStr}', '${e.customerId}', '${e.title}', '${e.time}')">
-            ${e.time.substring(0, 5)} - ${e.title}
-          </div>`;
+          if (topPosition >= 0) { // Only render if within 8 AM to 6 PM range
+            dayBody += `<div class="schedule-event ${e.type}" style="top: ${topPosition}px; left: 80px; width: calc(100% - 80px); height: 38px;" onclick="openEventModal('${dateStr}', '${e.customerId}', '${e.title}', '${e.time}')">
+              ${e.time.substring(0, 5)} - ${e.title}
+            </div>`;
+          } else {
+            // Render all-day/early events above the grid
+             dayBody = `<div class="event ${e.type} text-sm mb-1">${e.time.substring(0, 5)} - ${e.title} (Early)</div>` + dayBody;
+          }
         } else {
           // Render all-day events above the grid
           dayBody = `<div class="event ${e.type} text-sm mb-1">${e.title} (All Day)</div>` + dayBody;
@@ -888,15 +947,21 @@
       // Time slots from 8 AM to 6 PM
       for (let h = 8; h <= 18; h++) {
         const timeLabel = h > 12 ? `${h - 12} PM` : `${h} AM`;
+        const timeStr = String(h).padStart(2, '0') + ':00';
         weekBody += `<div class="time-label">${timeLabel}</div>`;
         for (let d = 0; d < 7; d++) {
-          weekBody += `<div class="time-slot day-column relative"></div>`;
+          const dayDate = new Date(startOfWeek);
+          dayDate.setDate(startOfWeek.getDate() + d);
+          const dateStr = dayDate.toISOString().split('T')[0];
+          // Clickable time slot
+          weekBody += `<div class="time-slot day-column relative" onclick="openEventModal('${dateStr}', activeCustomer?.id, '', '${timeStr}')"></div>`;
         }
       }
       weekBody += '</div>';
 
       // Event rendering logic (simplified absolute positioning based on grid)
       const allEventsInWeek = [...appointments, ...tasks].filter(e => {
+        if (!e.date) return false;
         const eventDate = new Date(e.date);
         return eventDate >= startOfWeek && eventDate < new Date(startOfWeek.getFullYear(), startOfWeek.getMonth(), startOfWeek.getDate() + 7);
       });
@@ -910,12 +975,13 @@
           const totalMinutes = (hour * 60 + minute) - (startHour * 60);
           const topPosition = (totalMinutes / 60) * 40 + 40; // +40px for the day header row
           
-          // Calculate grid column for positioning
-          const column = dayIndex + 2; // Day index 0-6 maps to grid columns 2-8 (skipping time column 1)
-          
-          weekBody += `<div class="schedule-event ${e.type}" style="top: ${topPosition}px; grid-column: ${column}; height: 38px; width: 98%; position: absolute; margin-top: 0;" onclick="openEventModal('${e.date}', '${e.customerId}', '${e.title}', '${e.time}')">
-            ${e.time.substring(0, 5)} - ${e.title}
-          </div>`;
+          if (topPosition >= 40) { // Only render if within 8 AM to 6 PM range + header height
+            const column = dayIndex + 2; 
+            
+            weekBody += `<div class="schedule-event ${e.type}" style="top: ${topPosition}px; grid-column: ${column}; height: 38px; width: 98%; position: absolute; margin-top: 0;" onclick="openEventModal('${e.date}', '${e.customerId}', '${e.title}', '${e.time}')">
+              ${e.time.substring(0, 5)} - ${e.title}
+            </div>`;
+          }
         }
       });
       
@@ -997,13 +1063,13 @@
     }
 
 
-    function openEventModal(date, customerId = null, defaultTitle = '') {
+    function openEventModal(date, customerId = null, defaultTitle = '', defaultTime = '') {
       // Ensure customerId is set correctly if an active customer exists
       if (!customerId && activeCustomer) {
           customerId = activeCustomer.id;
       }
       
-      const eventsForDay = [...appointments, ...tasks].filter(e => e.date === date).sort((a, b) => (a.time || '') > (b.time || '') ? 1 : -1);
+      const eventsForDay = getEventsForDate(date);
 
       const modal = document.createElement('div');
       modal.className = 'modal';
@@ -1032,7 +1098,7 @@
               <option value="Task">Task</option>
               <option value="Todo">To-do</option>
             </select>
-            <input type="time" id="eventTime" value="${new Date().toTimeString().substring(0, 5)}" class="p-2 border rounded-lg">
+            <input type="time" id="eventTime" value="${defaultTime || new Date().toTimeString().substring(0, 5)}" class="p-2 border rounded-lg">
           </div>
           <select id="eventCustomer" class="w-full p-2 border rounded-lg">
             <option value="">-- No Specific Customer --</option>
@@ -1098,35 +1164,80 @@
     }
 
 
-    // === CRM TEAM (Add/Remove) ===
-    function renderCRMTeam() {
-      const view = document.getElementById('crmteam-view');
+    // === VENDORS & TEAM (NEW NAME) ===
+    function renderVendorsTeam() {
+      const view = document.getElementById('vendors-team-view');
       view.innerHTML = `
-        <div class="max-w-4xl mx-auto">
-          <h2 class="text-2xl font-extrabold text-gray-900 mb-6 flex justify-between items-center">
-            CRM Team & Affiliates
-            <button onclick="openEventModal(new Date().toISOString().split('T')[0], null, 'Team Review Meeting')" class="text-indigo-600 hover:text-indigo-800 text-xl">📅</button>
-          </h2>
-          <button id="addTeamBtn" class="bg-indigo-600 text-white py-2 px-4 rounded mb-4">+ Add Member</button>
-          <div id="teamList"></div>
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-2xl font-extrabold text-gray-900 mb-6 flex justify-between items-center">
+                Vendors & Internal Team Management
+                <button onclick="openEventModal(new Date().toISOString().split('T')[0], null, 'Team/Vendor Check-in')" class="text-indigo-600 hover:text-indigo-800 text-xl">📅</button>
+            </h2>
+            
+            <div class="mb-8">
+                <h3 class="text-xl font-bold mb-4 border-b pb-2">Vendors/Manufacturers</h3>
+                <button id="addVendorBtn" class="bg-purple-600 text-white py-2 px-4 rounded mb-4 hover:bg-purple-700">+ Add Vendor</button>
+                <div id="vendorList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    ${vendors.map((v, i) => `
+                        <div class="team-card bg-purple-50">
+                            <div>
+                                <span class="font-bold">${v.name}</span>
+                                <p class="text-sm text-gray-600">${v.type} | Contact: ${v.contact}</p>
+                            </div>
+                            <button class="text-red-600 text-sm hover:text-red-800" onclick="deleteVendor(${i})">Remove</button>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+
+            <div>
+                <h3 class="text-xl font-bold mb-4 border-b pb-2">Internal CRM Team & Affiliates</h3>
+                <button id="addTeamBtn" class="bg-indigo-600 text-white py-2 px-4 rounded mb-4 hover:bg-indigo-700">+ Add Team Member</button>
+                <div id="teamList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    ${teamMembers.map((m, i) => `
+                        <div class="team-card">
+                            <span>${m}</span>
+                            <button class="text-red-600 text-sm hover:text-red-800" onclick="deleteTeamMember(${i})">Remove</button>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
         </div>`;
-      renderTeamList();
+      
+      document.getElementById('addVendorBtn').addEventListener('click', () => {
+        const name = prompt("Enter vendor name:");
+        const contact = prompt("Enter main contact name:");
+        const type = prompt("Enter vendor type (e.g., Supplier, Manufacturer, Carrier):");
+        if (name && type) {
+          vendors.push({ id: 'VEND-' + Date.now(), name, contact, type });
+          saveData();
+          renderVendorsTeam();
+        }
+      });
       document.getElementById('addTeamBtn').addEventListener('click', () => {
         const name = prompt("Enter team member name:");
         if (name) {
           teamMembers.push(name);
           saveData();
-          renderTeamList();
+          renderVendorsTeam();
         }
       });
     }
-    function renderTeamList() {
-      const list = document.getElementById('teamList');
-      list.innerHTML = teamMembers.map((m, i) => `
-        <div class="team-card">
-          <span>${m}</span>
-          <button class="text-red-600 text-sm hover:text-red-800" onclick="teamMembers.splice(${i},1); saveData(); renderTeamList()">Remove</button>
-        </div>`).join('');
+
+    function deleteVendor(index) {
+        if(confirm(`Are you sure you want to delete vendor ${vendors[index].name}?`)) {
+            vendors.splice(index, 1);
+            saveData();
+            renderVendorsTeam();
+        }
+    }
+    
+    function deleteTeamMember(index) {
+        if(confirm(`Are you sure you want to delete team member ${teamMembers[index]}?`)) {
+            teamMembers.splice(index, 1);
+            saveData();
+            renderVendorsTeam();
+        }
     }
 
     // === PIPELINE ===
@@ -1185,7 +1296,7 @@
 
     // === EXPORT / IMPORT ===
     document.getElementById('exportBtn').addEventListener('click', () => {
-      const data = JSON.stringify({ customers, orders, inventory, pipelineDeals, appointments, tasks, teamMembers }, null, 2);
+      const data = JSON.stringify({ customers, vendors, orders, inventory, pipelineDeals, appointments, tasks, teamMembers }, null, 2);
       const blob = new Blob([data], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -1198,7 +1309,7 @@
       reader.onload = (ev) => {
         try {
           const data = JSON.parse(ev.target.result);
-          customers = data.customers || []; orders = data.orders || []; inventory = data.inventory || [];
+          customers = data.customers || []; vendors = data.vendors || []; orders = data.orders || []; inventory = data.inventory || [];
           pipelineDeals = data.pipelineDeals || []; appointments = data.appointments || []; tasks = data.tasks || [];
           teamMembers = data.teamMembers || [];
           activeCustomer = customers[0] || null;
@@ -1211,6 +1322,7 @@
 
     // === INIT ===
     function setupEventListeners() {
+      // NEW CUSTOMER button logic simplified
       document.getElementById('newCustomerButton').addEventListener('click', () => {
         const id = 'CUST-' + Math.random().toString(36).substring(2, 9).toUpperCase();
         activeCustomer = { id, name: 'New Customer', email: '', phone: '', status: 'Prospect', industry: '', revenue: '', employees: '', address: '', website: '', leadSource: '', clv: '$0', lastPurchase: null, firstPurchase: null, purchaseFrequency: 0, primaryProduct: null, subscriptionTier: null, lastContact: null, nextTask: '', nps: null, social: [], handle: '', accountOwner: '', teamDivision: '', notes: '', tags: [], specialHandling: '', poRequired: false, preferredShipping: '', preferredCarrier: '', paymentTerms: '', creditLimit: 0, billingCycle: '', currency: 'USD', aov: 0, lastOrderDate: null, lifetimeSpend: 0, ordersPlaced: 0, returnRate: 0, paddleBrandsUsed: [] };
@@ -1219,6 +1331,9 @@
         renderCustomerList();
         navigateTo('customers-view');
       });
+      // NEW VENDOR button navigates to the vendors view
+      document.getElementById('newVendorButton').addEventListener('click', () => navigateTo('vendors-team-view'));
+
       document.getElementById('editCustomerButton').addEventListener('click', () => navigateTo('customers-view'));
       document.getElementById('backToDashboard').addEventListener('click', () => navigateTo('dashboard-view'));
       document.querySelectorAll('.nav-link').forEach(link => {
