@@ -27,7 +27,7 @@
     .calendar-grid { 
       display: grid; 
       gap: 0.5rem; 
-      grid-template-columns: repeat(7, 1fr); /* FIX: Ensure 7 columns for month view */
+      grid-template-columns: repeat(7, 1fr); 
     }
     .calendar-day { 
       min-height: 80px; 
@@ -37,7 +37,7 @@
       background: white; 
       cursor: pointer; 
       transition: background-color 0.1s;
-      overflow: hidden; /* Prevent text overflow from breaking layout */
+      overflow: hidden; 
     }
     .calendar-day:hover { background: #f5f5f5; }
     .calendar-day.today { background: #eef2ff; border-color: #6366f1; }
@@ -52,6 +52,14 @@
     .low { @apply bg-red-100 text-red-700; }
     .medium { @apply bg-yellow-100 text-yellow-700; }
     .high { @apply bg-green-100 text-green-700; }
+    
+    /* Day/Week View Specific Styles */
+    .schedule-grid { display: grid; grid-template-columns: 80px repeat(7, 1fr); border: 1px solid #e5e7eb; border-radius: 0.5rem; overflow: hidden; }
+    .time-slot { height: 40px; border-bottom: 1px dashed #e5e7eb; }
+    .time-label { padding-right: 10px; text-align: right; color: #6b7280; font-size: 0.75rem; align-self: flex-start; margin-top: -8px; }
+    .day-column { border-left: 1px solid #e5e7eb; }
+    .schedule-event { position: absolute; width: calc(100% - 2px); background: #3b82f6; color: white; border-radius: 0.25rem; padding: 2px 4px; font-size: 0.75rem; overflow: hidden; z-index: 10; cursor: pointer; }
+    .schedule-event.task { background: #f59e0b; }
   </style>
 </head>
 <body class="bg-gray-50 min-h-screen antialiased flex">
@@ -74,6 +82,9 @@
       </nav>
       <button id="newCustomerButton" class="w-full mt-6 bg-indigo-500 hover:bg-indigo-400 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 shadow-md">
         + New Customer
+      </button>
+      <button onclick="openEventModal(new Date().toISOString().split('T')[0], null, 'New Customer Setup')" class="w-full mt-2 bg-gray-600 hover:bg-gray-500 text-white py-2 px-4 rounded-lg transition-colors duration-200 shadow-md text-sm">
+        📅 Quick Schedule Task
       </button>
       <div class="mt-6 space-y-2">
         <button id="exportBtn" class="w-full bg-gray-600 hover:bg-gray-500 text-white py-2 rounded-lg text-sm">Export Data</button>
@@ -172,21 +183,30 @@
       setTimeout(() => n.classList.add('hidden'), 4000);
     }
 
+    function getCustomerIdByName(name) {
+      return customers.find(c => c.name === name)?.id;
+    }
+
     // === NAVIGATION ===
     function navigateTo(view) {
       document.querySelectorAll('.app-view').forEach(v => v.classList.add('hidden'));
       document.getElementById(view)?.classList.remove('hidden');
       document.getElementById('editCustomerButton')?.classList[view === 'customers-view' ? 'remove' : 'add']('hidden');
       document.getElementById('backToDashboard')?.classList[view === 'dashboard-view' ? 'add' : 'remove']('hidden');
-      if (view === 'dashboard-view') renderDashboard();
-      if (view === 'customers-view') renderCustomers();
-      if (view === 'new-order-view') renderNewOrderForm();
-      if (view === 'inventory-view') renderInventory();
-      if (view === 'orders-view') renderOrderTracking();
-      if (view === 'calendar-view') renderCalendar();
-      if (view === 'pipeline-view') renderPipeline();
-      if (view === 'reports-view') renderReports();
-      if (view === 'crmteam-view') renderCRMTeam();
+      
+      const views = {
+        'dashboard-view': renderDashboard,
+        'customers-view': renderCustomers,
+        'new-order-view': renderNewOrderForm,
+        'inventory-view': renderInventory,
+        'orders-view': renderOrderTracking,
+        'calendar-view': renderCalendar,
+        'pipeline-view': renderPipeline,
+        'reports-view': renderReports,
+        'crmteam-view': renderCRMTeam
+      };
+
+      if (views[view]) views[view]();
     }
 
     // === CUSTOMER LIST ===
@@ -234,7 +254,10 @@
       const lowStock = inventory.filter(i => i.stock <= i.reorder).length;
       view.innerHTML = `
         <div class="max-w-7xl mx-auto">
-          <h2 class="text-2xl font-extrabold text-gray-900 mb-6">${activeCustomer.name} - Dashboard</h2>
+          <h2 class="text-2xl font-extrabold text-gray-900 mb-6 flex justify-between items-center">
+            ${activeCustomer.name} - Dashboard
+            <button onclick="openEventModal(new Date().toISOString().split('T')[0], activeCustomer?.id, 'Follow up with ${activeCustomer.name}')" class="text-indigo-600 hover:text-indigo-800 text-xl">📅</button>
+          </h2>
           <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
             <div class="bg-white p-4 rounded-xl shadow text-center">
               <p class="text-2xl font-bold text-indigo-600">$${totalRevenue.toFixed(0)}</p>
@@ -284,7 +307,10 @@
       }
       view.innerHTML = `
         <div class="max-w-7xl mx-auto">
-          <h2 class="text-2xl font-extrabold text-gray-900 mb-6">Edit Customer Profile</h2>
+          <h2 class="text-2xl font-extrabold text-gray-900 mb-6 flex justify-between items-center">
+            Edit Customer Profile
+            <button onclick="openEventModal(new Date().toISOString().split('T')[0], activeCustomer?.id, 'Review ${activeCustomer.name} Profile')" class="text-indigo-600 hover:text-indigo-800 text-xl">📅</button>
+          </h2>
           <form id="customerForm" class="bg-white p-6 rounded-xl shadow space-y-6">
             <div class="section">
               <h3 class="font-semibold text-gray-700 mb-4">Identity & Firmographics</h3>
@@ -393,7 +419,10 @@
       const view = document.getElementById('new-order-view');
       view.innerHTML = `
         <div class="max-w-7xl mx-auto">
-          <h2 class="text-2xl font-extrabold text-gray-900 mb-6">New Order - ${activeCustomer.name}</h2>
+          <h2 class="text-2xl font-extrabold text-gray-900 mb-6 flex justify-between items-center">
+            New Order - ${activeCustomer.name}
+            <button onclick="openEventModal(new Date().toISOString().split('T')[0], activeCustomer?.id, 'Verify ${activeCustomer.name} Order')" class="text-indigo-600 hover:text-indigo-800 text-xl">📅</button>
+          </h2>
           <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow">
               <h3 class="text-xl font-bold mb-4 border-b pb-2">Order Items</h3>
@@ -549,7 +578,10 @@
       const view = document.getElementById('inventory-view');
       view.innerHTML = `
         <div class="max-w-7xl mx-auto">
-          <h2 class="text-2xl font-extrabold text-gray-900 mb-6">Inventory Management</h2>
+          <h2 class="text-2xl font-extrabold text-gray-900 mb-6 flex justify-between items-center">
+            Inventory Management
+            <button onclick="openEventModal(new Date().toISOString().split('T')[0], null, 'Review Inventory Stock')" class="text-indigo-600 hover:text-indigo-800 text-xl">📅</button>
+          </h2>
           <button id="addInventoryBtn" class="bg-indigo-600 text-white py-2 px-4 rounded mb-4">+ Add Product</button>
           <div class="bg-white rounded-xl shadow overflow-hidden">
             <table class="w-full">
@@ -611,7 +643,10 @@
       const view = document.getElementById('orders-view');
       view.innerHTML = `
         <div class="max-w-7xl mx-auto">
-          <h2 class="text-2xl font-extrabold text-gray-900 mb-6">Order Tracking</h2>
+          <h2 class="text-2xl font-extrabold text-gray-900 mb-6 flex justify-between items-center">
+            Order Tracking
+            <button onclick="openEventModal(new Date().toISOString().split('T')[0], activeCustomer?.id, 'Review Order Status')" class="text-indigo-600 hover:text-indigo-800 text-xl">📅</button>
+          </h2>
           <div class="bg-white rounded-xl shadow overflow-hidden">
             ${orders.slice().reverse().map(o => { // Reverse to show latest first
               const cust = customers.find(c => c.id === o.customerId);
@@ -648,7 +683,10 @@
       });
       view.innerHTML = `
         <div class="max-w-7xl mx-auto">
-          <h2 class="text-2xl font-extrabold text-gray-900 mb-6">Sales Performance</h2>
+          <h2 class="text-2xl font-extrabold text-gray-900 mb-6 flex justify-between items-center">
+            Sales Performance
+            <button onclick="openEventModal(new Date().toISOString().split('T')[0], null, 'Review Quarterly Sales Report')" class="text-indigo-600 hover:text-indigo-800 text-xl">📅</button>
+          </h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="bg-white p-6 rounded-xl shadow">
               <h3 class="font-semibold mb-4">Brand Performance</h3>
@@ -674,7 +712,8 @@
         </div>`;
     }
 
-    // === FULL CALENDAR (Day/Week/Month + Scheduling) ===
+    // === CALENDAR VIEW RENDERING FUNCTIONS ===
+
     function getCalendarDays(year, month) {
       const firstDay = new Date(year, month, 1).getDay(); // 0 = Sunday, 6 = Saturday
       const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -696,7 +735,8 @@
           <div class="font-medium text-right">${day}</div>
           ${events.slice(0, 3).map(e => {
             const timeDisplay = e.time ? e.time.substring(0, 5) + ' ' : '';
-            return `<div class="event ${e.type === 'appointment' ? 'appointment' : 'task'}" title="${timeDisplay}${e.title}">${timeDisplay}${e.title}</div>`;
+            const typeClass = e.type === 'appointment' ? 'appointment' : 'task';
+            return `<div class="event ${typeClass}" title="${timeDisplay}${e.title}">${timeDisplay}${e.title}</div>`;
           }).join('')}
           ${events.length > 3 ? `<div class="text-xs text-gray-500 mt-1 text-center">+${events.length - 3} more</div>` : ''}
         </div>`;
@@ -704,40 +744,142 @@
       return daysHtml;
     }
 
+    function renderDayView() {
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
+      const day = currentDate.getDate();
+      const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      const events = [...appointments, ...tasks].filter(e => e.date === dateStr).sort((a, b) => (a.time || '') > (b.time || '') ? 1 : -1);
+      
+      let dayBody = '<div class="schedule-grid" style="grid-template-columns: 80px 1fr;">';
+      
+      // Time slots from 8 AM to 6 PM
+      for (let h = 8; h <= 18; h++) {
+        const timeLabel = h > 12 ? `${h - 12} PM` : `${h} AM`;
+        dayBody += `<div class="time-label">${timeLabel}</div>`;
+        dayBody += `<div class="time-slot day-column relative"></div>`;
+      }
+      dayBody += '</div>';
+
+      // Overlay events
+      events.forEach(e => {
+        if (e.time) {
+          const [hour, minute] = e.time.split(':').map(Number);
+          const startHour = 8; // Start time of the displayed grid
+          const totalMinutes = (hour * 60 + minute) - (startHour * 60);
+          const topPosition = (totalMinutes / 60) * 40; // 40px per hour
+          
+          dayBody += `<div class="schedule-event ${e.type}" style="top: ${topPosition}px; left: 80px; height: 38px;" onclick="openEventModal('${dateStr}', '${e.customerId}', '${e.title}', '${e.time}')">
+            ${e.time.substring(0, 5)} - ${e.title}
+          </div>`;
+        } else {
+          // Render all-day events above the grid
+          dayBody = `<div class="event ${e.type} text-sm mb-1">${e.title} (All Day)</div>` + dayBody;
+        }
+      });
+
+      return dayBody;
+    }
+
+    function renderWeekView() {
+      const startOfWeek = new Date(currentDate);
+      startOfWeek.setDate(currentDate.getDate() - currentDate.getDay()); // Go to Sunday
+      
+      let weekBody = '<div class="schedule-grid" style="grid-template-columns: 80px repeat(7, 1fr);">';
+      
+      // Header for the week view
+      for (let i = 0; i < 7; i++) {
+        const date = new Date(startOfWeek);
+        date.setDate(startOfWeek.getDate() + i);
+        const dayName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][i];
+        weekBody += `<div class="text-center text-sm font-semibold p-2">${dayName} ${date.getDate()}</div>`;
+      }
+      weekBody += '<div class="p-2 border-b"></div>'; // Empty corner space
+
+      // Time slots from 8 AM to 6 PM (11 hours * 40px/hr = 440px)
+      for (let h = 8; h <= 18; h++) {
+        const timeLabel = h > 12 ? `${h - 12} PM` : `${h} AM`;
+        weekBody += `<div class="time-label">${timeLabel}</div>`;
+        for (let d = 0; d < 7; d++) {
+          weekBody += `<div class="time-slot day-column relative"></div>`;
+        }
+      }
+      weekBody += '</div>';
+
+      // Overlay events (simplified for this demo)
+      const allEventsInWeek = [...appointments, ...tasks].filter(e => {
+        const eventDate = new Date(e.date);
+        return eventDate >= startOfWeek && eventDate < new Date(startOfWeek.getFullYear(), startOfWeek.getMonth(), startOfWeek.getDate() + 7);
+      });
+      
+      allEventsInWeek.forEach(e => {
+        if (e.time) {
+          const eventDate = new Date(e.date);
+          const dayIndex = eventDate.getDay();
+          const [hour, minute] = e.time.split(':').map(Number);
+          const startHour = 8;
+          const totalMinutes = (hour * 60 + minute) - (startHour * 60);
+          const topPosition = (totalMinutes / 60) * 40 + 40; // +40px for the day header row
+          
+          // Calculate grid position: (dayIndex + 1) for the column (skipping time column)
+          const leftPosition = 80 + (dayIndex * (100 / 7)) + '%'; // Highly simplified grid alignment
+          
+          weekBody += `<div class="schedule-event ${e.type}" style="top: ${topPosition}px; grid-column: ${dayIndex + 2}; margin-top: 0; position: absolute; height: 38px;" onclick="openEventModal('${e.date}', '${e.customerId}', '${e.title}', '${e.time}')">
+            ${e.time.substring(0, 5)} - ${e.title}
+          </div>`;
+        }
+      });
+      
+      // A dedicated event container is needed to handle absolute positioning in a grid layout accurately, 
+      // but for this single-file HTML structure, we will use a simplified absolute approach that overlays the grid.
+
+      return weekBody;
+    }
+
     function renderCalendar() {
       const view = document.getElementById('calendar-view');
-      const monthName = currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
       
+      let viewTitle = '';
+      let body = '';
+      let dateNavFn = 'changeMonth';
+      
+      if (calendarView === 'month') {
+        viewTitle = currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        body = `
+          <div class="calendar-grid text-center font-semibold text-sm border-b pb-2 mb-2">
+            <div class="text-red-500">Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div class="text-blue-500">Sat</div>
+          </div>
+          <div class="calendar-grid">
+            ${getCalendarDays(currentDate.getFullYear(), currentDate.getMonth())}
+          </div>`;
+        dateNavFn = 'changeMonth';
+      } else if (calendarView === 'day') {
+        viewTitle = currentDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+        body = `<div class="overflow-y-auto" style="height: 600px; position: relative;">${renderDayView()}</div>`;
+        dateNavFn = 'changeDay';
+      } else if (calendarView === 'week') {
+        const start = new Date(currentDate);
+        start.setDate(currentDate.getDate() - currentDate.getDay());
+        const end = new Date(start);
+        end.setDate(start.getDate() + 6);
+        viewTitle = `${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
+        body = `<div class="overflow-y-auto" style="height: 600px; position: relative;">${renderWeekView()}</div>`;
+        dateNavFn = 'changeWeek';
+      }
+
       const header = `<div class="calendar-nav">
         <div>
           <button onclick="changeView('day')" class="${calendarView === 'day' ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-800'} px-3 py-1 rounded transition-colors text-sm">Day</button>
           <button onclick="changeView('week')" class="${calendarView === 'week' ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-800'} px-3 py-1 rounded ml-2 transition-colors text-sm">Week</button>
           <button onclick="changeView('month')" class="${calendarView === 'month' ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-800'} px-3 py-1 rounded ml-2 transition-colors text-sm">Month</button>
         </div>
-        <div class="flex-1 text-center font-bold text-xl">${monthName}</div>
+        <div class="flex-1 text-center font-bold text-xl">${viewTitle}</div>
         <div>
-          <button onclick="changeMonth(-1)" class="text-indigo-600 p-2 hover:bg-gray-100 rounded">◀</button>
+          <button onclick="${dateNavFn}(-1)" class="text-indigo-600 p-2 hover:bg-gray-100 rounded">◀</button>
           <button onclick="currentDate = new Date(); renderCalendar()" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-1 px-3 rounded-lg text-sm mx-2">Today</button>
-          <button onclick="changeMonth(1)" class="text-indigo-600 p-2 hover:bg-gray-100 rounded">▶</button>
+          <button onclick="${dateNavFn}(1)" class="text-indigo-600 p-2 hover:bg-gray-100 rounded">▶</button>
         </div>
       </div>`;
-
-      let body = '';
-      if (calendarView === 'month') {
-        const year = currentDate.getFullYear();
-        const month = currentDate.getMonth();
-
-        body = `
-        <div class="calendar-grid text-center font-semibold text-sm border-b pb-2 mb-2">
-          <div class="text-red-500">Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div class="text-blue-500">Sat</div>
-        </div>
-        <div class="calendar-grid">
-          ${getCalendarDays(year, month)}
-        </div>`;
-      } else {
-        // Basic placeholders for other views
-        body = `<div class="text-center p-10 text-gray-500">View Not Implemented Yet (${calendarView} view)</div>`;
-      }
 
       view.innerHTML = `<div class="max-w-7xl mx-auto bg-white p-6 rounded-xl shadow">${header}<div class="mt-4">${body}</div></div>`;
     }
@@ -749,12 +891,29 @@
 
     function changeMonth(delta) {
       const newMonth = currentDate.getMonth() + delta;
-      // Set the date to the 1st of the new month to avoid date overflow issues (e.g., jumping from Jan 31 to Mar 3)
       currentDate = new Date(currentDate.getFullYear(), newMonth, 1);
       renderCalendar();
     }
+    
+    function changeDay(delta) {
+        currentDate.setDate(currentDate.getDate() + delta);
+        renderCalendar();
+    }
 
-    function openEventModal(date) {
+    function changeWeek(delta) {
+        currentDate.setDate(currentDate.getDate() + (delta * 7));
+        renderCalendar();
+    }
+
+
+    function openEventModal(date, customerId = null, defaultTitle = '') {
+      // Find customerId if only the name is passed (less common now, but good to handle)
+      if (typeof customerId === 'string' && customerId.startsWith('CUST-')) {
+          customerId = customerId; // It's already an ID
+      } else if (activeCustomer) {
+          customerId = activeCustomer.id;
+      }
+      
       const eventsForDay = [...appointments, ...tasks].filter(e => e.date === date).sort((a, b) => (a.time || '') > (b.time || '') ? 1 : -1);
 
       const modal = document.createElement('div');
@@ -777,17 +936,18 @@
 
         <h4 class="font-semibold mb-2">Add New Event</h4>
         <div class="space-y-2">
-          <input type="text" id="eventTitle" placeholder="Title (e.g., Call with John Doe)" class="w-full p-2 border rounded-lg">
+          <input type="text" id="eventTitle" placeholder="Title (e.g., Call with John Doe)" class="w-full p-2 border rounded-lg" value="${defaultTitle}">
           <div class="flex space-x-2">
             <select id="eventType" class="p-2 border rounded-lg flex-1">
-              <option>Appointment</option>
-              <option>Task</option>
+              <option value="Appointment">Appointment</option>
+              <option value="Task">Task</option>
+              <option value="Todo">To-do</option>
             </select>
             <input type="time" id="eventTime" value="${new Date().toTimeString().substring(0, 5)}" class="p-2 border rounded-lg">
           </div>
           <select id="eventCustomer" class="w-full p-2 border rounded-lg">
             <option value="">-- No Specific Customer --</option>
-            ${customers.map(c => `<option value="${c.id}" ${activeCustomer?.id === c.id ? 'selected' : ''}>${c.name}</option>`).join('')}
+            ${customers.map(c => `<option value="${c.id}" ${c.id === customerId ? 'selected' : ''}>${c.name}</option>`).join('')}
           </select>
         </div>
 
@@ -812,6 +972,7 @@
       
       const newEvent = { date, title, time, type: type.toLowerCase(), customerId };
 
+      // Tasks and Todos are stored in the 'tasks' array for simplicity
       if (type === 'Appointment') {
         appointments.push(newEvent);
       } else {
@@ -834,7 +995,7 @@
         showNotification('Appointment deleted.', 'bg-yellow-100 text-yellow-700');
       } else if (taskIndex !== -1) {
         tasks.splice(taskIndex, 1);
-        showNotification('Task deleted.', 'bg-yellow-100 text-yellow-700');
+        showNotification('Task/Todo deleted.', 'bg-yellow-100 text-yellow-700');
       }
       
       saveData();
@@ -850,7 +1011,10 @@
       const view = document.getElementById('crmteam-view');
       view.innerHTML = `
         <div class="max-w-4xl mx-auto">
-          <h2 class="text-2xl font-extrabold text-gray-900 mb-6">CRM Team & Affiliates</h2>
+          <h2 class="text-2xl font-extrabold text-gray-900 mb-6 flex justify-between items-center">
+            CRM Team & Affiliates
+            <button onclick="openEventModal(new Date().toISOString().split('T')[0], null, 'Team Review Meeting')" class="text-indigo-600 hover:text-indigo-800 text-xl">📅</button>
+          </h2>
           <button id="addTeamBtn" class="bg-indigo-600 text-white py-2 px-4 rounded mb-4">+ Add Member</button>
           <div id="teamList"></div>
         </div>`;
@@ -878,7 +1042,10 @@
       const view = document.getElementById('pipeline-view');
       const stages = ['Lead', 'Qualified', 'Proposal', 'Negotiation', 'Closed Won', 'Closed Lost'];
       view.innerHTML = `<div class="max-w-7xl mx-auto">
-        <h2 class="text-2xl font-extrabold text-gray-900 mb-6">Sales Pipeline</h2>
+        <h2 class="text-2xl font-extrabold text-gray-900 mb-6 flex justify-between items-center">
+          Sales Pipeline
+          <button onclick="openEventModal(new Date().toISOString().split('T')[0], activeCustomer?.id, 'Pipeline Review')" class="text-indigo-600 hover:text-indigo-800 text-xl">📅</button>
+        </h2>
         <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
           ${stages.map(stage => {
             const deals = pipelineDeals.filter(d => d.stage === stage);
