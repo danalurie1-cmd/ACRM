@@ -258,6 +258,8 @@
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
+        let isAuthReady = false; // New state variable to track auth status
+
         if (firebaseConfig) {
             app = initializeApp(firebaseConfig);
             db = getFirestore(app);
@@ -266,6 +268,7 @@
 
             // 1. Authentication and Listener Setup
             onAuthStateChanged(auth, async (user) => {
+                isAuthReady = true; // Auth state has been determined
                 if (user) {
                     userId = user.uid;
                     document.getElementById('user-info').textContent = `User ID: ${userId}`;
@@ -281,7 +284,7 @@
                     } catch (error) {
                         console.error("Firebase Auth Error:", error);
                         document.getElementById('user-info').textContent = `Auth Failed.`;
-                        // Fallback to holidays-only if auth fails
+                        // Fallback: render static holidays and hide overlay
                         events = getFederalHolidays(currentDate.getFullYear());
                         renderCalendar();
                         document.getElementById('loading-overlay').classList.add('hidden');
@@ -289,11 +292,14 @@
                 }
             });
         } else {
+            // FIX: If Firebase config is missing, ensure the page loads immediately with static data.
             console.warn("Firebase configuration is missing. Running in static mode.");
-            // Fallback to holidays-only if Firebase is not initialized
             events = getFederalHolidays(currentDate.getFullYear());
-            renderCalendar();
-            document.getElementById('loading-overlay').classList.add('hidden');
+            
+            document.addEventListener('DOMContentLoaded', () => {
+                renderCalendar();
+                document.getElementById('loading-overlay').classList.add('hidden');
+            });
         }
 
         function setupFirestoreListener() {
@@ -619,10 +625,15 @@
         document.getElementById('next-month').addEventListener('click', () => changeMonth(1));
         document.getElementById('today-btn').addEventListener('click', goToToday);
 
-        // Initial setup hook: If Firebase is not configured, render static data.
-        if (!firebaseConfig) {
-            document.addEventListener('DOMContentLoaded', renderCalendar);
-        }
+        // --- FINAL INITIALIZATION FALLBACK ---
+        // This ensures the application starts rendering even if the Firebase config check is slow or missing.
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!firebaseConfig) {
+                // If Firebase wasn't initialized, we render the static holiday calendar now
+                renderCalendar();
+                document.getElementById('loading-overlay').classList.add('hidden');
+            }
+        });
     </script>
 </body>
 </html>
