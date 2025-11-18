@@ -87,6 +87,11 @@
     .team-card { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
 
     /* Calendar */
+    .calendar-grid { 
+      display: grid; 
+      gap: 0.5rem; 
+      grid-template-columns: repeat(7, 1fr); /* FIX: Ensure 7 columns for MONTH view */
+    }
     .calendar-day.today { background: #E0F7FA; border-color: var(--color-accent); }
     .appointment { background: var(--color-accent); }
     .schedule-event { background: var(--color-accent); }
@@ -234,9 +239,32 @@
       orders = data.orders || [];
       inventory = data.inventory || inventory;
       pipelineDeals = data.pipelineDeals || [];
-      appointments = data.appointments || [];
       tasks = data.tasks || [];
       teamMembers = data.teamMembers || teamMembers;
+
+      // FIX: Hardcode USA Federal Holidays for reliability and persistence
+      const currentYear = new Date().getFullYear();
+      appointments = data.appointments || [];
+
+      // Only add holidays if they haven't been added this year (to prevent duplicates)
+      if (!appointments.some(e => e.title.includes('Federal Holiday') && e.date.includes(currentYear))) {
+          const holidays = [
+              // Format: {date: "YYYY-MM-DD", title: "Holiday Name"}
+              { date: `${currentYear}-01-01`, title: "New Year's Day - Federal Holiday", isRecurring: true },
+              { date: `${currentYear}-01-20`, title: "MLK Day - Federal Holiday", isRecurring: true }, // 3rd Monday in Jan
+              { date: `${currentYear}-02-17`, title: "Presidents' Day - Federal Holiday", isRecurring: true }, // 3rd Monday in Feb
+              { date: `${currentYear}-05-26`, title: "Memorial Day - Federal Holiday", isRecurring: true }, // Last Monday in May
+              { date: `${currentYear}-06-19`, title: "Juneteenth - Federal Holiday", isRecurring: true },
+              { date: `${currentYear}-07-04`, title: "Independence Day - Federal Holiday", isRecurring: true },
+              { date: `${currentYear}-09-01`, title: "Labor Day - Federal Holiday", isRecurring: true }, // 1st Monday in Sep
+              { date: `${currentYear}-10-13`, title: "Columbus Day - Federal Holiday", isRecurring: true }, // 2nd Monday in Oct
+              { date: `${currentYear}-11-11`, title: "Veterans Day - Federal Holiday", isRecurring: true },
+              { date: `${currentYear}-11-27`, title: "Thanksgiving Day - Federal Holiday", isRecurring: true }, // 4th Thursday in Nov
+              { date: `${currentYear}-12-25`, title: "Christmas Day - Federal Holiday", isRecurring: true },
+          ];
+          appointments.push(...holidays.map(h => ({...h, type: 'appointment', time: '09:00'})));
+      }
+
       if (customers.length > 0 && !activeCustomer) activeCustomer = customers[0];
     }
     function saveData() {
@@ -1028,8 +1056,84 @@
     }
 
     function getEventsForDate(dateStr) {
-        return [...appointments, ...tasks].filter(e => e.date === dateStr).sort((a, b) => (a.time || '') > (b.time || '') ? 1 : -1);
+        // Simple logic for recurring holidays (since full RRULE is complex)
+        const date = new Date(dateStr);
+        const month = date.getMonth();
+        const day = date.getDate();
+        const dayOfWeek = date.getDay(); // 0 = Sun, 1 = Mon, etc.
+
+        let matchedEvents = [...appointments, ...tasks].filter(e => e.date === dateStr).sort((a, b) => (a.time || '') > (b.time || '') ? 1 : -1);
+
+        // Logic to simulate recurring Federal Holidays (using the 2024 dates as base reference)
+        const holidays2024 = [
+            { m: 0, d: 1, title: "New Year's Day" },
+            { m: 0, dayOfWeek: 1, instance: 3, title: "MLK Day" }, // 3rd Monday in Jan
+            { m: 1, dayOfWeek: 1, instance: 3, title: "Presidents' Day" }, // 3rd Monday in Feb
+            { m: 4, dayOfWeek: 1, instance: -1, title: "Memorial Day" }, // Last Monday in May
+            { m: 5, d: 19, title: "Juneteenth" },
+            { m: 6, d: 4, title: "Independence Day" },
+            { m: 8, dayOfWeek: 1, instance: 1, title: "Labor Day" }, // 1st Monday in Sep
+            { m: 9, dayOfWeek: 1, instance: 2, title: "Columbus Day" }, // 2nd Monday in Oct
+            { m: 10, d: 11, title: "Veterans Day" },
+            { m: 10, dayOfWeek: 4, instance: 4, title: "Thanksgiving Day" }, // 4th Thursday in Nov
+            { m: 11, d: 25, title: "Christmas Day" }
+        ];
+
+        holidays2024.forEach(h => {
+            let isHoliday = false;
+            
+            if (h.d) {
+                // Fixed date holidays (Jan 1, Jun 19, July 4, Nov 11, Dec 25)
+                if (month === h.m && day === h.d) {
+                    isHoliday = true;
+                }
+            } else if (h.dayOfWeek) {
+                // Floating holidays (MLK, Presidents, Memorial, Labor, Thanksgiving)
+                const tempDate = new Date(date.getFullYear(), month, 1);
+                let count = 0;
+                let foundDay = -1;
+                
+                // Calculate the instance of the day of the week in the current month
+                while (tempDate.getMonth() === month) {
+                    if (tempDate.getDay() === h.dayOfWeek) {
+                        count++;
+                        if (count === h.instance) {
+                            foundDay = tempDate.getDate();
+                            break;
+                        }
+                    }
+                    tempDate.setDate(tempDate.getDate() + 1);
+                }
+
+                // Handle last instance (Memorial Day)
+                if (h.instance === -1) {
+                    const lastDayOfMonth = new Date(date.getFullYear(), month + 1, 0).getDate();
+                    let lastInstanceDate = new Date(date.getFullYear(), month, lastDayOfMonth);
+                    while (lastInstanceDate.getDay() !== h.dayOfWeek) {
+                        lastInstanceDate.setDate(lastInstanceDate.getDate() - 1);
+                    }
+                    if (day === lastInstanceDate.getDate()) isHoliday = true;
+                }
+                
+                if (h.instance !== -1 && day === foundDay) {
+                    isHoliday = true;
+                }
+            }
+
+            if (isHoliday && !matchedEvents.some(e => e.title.includes(h.title))) {
+                matchedEvents.push({ 
+                    date: dateStr, 
+                    title: `${h.title} - Federal Holiday`, 
+                    type: 'appointment', 
+                    time: '09:00',
+                    isRecurring: true 
+                });
+            }
+        });
+        
+        return matchedEvents;
     }
+
 
     function renderDayView() {
       const year = currentDate.getFullYear();
@@ -1354,8 +1458,7 @@
     function openNewVendorModal() {
         const modal = document.createElement('div');
         modal.className = 'modal';
-        // Increased max-width to 700px for a better field layout
-        modal.innerHTML = `<div class="modal-content max-w-2xl"> 
+        modal.innerHTML = `<div class="modal-content max-w-2xl">
             <h3 class="text-xl font-bold mb-4">Add New Vendor/Manufacturer</h3>
             <form id="newVendorForm" class="space-y-4">
                 <div class="section">
