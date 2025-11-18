@@ -8,18 +8,53 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>AS</text></svg>">
   <style>
-    body { font-family: 'Inter', sans-serif; background-color: #f9fafb; }
-    .sidebar { width: 280px; }
-    .main-content { flex-grow: 1; }
-    .app-header { box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-    .input-group label { font-weight: 500; font-size: 0.875rem; color: #4b5563; margin-bottom: 0.25rem; display: block; }
-    .input-group input, .input-group select, .input-group textarea {
-      width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem;
+    /* ------------------------------------------- */
+    /* NEW COLOR PALETTE & MODERN STYLING */
+    /* Primary: Navy Blue (slate-800) */
+    /* Accent: Vibrant Teal/Aqua (cyan-500) */
+    /* ------------------------------------------- */
+    :root {
+      --color-primary: #1E293B; /* slate-800 */
+      --color-accent: #06B6D4; /* cyan-500 */
+      --color-hover: #334155; /* slate-700 */
     }
-    .section { margin-bottom: 2rem; border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 1rem; }
-    .field-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
-    .search-bar { width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem; margin-bottom: 1rem; }
+
+    body { 
+        font-family: 'Inter', sans-serif; 
+        background-color: #f1f5f9; /* slate-100 */
+        color: var(--color-primary); 
+    }
+    .sidebar { 
+        width: 280px; 
+        background-color: var(--color-primary);
+    }
+    .app-header { 
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06); 
+    }
+    .nav-link {
+        transition: background-color 0.15s, color 0.15s;
+    }
+    .nav-link:hover {
+        background-color: var(--color-hover);
+    }
+    .text-indigo-600 { color: var(--color-accent); }
+    .bg-indigo-500 { background-color: var(--color-accent); }
+    .hover\:bg-indigo-400:hover { background-color: #0891B2; /* cyan-600 */ }
+    .bg-indigo-600 { background-color: var(--color-accent); }
+    .hover\:bg-indigo-700:hover { background-color: #0E7490; /* cyan-700 */ }
     
+    .text-purple-600 { color: #7C3AED; } /* violet-600 for Vendors */
+    .bg-purple-500 { background-color: #7C3AED; }
+    .hover\:bg-purple-400:hover { background-color: #6D28D9; }
+
+    /* Input/Form Styles */
+    .input-group input, .input-group select, .input-group textarea {
+      border: 1px solid #cbd5e1; /* slate-300 */
+    }
+
+    /* Address Book Toggle */
+    .collapsible { cursor: pointer; }
+
     /* Order Line Styles */
     .line-item { 
         display: grid; 
@@ -30,67 +65,32 @@
         padding-right: 20px; 
     }
     .line-total { font-weight: bold; text-align: right; } 
-    .kanban-column { background: #f3f4f6; padding: 1rem; border-radius: 0.5rem; min-height: 200px; }
-    .deal-card { background: white; padding: 1rem; border-radius: 0.5rem; margin-bottom: 0.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); cursor: move; }
-    .calendar-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-    .calendar-grid { 
-      display: grid; 
-      gap: 0.5rem; 
-      grid-template-columns: repeat(7, 1fr); 
-    }
-    .calendar-day { 
-      min-height: 80px; 
-      border: 1px solid #e5e7eb; 
-      border-radius: 0.5rem; 
-      padding: 0.5rem; 
-      background: white; 
-      cursor: pointer; 
-      transition: background-color 0.1s;
-      overflow: hidden; 
-    }
-    .calendar-day:hover { background: #f5f5f5; }
-    .calendar-day.today { background: #eef2ff; border-color: #6366f1; }
-    .event { padding: 0.25rem 0.5rem; border-radius: 0.25rem; margin: 0.25rem 0; font-size: 0.75rem; color: white; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .appointment { background: #3b82f6; }
-    .task { background: #f59e0b; }
-    .team-card { background: white; padding: 1rem; border-radius: 0.5rem; margin-bottom: 0.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
-    .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-    .modal-content { background: white; padding: 2rem; border-radius: 0.5rem; max-width: 600px; width: 90%; }
-    .chart { height: 300px; }
-    .badge { @apply px-2 py-1 text-xs rounded-full font-medium; }
-    .low { @apply bg-red-100 text-red-700; }
-    .medium { @apply bg-yellow-100 text-yellow-700; }
-    .high { @apply bg-green-100 text-green-700; }
+    .team-card { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
+
+    /* Calendar */
+    .calendar-day.today { background: #E0F7FA; border-color: var(--color-accent); }
+    .appointment { background: var(--color-accent); }
+    .schedule-event { background: var(--color-accent); }
     
-    /* Calendar Day/Week View Styles */
-    .schedule-grid { display: grid; border: 1px solid #e5e7eb; border-radius: 0.5rem; overflow: hidden; }
-    .time-slot { height: 40px; border-bottom: 1px dashed #e5e7eb; }
-    .time-label { padding-right: 10px; text-align: right; color: #6b7280; font-size: 0.75rem; align-self: flex-start; margin-top: -8px; }
-    .day-column { border-left: 1px solid #e5e7eb; }
-    .schedule-event { position: absolute; background: #3b82f6; color: white; border-radius: 0.25rem; padding: 2px 4px; font-size: 0.75rem; overflow: hidden; z-index: 10; cursor: pointer; }
-    .schedule-event.task { background: #f59e0b; }
-    
-    /* Address Book Toggle */
-    .collapsible { cursor: pointer; }
   </style>
 </head>
 <body class="bg-gray-50 min-h-screen antialiased flex">
   <div id="notification" class="fixed top-4 right-4 z-50 p-3 hidden rounded-lg shadow-xl text-sm font-medium transition-all duration-300" role="alert"></div>
 
-  <aside class="sidebar bg-indigo-700 text-white flex flex-col h-screen fixed">
-    <div class="p-6 text-2xl font-bold border-b border-indigo-600">AcoustiSkin CRM Pro</div>
+  <aside class="sidebar text-white flex flex-col h-screen fixed">
+    <div class="p-6 text-2xl font-bold border-b border-gray-700">AcoustiSkin CRM Pro</div>
     <div class="p-6 flex-grow overflow-y-auto">
-      <h3 class="text-sm font-semibold mb-2 text-indigo-300 uppercase tracking-wider">Core</h3>
+      <h3 class="text-sm font-semibold mb-2 text-cyan-300 uppercase tracking-wider">Core</h3>
       <nav class="space-y-1">
-        <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="dashboard-view">Dashboard</a>
-        <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="customers-view">Customers</a>
-        <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="new-order-view">New Order</a>
-        <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="inventory-view">Inventory</a>
-        <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="orders-view">Order Tracking</a>
-        <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="calendar-view">Calendar</a>
-        <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="pipeline-view">Pipeline</a>
-        <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="reports-view">Reports</a>
-        <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="vendors-team-view">Vendors & Team</a>
+        <a href="#" class="nav-link flex items-center p-3 rounded-lg transition-colors" data-view="dashboard-view">Dashboard</a>
+        <a href="#" class="nav-link flex items-center p-3 rounded-lg transition-colors" data-view="customers-view">Customers</a>
+        <a href="#" class="nav-link flex items-center p-3 rounded-lg transition-colors" data-view="new-order-view">New Order</a>
+        <a href="#" class="nav-link flex items-center p-3 rounded-lg transition-colors" data-view="inventory-view">Inventory</a>
+        <a href="#" class="nav-link flex items-center p-3 rounded-lg transition-colors" data-view="orders-view">Order Tracking</a>
+        <a href="#" class="nav-link flex items-center p-3 rounded-lg transition-colors" data-view="calendar-view">Calendar</a>
+        <a href="#" class="nav-link flex items-center p-3 rounded-lg transition-colors" data-view="pipeline-view">Pipeline</a>
+        <a href="#" class="nav-link flex items-center p-3 rounded-lg transition-colors" data-view="reports-view">Reports</a>
+        <a href="#" class="nav-link flex items-center p-3 rounded-lg transition-colors" data-view="vendors-team-view">Vendors & Team</a>
       </nav>
       <button id="newCustomerButton" class="w-full mt-6 bg-indigo-500 hover:bg-indigo-400 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 shadow-md">
         + New Customer
@@ -109,25 +109,25 @@
       </div>
     </div>
     
-    <div class="p-6 border-t border-indigo-600">
-      <div id="addressBookHeader" class="collapsible flex justify-between items-center text-sm font-semibold mb-2 text-indigo-300 uppercase tracking-wider">
+    <div class="p-6 border-t border-gray-700">
+      <div id="addressBookHeader" class="collapsible flex justify-between items-center text-sm font-semibold mb-2 text-cyan-300 uppercase tracking-wider">
         <h3>Address Book</h3> 
-        <span id="addressBookToggle">▼</span>
+        <span id="addressBookToggle">▶</span>
       </div>
-      <div id="addressBookContent" class="space-y-2">
+      <div id="addressBookContent" class="space-y-2 hidden">
         <div class="flex space-x-2 mb-2">
-          <select id="customerSort" class="bg-indigo-600 text-white text-xs p-1 rounded">
+          <select id="customerSort" class="bg-slate-700 text-white text-xs p-1 rounded">
             <option value="name_asc">Name A-Z</option>
+            <option value="name_desc">Name Z-A</option>
             <option value="id_asc">ID Asc</option>
             <option value="state_asc">State A-Z</option>
           </select>
-          <select id="customerFilter" class="bg-indigo-600 text-white text-xs p-1 rounded">
+          <select id="customerFilter" class="bg-slate-700 text-white text-xs p-1 rounded">
             <option value="">All States</option>
-            <option value="CA">CA</option>
-            <option value="TX">TX</option>
-            </select>
+            ${Object.keys(stateTax).map(st => `<option value="${st}">${st}</option>`).join('')}
+          </select>
         </div>
-        <input type="text" id="customerSearch" class="search-bar" placeholder="Search name, address, PO...">
+        <input type="text" id="customerSearch" class="search-bar bg-slate-700 text-white placeholder-slate-400 border-none" placeholder="Search name, address, PO...">
         <ul id="customerList" class="space-y-1 max-h-64 overflow-y-auto">
           <li class="p-3 text-center text-gray-400">Loading...</li>
         </ul>
@@ -185,6 +185,7 @@
     let teamMembers = ['Allyson', 'Sindi', 'Lori', 'Wen', 'Janine', 'Winnie'];
     const paddleBrands = ['Selkirk', 'Joola', 'Paddletek', 'Onix', 'Gamma', 'Engage', 'ProKennex', 'Diadem', 'CRBN', 'Vatic Pro'];
     
+    // US Sales Tax Rates (State Level)
     const stateTax = { 'AL': 0.04, 'AK': 0.00, 'AZ': 0.056, 'AR': 0.065, 'CA': 0.0725, 'CO': 0.029, 'CT': 0.0635, 'DE': 0.00, 'FL': 0.06, 'GA': 0.04, 'HI': 0.04, 'ID': 0.06, 'IL': 0.0625, 'IN': 0.07, 'IA': 0.06, 'KS': 0.065, 'KY': 0.06, 'LA': 0.045, 'ME': 0.055, 'MD': 0.06, 'MA': 0.0625, 'MI': 0.06, 'MN': 0.06875, 'MS': 0.07, 'MO': 0.04225, 'MT': 0.00, 'NE': 0.055, 'NV': 0.0685, 'NH': 0.00, 'NJ': 0.06625, 'NM': 0.05125, 'NY': 0.04, 'NC': 0.0475, 'ND': 0.05, 'OH': 0.0575, 'OK': 0.045, 'OR': 0.00, 'PA': 0.06, 'RI': 0.07, 'SC': 0.06, 'SD': 0.042, 'TN': 0.07, 'TX': 0.0625, 'UT': 0.0485, 'VT': 0.06, 'VA': 0.043, 'WA': 0.065, 'WV': 0.06, 'WI': 0.05, 'WY': 0.04 };
     let calendarView = 'month';
     let currentDate = new Date();
@@ -193,12 +194,10 @@
     function loadData() {
       const data = JSON.parse(localStorage.getItem('acoustiskin-crm-pro') || '{}');
       
-      // Migration/Default Customer Data Setup
       customers = (data.customers || [
         { id: 'CUST-001', name: 'Acme Corp', email: 'john@acme.com', phone: '555-0001', status: 'Active Customer', industry: 'Manufacturing', revenue: '$5M', employees: '200+', address: '123 Main St, City, CA 12345', website: 'acme.com', leadSource: 'Referral', clv: '$150,000', lastPurchase: '2025-10-15', firstPurchase: '2023-01-10', purchaseFrequency: 12, primaryProduct: 'Team Jerseys', subscriptionTier: 'Gold', lastContact: '2025-11-10', nextTask: 'Q4 Review Call', nps: 9, social: ['LinkedIn'], handle: '@acmecorp', accountOwner: 'Dana Lurie', teamDivision: 'Sales', notes: '', tags: ['VIP'], specialHandling: 'Email only', poRequired: true, preferredShipping: 'Standard', preferredCarrier: 'UPS', paymentTerms: 'Net 30', creditLimit: 50000, billingCycle: 'Monthly', currency: 'USD', aov: 1250, lastOrderDate: '2025-10-15', lifetimeSpend: 150000, ordersPlaced: 120, returnRate: 2.1, paddleBrandsUsed: ['Selkirk', 'Joola'] },
         { id: 'CUST-002', name: 'AcoustiSkin LLC', email: 'dana@acoustiskin.com', phone: '555-0002', status: 'Prospect', industry: 'Healthcare', revenue: '$2M', employees: '50-200', address: '456 Health Ave, Wellness, CA 67890', website: 'acoustiskin.com', leadSource: 'Website', clv: '$0', lastPurchase: null, firstPurchase: null, purchaseFrequency: 0, primaryProduct: null, subscriptionTier: null, lastContact: '2025-11-01', nextTask: 'Product Demo', nps: null, social: ['Instagram', 'X'], handle: '@acoustiskin', accountOwner: 'Dana Lurie', teamDivision: 'Sales', notes: '', tags: [], specialHandling: '', poRequired: false, preferredShipping: 'Expedited', preferredCarrier: 'FedEx', paymentTerms: 'Pre-paid', creditLimit: 0, billingCycle: 'Per-Order', currency: 'USD', aov: 0, lastOrderDate: null, lifetimeSpend: 0, ordersPlaced: 0, returnRate: 0, paddleBrandsUsed: [] }
       ]).map(c => {
-          // Migrates old single fields to new detailed fields on load
           c.primaryEmail = c.email || c.primaryEmail || '';
           c.personalEmail = c.personalEmail || '';
           c.workEmail = c.workEmail || '';
@@ -235,7 +234,6 @@
       return customers.find(c => c.name === name)?.id;
     }
 
-    // Function to extract state from address string
     function extractStateFromAddress(address) {
       if (!address) return '';
       const parts = address.split(', ');
@@ -271,7 +269,7 @@
       };
 
       if (views[view]) views[view]();
-      renderCustomerList(); // Ensure sidebar reflects filtering/sorting/deletions on every navigation
+      renderCustomerList(); 
     }
 
     // === CUSTOMER LIST / ADDRESS BOOK ===
@@ -282,7 +280,7 @@
       
       let filtered = customers.filter(c => {
           const matchSearch = c.name.toLowerCase().includes(search) || 
-                              c.address.toLowerCase().includes(search) || 
+                              c.address?.toLowerCase().includes(search) || // Use optional chaining
                               c.id.toLowerCase().includes(search);
           const matchFilter = filterByState ? extractStateFromAddress(c.address) === filterByState : true;
           return matchSearch && matchFilter;
@@ -308,7 +306,7 @@
       });
 
       const list = document.getElementById('customerList');
-      if (!list) return; // Prevent errors if the element isn't rendered yet
+      if (!list) return;
 
       list.innerHTML = filtered.map(c => `
         <li class="customer-item p-2 flex justify-between items-center text-sm ${activeCustomer?.id === c.id ? 'bg-indigo-600' : 'hover:bg-indigo-600'} rounded-lg">
@@ -319,7 +317,6 @@
           </div>
         </li>`).join('');
       
-      // Attach click handlers to the name/span part to navigate to dashboard
       document.querySelectorAll('.customer-item span').forEach(span => {
           span.onclick = () => {
               const customerId = span.dataset.customerId;
@@ -338,16 +335,34 @@
     }
 
     // Address Book Listeners
-    document.getElementById('customerSearch').addEventListener('input', renderCustomerList);
-    document.getElementById('customerSort').addEventListener('change', renderCustomerList);
-    document.getElementById('customerFilter').addEventListener('change', renderCustomerList);
-    document.getElementById('addressBookHeader').addEventListener('click', () => {
-        const content = document.getElementById('addressBookContent');
-        const toggle = document.getElementById('addressBookToggle');
-        content.classList.toggle('hidden');
-        toggle.textContent = content.classList.contains('hidden') ? '▶' : '▼';
+    document.addEventListener('DOMContentLoaded', () => {
+        // Only attach listeners if elements exist (which they should)
+        if (document.getElementById('customerSearch')) {
+            document.getElementById('customerSearch').addEventListener('input', renderCustomerList);
+            document.getElementById('customerSort').addEventListener('change', renderCustomerList);
+            document.getElementById('customerFilter').addEventListener('change', renderCustomerList);
+        }
+        
+        // Initial setup for collapsible address book
+        const header = document.getElementById('addressBookHeader');
+        if (header) {
+            header.addEventListener('click', () => {
+                const content = document.getElementById('addressBookContent');
+                const toggle = document.getElementById('addressBookToggle');
+                content.classList.toggle('hidden');
+                toggle.textContent = content.classList.contains('hidden') ? '▶' : '▼';
+            });
+        }
+        
+        loadData();
+        renderCustomerList();
+        setupEventListeners();
+        if (activeCustomer) {
+          document.getElementById('currentCustomerName').textContent = activeCustomer.name;
+          updateCustomerStatusUI(activeCustomer.status);
+        }
+        navigateTo('dashboard-view');
     });
-
 
     function updateCustomerStatusUI(status) {
       const bar = document.getElementById('customerStatusBar');
@@ -655,7 +670,7 @@
                     <span></span>
                 </div>
               </div>
-              <button id="addLine" class="bg-indigo-500 hover:bg-indigo-600 text-white py-2 px-4 rounded-lg mt-4">+ Add Line</button>
+              <button id="addLine" class="bg-indigo-500 hover:bg-indigo-400 text-white py-2 px-4 rounded-lg mt-4">+ Add Line</button>
             </div>
             <div class="bg-white p-6 rounded-xl shadow space-y-6">
               <div>
@@ -709,7 +724,7 @@
       document.getElementById('paymentMethod').addEventListener('input', updateNewOrderDisplay);
 
       document.getElementById('processOrderBtn').addEventListener('click', () => {
-        const lines = document.getElementById('orderLines').querySelectorAll('.line-item:not(:first-child)'); // Skip the header line
+        const lines = document.getElementById('orderLines').querySelectorAll('.line-item:not(:first-child)'); 
         
         if (lines.length === 0) {
             showNotification('Order must contain at least one item.', 'bg-red-100 text-red-700');
@@ -990,9 +1005,7 @@
         </div>`;
     }
 
-    // === CALENDAR VIEW RENDERING FUNCTIONS ===
-    
-    // ... (Calendar functions like getCalendarDays, getEventsForDate, renderDayView, renderWeekView, renderCalendar, changeView, changeMonth, changeDay, changeWeek, openEventModal, saveEvent, deleteEvent remain unchanged from previous response) ...
+    // === CALENDAR VIEW RENDERING FUNCTIONS (Simplified for brevity - logic is integrated in full code) ===
     function getCalendarDays(year, month) {
       const firstDay = new Date(year, month, 1).getDay();
       const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -1507,21 +1520,6 @@
         link.addEventListener('click', e => { e.preventDefault(); navigateTo(link.dataset.view); });
       });
     }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      loadData();
-      // Initialize Address Book state: closed by default
-      document.getElementById('addressBookContent').classList.add('hidden');
-      document.getElementById('addressBookToggle').textContent = '▶';
-
-      renderCustomerList();
-      setupEventListeners();
-      if (activeCustomer) {
-        document.getElementById('currentCustomerName').textContent = activeCustomer.name;
-        updateCustomerStatusUI(activeCustomer.status);
-      }
-      navigateTo('dashboard-view');
-    });
   </script>
 </body>
 </html>
