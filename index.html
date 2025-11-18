@@ -20,16 +20,16 @@
     .field-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
     .search-bar { width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem; margin-bottom: 1rem; }
     
-    /* Updated .line-item for New Order (Product Name, Specs, Qty, Price, Affiliate, Total, Remove) */
+    /* Order Line Styles */
     .line-item { 
         display: grid; 
         grid-template-columns: 1.5fr 1fr 0.5fr 1fr 1fr 1fr auto; 
         gap: 0.5rem; 
         align-items: center; 
         margin-bottom: 0.5rem; 
-        padding-right: 20px; /* Space for the delete button */
+        padding-right: 20px; 
     }
-    .line-total { font-weight: bold; text-align: right; } /* FIX: Align total to right */
+    .line-total { font-weight: bold; text-align: right; } 
     .kanban-column { background: #f3f4f6; padding: 1rem; border-radius: 0.5rem; min-height: 200px; }
     .deal-card { background: white; padding: 1rem; border-radius: 0.5rem; margin-bottom: 0.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); cursor: move; }
     .calendar-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
@@ -62,13 +62,16 @@
     .medium { @apply bg-yellow-100 text-yellow-700; }
     .high { @apply bg-green-100 text-green-700; }
     
-    /* Day/Week View Specific Styles */
+    /* Calendar Day/Week View Styles */
     .schedule-grid { display: grid; border: 1px solid #e5e7eb; border-radius: 0.5rem; overflow: hidden; }
     .time-slot { height: 40px; border-bottom: 1px dashed #e5e7eb; }
     .time-label { padding-right: 10px; text-align: right; color: #6b7280; font-size: 0.75rem; align-self: flex-start; margin-top: -8px; }
     .day-column { border-left: 1px solid #e5e7eb; }
     .schedule-event { position: absolute; background: #3b82f6; color: white; border-radius: 0.25rem; padding: 2px 4px; font-size: 0.75rem; overflow: hidden; z-index: 10; cursor: pointer; }
     .schedule-event.task { background: #f59e0b; }
+    
+    /* Address Book Toggle */
+    .collapsible { cursor: pointer; }
   </style>
 </head>
 <body class="bg-gray-50 min-h-screen antialiased flex">
@@ -105,12 +108,30 @@
         </label>
       </div>
     </div>
+    
     <div class="p-6 border-t border-indigo-600">
-      <h3 class="text-sm font-semibold mb-2 text-indigo-300 uppercase tracking-wider">Address Book</h3>
-      <input type="text" id="customerSearch" class="search-bar" placeholder="Search customers...">
-      <ul id="customerList" class="space-y-1 max-h-64 overflow-y-auto">
-        <li class="p-3 text-center text-gray-400">Loading...</li>
-      </ul>
+      <div id="addressBookHeader" class="collapsible flex justify-between items-center text-sm font-semibold mb-2 text-indigo-300 uppercase tracking-wider">
+        <h3>Address Book</h3> 
+        <span id="addressBookToggle">▼</span>
+      </div>
+      <div id="addressBookContent" class="space-y-2">
+        <div class="flex space-x-2 mb-2">
+          <select id="customerSort" class="bg-indigo-600 text-white text-xs p-1 rounded">
+            <option value="name_asc">Name A-Z</option>
+            <option value="id_asc">ID Asc</option>
+            <option value="state_asc">State A-Z</option>
+          </select>
+          <select id="customerFilter" class="bg-indigo-600 text-white text-xs p-1 rounded">
+            <option value="">All States</option>
+            <option value="CA">CA</option>
+            <option value="TX">TX</option>
+            </select>
+        </div>
+        <input type="text" id="customerSearch" class="search-bar" placeholder="Search name, address, PO...">
+        <ul id="customerList" class="space-y-1 max-h-64 overflow-y-auto">
+          <li class="p-3 text-center text-gray-400">Loading...</li>
+        </ul>
+      </div>
     </div>
   </aside>
 
@@ -164,7 +185,6 @@
     let teamMembers = ['Allyson', 'Sindi', 'Lori', 'Wen', 'Janine', 'Winnie'];
     const paddleBrands = ['Selkirk', 'Joola', 'Paddletek', 'Onix', 'Gamma', 'Engage', 'ProKennex', 'Diadem', 'CRBN', 'Vatic Pro'];
     
-    // US Sales Tax Rates (State Level)
     const stateTax = { 'AL': 0.04, 'AK': 0.00, 'AZ': 0.056, 'AR': 0.065, 'CA': 0.0725, 'CO': 0.029, 'CT': 0.0635, 'DE': 0.00, 'FL': 0.06, 'GA': 0.04, 'HI': 0.04, 'ID': 0.06, 'IL': 0.0625, 'IN': 0.07, 'IA': 0.06, 'KS': 0.065, 'KY': 0.06, 'LA': 0.045, 'ME': 0.055, 'MD': 0.06, 'MA': 0.0625, 'MI': 0.06, 'MN': 0.06875, 'MS': 0.07, 'MO': 0.04225, 'MT': 0.00, 'NE': 0.055, 'NV': 0.0685, 'NH': 0.00, 'NJ': 0.06625, 'NM': 0.05125, 'NY': 0.04, 'NC': 0.0475, 'ND': 0.05, 'OH': 0.0575, 'OK': 0.045, 'OR': 0.00, 'PA': 0.06, 'RI': 0.07, 'SC': 0.06, 'SD': 0.042, 'TN': 0.07, 'TX': 0.0625, 'UT': 0.0485, 'VT': 0.06, 'VA': 0.043, 'WA': 0.065, 'WV': 0.06, 'WI': 0.05, 'WY': 0.04 };
     let calendarView = 'month';
     let currentDate = new Date();
@@ -184,7 +204,7 @@
           c.workEmail = c.workEmail || '';
           c.mobilePhone = c.phone || c.mobilePhone || '';
           c.workPhone = c.workPhone || '';
-          delete c.email; // Remove old fields
+          delete c.email; 
           delete c.phone;
           return c;
       });
@@ -219,10 +239,8 @@
     function extractStateFromAddress(address) {
       if (!address) return '';
       const parts = address.split(', ');
-      // Look for the ST ZIP part (e.g., CA 90210)
       const stZipPart = parts.pop(); 
       if (stZipPart) {
-        // Extract the state abbreviation (e.g., CA)
         return stZipPart.split(' ')[0].toUpperCase();
       }
       return '';
@@ -233,7 +251,6 @@
       document.querySelectorAll('.app-view').forEach(v => v.classList.add('hidden'));
       document.getElementById(view)?.classList.remove('hidden');
       
-      // Control header buttons based on active customer and view
       const isCustomerView = view === 'customers-view';
       const isDashboardView = view === 'dashboard-view';
       const hasActiveCustomer = !!activeCustomer;
@@ -241,7 +258,6 @@
       document.getElementById('editCustomerButton')?.classList[hasActiveCustomer && !isCustomerView ? 'remove' : 'add']('hidden');
       document.getElementById('backToDashboard')?.classList[isDashboardView ? 'add' : 'remove']('hidden');
       
-      // Dynamic rendering of content
       const views = {
         'dashboard-view': renderDashboard,
         'customers-view': renderCustomers,
@@ -255,30 +271,83 @@
       };
 
       if (views[view]) views[view]();
+      renderCustomerList(); // Ensure sidebar reflects filtering/sorting/deletions on every navigation
     }
 
-    // === CUSTOMER LIST ===
+    // === CUSTOMER LIST / ADDRESS BOOK ===
     function renderCustomerList() {
-      const search = document.getElementById('customerSearch').value.toLowerCase();
-      const filtered = customers.filter(c => c.name.toLowerCase().includes(search));
+      const search = document.getElementById('customerSearch')?.value.toLowerCase() || '';
+      const sortBy = document.getElementById('customerSort')?.value || 'name_asc';
+      const filterByState = document.getElementById('customerFilter')?.value || '';
+      
+      let filtered = customers.filter(c => {
+          const matchSearch = c.name.toLowerCase().includes(search) || 
+                              c.address.toLowerCase().includes(search) || 
+                              c.id.toLowerCase().includes(search);
+          const matchFilter = filterByState ? extractStateFromAddress(c.address) === filterByState : true;
+          return matchSearch && matchFilter;
+      });
+
+      // Sorting Logic
+      filtered.sort((a, b) => {
+          const [field, order] = sortBy.split('_');
+          let valA, valB;
+          
+          if (field === 'state') {
+              valA = extractStateFromAddress(a.address);
+              valB = extractStateFromAddress(b.address);
+          } else {
+              valA = a[field] || '';
+              valB = b[field] || '';
+          }
+
+          if (typeof valA === 'string') {
+              return order === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
+          }
+          return 0;
+      });
+
       const list = document.getElementById('customerList');
-      list.innerHTML = filtered.sort((a, b) => a.name.localeCompare(b.name)).map(c => `
-        <li class="customer-item p-3 cursor-pointer hover:bg-indigo-600 rounded-lg text-sm ${activeCustomer?.id === c.id ? 'bg-indigo-600' : ''}" data-customer-id="${c.id}">
-          ${c.name}
+      if (!list) return; // Prevent errors if the element isn't rendered yet
+
+      list.innerHTML = filtered.map(c => `
+        <li class="customer-item p-2 flex justify-between items-center text-sm ${activeCustomer?.id === c.id ? 'bg-indigo-600' : 'hover:bg-indigo-600'} rounded-lg">
+          <span class="flex-grow cursor-pointer" data-customer-id="${c.id}">${c.name}</span>
+          <div class="flex space-x-2">
+            <button class="text-xs text-yellow-300 hover:text-yellow-500" onclick="editCustomerFromList('${c.id}')">Edit</button>
+            <button class="text-xs text-red-300 hover:text-red-500" onclick="deleteCustomer('${c.id}')">Del</button>
+          </div>
         </li>`).join('');
-      document.querySelectorAll('.customer-item').forEach(item => {
-        item.onclick = () => {
-          document.querySelectorAll('.customer-item').forEach(i => i.classList.remove('bg-indigo-600'));
-          item.classList.add('bg-indigo-600');
-          activeCustomer = customers.find(c => c.id === item.dataset.customerId);
-          document.getElementById('currentCustomerName').textContent = activeCustomer.name;
-          updateCustomerStatusUI(activeCustomer.status);
-          saveData();
-          navigateTo('dashboard-view');
-        };
+      
+      // Attach click handlers to the name/span part to navigate to dashboard
+      document.querySelectorAll('.customer-item span').forEach(span => {
+          span.onclick = () => {
+              const customerId = span.dataset.customerId;
+              activeCustomer = customers.find(c => c.id === customerId);
+              document.getElementById('currentCustomerName').textContent = activeCustomer.name;
+              updateCustomerStatusUI(activeCustomer.status);
+              saveData();
+              navigateTo('dashboard-view');
+          };
       });
     }
+
+    function editCustomerFromList(customerId) {
+        activeCustomer = customers.find(c => c.id === customerId);
+        navigateTo('customers-view');
+    }
+
+    // Address Book Listeners
     document.getElementById('customerSearch').addEventListener('input', renderCustomerList);
+    document.getElementById('customerSort').addEventListener('change', renderCustomerList);
+    document.getElementById('customerFilter').addEventListener('change', renderCustomerList);
+    document.getElementById('addressBookHeader').addEventListener('click', () => {
+        const content = document.getElementById('addressBookContent');
+        const toggle = document.getElementById('addressBookToggle');
+        content.classList.toggle('hidden');
+        toggle.textContent = content.classList.contains('hidden') ? '▶' : '▼';
+    });
+
 
     function updateCustomerStatusUI(status) {
       const bar = document.getElementById('customerStatusBar');
@@ -295,17 +364,16 @@
         return;
       }
 
-      // 1. Remove from customers array
       customers = customers.filter(c => c.id !== customerId);
-      
-      // 2. Remove associated data
       orders = orders.filter(o => o.customerId !== customerId);
       pipelineDeals = pipelineDeals.filter(d => d.customerId !== customerId);
       appointments = appointments.filter(a => a.customerId !== customerId);
       tasks = tasks.filter(t => t.customerId !== customerId);
 
-      // 3. Update state and UI
-      activeCustomer = customers[0] || null;
+      if (activeCustomer && activeCustomer.id === customerId) {
+          activeCustomer = customers[0] || null;
+      }
+      
       if (activeCustomer) {
         document.getElementById('currentCustomerName').textContent = activeCustomer.name;
         updateCustomerStatusUI(activeCustomer.status);
@@ -315,12 +383,11 @@
       }
       
       saveData();
-      renderCustomerList();
       showNotification('Customer deleted!', 'bg-red-100 text-red-700');
       navigateTo('dashboard-view');
     }
     
-    // NEW FUNCTIONALITY: Toggle Customer to Vendor
+    // FUNCTIONALITY: Toggle Customer to Vendor
     function toggleCustomerType(customerId, isVendor) {
         const sourceArray = isVendor ? vendors : customers;
         const targetArray = isVendor ? customers : vendors;
@@ -335,13 +402,11 @@
         }
 
         const item = sourceArray.splice(index, 1)[0];
-        // Clean up or adjust fields for the new type (simplified)
+        
         if (isVendor) {
-             // Moving to Customer: Ensure default customer fields exist
              item.id = item.id.replace('VEND', 'CUST');
              if(!item.status) item.status = 'Prospect';
         } else {
-             // Moving to Vendor: Simplify contact fields
              item.id = item.id.replace('CUST', 'VEND');
              item.contact = item.contact || item.accountOwner;
              if(!item.type) item.type = 'Manufacturer';
@@ -349,7 +414,6 @@
         
         targetArray.push(item);
         
-        // If moving the active item, update activeCustomer reference
         if (activeCustomer && activeCustomer.id === customerId) {
             activeCustomer = item;
         } else if (!activeCustomer && targetName === 'Customer') {
@@ -359,7 +423,7 @@
         }
 
         saveData();
-        renderCustomerList(); // Refresh sidebar list
+        renderCustomerList(); 
         if (targetName === 'Customer') {
             navigateTo('customers-view');
         } else {
@@ -456,13 +520,13 @@
               <h3 class="font-semibold text-gray-700 mb-4">Identity & Firmographics</h3>
               <div class="field-grid">
                 <div class="input-group"><label>Company Name *</label><input type="text" name="name" value="${activeCustomer.name}" required></div>
+                
                 <div class="input-group"><label>Primary Email *</label><input type="email" name="primaryEmail" value="${activeCustomer.primaryEmail}" required></div>
                 <div class="input-group"><label>Mobile Phone</label><input type="tel" name="mobilePhone" value="${activeCustomer.mobilePhone}"></div>
 
                 <div class="input-group"><label>Personal Email</label><input type="email" name="personalEmail" value="${activeCustomer.personalEmail}"></div>
                 <div class="input-group"><label>Work Email</label><input type="email" name="workEmail" value="${activeCustomer.workEmail}"></div>
                 <div class="input-group"><label>Work Phone</label><input type="tel" name="workPhone" value="${activeCustomer.workPhone}"></div>
-                
                 <div class="input-group"><label>Status</label>
                   <select name="status">
                     <option value="Prospect" ${activeCustomer.status === 'Prospect' ? 'selected' : ''}>Prospect</option>
@@ -551,11 +615,10 @@
           }
         });
         
-        // Find the index of the current active customer to update
         const index = customers.findIndex(c => c.id === activeCustomer.id);
         if (index > -1) {
             Object.assign(customers[index], data);
-            activeCustomer = customers[index]; // Update activeCustomer reference
+            activeCustomer = customers[index]; 
         }
 
         saveData();
@@ -619,7 +682,6 @@
     function addOrderLine() {
       const container = document.getElementById('orderLines');
       const line = document.createElement('div');
-      // Updated grid template is applied via the .line-item CSS class
       line.className = 'line-item';
       line.innerHTML = `
         <input type="text" class="productName p-2 border rounded" value="AcoustiSkin Paddle Skin">
@@ -677,13 +739,13 @@
             affiliate: line.querySelector('.orderAffiliate').value
           };
           
-          if (item.qty <= 0 || item.price <= 0) return; // Skip invalid lines
+          if (item.qty <= 0 || item.price <= 0) return; 
 
           const sku = inventory.find(i => i.brand === item.brand)?.sku;
           if (sku) {
             const stockItem = inventory.find(i => i.sku === sku);
             if (stockItem.stock >= item.qty) {
-              stockItem.stock -= item.qty; // Deduct stock
+              stockItem.stock -= item.qty; 
             } else {
               showNotification(`Not enough stock for ${item.brand}`, 'bg-red-100 text-red-700');
               inventorySufficient = false;
@@ -694,7 +756,7 @@
           order.subtotal += item.qty * item.price;
         });
 
-        if (!inventorySufficient) return; // Stop if stock was insufficient
+        if (!inventorySufficient) return; 
 
         const state = extractStateFromAddress(order.shipAddress);
         order.tax = order.subtotal * (stateTax[state] || 0);
@@ -702,7 +764,6 @@
 
         orders.push(order);
         
-        // Update Customer Metrics
         activeCustomer.ordersPlaced++;
         activeCustomer.lifetimeSpend += order.total;
         activeCustomer.aov = activeCustomer.ordersPlaced > 0 ? activeCustomer.lifetimeSpend / activeCustomer.ordersPlaced : 0;
@@ -715,7 +776,7 @@
     }
 
     function updateNewOrderDisplay() {
-      const lines = document.getElementById('orderLines').querySelectorAll('.line-item:not(:first-child)'); // Skip header
+      const lines = document.getElementById('orderLines').querySelectorAll('.line-item:not(:first-child)'); 
       let subtotal = 0;
       lines.forEach(line => {
         const qty = parseFloat(line.querySelector('.orderQty').value) || 0;
@@ -811,7 +872,7 @@
             <button onclick="openEventModal(new Date().toISOString().split('T')[0], activeCustomer?.id, 'Review Order Status')" class="text-indigo-600 hover:text-indigo-800 text-xl">📅</button>
           </h2>
           <div class="bg-white rounded-xl shadow overflow-hidden">
-            ${orders.slice().reverse().map(o => { // Reverse to show latest first
+            ${orders.slice().reverse().map(o => { 
               const cust = customers.find(c => c.id === o.customerId);
               return `<div class="border-b p-4" id="order-${o.id}">
                 <div class="flex justify-between">
@@ -865,7 +926,6 @@
       }
     }
 
-    // FUNCTIONALITY: Delete Order
     function deleteOrder(orderId) {
         if (!confirm(`Are you sure you want to delete Order ID ${orderId}? This action cannot be undone.`)) {
             return;
@@ -875,7 +935,6 @@
         if (index > -1) {
             const deletedOrder = orders.splice(index, 1)[0];
             
-            // Recalculate customer lifetime value (simple version)
             const customer = customers.find(c => c.id === deletedOrder.customerId);
             if (customer) {
                 customer.lifetimeSpend = customer.lifetimeSpend - deletedOrder.total;
@@ -886,7 +945,6 @@
             saveData();
             showNotification(`Order ${orderId} deleted.`, 'bg-red-100 text-red-700');
             renderOrderTracking();
-            // Re-render dashboard if visible, to update metrics
             if (!document.getElementById('dashboard-view').classList.contains('hidden')) renderDashboard();
         }
     }
@@ -933,19 +991,18 @@
     }
 
     // === CALENDAR VIEW RENDERING FUNCTIONS ===
-
+    
+    // ... (Calendar functions like getCalendarDays, getEventsForDate, renderDayView, renderWeekView, renderCalendar, changeView, changeMonth, changeDay, changeWeek, openEventModal, saveEvent, deleteEvent remain unchanged from previous response) ...
     function getCalendarDays(year, month) {
-      const firstDay = new Date(year, month, 1).getDay(); // 0 = Sunday, 6 = Saturday
+      const firstDay = new Date(year, month, 1).getDay();
       const daysInMonth = new Date(year, month + 1, 0).getDate();
       const today = new Date().toISOString().split('T')[0];
       let daysHtml = '';
 
-      // Blank days for the start of the month
       for (let i = 0; i < firstDay; i++) {
         daysHtml += `<div></div>`;
       }
 
-      // Days of the month
       for (let day = 1; day <= daysInMonth; day++) {
         const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         const events = getEventsForDate(dateStr);
@@ -964,7 +1021,6 @@
       return daysHtml;
     }
 
-    // Helper to get events for a date
     function getEventsForDate(dateStr) {
         return [...appointments, ...tasks].filter(e => e.date === dateStr).sort((a, b) => (a.time || '') > (b.time || '') ? 1 : -1);
     }
@@ -978,34 +1034,29 @@
       
       let dayBody = '<div class="schedule-grid" style="grid-template-columns: 80px 1fr;">';
       
-      // Time slots from 8 AM to 6 PM (11 hours)
       for (let h = 8; h <= 18; h++) {
         const timeLabel = h > 12 ? `${h - 12} PM` : `${h} AM`;
         const timeStr = String(h).padStart(2, '0') + ':00';
         dayBody += `<div class="time-label">${timeLabel}</div>`;
-        // Clickable time slot for scheduling
         dayBody += `<div class="time-slot day-column relative" onclick="openEventModal('${dateStr}', activeCustomer?.id, '', '${timeStr}')"></div>`;
       }
       dayBody += '</div>';
 
-      // Overlay events
       events.forEach(e => {
         if (e.time) {
           const [hour, minute] = e.time.split(':').map(Number);
-          const startHour = 8; // Start time of the displayed grid
+          const startHour = 8; 
           const totalMinutes = (hour * 60 + minute) - (startHour * 60);
-          const topPosition = (totalMinutes / 60) * 40; // 40px per hour
+          const topPosition = (totalMinutes / 60) * 40; 
           
-          if (topPosition >= 0) { // Only render if within 8 AM to 6 PM range
+          if (topPosition >= 0) { 
             dayBody += `<div class="schedule-event ${e.type}" style="top: ${topPosition}px; left: 80px; width: calc(100% - 80px); height: 38px;" onclick="openEventModal('${dateStr}', '${e.customerId}', '${e.title}', '${e.time}')">
               ${e.time.substring(0, 5)} - ${e.title}
             </div>`;
           } else {
-            // Render all-day/early events above the grid
              dayBody = `<div class="event ${e.type} text-sm mb-1">${e.time.substring(0, 5)} - ${e.title} (Early)</div>` + dayBody;
           }
         } else {
-          // Render all-day events above the grid
           dayBody = `<div class="event ${e.type} text-sm mb-1">${e.title} (All Day)</div>` + dayBody;
         }
       });
@@ -1015,12 +1066,11 @@
 
     function renderWeekView() {
       const startOfWeek = new Date(currentDate);
-      startOfWeek.setDate(currentDate.getDate() - currentDate.getDay()); // Go to Sunday
+      startOfWeek.setDate(currentDate.getDate() - currentDate.getDay()); 
       
       let weekBody = `<div class="schedule-grid" style="grid-template-columns: 80px repeat(7, 1fr);">`;
       
-      // Header for the week view
-      weekBody += `<div class="text-center text-sm font-semibold p-2 border-r"></div>`; // Empty corner
+      weekBody += `<div class="text-center text-sm font-semibold p-2 border-r"></div>`; 
       for (let i = 0; i < 7; i++) {
         const date = new Date(startOfWeek);
         date.setDate(startOfWeek.getDate() + i);
@@ -1028,7 +1078,6 @@
         weekBody += `<div class="text-center text-sm font-semibold p-2 border-r">${dayName} ${date.getDate()}</div>`;
       }
 
-      // Time slots from 8 AM to 6 PM
       for (let h = 8; h <= 18; h++) {
         const timeLabel = h > 12 ? `${h - 12} PM` : `${h} AM`;
         const timeStr = String(h).padStart(2, '0') + ':00';
@@ -1037,13 +1086,11 @@
           const dayDate = new Date(startOfWeek);
           dayDate.setDate(startOfWeek.getDate() + d);
           const dateStr = dayDate.toISOString().split('T')[0];
-          // Clickable time slot
           weekBody += `<div class="time-slot day-column relative" onclick="openEventModal('${dateStr}', activeCustomer?.id, '', '${timeStr}')"></div>`;
         }
       }
       weekBody += '</div>';
 
-      // Event rendering logic (simplified absolute positioning based on grid)
       const allEventsInWeek = [...appointments, ...tasks].filter(e => {
         if (!e.date) return false;
         const eventDate = new Date(e.date);
@@ -1057,9 +1104,9 @@
           const [hour, minute] = e.time.split(':').map(Number);
           const startHour = 8;
           const totalMinutes = (hour * 60 + minute) - (startHour * 60);
-          const topPosition = (totalMinutes / 60) * 40 + 40; // +40px for the day header row
+          const topPosition = (totalMinutes / 60) * 40 + 40; 
           
-          if (topPosition >= 40) { // Only render if within 8 AM to 6 PM range + header height
+          if (topPosition >= 40) { 
             const column = dayIndex + 2; 
             
             weekBody += `<div class="schedule-event ${e.type}" style="top: ${topPosition}px; grid-column: ${column}; height: 38px; width: 98%; position: absolute; margin-top: 0;" onclick="openEventModal('${e.date}', '${e.customerId}', '${e.title}', '${e.time}')">
@@ -1122,7 +1169,6 @@
 
     function changeView(view) { 
       calendarView = view; 
-      // Reset currentDate to start of day/week/month to prevent navigation issues
       if (view === 'day') currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
       if (view === 'week') currentDate.setDate(currentDate.getDate() - currentDate.getDay());
       if (view === 'month') currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
@@ -1131,7 +1177,6 @@
 
     function changeMonth(delta) {
       const newMonth = currentDate.getMonth() + delta;
-      // Set the date to the 1st of the new month to avoid date overflow issues
       currentDate = new Date(currentDate.getFullYear(), newMonth, 1);
       renderCalendar();
     }
@@ -1148,7 +1193,6 @@
 
 
     function openEventModal(date, customerId = null, defaultTitle = '', defaultTime = '') {
-      // Ensure customerId is set correctly if an active customer exists
       if (!customerId && activeCustomer) {
           customerId = activeCustomer.id;
       }
@@ -1211,7 +1255,6 @@
       
       const newEvent = { date, title, time, type: type.toLowerCase(), customerId };
 
-      // Tasks and Todos are stored in the 'tasks' array for simplicity
       if (type === 'Appointment') {
         appointments.push(newEvent);
       } else {
@@ -1221,14 +1264,12 @@
       saveData();
       document.querySelector('.modal').remove();
       showNotification(`${type} "${title}" saved!`, 'bg-green-100 text-green-700');
-      // Re-render only if currently on the calendar view
       if (!document.getElementById('calendar-view').classList.contains('hidden')) {
           renderCalendar();
       }
     }
 
     function deleteEvent(date, title, time) {
-      // Find the event index
       const appointmentIndex = appointments.findIndex(e => e.date === date && e.title === title && e.time === time);
       const taskIndex = tasks.findIndex(e => e.date === date && e.title === title && e.time === time);
 
@@ -1242,7 +1283,6 @@
       
       saveData();
       document.querySelector('.modal').remove(); 
-      // Re-open the modal to show the remaining events
       openEventModal(date); 
       renderCalendar();
     }
@@ -1270,7 +1310,7 @@
                             </div>
                             <div class="flex space-x-2">
                                 <button class="text-indigo-600 text-sm hover:text-indigo-800" onclick="toggleCustomerType('${v.id}', true)">Switch to Customer</button>
-                                <button class="text-red-600 text-sm hover:text-red-800" onclick="deleteVendor(${i})">Remove</button>
+                                <button class="text-red-600 text-sm hover:text-red-800" onclick="deleteVendor('${v.id}')">Remove</button>
                             </div>
                         </div>
                     `).join('')}
@@ -1291,16 +1331,8 @@
             </div>
         </div>`;
       
-      document.getElementById('addVendorBtn').addEventListener('click', () => {
-        const name = prompt("Enter vendor name:");
-        const contact = prompt("Enter main contact name:");
-        const type = prompt("Enter vendor type (e.g., Supplier, Manufacturer, Carrier):");
-        if (name && type) {
-          vendors.push({ id: 'VEND-' + Date.now(), name, primaryEmail: '', contact, type });
-          saveData();
-          renderVendorsTeam();
-        }
-      });
+      document.getElementById('addVendorBtn').addEventListener('click', openNewVendorModal);
+
       document.getElementById('addTeamBtn').addEventListener('click', () => {
         const name = prompt("Enter team member name:");
         if (name) {
@@ -1311,9 +1343,59 @@
       });
     }
 
-    function deleteVendor(index) {
-        if(confirm(`Are you sure you want to delete vendor ${vendors[index].name}?`)) {
-            vendors.splice(index, 1);
+    // NEW FUNCTIONALITY: Vendor Creation Modal
+    function openNewVendorModal() {
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.innerHTML = `<div class="modal-content">
+            <h3 class="text-lg font-bold mb-4">Add New Vendor/Manufacturer</h3>
+            <div class="space-y-2">
+                <input type="text" id="vendorName" placeholder="Vendor Name *" class="w-full p-2 border rounded-lg">
+                <input type="email" id="vendorEmail" placeholder="Primary Email" class="w-full p-2 border rounded-lg">
+                <input type="text" id="vendorContact" placeholder="Main Contact Name" class="w-full p-2 border rounded-lg">
+                <select id="vendorType" class="w-full p-2 border rounded-lg">
+                    <option>Supplier</option>
+                    <option>Manufacturer</option>
+                    <option>Carrier</option>
+                    <option>Other</option>
+                </select>
+            </div>
+            <div class="flex justify-end mt-4 space-x-2">
+                <button onclick="this.closest('.modal').remove()" class="bg-gray-300 hover:bg-gray-400 px-4 py-2 rounded-lg text-sm">Cancel</button>
+                <button onclick="saveNewVendor()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm">Save Vendor</button>
+            </div>
+        </div>`;
+        document.body.appendChild(modal);
+    }
+    
+    function saveNewVendor() {
+        const name = document.getElementById('vendorName').value.trim();
+        const email = document.getElementById('vendorEmail').value.trim();
+        const contact = document.getElementById('vendorContact').value.trim();
+        const type = document.getElementById('vendorType').value;
+
+        if (!name) {
+            showNotification('Vendor name is required.', 'bg-red-100 text-red-700');
+            return;
+        }
+
+        vendors.push({ 
+            id: 'VEND-' + Date.now().toString(36).toUpperCase(), 
+            name, 
+            primaryEmail: email, 
+            contact, 
+            type 
+        });
+
+        saveData();
+        document.querySelector('.modal').remove();
+        showNotification(`${name} added as ${type}.`, 'bg-green-100 text-green-700');
+        renderVendorsTeam();
+    }
+
+    function deleteVendor(vendorId) {
+        if(confirm(`Are you sure you want to delete vendor ${vendors.find(v=>v.id===vendorId)?.name}?`)) {
+            vendors = vendors.filter(v => v.id !== vendorId);
             saveData();
             renderVendorsTeam();
         }
@@ -1409,7 +1491,6 @@
 
     // === INIT ===
     function setupEventListeners() {
-      // NEW CUSTOMER button logic simplified
       document.getElementById('newCustomerButton').addEventListener('click', () => {
         const id = 'CUST-' + Math.random().toString(36).substring(2, 9).toUpperCase();
         activeCustomer = { id, name: 'New Customer', primaryEmail: '', personalEmail: '', workEmail: '', mobilePhone: '', workPhone: '', status: 'Prospect', industry: '', revenue: '', employees: '', address: '', website: '', leadSource: '', clv: '$0', lastPurchase: null, firstPurchase: null, purchaseFrequency: 0, primaryProduct: null, subscriptionTier: null, lastContact: null, nextTask: '', nps: null, social: [], handle: '', accountOwner: '', teamDivision: '', notes: '', tags: [], specialHandling: '', poRequired: false, preferredShipping: '', preferredCarrier: '', paymentTerms: '', creditLimit: 0, billingCycle: '', currency: 'USD', aov: 0, lastOrderDate: null, lifetimeSpend: 0, ordersPlaced: 0, returnRate: 0, paddleBrandsUsed: [] };
@@ -1418,8 +1499,7 @@
         renderCustomerList();
         navigateTo('customers-view');
       });
-      // NEW VENDOR button navigates to the vendors view
-      document.getElementById('newVendorButton').addEventListener('click', () => navigateTo('vendors-team-view'));
+      document.getElementById('newVendorButton').addEventListener('click', openNewVendorModal);
 
       document.getElementById('editCustomerButton').addEventListener('click', () => navigateTo('customers-view'));
       document.getElementById('backToDashboard').addEventListener('click', () => navigateTo('dashboard-view'));
@@ -1430,6 +1510,10 @@
 
     document.addEventListener('DOMContentLoaded', () => {
       loadData();
+      // Initialize Address Book state: closed by default
+      document.getElementById('addressBookContent').classList.add('hidden');
+      document.getElementById('addressBookToggle').textContent = '▶';
+
       renderCustomerList();
       setupEventListeners();
       if (activeCustomer) {
