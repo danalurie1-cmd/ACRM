@@ -9,19 +9,21 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>AS</text></svg>">
   <style>
     /* ------------------------------------------- */
-    /* NEW COLOR PALETTE & MODERN STYLING */
-    /* Primary: Navy Blue (slate-800) */
-    /* Accent: Vibrant Teal/Aqua (cyan-500) */
+    /* MODERN PROFESSIONAL DESIGN SYSTEM */
+    /* Primary: Deep Navy (#1E293B) - slate-800 */
+    /* Accent: Vibrant Teal/Aqua (#06B6D4) - cyan-500 */
+    /* Vendor: Rich Violet (#7C3AED) - violet-600 */
     /* ------------------------------------------- */
     :root {
-      --color-primary: #1E293B; /* slate-800 */
-      --color-accent: #06B6D4; /* cyan-500 */
-      --color-hover: #334155; /* slate-700 */
+      --color-primary: #1E293B; 
+      --color-accent: #06B6D4; 
+      --color-hover: #334155; 
+      --color-vendor: #7C3AED;
     }
 
     body { 
         font-family: 'Inter', sans-serif; 
-        background-color: #f1f5f9; /* slate-100 */
+        background-color: #f1f5f9; 
         color: var(--color-primary); 
     }
     .sidebar { 
@@ -37,19 +39,29 @@
     .nav-link:hover {
         background-color: var(--color-hover);
     }
+    
+    /* Global Color Overrides for Tailwind classes */
     .text-indigo-600 { color: var(--color-accent); }
     .bg-indigo-500 { background-color: var(--color-accent); }
-    .hover\:bg-indigo-400:hover { background-color: #0891B2; /* cyan-600 */ }
+    .hover\:bg-indigo-400:hover { background-color: #0891B2; }
     .bg-indigo-600 { background-color: var(--color-accent); }
-    .hover\:bg-indigo-700:hover { background-color: #0E7490; /* cyan-700 */ }
+    .hover\:bg-indigo-700:hover { background-color: #0E7490; }
     
-    .text-purple-600 { color: #7C3AED; } /* violet-600 for Vendors */
-    .bg-purple-500 { background-color: #7C3AED; }
+    .text-purple-600 { color: var(--color-vendor); } 
+    .bg-purple-500 { background-color: var(--color-vendor); }
     .hover\:bg-purple-400:hover { background-color: #6D28D9; }
+    
+    .text-cyan-300 { color: #67E8F9; } /* Light accent for sidebar headers */
 
     /* Input/Form Styles */
     .input-group input, .input-group select, .input-group textarea {
-      border: 1px solid #cbd5e1; /* slate-300 */
+      border: 1px solid #cbd5e1; 
+      transition: border-color 0.15s;
+    }
+    .input-group input:focus, .input-group select:focus, .input-group textarea:focus {
+        border-color: var(--color-accent);
+        outline: none;
+        box-shadow: 0 0 0 1px var(--color-accent);
     }
 
     /* Address Book Toggle */
@@ -253,6 +265,7 @@
       const isDashboardView = view === 'dashboard-view';
       const hasActiveCustomer = !!activeCustomer;
 
+      // Update button visibility
       document.getElementById('editCustomerButton')?.classList[hasActiveCustomer && !isCustomerView ? 'remove' : 'add']('hidden');
       document.getElementById('backToDashboard')?.classList[isDashboardView ? 'add' : 'remove']('hidden');
       
@@ -280,7 +293,7 @@
       
       let filtered = customers.filter(c => {
           const matchSearch = c.name.toLowerCase().includes(search) || 
-                              c.address?.toLowerCase().includes(search) || // Use optional chaining
+                              c.address?.toLowerCase().includes(search) || 
                               c.id.toLowerCase().includes(search);
           const matchFilter = filterByState ? extractStateFromAddress(c.address) === filterByState : true;
           return matchSearch && matchFilter;
@@ -333,36 +346,6 @@
         activeCustomer = customers.find(c => c.id === customerId);
         navigateTo('customers-view');
     }
-
-    // Address Book Listeners
-    document.addEventListener('DOMContentLoaded', () => {
-        // Only attach listeners if elements exist (which they should)
-        if (document.getElementById('customerSearch')) {
-            document.getElementById('customerSearch').addEventListener('input', renderCustomerList);
-            document.getElementById('customerSort').addEventListener('change', renderCustomerList);
-            document.getElementById('customerFilter').addEventListener('change', renderCustomerList);
-        }
-        
-        // Initial setup for collapsible address book
-        const header = document.getElementById('addressBookHeader');
-        if (header) {
-            header.addEventListener('click', () => {
-                const content = document.getElementById('addressBookContent');
-                const toggle = document.getElementById('addressBookToggle');
-                content.classList.toggle('hidden');
-                toggle.textContent = content.classList.contains('hidden') ? '▶' : '▼';
-            });
-        }
-        
-        loadData();
-        renderCustomerList();
-        setupEventListeners();
-        if (activeCustomer) {
-          document.getElementById('currentCustomerName').textContent = activeCustomer.name;
-          updateCustomerStatusUI(activeCustomer.status);
-        }
-        navigateTo('dashboard-view');
-    });
 
     function updateCustomerStatusUI(status) {
       const bar = document.getElementById('customerStatusBar');
@@ -466,25 +449,25 @@
             <button onclick="openEventModal(new Date().toISOString().split('T')[0], activeCustomer?.id, 'Follow up with ${activeCustomer.name}')" class="text-indigo-600 hover:text-indigo-800 text-xl">📅</button>
           </h2>
           <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <div class="bg-white p-4 rounded-xl shadow text-center">
+            <div class="bg-white p-4 rounded-xl shadow-lg text-center">
               <p class="text-2xl font-bold text-indigo-600">$${totalRevenue.toFixed(0)}</p>
               <p class="text-sm text-gray-600">Total Revenue</p>
             </div>
-            <div class="bg-white p-4 rounded-xl shadow text-center">
+            <div class="bg-white p-4 rounded-xl shadow-lg text-center">
               <p class="text-2xl font-bold text-green-600">${orders.length}</p>
               <p class="text-sm text-gray-600">Orders Processed</p>
             </div>
-            <div class="bg-white p-4 rounded-xl shadow text-center">
+            <div class="bg-white p-4 rounded-xl shadow-lg text-center">
               <p class="text-2xl font-bold text-blue-600">$${avgOrderValue.toFixed(0)}</p>
               <p class="text-sm text-gray-600">Avg Order Value</p>
             </div>
-            <div class="bg-white p-4 rounded-xl shadow text-center">
+            <div class="bg-white p-4 rounded-xl shadow-lg text-center">
               <p class="text-2xl font-bold ${lowStock ? 'text-red-600' : 'text-green-600'}">${lowStock}</p>
               <p class="text-sm text-gray-600">Low Stock Items</p>
             </div>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="bg-white p-6 rounded-xl shadow">
+            <div class="bg-white p-6 rounded-xl shadow-lg">
               <h3 class="font-semibold text-gray-700">Company Info</h3>
               <p><strong>Industry:</strong> ${activeCustomer.industry}</p>
               <p><strong>Revenue:</strong> ${activeCustomer.revenue}</p>
@@ -493,7 +476,7 @@
               <p><strong>Website:</strong> <a href="http://${activeCustomer.website}" target="_blank" class="text-indigo-600">${activeCustomer.website}</a></p>
               <p><strong>Paddle Brands Used:</strong> ${activeCustomer.paddleBrandsUsed?.join(', ') || 'None'}</p>
             </div>
-            <div class="bg-white p-6 rounded-xl shadow">
+            <div class="bg-white p-6 rounded-xl shadow-lg">
               <h3 class="font-semibold text-gray-700">Financial & Transactional</h3>
               <p><strong>CLV:</strong> ${activeCustomer.clv}</p>
               <p><strong>Last Purchase:</strong> ${activeCustomer.lastPurchase || 'N/A'}</p>
@@ -519,18 +502,18 @@
         <div class="max-w-7xl mx-auto">
           <h2 class="text-2xl font-extrabold text-gray-900 mb-6 flex justify-between items-center">
             Edit Customer Profile
-            <button onclick="openEventModal(new Date().toISOString().split('T')[0], activeCustomer?.id, 'Review ${activeCustomer.name} Profile')" class="text-indigo-600 hover:text-indigo-800 text-xl">📅</button>
+            <button onclick="openEventModal(new Date().toISOString().split('T')[0], activeCustomer?.id, 'Review ${activeCustomer.name} Profile')" class="text-indigo-600 hover:text-indigo-700 text-xl">📅</button>
           </h2>
           <div class="mb-4 flex justify-start items-center space-x-4">
               <span class="font-semibold text-gray-700">Classification:</span>
               ${isVendor ? 
                 `<span class="text-purple-600 font-bold">Vendor/Manufacturer</span> 
-                 <button onclick="toggleCustomerType('${activeCustomer.id}', true)" class="text-indigo-600 hover:text-indigo-800 text-sm border p-1 rounded">Switch to Customer</button>` : 
+                 <button onclick="toggleCustomerType('${activeCustomer.id}', true)" class="text-indigo-600 hover:text-indigo-700 text-sm border border-gray-300 p-1 rounded">Switch to Customer</button>` : 
                 `<span class="text-indigo-600 font-bold">Standard Customer</span> 
-                 <button onclick="toggleCustomerType('${activeCustomer.id}', false)" class="text-purple-600 hover:text-purple-800 text-sm border p-1 rounded">Switch to Vendor</button>`
+                 <button onclick="toggleCustomerType('${activeCustomer.id}', false)" class="text-purple-600 hover:text-purple-700 text-sm border border-gray-300 p-1 rounded">Switch to Vendor</button>`
               }
           </div>
-          <form id="customerForm" class="bg-white p-6 rounded-xl shadow space-y-6">
+          <form id="customerForm" class="bg-white p-6 rounded-xl shadow-lg space-y-6">
             <div class="section">
               <h3 class="font-semibold text-gray-700 mb-4">Identity & Firmographics</h3>
               <div class="field-grid">
@@ -654,10 +637,10 @@
         <div class="max-w-7xl mx-auto">
           <h2 class="text-2xl font-extrabold text-gray-900 mb-6 flex justify-between items-center">
             New Order - ${activeCustomer.name}
-            <button onclick="openEventModal(new Date().toISOString().split('T')[0], activeCustomer?.id, 'Verify ${activeCustomer.name} Order')" class="text-indigo-600 hover:text-indigo-800 text-xl">📅</button>
+            <button onclick="openEventModal(new Date().toISOString().split('T')[0], activeCustomer?.id, 'Verify ${activeCustomer.name} Order')" class="text-indigo-600 hover:text-indigo-700 text-xl">📅</button>
           </h2>
           <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow">
+            <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-lg">
               <h3 class="text-xl font-bold mb-4 border-b pb-2">Order Items</h3>
               <div id="orderLines" class="space-y-4">
                 <div class="line-item font-semibold text-sm text-gray-600 border-b pb-2">
@@ -670,9 +653,9 @@
                     <span></span>
                 </div>
               </div>
-              <button id="addLine" class="bg-indigo-500 hover:bg-indigo-400 text-white py-2 px-4 rounded-lg mt-4">+ Add Line</button>
+              <button id="addLine" class="bg-indigo-500 hover:bg-indigo-400 text-white font-semibold py-2 px-4 rounded-lg mt-4">+ Add Line</button>
             </div>
-            <div class="bg-white p-6 rounded-xl shadow space-y-6">
+            <div class="bg-white p-6 rounded-xl shadow-lg space-y-6">
               <div>
                 <h3 class="text-xl font-bold mb-4 border-b pb-2">Shipping & Payment</h3>
                 <textarea id="shipAddress" class="w-full" rows="3">${activeCustomer.address}</textarea>
@@ -819,10 +802,10 @@
         <div class="max-w-7xl mx-auto">
           <h2 class="text-2xl font-extrabold text-gray-900 mb-6 flex justify-between items-center">
             Inventory Management
-            <button onclick="openEventModal(new Date().toISOString().split('T')[0], null, 'Review Inventory Stock')" class="text-indigo-600 hover:text-indigo-800 text-xl">📅</button>
+            <button onclick="openEventModal(new Date().toISOString().split('T')[0], null, 'Review Inventory Stock')" class="text-indigo-600 hover:text-indigo-700 text-xl">📅</button>
           </h2>
           <button id="addInventoryBtn" class="bg-indigo-600 text-white py-2 px-4 rounded mb-4">+ Add Product</button>
-          <div class="bg-white rounded-xl shadow overflow-hidden">
+          <div class="bg-white rounded-xl shadow-lg overflow-hidden">
             <table class="w-full">
               <thead class="bg-gray-50">
                 <tr>
@@ -884,9 +867,9 @@
         <div class="max-w-7xl mx-auto">
           <h2 class="text-2xl font-extrabold text-gray-900 mb-6 flex justify-between items-center">
             Order Tracking
-            <button onclick="openEventModal(new Date().toISOString().split('T')[0], activeCustomer?.id, 'Review Order Status')" class="text-indigo-600 hover:text-indigo-800 text-xl">📅</button>
+            <button onclick="openEventModal(new Date().toISOString().split('T')[0], activeCustomer?.id, 'Review Order Status')" class="text-indigo-600 hover:text-indigo-700 text-xl">📅</button>
           </h2>
-          <div class="bg-white rounded-xl shadow overflow-hidden">
+          <div class="bg-white rounded-xl shadow-lg overflow-hidden">
             ${orders.slice().reverse().map(o => { 
               const cust = customers.find(c => c.id === o.customerId);
               return `<div class="border-b p-4" id="order-${o.id}">
@@ -978,10 +961,10 @@
         <div class="max-w-7xl mx-auto">
           <h2 class="text-2xl font-extrabold text-gray-900 mb-6 flex justify-between items-center">
             Sales Performance
-            <button onclick="openEventModal(new Date().toISOString().split('T')[0], null, 'Review Quarterly Sales Report')" class="text-indigo-600 hover:text-indigo-800 text-xl">📅</button>
+            <button onclick="openEventModal(new Date().toISOString().split('T')[0], null, 'Review Quarterly Sales Report')" class="text-indigo-600 hover:text-indigo-700 text-xl">📅</button>
           </h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="bg-white p-6 rounded-xl shadow">
+            <div class="bg-white p-6 rounded-xl shadow-lg">
               <h3 class="font-semibold mb-4">Brand Performance</h3>
               <div class="space-y-2">
                 ${Object.entries(brandSales).sort((a,b) => b[1]-a[1]).map(([brand, qty]) => `
@@ -991,7 +974,7 @@
                   </div>`).join('')}
               </div>
             </div>
-            <div class="bg-white p-6 rounded-xl shadow">
+            <div class="bg-white p-6 rounded-xl shadow-lg">
               <h3 class="font-semibold mb-4">Top Customers (Lifetime Spend)</h3>
               <div class="space-y-2">
                 ${customers.slice().sort((a,b) => b.lifetimeSpend - a.lifetimeSpend).slice(0,5).map(c => `
@@ -1005,7 +988,8 @@
         </div>`;
     }
 
-    // === CALENDAR VIEW RENDERING FUNCTIONS (Simplified for brevity - logic is integrated in full code) ===
+    // === CALENDAR VIEW RENDERING FUNCTIONS ===
+    
     function getCalendarDays(year, month) {
       const firstDay = new Date(year, month, 1).getDay();
       const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -1037,7 +1021,8 @@
     function getEventsForDate(dateStr) {
         return [...appointments, ...tasks].filter(e => e.date === dateStr).sort((a, b) => (a.time || '') > (b.time || '') ? 1 : -1);
     }
-
+    
+    // FIX: Day View Clickable Slots
     function renderDayView() {
       const year = currentDate.getFullYear();
       const month = currentDate.getMonth();
@@ -1051,6 +1036,7 @@
         const timeLabel = h > 12 ? `${h - 12} PM` : `${h} AM`;
         const timeStr = String(h).padStart(2, '0') + ':00';
         dayBody += `<div class="time-label">${timeLabel}</div>`;
+        // FIX: Added timeStr to openEventModal for accurate time pre-fill
         dayBody += `<div class="time-slot day-column relative" onclick="openEventModal('${dateStr}', activeCustomer?.id, '', '${timeStr}')"></div>`;
       }
       dayBody += '</div>';
@@ -1077,6 +1063,7 @@
       return dayBody;
     }
 
+    // FIX: Week View Clickable Slots
     function renderWeekView() {
       const startOfWeek = new Date(currentDate);
       startOfWeek.setDate(currentDate.getDate() - currentDate.getDay()); 
@@ -1099,6 +1086,7 @@
           const dayDate = new Date(startOfWeek);
           dayDate.setDate(startOfWeek.getDate() + d);
           const dateStr = dayDate.toISOString().split('T')[0];
+          // FIX: Added timeStr to openEventModal for accurate time pre-fill
           weekBody += `<div class="time-slot day-column relative" onclick="openEventModal('${dateStr}', activeCustomer?.id, '', '${timeStr}')"></div>`;
         }
       }
@@ -1177,7 +1165,7 @@
         </div>
       </div>`;
 
-      view.innerHTML = `<div class="max-w-7xl mx-auto bg-white p-6 rounded-xl shadow">${header}<div class="mt-4">${body}</div></div>`;
+      view.innerHTML = `<div class="max-w-7xl mx-auto bg-white p-6 rounded-xl shadow-lg">${header}<div class="mt-4">${body}</div></div>`;
     }
 
     function changeView(view) { 
@@ -1308,7 +1296,7 @@
         <div class="max-w-7xl mx-auto">
             <h2 class="text-2xl font-extrabold text-gray-900 mb-6 flex justify-between items-center">
                 Vendors & Internal Team Management
-                <button onclick="openEventModal(new Date().toISOString().split('T')[0], null, 'Team/Vendor Check-in')" class="text-indigo-600 hover:text-indigo-800 text-xl">📅</button>
+                <button onclick="openEventModal(new Date().toISOString().split('T')[0], null, 'Team/Vendor Check-in')" class="text-indigo-600 hover:text-indigo-700 text-xl">📅</button>
             </h2>
             
             <div class="mb-8">
@@ -1322,7 +1310,7 @@
                                 <p class="text-sm text-gray-600">Contact: ${v.contact} | Type: ${v.type}</p>
                             </div>
                             <div class="flex space-x-2">
-                                <button class="text-indigo-600 text-sm hover:text-indigo-800" onclick="toggleCustomerType('${v.id}', true)">Switch to Customer</button>
+                                <button class="text-indigo-600 text-sm hover:text-indigo-700" onclick="toggleCustomerType('${v.id}', true)">Switch to Customer</button>
                                 <button class="text-red-600 text-sm hover:text-red-800" onclick="deleteVendor('${v.id}')">Remove</button>
                             </div>
                         </div>
@@ -1429,7 +1417,7 @@
       view.innerHTML = `<div class="max-w-7xl mx-auto">
         <h2 class="text-2xl font-extrabold text-gray-900 mb-6 flex justify-between items-center">
           Sales Pipeline
-          <button onclick="openEventModal(new Date().toISOString().split('T')[0], activeCustomer?.id, 'Pipeline Review')" class="text-indigo-600 hover:text-indigo-800 text-xl">📅</button>
+          <button onclick="openEventModal(new Date().toISOString().split('T')[0], activeCustomer?.id, 'Pipeline Review')" class="text-indigo-600 hover:text-indigo-700 text-xl">📅</button>
         </h2>
         <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
           ${stages.map(stage => {
@@ -1520,6 +1508,25 @@
         link.addEventListener('click', e => { e.preventDefault(); navigateTo(link.dataset.view); });
       });
     }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Handle Address Book initialization AFTER elements exist
+      const content = document.getElementById('addressBookContent');
+      const toggle = document.getElementById('addressBookToggle');
+      if (content && toggle) {
+          content.classList.add('hidden');
+          toggle.textContent = '▶';
+      }
+
+      loadData();
+      setupEventListeners();
+      renderCustomerList();
+      if (activeCustomer) {
+        document.getElementById('currentCustomerName').textContent = activeCustomer.name;
+        updateCustomerStatusUI(activeCustomer.status);
+      }
+      navigateTo('dashboard-view');
+    });
   </script>
 </body>
 </html>
