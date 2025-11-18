@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AcoustiSkin CRM Pro</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>AS</text></svg>">
   <style>
     /* ------------------------------------------- */
@@ -15,43 +15,49 @@
     /* Vendor: Rich Violet (#7C3AED) - violet-600 */
     /* ------------------------------------------- */
     :root {
-      --color-primary: #1E293B; 
-      --color-accent: #06B6D4; 
-      --color-hover: #334155; 
-      --color-vendor: #7C3AED;
+      --color-primary-dark: #1E293B; /* Deep Navy */
+      --color-primary-light: #334155; /* Navy Hover */
+      --color-accent: #06B6D4; /* Vibrant Teal */
+      --color-accent-dark: #0E7490; /* Teal Hover */
+      --color-vendor: #7C3AED; /* Violet */
     }
 
     body { 
         font-family: 'Inter', sans-serif; 
         background-color: #f1f5f9; 
-        color: var(--color-primary); 
+        color: var(--color-primary-dark); 
     }
     .sidebar { 
         width: 280px; 
-        background-color: var(--color-primary);
+        background-color: var(--color-primary-dark); /* FIX: Enforce Navy Background */
     }
     .app-header { 
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06); 
     }
+    
+    /* Navigation Link Styling */
     .nav-link {
         transition: background-color 0.15s, color 0.15s;
     }
-    .nav-link:hover {
-        background-color: var(--color-hover);
+    .nav-link:hover, .customer-item:hover {
+        background-color: var(--color-primary-light) !important; /* Use Navy Hover */
     }
-    
+    .customer-item.bg-indigo-600, .nav-link.bg-indigo-600 {
+        background-color: var(--color-primary-light) !important; /* Selected item styling */
+    }
+
     /* Global Color Overrides for Tailwind classes */
     .text-indigo-600 { color: var(--color-accent); }
     .bg-indigo-500 { background-color: var(--color-accent); }
     .hover\:bg-indigo-400:hover { background-color: #0891B2; }
     .bg-indigo-600 { background-color: var(--color-accent); }
-    .hover\:bg-indigo-700:hover { background-color: #0E7490; }
+    .hover\:bg-indigo-700:hover { background-color: var(--color-accent-dark); }
     
+    .text-cyan-300 { color: #67E8F9; } /* Light accent for sidebar headers */
+
     .text-purple-600 { color: var(--color-vendor); } 
     .bg-purple-500 { background-color: var(--color-vendor); }
     .hover\:bg-purple-400:hover { background-color: #6D28D9; }
-    
-    .text-cyan-300 { color: #67E8F9; } /* Light accent for sidebar headers */
 
     /* Input/Form Styles */
     .input-group input, .input-group select, .input-group textarea {
@@ -63,6 +69,7 @@
         outline: none;
         box-shadow: 0 0 0 1px var(--color-accent);
     }
+    .search-bar { background-color: var(--color-primary-light); }
 
     /* Address Book Toggle */
     .collapsible { cursor: pointer; }
@@ -265,7 +272,6 @@
       const isDashboardView = view === 'dashboard-view';
       const hasActiveCustomer = !!activeCustomer;
 
-      // Update button visibility
       document.getElementById('editCustomerButton')?.classList[hasActiveCustomer && !isCustomerView ? 'remove' : 'add']('hidden');
       document.getElementById('backToDashboard')?.classList[isDashboardView ? 'add' : 'remove']('hidden');
       
@@ -446,7 +452,7 @@
         <div class="max-w-7xl mx-auto">
           <h2 class="text-2xl font-extrabold text-gray-900 mb-6 flex justify-between items-center">
             ${activeCustomer.name} - Dashboard
-            <button onclick="openEventModal(new Date().toISOString().split('T')[0], activeCustomer?.id, 'Follow up with ${activeCustomer.name}')" class="text-indigo-600 hover:text-indigo-800 text-xl">📅</button>
+            <button onclick="openEventModal(new Date().toISOString().split('T')[0], activeCustomer?.id, 'Follow up with ${activeCustomer.name}')" class="text-indigo-600 hover:text-indigo-700 text-xl">📅</button>
           </h2>
           <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
             <div class="bg-white p-4 rounded-xl shadow-lg text-center">
@@ -1021,8 +1027,7 @@
     function getEventsForDate(dateStr) {
         return [...appointments, ...tasks].filter(e => e.date === dateStr).sort((a, b) => (a.time || '') > (b.time || '') ? 1 : -1);
     }
-    
-    // FIX: Day View Clickable Slots
+
     function renderDayView() {
       const year = currentDate.getFullYear();
       const month = currentDate.getMonth();
@@ -1036,7 +1041,6 @@
         const timeLabel = h > 12 ? `${h - 12} PM` : `${h} AM`;
         const timeStr = String(h).padStart(2, '0') + ':00';
         dayBody += `<div class="time-label">${timeLabel}</div>`;
-        // FIX: Added timeStr to openEventModal for accurate time pre-fill
         dayBody += `<div class="time-slot day-column relative" onclick="openEventModal('${dateStr}', activeCustomer?.id, '', '${timeStr}')"></div>`;
       }
       dayBody += '</div>';
@@ -1063,7 +1067,6 @@
       return dayBody;
     }
 
-    // FIX: Week View Clickable Slots
     function renderWeekView() {
       const startOfWeek = new Date(currentDate);
       startOfWeek.setDate(currentDate.getDate() - currentDate.getDay()); 
@@ -1086,7 +1089,6 @@
           const dayDate = new Date(startOfWeek);
           dayDate.setDate(startOfWeek.getDate() + d);
           const dateStr = dayDate.toISOString().split('T')[0];
-          // FIX: Added timeStr to openEventModal for accurate time pre-fill
           weekBody += `<div class="time-slot day-column relative" onclick="openEventModal('${dateStr}', activeCustomer?.id, '', '${timeStr}')"></div>`;
         }
       }
