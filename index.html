@@ -199,7 +199,6 @@
       { sku: 'ASKIN-006', name: 'AcoustiSkin Paddle Skin - ProKennex', brand: 'ProKennex', stock: 20, price: 29.95, reorder: 20 },
       { sku: 'ASKIN-007', name: 'AcoustiSkin Paddle Skin - Diadem', brand: 'Diadem', stock: 35, price: 29.95, reorder: 25 },
       { sku: 'ASKIN-008', name: 'AcoustiSkin Paddle Skin - CRBN', brand: 'CRBN', stock: 50, price: 29.95, reorder: 30 },
-      { sku: 'ASKIN-009', name: 'AcoustiSkin Paddle Skin - Vatic Pro', brand: 'Vatic Pro', stock: 70, price: 29.95, reorder: 40 },
       { sku: 'ASKIN-010', name: 'AcoustiSkin Paddle Skin - Paddletek', brand: 'Paddletek', stock: 90, price: 29.95, reorder: 50 }
     ];
     let pipelineDeals = [];
@@ -1355,28 +1354,36 @@
     function openNewVendorModal() {
         const modal = document.createElement('div');
         modal.className = 'modal';
-        modal.innerHTML = `<div class="modal-content max-w-lg">
+        // Increased max-width to 700px for a better field layout
+        modal.innerHTML = `<div class="modal-content max-w-2xl"> 
             <h3 class="text-xl font-bold mb-4">Add New Vendor/Manufacturer</h3>
-            <div class="space-y-3">
-                <h4 class="font-semibold border-b pb-1">Business Details</h4>
-                <input type="text" id="vendorName" placeholder="Company Name *" class="w-full p-2 border rounded-lg" required>
-                <input type="text" id="vendorAddress" placeholder="Physical Address (e.g. 123 Main St, ST 12345)" class="w-full p-2 border rounded-lg">
-                <h4 class="font-semibold border-b pb-1 pt-3">Contact Information</h4>
-                <div class="grid grid-cols-2 gap-2">
-                    <input type="email" id="vendorEmail" placeholder="Primary Email *" class="w-full p-2 border rounded-lg" required>
-                    <input type="text" id="vendorContact" placeholder="Main Contact Name" class="w-full p-2 border rounded-lg">
-                    <input type="tel" id="vendorPhone" placeholder="Phone Number" class="w-full p-2 border rounded-lg">
-                    <select id="vendorType" class="w-full p-2 border rounded-lg">
-                        <option>Supplier</option>
-                        <option>Manufacturer</option>
-                        <option>Carrier</option>
-                        <option>Other</option>
-                    </select>
+            <form id="newVendorForm" class="space-y-4">
+                <div class="section">
+                    <h4 class="font-semibold text-gray-700 mb-2">Business Details</h4>
+                    <div class="field-grid">
+                        <input type="text" id="vendorName" placeholder="Company Name *" class="w-full p-2 border rounded-lg" required>
+                        <input type="text" id="vendorAddress" placeholder="Physical Address (e.g. 123 Main St, ST 12345)" class="w-full p-2 border rounded-lg">
+                        <select id="vendorType" class="w-full p-2 border rounded-lg">
+                            <option value="Supplier">Supplier</option>
+                            <option value="Manufacturer">Manufacturer</option>
+                            <option value="Carrier">Carrier</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
                 </div>
-            </div>
+                <div class="section">
+                    <h4 class="font-semibold text-gray-700 mb-2">Contact Information</h4>
+                    <div class="field-grid">
+                        <input type="text" id="vendorContact" placeholder="Main Contact Name" class="w-full p-2 border rounded-lg">
+                        <input type="email" id="vendorEmail" placeholder="Primary Email *" class="w-full p-2 border rounded-lg" required>
+                        <input type="tel" id="vendorPhone" placeholder="Phone Number" class="w-full p-2 border rounded-lg">
+                        <input type="text" id="vendorPaymentTerms" placeholder="Payment Terms (e.g., Net 30)" class="w-full p-2 border rounded-lg">
+                    </div>
+                </div>
+            </form>
             <div class="flex justify-end mt-4 space-x-2">
-                <button onclick="this.closest('.modal').remove()" class="bg-gray-300 hover:bg-gray-400 px-4 py-2 rounded-lg text-sm">Cancel</button>
-                <button onclick="saveNewVendor()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm">Save Vendor</button>
+                <button type="button" onclick="this.closest('.modal').remove()" class="bg-gray-300 hover:bg-gray-400 px-4 py-2 rounded-lg text-sm">Cancel</button>
+                <button type="button" onclick="saveNewVendor()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm">Save Vendor</button>
             </div>
         </div>`;
         document.body.appendChild(modal);
@@ -1389,6 +1396,8 @@
         const contact = document.getElementById('vendorContact').value.trim();
         const phone = document.getElementById('vendorPhone').value.trim();
         const type = document.getElementById('vendorType').value;
+        const paymentTerms = document.getElementById('vendorPaymentTerms').value.trim();
+
 
         if (!name || !email) {
             showNotification('Company Name and Primary Email are required.', 'bg-red-100 text-red-700');
@@ -1402,7 +1411,8 @@
             primaryEmail: email, 
             contact, 
             phone,
-            type 
+            type,
+            paymentTerms
         });
 
         saveData();
