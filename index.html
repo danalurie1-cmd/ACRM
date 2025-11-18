@@ -327,6 +327,8 @@
                 document.getElementById('loading-overlay').classList.add('hidden');
             }, (error) => {
                 console.error("Firestore Listener Error:", error);
+                // FIX: Ensure the overlay is hidden even if the data connection fails
+                document.getElementById('loading-overlay').classList.add('hidden');
             });
         }
 
