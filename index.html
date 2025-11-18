@@ -1,1664 +1,626 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AcoustiSkin CRM Pro</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>AS</text></svg>">
-  <style>
-    /* ------------------------------------------- */
-    /* MODERN PROFESSIONAL DESIGN SYSTEM */
-    /* Primary: Deep Navy (#1E293B) - slate-800 */
-    /* Accent: Vibrant Teal/Aqua (#06B6D4) - cyan-500 */
-    /* Vendor: Rich Violet (#7C3AED) - violet-600 */
-    /* ------------------------------------------- */
-    :root {
-      --color-primary-dark: #1E293B; /* Deep Navy */
-      --color-primary-light: #334155; /* Navy Hover */
-      --color-accent: #06B6D4; /* Vibrant Teal */
-      --color-accent-dark: #0E7490; /* Teal Hover */
-      --color-vendor: #7C3AED; /* Violet */
-    }
-
-    body { 
-        font-family: 'Inter', sans-serif; 
-        background-color: #f1f5f9; 
-        color: var(--color-primary-dark); 
-    }
-    .sidebar { 
-        width: 280px; 
-        background-color: var(--color-primary-dark);
-    }
-    .app-header { 
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06); 
-    }
-    
-    /* Navigation Link Styling */
-    .nav-link {
-        transition: background-color 0.15s, color 0.15s;
-    }
-    .nav-link:hover, .customer-item:hover {
-        background-color: var(--color-primary-light) !important;
-    }
-    .customer-item.bg-indigo-600, .nav-link.bg-indigo-600 {
-        background-color: var(--color-primary-light) !important;
-    }
-
-    /* Global Color Overrides for Tailwind classes */
-    .text-indigo-600 { color: var(--color-accent); }
-    .bg-indigo-500 { background-color: var(--color-accent); }
-    .hover\:bg-indigo-400:hover { background-color: #0891B2; }
-    .bg-indigo-600 { background-color: var(--color-accent); }
-    .hover\:bg-indigo-700:hover { background-color: var(--color-accent-dark); }
-    
-    .text-cyan-300 { color: #67E8F9; } 
-
-    .text-purple-600 { color: var(--color-vendor); } 
-    .bg-purple-500 { background-color: var(--color-vendor); }
-    .hover\:bg-purple-400:hover { background-color: #6D28D9; }
-
-    /* Input/Form Styles */
-    .input-group input, .input-group select, .input-group textarea {
-      border: 1px solid #cbd5e1; 
-      transition: border-color 0.15s;
-    }
-    .input-group input:focus, .input-group select:focus, .input-group textarea:focus {
-        border-color: var(--color-accent);
-        outline: none;
-        box-shadow: 0 0 0 1px var(--color-accent);
-    }
-    .search-bar { background-color: var(--color-primary-light); }
-
-    /* Address Book Toggle */
-    .collapsible { cursor: pointer; }
-
-    /* Order Line Styles */
-    .line-item { 
-        display: grid; 
-        grid-template-columns: 1.5fr 1fr 0.5fr 1fr 1fr 1fr auto; 
-        gap: 0.5rem; 
-        align-items: center; 
-        margin-bottom: 0.5rem; 
-        padding-right: 20px; 
-    }
-    .line-total { font-weight: bold; text-align: right; padding-right: 8px; } 
-    .team-card { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
-
-    /* Calendar */
-    .calendar-grid { 
-      display: grid; 
-      gap: 0.5rem; 
-      grid-template-columns: repeat(7, 1fr); /* FIX: Ensure 7 columns for MONTH view */
-    }
-    .calendar-day.today { background: #E0F7FA; border-color: var(--color-accent); }
-    .appointment { background: var(--color-accent); }
-    .schedule-event { background: var(--color-accent); }
-    
-    /* FIX: Calendar Daily View Alignment */
-    .time-slot { height: 40px; border-bottom: 1px dashed #e5e7eb; }
-    .time-label { padding-right: 10px; text-align: right; color: #6b7280; font-size: 0.75rem; align-self: flex-start; margin-top: 8px; } 
-    
-  </style>
-</head>
-<body class="bg-gray-50 min-h-screen antialiased flex">
-  <div id="notification" class="fixed top-4 right-4 z-50 p-3 rounded-lg shadow-xl text-sm font-medium transition-all duration-300" role="alert"></div>
-
-  <aside class="sidebar text-white flex flex-col h-screen fixed">
-    <div class="p-6 text-2xl font-bold border-b border-gray-700">AcoustiSkin CRM Pro</div>
-    <div class="p-6 flex-grow overflow-y-auto">
-      <h3 class="text-sm font-semibold mb-2 text-cyan-300 uppercase tracking-wider">Core</h3>
-      <nav class="space-y-1">
-        <a href="#" class="nav-link flex items-center p-3 rounded-lg transition-colors" data-view="dashboard-view">Dashboard</a>
-        <a href="#" class="nav-link flex items-center p-3 rounded-lg transition-colors" data-view="customers-view">Customers</a>
-        <a href="#" class="nav-link flex items-center p-3 rounded-lg transition-colors" data-view="new-order-view">New Order</a>
-        <a href="#" class="nav-link flex items-center p-3 rounded-lg transition-colors" data-view="inventory-view">Inventory</a>
-        <a href="#" class="nav-link flex items-center p-3 rounded-lg transition-colors" data-view="orders-view">Order Tracking</a>
-        <a href="#" class="nav-link flex items-center p-3 rounded-lg transition-colors" data-view="calendar-view">Calendar</a>
-        <a href="#" class="nav-link flex items-center p-3 rounded-lg transition-colors" data-view="pipeline-view">Pipeline</a>
-        <a href="#" class="nav-link flex items-center p-3 rounded-lg transition-colors" data-view="reports-view">Reports</a>
-        <a href="#" class="nav-link flex items-center p-3 rounded-lg transition-colors" data-view="vendors-team-view">Vendors & Team</a>
-      </nav>
-      <button id="newCustomerButton" class="w-full mt-6 bg-indigo-500 hover:bg-indigo-400 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 shadow-md">
-        + New Customer
-      </button>
-      <button id="newVendorButton" class="w-full mt-2 bg-purple-500 hover:bg-purple-400 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 shadow-md">
-        + New Vendor
-      </button>
-      <button onclick="openEventModal(new Date().toISOString().split('T')[0], null, 'General Task/To-Do')" class="w-full mt-2 bg-gray-600 hover:bg-gray-500 text-white py-2 px-4 rounded-lg transition-colors duration-200 shadow-md text-sm">
-        📅 Quick Schedule Task
-      </button>
-      <div class="mt-6 space-y-2">
-        <button id="exportBtn" class="w-full bg-gray-600 hover:bg-gray-500 text-white py-2 rounded-lg text-sm">Export Data</button>
-        <label class="w-full bg-gray-600 hover:bg-gray-500 text-white py-2 rounded-lg text-sm text-center block cursor-pointer">
-          Import Data <input type="file" id="importFile" class="hidden" accept=".json">
-        </label>
-      </div>
-    </div>
-    
-    <div class="p-6 border-t border-gray-700">
-      <div id="addressBookHeader" class="collapsible flex justify-between items-center text-sm font-semibold mb-2 text-cyan-300 uppercase tracking-wider">
-        <h3>Address Book</h3> 
-        <span id="addressBookToggle">▶</span>
-      </div>
-      <div id="addressBookContent" class="space-y-2 hidden">
-        <div class="flex space-x-2 mb-2">
-          <select id="customerSort" class="bg-slate-700 text-white text-xs p-1 rounded">
-            <option value="name_asc">Name A-Z</option>
-            <option value="name_desc">Name Z-A</option>
-            <option value="id_asc">ID Asc</option>
-            <option value="state_asc">State A-Z</option>
-          </select>
-          <select id="customerFilter" class="bg-slate-700 text-white text-xs p-1 rounded">
-            <option value="">All States</option>
-            ${Object.keys(stateTax).map(st => `<option value="${st}">${st}</option>`).join('')}
-          </select>
-        </div>
-        <input type="text" id="customerSearch" class="search-bar bg-slate-700 text-white placeholder-slate-400 border-none" placeholder="Search name, address, PO...">
-        <ul id="customerList" class="space-y-1 max-h-64 overflow-y-auto">
-          <li class="p-3 text-center text-gray-400">Loading...</li>
-        </ul>
-      </div>
-    </div>
-  </aside>
-
-  <main class="main-content flex flex-col ml-72 w-full">
-    <header class="app-header bg-white p-4 flex justify-between items-center sticky top-0 z-10">
-      <h1 class="text-xl font-bold text-gray-800">Customer: <span id="currentCustomerName" class="text-indigo-600">Select Customer</span></h1>
-      <div class="flex items-center space-x-4">
-        <button id="backToDashboard" class="hidden bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg text-sm transition-colors">
-          Back to Dashboard
-        </button>
-        <button id="editCustomerButton" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg text-sm transition-colors">
-          Edit Profile
-        </button>
-      </div>
-    </header>
-    <div id="customerStatusBar" class="mx-6 mt-4 p-2 font-semibold text-sm rounded-lg bg-gray-200 text-gray-800">
-      Status: N/A
-    </div>
-    <div id="dashboard-view" class="app-view p-6"></div>
-    <div id="customers-view" class="app-view p-6 hidden"></div>
-    <div id="new-order-view" class="app-view p-6 hidden"></div>
-    <div id="inventory-view" class="app-view p-6 hidden"></div>
-    <div id="orders-view" class="app-view p-6 hidden"></div>
-    <div id="calendar-view" class="app-view p-6 hidden"></div>
-    <div id="pipeline-view" class="app-view p-6 hidden"></div>
-    <div id="reports-view" class="app-view p-6 hidden"></div>
-    <div id="vendors-team-view" class="app-view p-6 hidden"></div>
-  </main>
-
-  <script>
-    // === DATA & STATE ===
-    let activeCustomer = null;
-    let customers = [];
-    let vendors = []; 
-    let orders = [];
-    let inventory = [
-      { sku: 'ASKIN-001', name: 'AcoustiSkin Paddle Skin - Selkirk', brand: 'Selkirk', stock: 150, price: 29.95, reorder: 50 },
-      { sku: 'ASKIN-002', name: 'AcoustiSkin Paddle Skin - Joola', brand: 'Joola', stock: 80, price: 29.95, reorder: 40 },
-      { sku: 'ASKIN-003', name: 'AcoustiSkin Paddle Skin - Onix', brand: 'Onix', stock: 30, price: 29.95, reorder: 30 },
-      { sku: 'ASKIN-004', name: 'AcoustiSkin Paddle Skin - Gamma', brand: 'Gamma', stock: 60, price: 29.95, reorder: 30 },
-      { sku: 'ASKIN-005', name: 'AcoustiSkin Paddle Skin - Engage', brand: 'Engage', stock: 45, price: 29.95, reorder: 30 },
-      { sku: 'ASKIN-006', name: 'AcoustiSkin Paddle Skin - ProKennex', brand: 'ProKennex', stock: 20, price: 29.95, reorder: 20 },
-      { sku: 'ASKIN-007', name: 'AcoustiSkin Paddle Skin - Diadem', brand: 'Diadem', stock: 35, price: 29.95, reorder: 25 },
-      { sku: 'ASKIN-008', name: 'AcoustiSkin Paddle Skin - CRBN', brand: 'CRBN', stock: 50, price: 29.95, reorder: 30 },
-      { sku: 'ASKIN-010', name: 'AcoustiSkin Paddle Skin - Paddletek', brand: 'Paddletek', stock: 90, price: 29.95, reorder: 50 }
-    ];
-    let pipelineDeals = [];
-    let appointments = [];
-    let tasks = [];
-    let teamMembers = ['Allyson', 'Sindi', 'Lori', 'Wen', 'Janine', 'Winnie'];
-    const paddleBrands = ['Selkirk', 'Joola', 'Paddletek', 'Onix', 'Gamma', 'Engage', 'ProKennex', 'Diadem', 'CRBN', 'Vatic Pro'];
-    
-    // US Sales Tax Rates (State Level)
-    const stateTax = { 'AL': 0.04, 'AK': 0.00, 'AZ': 0.056, 'AR': 0.065, 'CA': 0.0725, 'CO': 0.029, 'CT': 0.0635, 'DE': 0.00, 'FL': 0.06, 'GA': 0.04, 'HI': 0.04, 'ID': 0.06, 'IL': 0.0625, 'IN': 0.07, 'IA': 0.06, 'KS': 0.065, 'KY': 0.06, 'LA': 0.045, 'ME': 0.055, 'MD': 0.06, 'MA': 0.0625, 'MI': 0.06, 'MN': 0.06875, 'MS': 0.07, 'MO': 0.04225, 'MT': 0.00, 'NE': 0.055, 'NV': 0.0685, 'NH': 0.00, 'NJ': 0.06625, 'NM': 0.05125, 'NY': 0.04, 'NC': 0.0475, 'ND': 0.05, 'OH': 0.0575, 'OK': 0.045, 'OR': 0.00, 'PA': 0.06, 'RI': 0.07, 'SC': 0.06, 'SD': 0.042, 'TN': 0.07, 'TX': 0.0625, 'UT': 0.0485, 'VT': 0.06, 'VA': 0.043, 'WA': 0.065, 'WV': 0.06, 'WI': 0.05, 'WY': 0.04 };
-    let calendarView = 'month';
-    let currentDate = new Date();
-
-    // === LOCALSTORAGE ===
-    function loadData() {
-      const data = JSON.parse(localStorage.getItem('acoustiskin-crm-pro') || '{}');
-      
-      customers = (data.customers || [
-        { id: 'CUST-001', name: 'Acme Corp', email: 'john@acme.com', phone: '555-0001', status: 'Active Customer', industry: 'Manufacturing', revenue: '$5M', employees: '200+', address: '123 Main St, City, CA 12345', website: 'acme.com', leadSource: 'Referral', clv: '$150,000', lastPurchase: '2025-10-15', firstPurchase: '2023-01-10', purchaseFrequency: 12, primaryProduct: 'Team Jerseys', subscriptionTier: 'Gold', lastContact: '2025-11-10', nextTask: 'Q4 Review Call', nps: 9, social: ['LinkedIn'], handle: '@acmecorp', accountOwner: 'Dana Lurie', teamDivision: 'Sales', notes: '', tags: ['VIP'], specialHandling: 'Email only', poRequired: true, preferredShipping: 'Standard', preferredCarrier: 'UPS', paymentTerms: 'Net 30', creditLimit: 50000, billingCycle: 'Monthly', currency: 'USD', aov: 1250, lastOrderDate: '2025-10-15', lifetimeSpend: 150000, ordersPlaced: 120, returnRate: 2.1, paddleBrandsUsed: ['Selkirk', 'Joola'] },
-        { id: 'CUST-002', name: 'AcoustiSkin LLC', email: 'dana@acoustiskin.com', phone: '555-0002', status: 'Prospect', industry: 'Healthcare', revenue: '$2M', employees: '50-200', address: '456 Health Ave, Wellness, CA 67890', website: 'acoustiskin.com', leadSource: 'Website', clv: '$0', lastPurchase: null, firstPurchase: null, purchaseFrequency: 0, primaryProduct: null, subscriptionTier: null, lastContact: '2025-11-01', nextTask: 'Product Demo', nps: null, social: ['Instagram', 'X'], handle: '@acoustiskin', accountOwner: 'Dana Lurie', teamDivision: 'Sales', notes: '', tags: [], specialHandling: '', poRequired: false, preferredShipping: 'Expedited', preferredCarrier: 'FedEx', paymentTerms: 'Pre-paid', creditLimit: 0, billingCycle: 'Per-Order', currency: 'USD', aov: 0, lastOrderDate: null, lifetimeSpend: 0, ordersPlaced: 0, returnRate: 0, paddleBrandsUsed: [] }
-      ]).map(c => {
-          c.primaryEmail = c.email || c.primaryEmail || '';
-          c.personalEmail = c.personalEmail || '';
-          c.workEmail = c.workEmail || '';
-          c.mobilePhone = c.phone || c.mobilePhone || '';
-          c.workPhone = c.workPhone || '';
-          delete c.email; 
-          delete c.phone;
-          return c;
-      });
-      
-      vendors = data.vendors || [{id: 'VEND-001', name: '3M Vinyls', primaryEmail: 'orders@3m.com', contact: 'Bob', type: 'Supplier'}, {id: 'VEND-002', name: 'FedEx Ground', primaryEmail: 'support@fedex.com', contact: 'Shipping Rep', type: 'Carrier'}];
-      orders = data.orders || [];
-      inventory = data.inventory || inventory;
-      pipelineDeals = data.pipelineDeals || [];
-      tasks = data.tasks || [];
-      teamMembers = data.teamMembers || teamMembers;
-
-      // FIX: Hardcode USA Federal Holidays for reliability and persistence
-      const currentYear = new Date().getFullYear();
-      appointments = data.appointments || [];
-
-      // Only add holidays if they haven't been added this year (to prevent duplicates)
-      if (!appointments.some(e => e.title.includes('Federal Holiday') && e.date.includes(currentYear))) {
-          const holidays = [
-              // Format: {date: "YYYY-MM-DD", title: "Holiday Name"}
-              { date: `${currentYear}-01-01`, title: "New Year's Day - Federal Holiday", isRecurring: true },
-              { date: `${currentYear}-01-20`, title: "MLK Day - Federal Holiday", isRecurring: true }, // 3rd Monday in Jan
-              { date: `${currentYear}-02-17`, title: "Presidents' Day - Federal Holiday", isRecurring: true }, // 3rd Monday in Feb
-              { date: `${currentYear}-05-26`, title: "Memorial Day - Federal Holiday", isRecurring: true }, // Last Monday in May
-              { date: `${currentYear}-06-19`, title: "Juneteenth - Federal Holiday", isRecurring: true },
-              { date: `${currentYear}-07-04`, title: "Independence Day - Federal Holiday", isRecurring: true },
-              { date: `${currentYear}-09-01`, title: "Labor Day - Federal Holiday", isRecurring: true }, // 1st Monday in Sep
-              { date: `${currentYear}-10-13`, title: "Columbus Day - Federal Holiday", isRecurring: true }, // 2nd Monday in Oct
-              { date: `${currentYear}-11-11`, title: "Veterans Day - Federal Holiday", isRecurring: true },
-              { date: `${currentYear}-11-27`, title: "Thanksgiving Day - Federal Holiday", isRecurring: true }, // 4th Thursday in Nov
-              { date: `${currentYear}-12-25`, title: "Christmas Day - Federal Holiday", isRecurring: true },
-          ];
-          appointments.push(...holidays.map(h => ({...h, type: 'appointment', time: '09:00'})));
-      }
-
-      if (customers.length > 0 && !activeCustomer) activeCustomer = customers[0];
-    }
-    function saveData() {
-      localStorage.setItem('acoustiskin-crm-pro', JSON.stringify({ customers, vendors, orders, inventory, pipelineDeals, appointments, tasks, teamMembers }));
-    }
-
-    // === UTILS ===
-    function showNotification(msg, type = 'bg-blue-100 text-blue-700') {
-      const n = document.getElementById('notification');
-      n.textContent = msg;
-      n.className = `fixed top-4 right-4 z-50 p-3 rounded-lg shadow-xl text-sm font-medium ${type} transition-all duration-300`;
-      n.classList.remove('hidden');
-      setTimeout(() => n.classList.add('hidden'), 4000);
-    }
-
-    function getCustomerIdByName(name) {
-      return customers.find(c => c.name === name)?.id;
-    }
-
-    function extractStateFromAddress(address) {
-      if (!address) return '';
-      const parts = address.split(', ');
-      const stZipPart = parts.pop(); 
-      if (stZipPart) {
-        return stZipPart.split(' ')[0].toUpperCase();
-      }
-      return '';
-    }
-
-    // === NAVIGATION ===
-    function navigateTo(view) {
-      document.querySelectorAll('.app-view').forEach(v => v.classList.add('hidden'));
-      document.getElementById(view)?.classList.remove('hidden');
-      
-      const isCustomerView = view === 'customers-view';
-      const isDashboardView = view === 'dashboard-view';
-      const hasActiveCustomer = !!activeCustomer;
-
-      document.getElementById('editCustomerButton')?.classList[hasActiveCustomer && !isCustomerView ? 'remove' : 'add']('hidden');
-      document.getElementById('backToDashboard')?.classList[isDashboardView ? 'add' : 'remove']('hidden');
-      
-      const views = {
-        'dashboard-view': renderDashboard,
-        'customers-view': renderCustomers,
-        'new-order-view': renderNewOrderForm,
-        'inventory-view': renderInventory,
-        'orders-view': renderOrderTracking,
-        'calendar-view': renderCalendar,
-        'pipeline-view': renderPipeline,
-        'reports-view': renderReports,
-        'vendors-team-view': renderVendorsTeam
-      };
-
-      if (views[view]) views[view]();
-      renderCustomerList(); 
-    }
-
-    // === CUSTOMER LIST / ADDRESS BOOK ===
-    function renderCustomerList() {
-      const search = document.getElementById('customerSearch')?.value.toLowerCase() || '';
-      const sortBy = document.getElementById('customerSort')?.value || 'name_asc';
-      const filterByState = document.getElementById('customerFilter')?.value || '';
-      
-      let filtered = customers.filter(c => {
-          const matchSearch = c.name.toLowerCase().includes(search) || 
-                              c.address?.toLowerCase().includes(search) || 
-                              c.id.toLowerCase().includes(search);
-          const matchFilter = filterByState ? extractStateFromAddress(c.address) === filterByState : true;
-          return matchSearch && matchFilter;
-      });
-
-      // Sorting Logic
-      filtered.sort((a, b) => {
-          const [field, order] = sortBy.split('_');
-          let valA, valB;
-          
-          if (field === 'state') {
-              valA = extractStateFromAddress(a.address);
-              valB = extractStateFromAddress(b.address);
-          } else {
-              valA = a[field] || '';
-              valB = b[field] || '';
-          }
-
-          if (typeof valA === 'string') {
-              return order === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
-          }
-          return 0;
-      });
-
-      const list = document.getElementById('customerList');
-      if (!list) return;
-
-      list.innerHTML = filtered.map(c => `
-        <li class="customer-item p-2 flex justify-between items-center text-sm ${activeCustomer?.id === c.id ? 'bg-indigo-600' : 'hover:bg-indigo-600'} rounded-lg">
-          <span class="flex-grow cursor-pointer" data-customer-id="${c.id}">${c.name}</span>
-          <div class="flex space-x-2">
-            <button class="text-xs text-yellow-300 hover:text-yellow-500" onclick="editCustomerFromList('${c.id}')">Edit</button>
-            <button class="text-xs text-red-300 hover:text-red-500" onclick="deleteCustomer('${c.id}')">Del</button>
-          </div>
-        </li>`).join('');
-      
-      document.querySelectorAll('.customer-item span').forEach(span => {
-          span.onclick = () => {
-              const customerId = span.dataset.customerId;
-              activeCustomer = customers.find(c => c.id === customerId);
-              document.getElementById('currentCustomerName').textContent = activeCustomer.name;
-              updateCustomerStatusUI(activeCustomer.status);
-              saveData();
-              navigateTo('dashboard-view');
-          };
-      });
-    }
-
-    function editCustomerFromList(customerId) {
-        activeCustomer = customers.find(c => c.id === customerId);
-        navigateTo('customers-view');
-    }
-
-    function updateCustomerStatusUI(status) {
-      const bar = document.getElementById('customerStatusBar');
-      let color = 'bg-gray-200 text-gray-800';
-      if (status === 'Active Customer') color = 'bg-green-100 text-green-700';
-      else if (status === 'Prospect') color = 'bg-blue-100 text-blue-700';
-      bar.className = `mx-6 mt-4 p-2 font-semibold text-sm rounded-lg ${color}`;
-      bar.textContent = `Status: ${status || 'N/A'}`;
-    }
-    
-    // FUNCTIONALITY: Delete Customer
-    function deleteCustomer(customerId) {
-      if (!confirm(`Are you sure you want to permanently delete this customer (ID: ${customerId})? This will also delete all associated orders, deals, tasks, and appointments.`)) {
-        return;
-      }
-
-      customers = customers.filter(c => c.id !== customerId);
-      orders = orders.filter(o => o.customerId !== customerId);
-      pipelineDeals = pipelineDeals.filter(d => d.customerId !== customerId);
-      appointments = appointments.filter(a => a.customerId !== customerId);
-      tasks = tasks.filter(t => t.customerId !== customerId);
-
-      if (activeCustomer && activeCustomer.id === customerId) {
-          activeCustomer = customers[0] || null;
-      }
-      
-      if (activeCustomer) {
-        document.getElementById('currentCustomerName').textContent = activeCustomer.name;
-        updateCustomerStatusUI(activeCustomer.status);
-      } else {
-        document.getElementById('currentCustomerName').textContent = 'Select Customer';
-        updateCustomerStatusUI('');
-      }
-      
-      saveData();
-      showNotification('Customer deleted!', 'bg-red-100 text-red-700');
-      navigateTo('dashboard-view');
-    }
-    
-    // FUNCTIONALITY: Toggle Customer to Vendor
-    function toggleCustomerType(customerId, isVendor) {
-        const sourceArray = isVendor ? vendors : customers;
-        const targetArray = isVendor ? customers : vendors;
-        const sourceName = isVendor ? 'Vendor' : 'Customer';
-        const targetName = isVendor ? 'Customer' : 'Vendor';
-
-        const index = sourceArray.findIndex(item => item.id === customerId);
-        if (index === -1) return showNotification(`Error: Could not find ${sourceName}.`, 'bg-red-100 text-red-700');
-
-        if (!confirm(`Are you sure you want to change ${sourceArray[index].name} from a ${sourceName} to a ${targetName}?`)) {
-            return;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AcoustiSkin CRM Pro - Customer View</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #7c3aed; /* Violet 600 */
+            --secondary-color: #3b82f6; /* Blue 500 */
         }
-
-        const item = sourceArray.splice(index, 1)[0];
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        /* Custom scrollbar for aesthetic */
+        .sidebar {
+            scrollbar-width: thin;
+            scrollbar-color: #9ca3af #f3f4f6;
+        }
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background-color: #9ca3af;
+            border-radius: 3px;
+        }
+        .sidebar::-webkit-scrollbar-track {
+            background-color: #f3f4f6;
+        }
+        .event-box {
+            color: white;
+            padding: 2px 4px;
+            font-size: 0.75rem;
+            line-height: 1;
+            border-radius: 4px;
+            margin-top: 4px;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+        .calendar-day-cell {
+            min-height: 120px; /* Ensure visual spacing */
+            border-right: 1px solid #e5e7eb;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 4px;
+        }
+        .calendar-grid {
+            border-left: 1px solid #e5e7eb;
+            border-top: 1px solid #e5e7eb;
+        }
+        .loading-overlay {
+            background-color: rgba(255, 255, 255, 0.8);
+            z-index: 60;
+            transition: opacity 0.3s;
+        }
+    </style>
+    <!-- Firebase Imports -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, onSnapshot, collection, query, addDoc, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
-        if (isVendor) {
-             item.id = item.id.replace('VEND', 'CUST');
-             if(!item.status) item.status = 'Prospect';
-        } else {
-             item.id = item.id.replace('CUST', 'VEND');
-             item.contact = item.contact || item.accountOwner;
-             if(!item.type) item.type = 'Manufacturer';
-        }
-        
-        targetArray.push(item);
-        
-        if (activeCustomer && activeCustomer.id === customerId) {
-            activeCustomer = item;
-        } else if (!activeCustomer && targetName === 'Customer') {
-            activeCustomer = item;
-        } else if (targetName === 'Customer') {
-            activeCustomer = item;
-        }
-
-        saveData();
-        renderCustomerList(); 
-        if (targetName === 'Customer') {
-            navigateTo('customers-view');
-        } else {
-            navigateTo('vendors-team-view');
-        }
-        showNotification(`${item.name} is now a ${targetName}.`, 'bg-green-100 text-green-700');
-    }
-
-
-    // === DASHBOARD (WITH SALES METRICS) ===
-    function renderDashboard() {
-      const view = document.getElementById('dashboard-view');
-      if (!activeCustomer) {
-        view.innerHTML = `<div class="text-center text-gray-500 mt-20">Select a customer to view dashboard</div>`;
-        return;
-      }
-      const custOrders = orders.filter(o => o.customerId === activeCustomer.id);
-      const totalRevenue = orders.reduce((sum, o) => sum + o.total, 0);
-      const avgOrderValue = orders.length ? totalRevenue / orders.length : 0;
-      const lowStock = inventory.filter(i => i.stock <= i.reorder).length;
-      view.innerHTML = `
-        <div class="max-w-7xl mx-auto">
-          <h2 class="text-2xl font-extrabold text-gray-900 mb-6 flex justify-between items-center">
-            ${activeCustomer.name} - Dashboard
-            <button onclick="openEventModal(new Date().toISOString().split('T')[0], activeCustomer?.id, 'Follow up with ${activeCustomer.name}')" class="text-indigo-600 hover:text-indigo-700 text-xl">📅</button>
-          </h2>
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <div class="bg-white p-4 rounded-xl shadow-lg text-center">
-              <p class="text-2xl font-bold text-indigo-600">$${totalRevenue.toFixed(0)}</p>
-              <p class="text-sm text-gray-600">Total Revenue</p>
-            </div>
-            <div class="bg-white p-4 rounded-xl shadow-lg text-center">
-              <p class="text-2xl font-bold text-green-600">${orders.length}</p>
-              <p class="text-sm text-gray-600">Orders Processed</p>
-            </div>
-            <div class="bg-white p-4 rounded-xl shadow-lg text-center">
-              <p class="text-2xl font-bold text-blue-600">$${avgOrderValue.toFixed(0)}</p>
-              <p class="text-sm text-gray-600">Avg Order Value</p>
-            </div>
-            <div class="bg-white p-4 rounded-xl shadow-lg text-center">
-              <p class="text-2xl font-bold ${lowStock ? 'text-red-600' : 'text-green-600'}">${lowStock}</p>
-              <p class="text-sm text-gray-600">Low Stock Items</p>
-            </div>
-          </div>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="bg-white p-6 rounded-xl shadow-lg">
-              <h3 class="font-semibold text-gray-700">Company Info</h3>
-              <p><strong>Industry:</strong> ${activeCustomer.industry}</p>
-              <p><strong>Revenue:</strong> ${activeCustomer.revenue}</p>
-              <p><strong>Employees:</strong> ${activeCustomer.employees}</p>
-              <p><strong>Address:</strong> ${activeCustomer.address}</p>
-              <p><strong>Website:</strong> <a href="http://${activeCustomer.website}" target="_blank" class="text-indigo-600">${activeCustomer.website}</a></p>
-              <p><strong>Paddle Brands Used:</strong> ${activeCustomer.paddleBrandsUsed?.join(', ') || 'None'}</p>
-            </div>
-            <div class="bg-white p-6 rounded-xl shadow-lg">
-              <h3 class="font-semibold text-gray-700">Financial & Transactional</h3>
-              <p><strong>CLV:</strong> ${activeCustomer.clv}</p>
-              <p><strong>Last Purchase:</strong> ${activeCustomer.lastPurchase || 'N/A'}</p>
-              <p><strong>Orders:</strong> ${custOrders.length}</p>
-              <p><strong>Lifetime Spend:</strong> $${activeCustomer.lifetimeSpend.toFixed(2)}</p>
-              <p><strong>AOV:</strong> $${activeCustomer.aov.toFixed(2)}</p>
-            </div>
-          </div>
-        </div>`;
-    }
-
-    // === FULL CUSTOMER PROFILE (30+ FIELDS) ===
-    function renderCustomers() {
-      const view = document.getElementById('customers-view');
-      if (!activeCustomer) {
-        view.innerHTML = '<p class="text-center text-gray-500">Select a customer</p>';
-        return;
-      }
-      
-      const isVendor = activeCustomer.id.startsWith('VEND');
-
-      view.innerHTML = `
-        <div class="max-w-7xl mx-auto">
-          <h2 class="text-2xl font-extrabold text-gray-900 mb-6 flex justify-between items-center">
-            Edit Customer Profile
-            <button onclick="openEventModal(new Date().toISOString().split('T')[0], activeCustomer?.id, 'Review ${activeCustomer.name} Profile')" class="text-indigo-600 hover:text-indigo-700 text-xl">📅</button>
-          </h2>
-          <div class="mb-4 flex justify-start items-center space-x-4">
-              <span class="font-semibold text-gray-700">Classification:</span>
-              ${isVendor ? 
-                `<span class="text-purple-600 font-bold">Vendor/Manufacturer</span> 
-                 <button onclick="toggleCustomerType('${activeCustomer.id}', true)" class="text-indigo-600 hover:text-indigo-700 text-sm border border-gray-300 p-1 rounded">Switch to Customer</button>` : 
-                `<span class="text-indigo-600 font-bold">Standard Customer</span> 
-                 <button onclick="toggleCustomerType('${activeCustomer.id}', false)" class="text-purple-600 hover:text-purple-700 text-sm border border-gray-300 p-1 rounded">Switch to Vendor</button>`
-              }
-          </div>
-          <form id="customerForm" class="bg-white p-6 rounded-xl shadow-lg space-y-6">
-            <div class="section">
-              <h3 class="font-semibold text-gray-700 mb-4">Identity & Firmographics</h3>
-              <div class="field-grid">
-                <div class="input-group"><label>Company Name *</label><input type="text" name="name" value="${activeCustomer.name}" required></div>
-                
-                <div class="input-group"><label>Primary Email *</label><input type="email" name="primaryEmail" value="${activeCustomer.primaryEmail}" required></div>
-                <div class="input-group"><label>Mobile Phone</label><input type="tel" name="mobilePhone" value="${activeCustomer.mobilePhone}"></div>
-
-                <div class="input-group"><label>Personal Email</label><input type="email" name="personalEmail" value="${activeCustomer.personalEmail}"></div>
-                <div class="input-group"><label>Work Email</label><input type="email" name="workEmail" value="${activeCustomer.workEmail}"></div>
-                <div class="input-group"><label>Work Phone</label><input type="tel" name="workPhone" value="${activeCustomer.workPhone}"></div>
-                <div class="input-group"><label>Status</label>
-                  <select name="status">
-                    <option value="Prospect" ${activeCustomer.status === 'Prospect' ? 'selected' : ''}>Prospect</option>
-                    <option value="Active Customer" ${activeCustomer.status === 'Active Customer' ? 'selected' : ''}>Active Customer</option>
-                  </select>
-                </div>
-                <div class="input-group md:col-span-2"><label>Address</label><input type="text" name="address" value="${activeCustomer.address}"></div>
-                <div class="input-group"><label>Industry</label><input type="text" name="industry" value="${activeCustomer.industry}"></div>
-                <div class="input-group"><label>Revenue</label><input type="text" name="revenue" value="${activeCustomer.revenue}"></div>
-                <div class="input-group"><label>Employees</label><input type="text" name="employees" value="${activeCustomer.employees}"></div>
-                <div class="input-group"><label>Website</label><input type="url" name="website" value="${activeCustomer.website}"></div>
-                <div class="input-group"><label>Lead Source</label><input type="text" name="leadSource" value="${activeCustomer.leadSource}"></div>
-                <div class="input-group col-span-full">
-                  <label>Paddle Brands Used</label>
-                  <select multiple name="paddleBrandsUsed" size="5" class="h-32">
-                    ${paddleBrands.map(b => `<option value="${b}" ${activeCustomer.paddleBrandsUsed?.includes(b) ? 'selected' : ''}>${b}</option>`).join('')}
-                  </select>
-                  <p class="text-xs text-gray-500 mt-1">Hold Ctrl/Cmd to select multiple</p>
-                </div>
-              </div>
-            </div>
-            <div class="section">
-              <h3 class="font-semibold text-gray-700 mb-4">Financial & Transactional</h3>
-              <div class="field-grid">
-                <div class="input-group"><label>CLV</label><input type="text" name="clv" value="${activeCustomer.clv}"></div>
-                <div class="input-group"><label>Last Purchase</label><input type="date" name="lastPurchase" value="${activeCustomer.lastPurchase}"></div>
-                <div class="input-group"><label>First Purchase</label><input type="date" name="firstPurchase" value="${activeCustomer.firstPurchase}"></div>
-                <div class="input-group"><label>Purchase Frequency</label><input type="number" name="purchaseFrequency" value="${activeCustomer.purchaseFrequency}"></div>
-                <div class="input-group"><label>Primary Product</label><input type="text" name="primaryProduct" value="${activeCustomer.primaryProduct}"></div>
-                <div class="input-group"><label>Subscription Tier</label><input type="text" name="subscriptionTier" value="${activeCustomer.subscriptionTier}"></div>
-                <div class="input-group"><label>AOV</label><input type="number" name="aov" value="${activeCustomer.aov}"></div>
-                <div class="input-group"><label>Lifetime Spend</label><input type="number" name="lifetimeSpend" value="${activeCustomer.lifetimeSpend}"></div>
-                <div class="input-group"><label>Orders Placed</label><input type="number" name="ordersPlaced" value="${activeCustomer.ordersPlaced}"></div>
-                <div class="input-group"><label>Return Rate (%)</label><input type="number" name="returnRate" value="${activeCustomer.returnRate}"></div>
-              </div>
-            </div>
-            <div class="section">
-              <h3 class="font-semibold text-gray-700 mb-4">Engagement & CRM</h3>
-              <div class="field-grid">
-                <div class="input-group"><label>Last Contact</label><input type="date" name="lastContact" value="${activeCustomer.lastContact}"></div>
-                <div class="input-group"><label>Next Task</label><input type="text" name="nextTask" value="${activeCustomer.nextTask}"></div>
-                <div class="input-group"><label>NPS</label><input type="number" name="nps" value="${activeCustomer.nps}"></div>
-                <div class="input-group"><label>Social (comma separated list)</label><input type="text" name="social" value="${activeCustomer.social?.join(', ')}"></div>
-                <div class="input-group"><label>Handle</label><input type="text" name="handle" value="${activeCustomer.handle}"></div>
-                <div class="input-group"><label>Account Owner</label><input type="text" name="accountOwner" value="${activeCustomer.accountOwner}"></div>
-                <div class="input-group"><label>Team Division</label><input type="text" name="teamDivision" value="${activeCustomer.teamDivision}"></div>
-                <div class="input-group"><label>Notes</label><textarea name="notes">${activeCustomer.notes}</textarea></div>
-                <div class="input-group"><label>Tags</label><input type="text" name="tags" value="${activeCustomer.tags?.join(', ')}"></div>
-                <div class="input-group"><label>Special Handling</label><input type="text" name="specialHandling" value="${activeCustomer.specialHandling}"></div>
-                <div class="input-group"><label>PO Required</label>
-                  <select name="poRequired">
-                    <option value="true" ${activeCustomer.poRequired ? 'selected' : ''}>Yes</option>
-                    <option value="false" ${!activeCustomer.poRequired ? 'selected' : ''}>No</option>
-                  </select>
-                </div>
-                <div class="input-group"><label>Preferred Shipping</label><input type="text" name="preferredShipping" value="${activeCustomer.preferredShipping}"></div>
-                <div class="input-group"><label>Preferred Carrier</label><input type="text" name="preferredCarrier" value="${activeCustomer.preferredCarrier}"></div>
-                <div class="input-group"><label>Payment Terms</label><input type="text" name="paymentTerms" value="${activeCustomer.paymentTerms}"></div>
-                <div class="input-group"><label>Credit Limit</label><input type="number" name="creditLimit" value="${activeCustomer.creditLimit}"></div>
-                <div class="input-group"><label>Billing Cycle</label><input type="text" name="billingCycle" value="${activeCustomer.billingCycle}"></div>
-                <div class="input-group"><label>Currency</label><input type="text" name="currency" value="${activeCustomer.currency}"></div>
-              </div>
-            </div>
-            <div class="flex justify-between items-center">
-                <button type="button" onclick="deleteCustomer('${activeCustomer.id}')" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lg">
-                    Delete Customer
-                </button>
-                <button type="button" id="saveCustomerBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg">
-                    Save Changes
-                </button>
-            </div>
-          </form>
-        </div>`;
-
-      document.getElementById('saveCustomerBtn').addEventListener('click', () => {
-        const form = document.getElementById('customerForm');
-        if (!form.reportValidity()) return;
-        const data = {};
-        form.querySelectorAll('input, select, textarea').forEach(f => {
-          if (f.name) {
-            if (f.multiple) data[f.name] = Array.from(f.selectedOptions).map(o => o.value);
-            else if (f.name === 'tags' || f.name === 'social') data[f.name] = f.value.split(',').map(s => s.trim()).filter(Boolean);
-            else if (f.name === 'poRequired') data[f.name] = f.value === 'true';
-            else if (f.type === 'number') data[f.name] = parseFloat(f.value) || 0;
-            else data[f.name] = f.value;
-          }
-        });
-        
-        const index = customers.findIndex(c => c.id === activeCustomer.id);
-        if (index > -1) {
-            Object.assign(customers[index], data);
-            activeCustomer = customers[index]; 
-        }
-
-        saveData();
-        showNotification('Customer saved!', 'bg-green-100 text-green-700');
-        renderCustomerList();
-        navigateTo('dashboard-view');
-      });
-    }
-
-    // === NEW ORDER (FULL E-COMMERCE) ===
-    function renderNewOrderForm() {
-      if (!activeCustomer) {
-        document.getElementById('new-order-view').innerHTML = `<div class="text-center text-gray-500 mt-20">Select a customer first</div>`;
-        return;
-      }
-      const view = document.getElementById('new-order-view');
-      view.innerHTML = `
-        <div class="max-w-7xl mx-auto">
-          <h2 class="text-2xl font-extrabold text-gray-900 mb-6 flex justify-between items-center">
-            New Order - ${activeCustomer.name}
-            <button onclick="openEventModal(new Date().toISOString().split('T')[0], activeCustomer?.id, 'Verify ${activeCustomer.name} Order')" class="text-indigo-600 hover:text-indigo-700 text-xl">📅</button>
-          </h2>
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-lg">
-              <h3 class="text-xl font-bold mb-4 border-b pb-2">Order Items</h3>
-              <div id="orderLines" class="space-y-4">
-                <div class="line-item font-semibold text-sm text-gray-600 border-b pb-2">
-                    <span>Product</span>
-                    <span>Paddle Specs (Brand/Dims)</span>
-                    <span>Qty</span>
-                    <span style="text-align: right;">Price</span>
-                    <span>Affiliate</span>
-                    <span style="text-align: right;">Total</span>
-                    <span></span>
-                </div>
-              </div>
-              <button id="addLine" class="bg-indigo-500 hover:bg-indigo-400 text-white font-semibold py-2 px-4 rounded-lg mt-4">+ Add Line</button>
-            </div>
-            <div class="bg-white p-6 rounded-xl shadow-lg space-y-6">
-              <div>
-                <h3 class="text-xl font-bold mb-4 border-b pb-2">Shipping & Payment</h3>
-                <textarea id="shipAddress" class="w-full" rows="3">${activeCustomer.address}</textarea>
-                <select id="paymentMethod" class="w-full mt-2">
-                  <option>Credit Card</option>
-                  <option>Net 30</option>
-                  <option>Pre-paid</option>
-                </select>
-              </div>
-              <div id="orderSummary" class="space-y-1 text-sm"></div>
-              <button id="processOrderBtn" class="w-full mt-4 bg-green-600 hover:bg-green-700 text-white font-extrabold py-3 rounded-lg">
-                PLACE ORDER
-              </button>
-            </div>
-          </div>
-        </div>`;
-      addOrderLine();
-      attachNewOrderListeners();
-      updateNewOrderDisplay(); // Initial display update
-    }
-
-    function addOrderLine() {
-      const container = document.getElementById('orderLines');
-      const line = document.createElement('div');
-      line.className = 'line-item';
-      line.innerHTML = `
-        <input type="text" class="productName p-2 border rounded" value="AcoustiSkin Paddle Skin">
-        <div class="flex flex-col space-y-1">
-            <select class="productBrand p-1 border rounded text-xs">
-              ${paddleBrands.map(b => `<option>${b}</option>`).join('')}
-            </select>
-            <input type="text" class="paddleDimensions p-1 border rounded text-xs" placeholder="LxW (e.g. 16.5 x 7.5)">
-        </div>
-        <input type="number" class="orderQty p-2 border rounded" value="1" min="1">
-        <input type="number" class="orderPrice p-2 border rounded text-right" value="29.95" step="0.01">
-        <select class="orderAffiliate p-2 border rounded">
-          <option>None</option>
-          ${teamMembers.map(a => `<option>${a}</option>`).join('')}
-        </select>
-        <span class="line-total">$29.95</span>
-        <button type="button" class="text-red-600 hover:text-red-800 text-sm p-1 ml-auto" onclick="this.closest('.line-item').remove(); updateNewOrderDisplay()">X</button>`;
-      container.appendChild(line);
-      line.querySelectorAll('input, select').forEach(el => el.addEventListener('input', updateNewOrderDisplay));
-    }
-
-    function attachNewOrderListeners() {
-      document.getElementById('addLine').addEventListener('click', addOrderLine);
-      document.getElementById('shipAddress').addEventListener('input', updateNewOrderDisplay);
-      document.getElementById('paymentMethod').addEventListener('input', updateNewOrderDisplay);
-
-      document.getElementById('processOrderBtn').addEventListener('click', () => {
-        const lines = document.getElementById('orderLines').querySelectorAll('.line-item:not(:first-child)'); 
-        
-        if (lines.length === 0) {
-            showNotification('Order must contain at least one item.', 'bg-red-100 text-red-700');
-            return;
-        }
-
-        const order = {
-          id: 'ORD-' + Date.now().toString(36).toUpperCase(),
-          customerId: activeCustomer.id,
-          date: new Date().toISOString().split('T')[0],
-          items: [], subtotal: 0, shipping: 5.99, tax: 0, total: 0,
-          shipAddress: document.getElementById('shipAddress').value,
-          paymentMethod: document.getElementById('paymentMethod').value,
-          status: 'Processing',
-          trackingNumber: null, 
-          notes: '' 
+        // Expose Firebase functions to the global scope for use in the main script block
+        window.firebase = {
+            initializeApp, getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged,
+            getFirestore, doc, onSnapshot, collection, query, addDoc, setLogLevel
         };
+    </script>
+</head>
+<body class="flex h-screen overflow-hidden">
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay fixed inset-0 flex items-center justify-center">
+        <div class="flex items-center space-x-2 text-violet-600">
+            <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span>Loading CRM data...</span>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar w-64 bg-white p-4 flex flex-col shadow-lg overflow-y-auto">
+        <div class="text-xl font-bold text-violet-700 mb-8 pb-4 border-b">
+            AcoustiSkin <span class="text-gray-900">CRM Pro</span>
+            <div id="user-info" class="text-xs text-gray-500 mt-1 truncate">User ID: N/A</div>
+        </div>
         
-        let inventorySufficient = true;
-        lines.forEach(line => {
-          const item = {
-            name: line.querySelector('.productName').value,
-            brand: line.querySelector('.productBrand').value, 
-            paddleDimensions: line.querySelector('.paddleDimensions').value, 
-            qty: parseInt(line.querySelector('.orderQty').value) || 0,
-            price: parseFloat(line.querySelector('.orderPrice').value) || 0,
-            affiliate: line.querySelector('.orderAffiliate').value
-          };
-          
-          if (item.qty <= 0 || item.price <= 0) return; 
-
-          const sku = inventory.find(i => i.brand === item.brand)?.sku;
-          if (sku) {
-            const stockItem = inventory.find(i => i.sku === sku);
-            if (stockItem.stock >= item.qty) {
-              stockItem.stock -= item.qty; 
-            } else {
-              showNotification(`Not enough stock for ${item.brand}`, 'bg-red-100 text-red-700');
-              inventorySufficient = false;
-              return;
-            }
-          }
-          order.items.push(item);
-          order.subtotal += item.qty * item.price;
-        });
-
-        if (!inventorySufficient) return; 
-
-        const state = extractStateFromAddress(order.shipAddress);
-        order.tax = order.subtotal * (stateTax[state] || 0);
-        order.total = order.subtotal + order.shipping + order.tax;
-
-        orders.push(order);
+        <!-- Navigation -->
+        <div class="space-y-2 mb-8">
+            <h3 class="text-xs font-semibold uppercase text-gray-500 mb-2">CORE</h3>
+            <a href="#" class="flex items-center p-3 text-gray-600 hover:bg-violet-50 hover:text-violet-700 rounded-lg transition duration-150">Dashboard</a>
+            <a href="#" class="flex items-center p-3 text-gray-600 hover:bg-violet-50 hover:text-violet-700 rounded-lg transition duration-150">Customers</a>
+            <a href="#" class="flex items-center p-3 text-gray-600 hover:bg-violet-50 hover:text-violet-700 rounded-lg transition duration-150">New Order</a>
+            <a href="#" class="flex items-center p-3 text-gray-600 hover:bg-violet-50 hover:text-violet-700 rounded-lg transition duration-150">Order Tracking</a>
+            <a href="#" class="flex items-center p-3 bg-violet-100 text-violet-700 font-semibold rounded-lg transition duration-150">Calendar</a>
+            <a href="#" class="flex items-center p-3 text-gray-600 hover:bg-violet-50 hover:text-violet-700 rounded-lg transition duration-150">Pipeline</a>
+            <a href="#" class="flex items-center p-3 text-gray-600 hover:bg-violet-50 hover:text-violet-700 rounded-lg transition duration-150">Reports</a>
+            <a href="#" class="flex items-center p-3 text-gray-600 hover:bg-violet-50 hover:text-violet-700 rounded-lg transition duration-150">Vendors & Team</a>
+        </div>
         
-        activeCustomer.ordersPlaced++;
-        activeCustomer.lifetimeSpend += order.total;
-        activeCustomer.aov = activeCustomer.ordersPlaced > 0 ? activeCustomer.lifetimeSpend / activeCustomer.ordersPlaced : 0;
-        activeCustomer.lastOrderDate = order.date;
-        
-        saveData();
-        showNotification(`Order ${order.id} placed! Total: $${order.total.toFixed(2)}`, 'bg-green-100 text-green-700');
-        navigateTo('dashboard-view');
-      });
-    }
+        <!-- Actions -->
+        <div class="space-y-3 mb-8">
+            <button class="w-full bg-violet-600 hover:bg-violet-700 text-white font-semibold py-3 px-4 rounded-lg shadow-md transition duration-150 flex items-center justify-center">
+                + New Customer
+            </button>
+            <button class="w-full bg-pink-500 hover:bg-pink-600 text-white font-semibold py-3 px-4 rounded-lg shadow-md transition duration-150 flex items-center justify-center">
+                + New Vendor
+            </button>
+            <button id="quick-schedule-btn" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-4 rounded-lg transition duration-150 flex items-center justify-center">
+                Quick Schedule Task
+            </button>
+        </div>
 
-    function updateNewOrderDisplay() {
-      const lines = document.getElementById('orderLines').querySelectorAll('.line-item:not(:first-child)'); 
-      let subtotal = 0;
-      lines.forEach(line => {
-        const qty = parseFloat(line.querySelector('.orderQty').value) || 0;
-        const price = parseFloat(line.querySelector('.orderPrice').value) || 0;
-        const total = qty * price;
-        line.querySelector('.line-total').textContent = `$${total.toFixed(2)}`;
-        subtotal += total;
-      });
-      const shipping = 5.99;
-      const state = extractStateFromAddress(document.getElementById('shipAddress').value);
-      const tax = subtotal * (stateTax[state] || 0);
-      const taxRate = (stateTax[state] * 100 || 0).toFixed(2);
-      const total = subtotal + shipping + tax;
-      document.getElementById('orderSummary').innerHTML = `
-        <div class="flex justify-between"><span>Subtotal:</span><span>$${subtotal.toFixed(2)}</span></div>
-        <div class="flex justify-between"><span>Shipping:</span><span>$${shipping.toFixed(2)}</span></div>
-        <div class="flex justify-between"><span>Tax (${taxRate}%):</span><span>$${tax.toFixed(2)}</span></div>
-        <div class="flex justify-between font-bold text-lg mt-2"><span>Total:</span><span class="text-indigo-600">$${total.toFixed(2)}</span></div>`;
-    }
+        <!-- Export/Import -->
+        <div class="space-y-2 mt-auto pt-4 border-t">
+            <a href="#" class="flex items-center p-2 text-sm text-gray-600 hover:text-violet-700 transition duration-150">Export Data</a>
+            <a href="#" class="flex items-center p-2 text-sm text-gray-600 hover:text-violet-700 transition duration-150">Import Data</a>
+            <p class="text-xs font-semibold uppercase text-gray-500 pt-4">ADDRESS BOOK</p>
+        </div>
+    </div>
 
-    // === INVENTORY MANAGEMENT ===
-    function renderInventory() {
-      const view = document.getElementById('inventory-view');
-      view.innerHTML = `
-        <div class="max-w-7xl mx-auto">
-          <h2 class="text-2xl font-extrabold text-gray-900 mb-6 flex justify-between items-center">
-            Inventory Management
-            <button onclick="openEventModal(new Date().toISOString().split('T')[0], null, 'Review Inventory Stock')" class="text-indigo-600 hover:text-indigo-700 text-xl">📅</button>
-          </h2>
-          <button id="addInventoryBtn" class="bg-indigo-600 text-white py-2 px-4 rounded mb-4">+ Add Product</button>
-          <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-            <table class="w-full">
-              <thead class="bg-gray-50">
-                <tr>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SKU</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Brand</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                </tr>
-              </thead>
-              <tbody class="bg-white divide-y divide-gray-200">
-                ${inventory.map(item => `
-                  <tr>
-                    <td class="px-4 py-3 text-sm">${item.sku}</td>
-                    <td class="px-4 py-3 text-sm">${item.name}</td>
-                    <td class="px-4 py-3 text-sm">${item.brand}</td>
-                    <td class="px-4 py-3 text-sm">${item.stock}</td>
-                    <td class="px-4 py-3 text-sm">$${item.price}</td>
-                    <td class="px-4 py-3 text-sm"><span class="badge ${item.stock <= item.reorder ? 'low' : item.stock <= item.reorder * 2 ? 'medium' : 'high'}">
-                      ${item.stock <= item.reorder ? 'Low' : item.stock <= item.reorder * 2 ? 'Medium' : 'Healthy'}
-                    </span></td>
-                    <td class="px-4 py-3 text-sm">
-                      <button onclick="adjustStock('${item.sku}', 1)" class="text-green-600 mr-2">+1</button>
-                      <button onclick="adjustStock('${item.sku}', -1)" class="text-red-600">-1</button>
-                    </td>
-                  </tr>`).join('')}
-              </tbody>
-            </table>
-          </div>
-        </div>`;
-      document.getElementById('addInventoryBtn').addEventListener('click', () => {
-        const sku = prompt("SKU:");
-        const name = prompt("Product Name:");
-        const brand = prompt("Brand:");
-        const price = parseFloat(prompt("Price:"));
-        const reorder = parseInt(prompt("Reorder Level:"));
-        if (sku && name && brand && price && reorder) {
-          inventory.push({ sku, name, brand, stock: 0, price, reorder });
-          saveData();
-          renderInventory();
-        }
-      });
-    }
-    function adjustStock(sku, change) {
-      const item = inventory.find(i => i.sku === sku);
-      if (item) {
-        item.stock = Math.max(0, item.stock + change);
-        saveData();
-        renderInventory();
-      }
-    }
-
-    // === ORDER TRACKING ===
-    function renderOrderTracking() {
-      const view = document.getElementById('orders-view');
-      view.innerHTML = `
-        <div class="max-w-7xl mx-auto">
-          <h2 class="text-2xl font-extrabold text-gray-900 mb-6 flex justify-between items-center">
-            Order Tracking
-            <button onclick="openEventModal(new Date().toISOString().split('T')[0], activeCustomer?.id, 'Review Order Status')" class="text-indigo-600 hover:text-indigo-700 text-xl">📅</button>
-          </h2>
-          <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-            ${orders.slice().reverse().map(o => { 
-              const cust = customers.find(c => c.id === o.customerId);
-              return `<div class="border-b p-4" id="order-${o.id}">
-                <div class="flex justify-between">
-                  <strong>#${o.id}</strong>
-                  <div class="flex items-center space-x-3">
-                    <span class="badge ${o.status === 'Shipped' ? 'high' : o.status === 'Processing' ? 'medium' : 'low'}">${o.status || 'Processing'}</span>
-                    <button onclick="updateOrderStatus('${o.id}')" class="text-xs text-indigo-600 hover:text-indigo-800">Update Status</button>
-                    <button onclick="toggleOrderDetails('${o.id}')" class="text-xs text-gray-600 hover:text-gray-800">Details/Edit</button>
-                    <button onclick="deleteOrder('${o.id}')" class="text-xs text-red-600 hover:text-red-800">Delete</button>
-                  </div>
-                </div>
-                <p class="text-sm text-gray-600">${o.date} | ${cust?.name || 'N/A'} | $${o.total.toFixed(2)}</p>
-                
-                <div id="details-${o.id}" class="hidden mt-4 p-3 bg-gray-50 rounded-lg space-y-2">
-                    <div class="input-group">
-                        <label class="text-xs">Tracking Number</label>
-                        <input type="text" id="track-${o.id}" value="${o.trackingNumber || ''}" onchange="saveOrderDetails('${o.id}', 'trackingNumber', this.value)">
-                    </div>
-                    <div class="input-group">
-                        <label class="text-xs">Notes</label>
-                        <textarea id="notes-${o.id}" rows="2" onchange="saveOrderDetails('${o.id}', 'notes', this.value)">${o.notes || ''}</textarea>
-                    </div>
-                </div>
-              </div>`;
-            }).join('') || '<p class="p-4 text-gray-500">No orders yet</p>'}
-          </div>
-        </div>`;
-    }
-    
-    function toggleOrderDetails(orderId) {
-        const details = document.getElementById(`details-${orderId}`);
-        details.classList.toggle('hidden');
-    }
-
-    function saveOrderDetails(orderId, field, value) {
-        const order = orders.find(o => o.id === orderId);
-        if (order) {
-            order[field] = value;
-            saveData();
-            showNotification(`${field === 'trackingNumber' ? 'Tracking Number' : 'Notes'} updated!`, 'bg-green-100 text-green-700');
-        }
-    }
-
-    function updateOrderStatus(id) {
-      const order = orders.find(o => o.id === id);
-      const newStatus = prompt("New status:", order.status || "Processing");
-      if (newStatus !== null) {
-        order.status = newStatus;
-        saveData();
-        renderOrderTracking();
-      }
-    }
-
-    function deleteOrder(orderId) {
-        if (!confirm(`Are you sure you want to delete Order ID ${orderId}? This action cannot be undone.`)) {
-            return;
-        }
-
-        const index = orders.findIndex(o => o.id === orderId);
-        if (index > -1) {
-            const deletedOrder = orders.splice(index, 1)[0];
-            
-            const customer = customers.find(c => c.id === deletedOrder.customerId);
-            if (customer) {
-                customer.lifetimeSpend = customer.lifetimeSpend - deletedOrder.total;
-                customer.ordersPlaced = Math.max(0, customer.ordersPlaced - 1);
-                customer.aov = customer.ordersPlaced > 0 ? customer.lifetimeSpend / customer.ordersPlaced : 0;
-            }
-
-            saveData();
-            showNotification(`Order ${orderId} deleted.`, 'bg-red-100 text-red-700');
-            renderOrderTracking();
-            if (!document.getElementById('dashboard-view').classList.contains('hidden')) renderDashboard();
-        }
-    }
-
-
-    // === SALES PERFORMANCE REPORTS ===
-    function renderReports() {
-      const view = document.getElementById('reports-view');
-      const brandSales = {};
-      orders.forEach(o => {
-        o.items.forEach(i => {
-          brandSales[i.brand] = (brandSales[i.brand] || 0) + i.qty;
-        });
-      });
-      view.innerHTML = `
-        <div class="max-w-7xl mx-auto">
-          <h2 class="text-2xl font-extrabold text-gray-900 mb-6 flex justify-between items-center">
-            Sales Performance
-            <button onclick="openEventModal(new Date().toISOString().split('T')[0], null, 'Review Quarterly Sales Report')" class="text-indigo-600 hover:text-indigo-700 text-xl">📅</button>
-          </h2>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="bg-white p-6 rounded-xl shadow-lg">
-              <h3 class="font-semibold text-gray-700 mb-4">Brand Performance</h3>
-              <div class="space-y-2">
-                ${Object.entries(brandSales).sort((a,b) => b[1]-a[1]).map(([brand, qty]) => `
-                  <div class="flex justify-between">
-                    <span>${brand}</span>
-                    <span class="font-medium">${qty} units</span>
-                  </div>`).join('')}
-              </div>
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto p-8">
+        <!-- Header -->
+        <header class="flex justify-between items-center pb-6 mb-6 border-b">
+            <h1 class="text-2xl font-semibold text-gray-800">Customer: Acme Corp</h1>
+            <div class="space-x-4">
+                <button class="text-violet-600 hover:text-violet-800 font-medium">Back to Dashboard</button>
+                <button class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-150 shadow-md">
+                    Edit Profile
+                </button>
             </div>
-            <div class="bg-white p-6 rounded-xl shadow-lg">
-              <h3 class="font-semibold text-gray-700 mb-4">Top Customers (Lifetime Spend)</h3>
-              <div class="space-y-2">
-                ${customers.slice().sort((a,b) => b.lifetimeSpend - a.lifetimeSpend).slice(0,5).map(c => `
-                  <div class="flex justify-between">
-                    <span>${c.name}</span>
-                    <span class="font-medium text-indigo-600">$${c.lifetimeSpend.toFixed(0)}</span>
-                  </div>`).join('')}
-              </div>
+        </header>
+
+        <!-- Status Tag -->
+        <div class="mb-8">
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                Status: Active Customer
+            </span>
+        </div>
+
+        <!-- Calendar Component -->
+        <div class="bg-white p-6 rounded-xl shadow-xl">
+            <!-- Calendar Controls -->
+            <div class="flex flex-col sm:flex-row justify-between items-center mb-6 space-y-4 sm:space-y-0">
+                <div class="flex space-x-2">
+                    <button class="p-2 text-sm font-medium rounded-lg text-gray-600 bg-gray-100 hover:bg-gray-200">Day</button>
+                    <button class="p-2 text-sm font-medium rounded-lg text-gray-600 bg-gray-100 hover:bg-gray-200">Week</button>
+                    <button class="p-2 text-sm font-medium rounded-lg bg-violet-600 text-white shadow-md">Month</button>
+                </div>
+                
+                <h2 id="calendar-title" class="text-xl font-semibold text-gray-800"></h2>
+
+                <div class="flex items-center space-x-3">
+                    <button id="prev-month" class="p-2 text-gray-600 hover:bg-gray-100 rounded-full transition duration-150">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    </button>
+                    <button id="today-btn" class="p-2 text-sm font-medium rounded-lg text-gray-700 bg-gray-200 hover:bg-gray-300">Today</button>
+                    <button id="next-month" class="p-2 text-gray-600 hover:bg-gray-100 rounded-full transition duration-150">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </button>
+                </div>
             </div>
-          </div>
-        </div>`;
-    }
 
-    // === CALENDAR VIEW RENDERING FUNCTIONS ===
-    
-    function getCalendarDays(year, month) {
-      const firstDay = new Date(year, month, 1).getDay();
-      const daysInMonth = new Date(year, month + 1, 0).getDate();
-      const today = new Date().toISOString().split('T')[0];
-      let daysHtml = '';
+            <!-- Calendar Grid -->
+            <div class="calendar-grid">
+                <!-- Weekday Headers -->
+                <div class="grid grid-cols-7 text-center font-medium text-gray-700 border-b">
+                    <div class="p-2 text-red-500">Sun</div>
+                    <div class="p-2">Mon</div>
+                    <div class="p-2">Tue</div>
+                    <div class="p-2">Wed</div>
+                    <div class="p-2">Thu</div>
+                    <div class="p-2">Fri</div>
+                    <div class="p-2 text-blue-500">Sat</div>
+                </div>
 
-      for (let i = 0; i < firstDay; i++) {
-        daysHtml += `<div></div>`;
-      }
+                <!-- Days Container -->
+                <div id="calendar-days" class="grid grid-cols-7">
+                    <!-- Calendar cells will be injected here -->
+                </div>
+            </div>
 
-      for (let day = 1; day <= daysInMonth; day++) {
-        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-        const events = getEventsForDate(dateStr);
-        const isToday = dateStr === today;
-
-        daysHtml += `<div class="calendar-day ${isToday ? 'today' : ''}" onclick="openEventModal('${dateStr}')">
-          <div class="font-medium text-right">${day}</div>
-          ${events.slice(0, 3).map(e => {
-            const timeDisplay = e.time ? e.time.substring(0, 5) + ' ' : '';
-            const typeClass = e.type === 'appointment' ? 'appointment' : 'task';
-            return `<div class="event ${typeClass}" title="${timeDisplay}${e.title}">${timeDisplay}${e.title}</div>`;
-          }).join('')}
-          ${events.length > 3 ? `<div class="text-xs text-gray-500 mt-1 text-center">+${events.length - 3} more</div>` : ''}
-        </div>`;
-      }
-      return daysHtml;
-    }
-
-    function getEventsForDate(dateStr) {
-        // Simple logic for recurring holidays (since full RRULE is complex)
-        const date = new Date(dateStr);
-        const month = date.getMonth();
-        const day = date.getDate();
-        const dayOfWeek = date.getDay(); // 0 = Sun, 1 = Mon, etc.
-
-        let matchedEvents = [...appointments, ...tasks].filter(e => e.date === dateStr).sort((a, b) => (a.time || '') > (b.time || '') ? 1 : -1);
-
-        // Logic to simulate recurring Federal Holidays (using the 2024 dates as base reference)
-        const holidays2024 = [
-            { m: 0, d: 1, title: "New Year's Day" },
-            { m: 0, dayOfWeek: 1, instance: 3, title: "MLK Day" }, // 3rd Monday in Jan
-            { m: 1, dayOfWeek: 1, instance: 3, title: "Presidents' Day" }, // 3rd Monday in Feb
-            { m: 4, dayOfWeek: 1, instance: -1, title: "Memorial Day" }, // Last Monday in May
-            { m: 5, d: 19, title: "Juneteenth" },
-            { m: 6, d: 4, title: "Independence Day" },
-            { m: 8, dayOfWeek: 1, instance: 1, title: "Labor Day" }, // 1st Monday in Sep
-            { m: 9, dayOfWeek: 1, instance: 2, title: "Columbus Day" }, // 2nd Monday in Oct
-            { m: 10, d: 11, title: "Veterans Day" },
-            { m: 10, dayOfWeek: 4, instance: 4, title: "Thanksgiving Day" }, // 4th Thursday in Nov
-            { m: 11, d: 25, title: "Christmas Day" }
-        ];
-
-        holidays2024.forEach(h => {
-            let isHoliday = false;
-            
-            if (h.d) {
-                // Fixed date holidays (Jan 1, Jun 19, July 4, Nov 11, Dec 25)
-                if (month === h.m && day === h.d) {
-                    isHoliday = true;
-                }
-            } else if (h.dayOfWeek) {
-                // Floating holidays (MLK, Presidents, Memorial, Labor, Thanksgiving)
-                const tempDate = new Date(date.getFullYear(), month, 1);
-                let count = 0;
-                let foundDay = -1;
-                
-                // Calculate the instance of the day of the week in the current month
-                while (tempDate.getMonth() === month) {
-                    if (tempDate.getDay() === h.dayOfWeek) {
-                        count++;
-                        if (count === h.instance) {
-                            foundDay = tempDate.getDate();
-                            break;
-                        }
-                    }
-                    tempDate.setDate(tempDate.getDate() + 1);
-                }
-
-                // Handle last instance (Memorial Day)
-                if (h.instance === -1) {
-                    const lastDayOfMonth = new Date(date.getFullYear(), month + 1, 0).getDate();
-                    let lastInstanceDate = new Date(date.getFullYear(), month, lastDayOfMonth);
-                    while (lastInstanceDate.getDay() !== h.dayOfWeek) {
-                        lastInstanceDate.setDate(lastInstanceDate.getDate() - 1);
-                    }
-                    if (day === lastInstanceDate.getDate()) isHoliday = true;
-                }
-                
-                if (h.instance !== -1 && day === foundDay) {
-                    isHoliday = true;
-                }
-            }
-
-            if (isHoliday && !matchedEvents.some(e => e.title.includes(h.title))) {
-                matchedEvents.push({ 
-                    date: dateStr, 
-                    title: `${h.title} - Federal Holiday`, 
-                    type: 'appointment', 
-                    time: '09:00',
-                    isRecurring: true 
-                });
-            }
-        });
-        
-        return matchedEvents;
-    }
-
-
-    function renderDayView() {
-      const year = currentDate.getFullYear();
-      const month = currentDate.getMonth();
-      const day = currentDate.getDate();
-      const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-      const events = getEventsForDate(dateStr);
-      
-      let dayBody = '<div class="schedule-grid" style="grid-template-columns: 80px 1fr;">';
-      
-      for (let h = 8; h <= 18; h++) {
-        const timeLabel = h > 12 ? `${h - 12} PM` : `${h} AM`;
-        const timeStr = String(h).padStart(2, '0') + ':00';
-        dayBody += `<div class="time-label">${timeLabel}</div>`;
-        
-        dayBody += `<div class="time-slot day-column relative" onclick="openEventModal('${dateStr}', activeCustomer?.id, '', '${timeStr}')"></div>`;
-      }
-      dayBody += '</div>';
-
-      events.forEach(e => {
-        if (e.time) {
-          const [hour, minute] = e.time.split(':').map(Number);
-          const startHour = 8; 
-          const totalMinutes = (hour * 60 + minute) - (startHour * 60);
-          const topPosition = (totalMinutes / 60) * 40; 
-          
-          if (topPosition >= 0) { 
-            dayBody += `<div class="schedule-event ${e.type}" style="top: ${topPosition}px; left: 80px; width: calc(100% - 80px); height: 38px;" onclick="openEventModal('${dateStr}', '${e.customerId}', '${e.title}', '${e.time}')">
-              ${e.time.substring(0, 5)} - ${e.title}
-            </div>`;
-          } else {
-             dayBody = `<div class="event ${e.type} text-sm mb-1">${e.time.substring(0, 5)} - ${e.title} (Early)</div>` + dayBody;
-          }
-        } else {
-          dayBody = `<div class="event ${e.type} text-sm mb-1">${e.title} (All Day)</div>` + dayBody;
-        }
-      });
-
-      return dayBody;
-    }
-
-    function renderWeekView() {
-      const startOfWeek = new Date(currentDate);
-      startOfWeek.setDate(currentDate.getDate() - currentDate.getDay()); 
-      
-      let weekBody = `<div class="schedule-grid" style="grid-template-columns: 80px repeat(7, 1fr);">`;
-      
-      weekBody += `<div class="text-center text-sm font-semibold p-2 border-r"></div>`; 
-      for (let i = 0; i < 7; i++) {
-        const date = new Date(startOfWeek);
-        date.setDate(startOfWeek.getDate() + i);
-        const dayName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][i];
-        weekBody += `<div class="text-center text-sm font-semibold p-2 border-r">${dayName} ${date.getDate()}</div>`;
-      }
-
-      for (let h = 8; h <= 18; h++) {
-        const timeLabel = h > 12 ? `${h - 12} PM` : `${h} AM`;
-        const timeStr = String(h).padStart(2, '0') + ':00';
-        weekBody += `<div class="time-label">${timeLabel}</div>`;
-        for (let d = 0; d < 7; d++) {
-          const dayDate = new Date(startOfWeek);
-          dayDate.setDate(startOfWeek.getDate() + d);
-          const dateStr = dayDate.toISOString().split('T')[0];
-          weekBody += `<div class="time-slot day-column relative" onclick="openEventModal('${dateStr}', activeCustomer?.id, '', '${timeStr}')"></div>`;
-        }
-      }
-      weekBody += '</div>';
-
-      const allEventsInWeek = [...appointments, ...tasks].filter(e => {
-        if (!e.date) return false;
-        const eventDate = new Date(e.date);
-        return eventDate >= startOfWeek && eventDate < new Date(startOfWeek.getFullYear(), startOfWeek.getMonth(), startOfWeek.getDate() + 7);
-      });
-      
-      allEventsInWeek.forEach(e => {
-        if (e.time) {
-          const eventDate = new Date(e.date);
-          const dayIndex = eventDate.getDay();
-          const [hour, minute] = e.time.split(':').map(Number);
-          const startHour = 8;
-          const totalMinutes = (hour * 60 + minute) - (startHour * 60);
-          const topPosition = (totalMinutes / 60) * 40 + 40; 
-          
-          if (topPosition >= 40) { 
-            const column = dayIndex + 2; 
-            
-            weekBody += `<div class="schedule-event ${e.type}" style="top: ${topPosition}px; grid-column: ${column}; height: 38px; width: 98%; position: absolute; margin-top: 0;" onclick="openEventModal('${e.date}', '${e.customerId}', '${e.title}', '${e.time}')">
-              ${e.time.substring(0, 5)} - ${e.title}
-            </div>`;
-          }
-        }
-      });
-      
-      return `<div class="schedule-grid-container relative" style="display: grid; grid-template-columns: 80px repeat(7, 1fr);">${weekBody}</div>`;
-    }
-
-    function renderCalendar() {
-      const view = document.getElementById('calendar-view');
-      
-      let viewTitle = '';
-      let body = '';
-      let dateNavFn = 'changeMonth';
-      
-      if (calendarView === 'month') {
-        viewTitle = currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-        body = `
-          <div class="calendar-grid text-center font-semibold text-sm border-b pb-2 mb-2">
-            <div class="text-red-500">Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div class="text-blue-500">Sat</div>
-          </div>
-          <div class="calendar-grid">
-            ${getCalendarDays(currentDate.getFullYear(), currentDate.getMonth())}
-          </div>`;
-        dateNavFn = 'changeMonth';
-      } else if (calendarView === 'day') {
-        viewTitle = currentDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-        body = `<div class="overflow-y-auto" style="height: 600px; position: relative;">${renderDayView()}</div>`;
-        dateNavFn = 'changeDay';
-      } else if (calendarView === 'week') {
-        const start = new Date(currentDate);
-        start.setDate(currentDate.getDate() - currentDate.getDay());
-        const end = new Date(start);
-        end.setDate(start.getDate() + 6);
-        viewTitle = `${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
-        body = `<div class="overflow-y-auto" style="height: 600px; position: relative;">${renderWeekView()}</div>`;
-        dateNavFn = 'changeWeek';
-      }
-
-      const header = `<div class="calendar-nav">
-        <div>
-          <button onclick="changeView('day')" class="${calendarView === 'day' ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-800'} px-3 py-1 rounded transition-colors text-sm">Day</button>
-          <button onclick="changeView('week')" class="${calendarView === 'week' ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-800'} px-3 py-1 rounded ml-2 transition-colors text-sm">Week</button>
-          <button onclick="changeView('month')" class="${calendarView === 'month' ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-800'} px-3 py-1 rounded ml-2 transition-colors text-sm">Month</button>
-        </div>
-        <div class="flex-1 text-center font-bold text-xl">${viewTitle}</div>
-        <div>
-          <button onclick="${dateNavFn}(-1)" class="text-indigo-600 p-2 hover:bg-gray-100 rounded">◀</button>
-          <button onclick="currentDate = new Date(); renderCalendar()" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-1 px-3 rounded-lg text-sm mx-2">Today</button>
-          <button onclick="${dateNavFn}(1)" class="text-indigo-600 p-2 hover:bg-gray-100 rounded">▶</button>
-        </div>
-      </div>`;
-
-      view.innerHTML = `<div class="max-w-7xl mx-auto bg-white p-6 rounded-xl shadow-lg">${header}<div class="mt-4">${body}</div></div>`;
-    }
-
-    function changeView(view) { 
-      calendarView = view; 
-      if (view === 'day') currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
-      if (view === 'week') currentDate.setDate(currentDate.getDate() - currentDate.getDay());
-      if (view === 'month') currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-      renderCalendar(); 
-    }
-
-    function changeMonth(delta) {
-      const newMonth = currentDate.getMonth() + delta;
-      currentDate = new Date(currentDate.getFullYear(), newMonth, 1);
-      renderCalendar();
-    }
-    
-    function changeDay(delta) {
-        currentDate.setDate(currentDate.getDate() + delta);
-        renderCalendar();
-    }
-
-    function changeWeek(delta) {
-        currentDate.setDate(currentDate.getDate() + (delta * 7));
-        renderCalendar();
-    }
-
-
-    function openEventModal(date, customerId = null, defaultTitle = '', defaultTime = '') {
-      if (!customerId && activeCustomer) {
-          customerId = activeCustomer.id;
-      }
-      
-      const eventsForDay = getEventsForDate(date);
-
-      const modal = document.createElement('div');
-      modal.className = 'modal';
-      modal.innerHTML = `<div class="modal-content">
-        <h3 class="text-lg font-bold mb-4">Schedule for ${date}</h3>
-        
-        <div class="mb-4 space-y-2 max-h-40 overflow-y-auto border-b pb-2">
-          ${eventsForDay.length > 0 ? eventsForDay.map(e => {
-            const customerName = customers.find(c => c.id === e.customerId)?.name || 'N/A';
-            return `
-            <div class="flex justify-between items-center p-2 rounded-lg ${e.type === 'appointment' ? 'bg-blue-100' : 'bg-yellow-100'}">
-              <span class="text-sm font-medium">
-                ${e.time ? e.time.substring(0, 5) + ' ' : ''}${e.title} (${e.type === 'appointment' ? 'Appt' : 'Task'}) - ${customerName}
-              </span>
-              <button onclick="deleteEvent('${e.date}', '${e.title}', '${e.time}')" class="text-red-600 hover:text-red-800 text-xs">Delete</button>
-            </div>`;
-          }).join('') : '<p class="text-gray-500 text-sm">No events scheduled.</p>'}
         </div>
 
-        <h4 class="font-semibold mb-2">Add New Event</h4>
-        <div class="space-y-2">
-          <input type="text" id="eventTitle" placeholder="Title (e.g., Call with John Doe)" class="w-full p-2 border rounded-lg" value="${defaultTitle}">
-          <div class="flex space-x-2">
-            <select id="eventType" class="p-2 border rounded-lg flex-1">
-              <option value="Appointment">Appointment</option>
-              <option value="Task">Task</option>
-              <option value="Todo">To-do</option>
-            </select>
-            <input type="time" id="eventTime" value="${defaultTime || new Date().toTimeString().substring(0, 5)}" class="p-2 border rounded-lg">
-          </div>
-          <select id="eventCustomer" class="w-full p-2 border rounded-lg">
-            <option value="">-- No Specific Customer --</option>
-            ${customers.map(c => `<option value="${c.id}" ${c.id === customerId ? 'selected' : ''}>${c.name}</option>`).join('')}
-          </select>
+        <!-- Event Modal (Display Details) -->
+        <div id="event-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center p-4 z-50">
+            <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-sm">
+                <h3 class="text-xl font-bold mb-4 text-gray-800" id="modal-title">Event Details</h3>
+                <p class="text-gray-700 mb-4" id="modal-body"></p>
+                <div class="flex justify-end">
+                    <button onclick="closeModal('event-modal')" class="px-4 py-2 bg-violet-600 text-white rounded-lg hover:bg-violet-700 transition">Close</button>
+                </div>
+            </div>
         </div>
 
-        <div class="flex justify-end mt-4 space-x-2">
-          <button onclick="this.closest('.modal').remove()" class="bg-gray-300 hover:bg-gray-400 px-4 py-2 rounded-lg text-sm">Cancel</button>
-          <button onclick="saveEvent('${date}')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm">Save Event</button>
-        </div>
-      </div>`;
-      document.body.appendChild(modal);
-    }
-    
-    function saveEvent(date) {
-      const title = document.getElementById('eventTitle').value.trim();
-      const type = document.getElementById('eventType').value;
-      const time = document.getElementById('eventTime').value;
-      const customerId = document.getElementById('eventCustomer').value || null;
-      
-      if (!title) {
-        showNotification('Event title is required.', 'bg-red-100 text-red-700');
-        return;
-      }
-      
-      const newEvent = { date, title, time, type: type.toLowerCase(), customerId };
-
-      if (type === 'Appointment') {
-        appointments.push(newEvent);
-      } else {
-        tasks.push(newEvent);
-      }
-      
-      saveData();
-      document.querySelector('.modal').remove();
-      showNotification(`${type} "${title}" saved!`, 'bg-green-100 text-green-700');
-      if (!document.getElementById('calendar-view').classList.contains('hidden')) {
-          renderCalendar();
-      }
-    }
-
-    function deleteEvent(date, title, time) {
-      const appointmentIndex = appointments.findIndex(e => e.date === date && e.title === title && e.time === time);
-      const taskIndex = tasks.findIndex(e => e.date === date && e.title === title && e.time === time);
-
-      if (appointmentIndex !== -1) {
-        appointments.splice(appointmentIndex, 1);
-        showNotification('Appointment deleted.', 'bg-yellow-100 text-yellow-700');
-      } else if (taskIndex !== -1) {
-        tasks.splice(taskIndex, 1);
-        showNotification('Task/Todo deleted.', 'bg-yellow-100 text-yellow-700');
-      }
-      
-      saveData();
-      document.querySelector('.modal').remove(); 
-      openEventModal(date); 
-      renderCalendar();
-    }
-
-
-    // === VENDORS & TEAM (NEW NAME) ===
-    function renderVendorsTeam() {
-      const view = document.getElementById('vendors-team-view');
-      view.innerHTML = `
-        <div class="max-w-7xl mx-auto">
-            <h2 class="text-2xl font-extrabold text-gray-900 mb-6 flex justify-between items-center">
-                Vendors & Internal Team Management
-                <button onclick="openEventModal(new Date().toISOString().split('T')[0], null, 'Team/Vendor Check-in')" class="text-indigo-600 hover:text-indigo-700 text-xl">📅</button>
-            </h2>
-            
-            <div class="mb-8">
-                <h3 class="text-xl font-bold mb-4 border-b pb-2">Vendors/Manufacturers</h3>
-                <button id="addVendorBtn" class="bg-purple-600 text-white py-2 px-4 rounded mb-4 hover:bg-purple-700">+ Add Vendor</button>
-                <div id="vendorList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    ${vendors.map((v, i) => `
-                        <div class="team-card bg-purple-50">
+        <!-- New Task Modal (Input Form) -->
+        <div id="task-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center p-4 z-50">
+            <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-lg">
+                <h3 class="text-2xl font-bold mb-6 text-gray-800">Schedule New Task/Event</h3>
+                <form id="task-form">
+                    <div class="space-y-4">
+                        <div>
+                            <label for="task-name" class="block text-sm font-medium text-gray-700">Task Name</label>
+                            <input type="text" id="task-name" name="task-name" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-violet-500 focus:ring-violet-500 p-2 border">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <span class="font-bold">${v.name}</span>
-                                <p class="text-sm text-gray-600">Contact: ${v.contact} | Type: ${v.type}</p>
+                                <label for="task-date" class="block text-sm font-medium text-gray-700">Date</label>
+                                <input type="date" id="task-date" name="task-date" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-violet-500 focus:ring-violet-500 p-2 border">
                             </div>
-                            <div class="flex space-x-2">
-                                <button class="text-indigo-600 text-sm hover:text-indigo-700" onclick="toggleCustomerType('${v.id}', true)">Switch to Customer</button>
-                                <button class="text-red-600 text-sm hover:text-red-800" onclick="deleteVendor('${v.id}')">Remove</button>
+                            <div>
+                                <label for="task-time" class="block text-sm font-medium text-gray-700">Time</label>
+                                <input type="time" id="task-time" name="task-time" required value="09:00" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-violet-500 focus:ring-violet-500 p-2 border">
                             </div>
                         </div>
-                    `).join('')}
-                </div>
-            </div>
-
-            <div>
-                <h3 class="text-xl font-bold mb-4 border-b pb-2">Internal CRM Team & Affiliates</h3>
-                <button id="addTeamBtn" class="bg-indigo-600 text-white py-2 px-4 rounded mb-4 hover:bg-indigo-700">+ Add Team Member</button>
-                <div id="teamList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    ${teamMembers.map((m, i) => `
-                        <div class="team-card">
-                            <span>${m}</span>
-                            <button class="text-red-600 text-sm hover:text-red-800" onclick="deleteTeamMember(${i})">Remove</button>
+                        <div>
+                            <label for="task-type" class="block text-sm font-medium text-gray-700">Event Type</label>
+                            <select id="task-type" name="task-type" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-violet-500 focus:ring-violet-500 p-2 border bg-white">
+                                <option value="Customer Follow-up">Customer Follow-up</option>
+                                <option value="Internal Meeting">Internal Meeting</option>
+                                <option value="Vendor Communication">Vendor Communication</option>
+                                <option value="General Task">General Task</option>
+                            </select>
                         </div>
-                    `).join('')}
-                </div>
-            </div>
-        </div>`;
-      
-      document.getElementById('addVendorBtn').addEventListener('click', openNewVendorModal);
-
-      document.getElementById('addTeamBtn').addEventListener('click', () => {
-        const name = prompt("Enter team member name:");
-        if (name) {
-          teamMembers.push(name);
-          saveData();
-          renderVendorsTeam();
-        }
-      });
-    }
-
-    // FIX: Vendor Creation Modal now includes all essential fields
-    function openNewVendorModal() {
-        const modal = document.createElement('div');
-        modal.className = 'modal';
-        modal.innerHTML = `<div class="modal-content max-w-2xl">
-            <h3 class="text-xl font-bold mb-4">Add New Vendor/Manufacturer</h3>
-            <form id="newVendorForm" class="space-y-4">
-                <div class="section">
-                    <h4 class="font-semibold text-gray-700 mb-2">Business Details</h4>
-                    <div class="field-grid">
-                        <input type="text" id="vendorName" placeholder="Company Name *" class="w-full p-2 border rounded-lg" required>
-                        <input type="text" id="vendorAddress" placeholder="Physical Address (e.g. 123 Main St, ST 12345)" class="w-full p-2 border rounded-lg">
-                        <select id="vendorType" class="w-full p-2 border rounded-lg">
-                            <option value="Supplier">Supplier</option>
-                            <option value="Manufacturer">Manufacturer</option>
-                            <option value="Carrier">Carrier</option>
-                            <option value="Other">Other</option>
-                        </select>
                     </div>
-                </div>
-                <div class="section">
-                    <h4 class="font-semibold text-gray-700 mb-2">Contact Information</h4>
-                    <div class="field-grid">
-                        <input type="text" id="vendorContact" placeholder="Main Contact Name" class="w-full p-2 border rounded-lg">
-                        <input type="email" id="vendorEmail" placeholder="Primary Email *" class="w-full p-2 border rounded-lg" required>
-                        <input type="tel" id="vendorPhone" placeholder="Phone Number" class="w-full p-2 border rounded-lg">
-                        <input type="text" id="vendorPaymentTerms" placeholder="Payment Terms (e.g., Net 30)" class="w-full p-2 border rounded-lg">
+                    <div class="flex justify-end space-x-3 mt-6">
+                        <button type="button" onclick="closeModal('task-modal')" class="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition">Cancel</button>
+                        <button type="submit" class="px-4 py-2 bg-violet-600 text-white rounded-lg hover:bg-violet-700 transition">Schedule Task</button>
                     </div>
-                </div>
-            </form>
-            <div class="flex justify-end mt-4 space-x-2">
-                <button type="button" onclick="this.closest('.modal').remove()" class="bg-gray-300 hover:bg-gray-400 px-4 py-2 rounded-lg text-sm">Cancel</button>
-                <button type="button" onclick="saveNewVendor()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm">Save Vendor</button>
+                </form>
             </div>
-        </div>`;
-        document.body.appendChild(modal);
-    }
-    
-    function saveNewVendor() {
-        const name = document.getElementById('vendorName').value.trim();
-        const address = document.getElementById('vendorAddress').value.trim();
-        const email = document.getElementById('vendorEmail').value.trim();
-        const contact = document.getElementById('vendorContact').value.trim();
-        const phone = document.getElementById('vendorPhone').value.trim();
-        const type = document.getElementById('vendorType').value;
-        const paymentTerms = document.getElementById('vendorPaymentTerms').value.trim();
+        </div>
+    </main>
 
+    <script type="module">
+        
+        // --- FIREBASE INITIALIZATION & DATA SETUP ---
 
-        if (!name || !email) {
-            showNotification('Company Name and Primary Email are required.', 'bg-red-100 text-red-700');
-            return;
+        const { initializeApp, getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, getFirestore, onSnapshot, collection, query, addDoc, setLogLevel } = window.firebase;
+        
+        // Global Firebase references
+        let app;
+        let db;
+        let auth;
+        let userId = null;
+        let events = []; // Array to hold combined events (Firestore + Holidays)
+
+        // Firebase Configuration & Initialization
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        if (firebaseConfig) {
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+            setLogLevel('debug'); // Enable Firestore logging
+
+            // 1. Authentication and Listener Setup
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    userId = user.uid;
+                    document.getElementById('user-info').textContent = `User ID: ${userId}`;
+                    setupFirestoreListener(); // Start listening for data once authenticated
+                } else {
+                    document.getElementById('user-info').textContent = `Signing in...`;
+                    try {
+                        if (initialAuthToken) {
+                            await signInWithCustomToken(auth, initialAuthToken);
+                        } else {
+                            await signInAnonymously(auth);
+                        }
+                    } catch (error) {
+                        console.error("Firebase Auth Error:", error);
+                        document.getElementById('user-info').textContent = `Auth Failed.`;
+                        // Fallback to holidays-only if auth fails
+                        events = getFederalHolidays(currentDate.getFullYear());
+                        renderCalendar();
+                        document.getElementById('loading-overlay').classList.add('hidden');
+                    }
+                }
+            });
+        } else {
+            console.warn("Firebase configuration is missing. Running in static mode.");
+            // Fallback to holidays-only if Firebase is not initialized
+            events = getFederalHolidays(currentDate.getFullYear());
+            renderCalendar();
+            document.getElementById('loading-overlay').classList.add('hidden');
         }
 
-        vendors.push({ 
-            id: 'VEND-' + Date.now().toString(36).toUpperCase(), 
-            name, 
-            address,
-            primaryEmail: email, 
-            contact, 
-            phone,
-            type,
-            paymentTerms
+        function setupFirestoreListener() {
+            // Using a public collection for team collaboration on the calendar
+            const eventsCollectionPath = `artifacts/${appId}/public/data/calendarEvents`;
+            const q = collection(db, eventsCollectionPath);
+
+            onSnapshot(q, (snapshot) => {
+                const firestoreEvents = [];
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    // Ensure the structure is compatible with the event object
+                    firestoreEvents.push({ 
+                        id: doc.id, 
+                        date: data.date, 
+                        name: data.name, 
+                        type: data.type, 
+                        time: data.time || '09:00' 
+                    });
+                });
+
+                // Combine Firestore events with calculated Federal Holidays for the current year
+                const currentYear = currentDate.getFullYear();
+                const dynamicHolidays = getFederalHolidays(currentYear);
+                
+                // Prioritize user events to show them before holidays in the cell
+                events = [...firestoreEvents, ...dynamicHolidays];
+                console.log(`Fetched ${firestoreEvents.length} user events and ${dynamicHolidays.length} holidays.`);
+                
+                renderCalendar(); 
+                document.getElementById('loading-overlay').classList.add('hidden');
+            }, (error) => {
+                console.error("Firestore Listener Error:", error);
+            });
+        }
+
+        // --- CALENDAR LOGIC START (PRESERVED FIX) ---
+
+        const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        
+        // Start date is December 2025, as seen in the screenshot
+        let currentDate = new Date(2025, 11, 1); 
+
+        // ----------------------------------------------------------------------
+        // 1. DYNAMIC FEDERAL HOLIDAY CALCULATION LOGIC (PRESERVED FIX)
+        // ----------------------------------------------------------------------
+
+        function getNthDayOfMonth(year, monthIndex, dayOfWeek, n) {
+            const date = new Date(year, monthIndex, 1);
+            let count = 0;
+            while (date.getDay() !== dayOfWeek) {
+                date.setDate(date.getDate() + 1);
+            }
+            count = 1;
+            while (count < n) {
+                date.setDate(date.getDate() + 7);
+                count++;
+            }
+            return date;
+        }
+
+        function getLastMondayInMay(year) {
+            let date = new Date(year, 5, 0); 
+            while (date.getDay() !== 1) { // 1 = Monday
+                date.setDate(date.getDate() - 1);
+            }
+            return date;
+        }
+
+        function getFederalHolidays(year) {
+            const holidays = [
+                { name: "New Year's Day", date: new Date(year, 0, 1) },
+                { name: 'Juneteenth National Independence Day', date: new Date(year, 5, 19) },
+                { name: 'Independence Day', date: new Date(year, 6, 4) },
+                { name: 'Veterans Day', date: new Date(year, 10, 11) },
+                { name: 'Christmas Day', date: new Date(year, 11, 25) },
+            ];
+
+            // Floating Holidays
+            holidays.push({ name: 'MLK Jr. Day', date: getNthDayOfMonth(year, 0, 1, 3) });
+            holidays.push({ name: "President's Day", date: getNthDayOfMonth(year, 1, 1, 3) });
+            holidays.push({ name: 'Labor Day', date: getNthDayOfMonth(year, 8, 1, 1) });
+            holidays.push({ name: 'Columbus Day', date: getNthDayOfMonth(year, 9, 1, 2) });
+            holidays.push({ name: 'Memorial Day', date: getLastMondayInMay(year) });
+            holidays.push({ name: 'Thanksgiving Day', date: getNthDayOfMonth(year, 10, 4, 4) });
+
+            const finalHolidays = [];
+            holidays.forEach(h => {
+                const day = h.date.getDay();
+                let observedDate = new Date(h.date);
+                let observedName = h.name;
+
+                // Weekend Observance Rules
+                if (day === 0) { // Sunday -> Observed Monday
+                    observedDate.setDate(observedDate.getDate() + 1);
+                    observedName = `${h.name} (Observed)`;
+                } else if (day === 6) { // Saturday -> Observed Friday
+                    observedDate.setDate(observedDate.getDate() - 1);
+                    observedName = `${h.name} (Observed)`;
+                } 
+                
+                // Official Holiday
+                finalHolidays.push({ 
+                    date: h.date.toISOString().split('T')[0], 
+                    name: h.name, 
+                    type: 'Federal Holiday', 
+                    time: '09:00' 
+                });
+
+                // Observed Day
+                if (h.date.toISOString().split('T')[0] !== observedDate.toISOString().split('T')[0]) {
+                     finalHolidays.push({ 
+                        date: observedDate.toISOString().split('T')[0], 
+                        name: observedName, 
+                        type: 'Federal Holiday (Observed)', 
+                        time: '09:00' 
+                    });
+                }
+            });
+
+            return finalHolidays;
+        }
+
+        // ----------------------------------------------------------------------
+        // 2. EVENT FILTERING LOGIC
+        // ----------------------------------------------------------------------
+
+        function getEventsForMonth(year, month) {
+            const monthStr = (month + 1).toString().padStart(2, '0');
+            const targetPrefix = `${year}-${monthStr}`;
+
+            // Filter the global 'events' array (which is already combined data)
+            return events.filter(event => event.date.startsWith(targetPrefix));
+        }
+
+        // ----------------------------------------------------------------------
+        // 3. CALENDAR RENDERING LOGIC
+        // ----------------------------------------------------------------------
+
+        function renderCalendar() {
+            const calendarTitle = document.getElementById('calendar-title');
+            const calendarDays = document.getElementById('calendar-days');
+
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            const today = new Date();
+            
+            const monthStr = (month + 1).toString().padStart(2, '0');
+
+            calendarTitle.textContent = `${MONTH_NAMES[month]} ${year}`;
+            calendarDays.innerHTML = '';
+
+            const firstDayOfMonth = new Date(year, month, 1);
+            const lastDayOfMonth = new Date(year, month + 1, 0);
+            const daysInMonth = lastDayOfMonth.getDate();
+            const firstDayOfWeek = firstDayOfMonth.getDay(); 
+
+            // Get events for the current month
+            const currentMonthEvents = getEventsForMonth(year, month);
+            const eventsByDate = {};
+            currentMonthEvents.forEach(event => {
+                const dayOfMonth = parseInt(event.date.split('-')[2], 10);
+                if (!eventsByDate[dayOfMonth]) {
+                    eventsByDate[dayOfMonth] = [];
+                }
+                eventsByDate[dayOfMonth].push(event);
+            });
+
+            // 1. Fill leading empty cells
+            for (let i = 0; i < firstDayOfWeek; i++) {
+                const prevMonthLastDay = new Date(year, month, 0).getDate();
+                const day = prevMonthLastDay - firstDayOfWeek + i + 1;
+                const cell = document.createElement('div');
+                cell.className = 'calendar-day-cell text-gray-400 bg-gray-50';
+                cell.innerHTML = `<div class="p-1 text-sm font-medium text-right">${day}</div>`;
+                calendarDays.appendChild(cell);
+            }
+
+            // 2. Fill current month's days
+            for (let day = 1; day <= daysInMonth; day++) {
+                const cell = document.createElement('div');
+                cell.className = 'calendar-day-cell relative hover:bg-violet-50 transition duration-100';
+                
+                let dayClasses = 'text-gray-900';
+                if (new Date(year, month, day).getDay() === 0) dayClasses = 'text-red-500'; 
+                if (new Date(year, month, day).getDay() === 6) dayClasses = 'text-blue-500'; 
+
+                let todayClass = '';
+                if (year === today.getFullYear() && month === today.getMonth() && day === today.getDate()) {
+                    todayClass = 'bg-violet-600 text-white rounded-full w-8 h-8 flex items-center justify-center shadow-lg';
+                    dayClasses = 'text-white'; 
+                }
+                
+                cell.innerHTML = `
+                    <div class="p-1 flex justify-end">
+                        <span class="text-sm font-medium ${todayClass}">${day}</span>
+                    </div>
+                `;
+
+                // Add events for this day
+                if (eventsByDate[day]) {
+                    const sortedEvents = eventsByDate[day].sort((a, b) => {
+                        return a.time.localeCompare(b.time);
+                    });
+
+                    sortedEvents.forEach(event => {
+                        const eventDiv = document.createElement('div');
+                        let eventColor = event.type.includes('Holiday') ? 'bg-sky-400' : 
+                                         event.type.includes('Customer') ? 'bg-blue-500' : 
+                                         event.type.includes('Internal') ? 'bg-green-500' : 
+                                         event.type.includes('Vendor') ? 'bg-orange-500' : 'bg-gray-500';
+
+                        eventDiv.className = `event-box mt-1 ${eventColor} text-white`;
+                        eventDiv.textContent = `${event.time.substring(0, 5)} ${event.name}`;
+                        
+                        eventDiv.onclick = (e) => {
+                            e.stopPropagation(); 
+                            showModal(event);
+                        };
+                        cell.appendChild(eventDiv);
+                    });
+                }
+
+                calendarDays.appendChild(cell);
+            }
+
+            // 3. Fill trailing empty cells
+            const totalCells = firstDayOfWeek + daysInMonth;
+            const remainingCells = 42 - totalCells; 
+
+            for (let i = 1; i <= remainingCells; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'calendar-day-cell text-gray-400 bg-gray-50';
+                cell.innerHTML = `<div class="p-1 text-sm font-medium text-right">${i}</div>`;
+                calendarDays.appendChild(cell);
+            }
+        }
+
+        // ----------------------------------------------------------------------
+        // 4. NAVIGATION, MODAL, AND FIREBASE ACTIONS
+        // ----------------------------------------------------------------------
+        
+        // Modal functions
+        window.closeModal = function(id) {
+            document.getElementById(id).classList.add('hidden');
+            document.getElementById(id).classList.remove('flex');
+        }
+
+        function showModal(event) {
+            const dateParts = event.date.split('-');
+            const formattedDate = `${MONTH_NAMES[parseInt(dateParts[1], 10) - 1]} ${dateParts[2]}, ${dateParts[0]}`;
+
+            document.getElementById('modal-title').textContent = event.name;
+            document.getElementById('modal-body').innerHTML = `
+                <p><strong>Type:</strong> ${event.type}</p>
+                <p><strong>Date:</strong> ${formattedDate}</p>
+                <p><strong>Time:</strong> ${event.time}</p>
+            `;
+            document.getElementById('event-modal').classList.remove('hidden');
+            document.getElementById('event-modal').classList.add('flex');
+        }
+
+        // Task Modal Handler
+        document.getElementById('quick-schedule-btn').addEventListener('click', () => {
+            const todayDate = new Date().toISOString().split('T')[0];
+            document.getElementById('task-date').value = todayDate;
+            document.getElementById('task-modal').classList.remove('hidden');
+            document.getElementById('task-modal').classList.add('flex');
         });
 
-        saveData();
-        document.querySelector('.modal').remove();
-        showNotification(`${name} added as ${type}.`, 'bg-green-100 text-green-700');
-        renderVendorsTeam();
-    }
+        document.getElementById('task-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const eventName = form['task-name'].value;
+            const eventDate = form['task-date'].value;
+            const eventTime = form['task-time'].value;
+            const eventType = form['task-type'].value;
 
-    function deleteVendor(vendorId) {
-        if(confirm(`Are you sure you want to delete vendor ${vendors.find(v=>v.id===vendorId)?.name}?`)) {
-            vendors = vendors.filter(v => v.id !== vendorId);
-            saveData();
-            renderVendorsTeam();
+            if (!db) {
+                console.error("Database is not initialized.");
+                return;
+            }
+
+            const newEvent = {
+                name: eventName,
+                date: eventDate,
+                time: eventTime,
+                type: eventType,
+                createdBy: userId,
+                timestamp: new Date().toISOString(),
+            };
+
+            const eventsCollectionPath = `artifacts/${appId}/public/data/calendarEvents`;
+
+            try {
+                await addDoc(collection(db, eventsCollectionPath), newEvent);
+                console.log("New event added successfully:", newEvent);
+                closeModal('task-modal');
+                form.reset();
+            } catch (error) {
+                console.error("Error adding document to Firestore:", error);
+            }
+        });
+
+        // Navigation functions
+        function changeMonth(delta) {
+            currentDate.setMonth(currentDate.getMonth() + delta);
+            // Re-render will automatically pull in new holidays for the new year/month via the onSnapshot
+            // We just need to ensure the calendar renders the current state of 'events'
+            renderCalendar(); 
         }
-    }
-    
-    function deleteTeamMember(index) {
-        if(confirm(`Are you sure you want to delete team member ${teamMembers[index]}?`)) {
-            teamMembers.splice(index, 1);
-            saveData();
-            renderVendorsTeam();
+
+        function goToToday() {
+            const today = new Date();
+            currentDate = new Date(today.getFullYear(), today.getMonth(), 1);
+            renderCalendar();
         }
-    }
 
-    // === PIPELINE ===
-    function renderPipeline() {
-      const view = document.getElementById('pipeline-view');
-      const stages = ['Lead', 'Qualified', 'Proposal', 'Negotiation', 'Closed Won', 'Closed Lost'];
-      view.innerHTML = `<div class="max-w-7xl mx-auto">
-        <h2 class="text-2xl font-extrabold text-gray-900 mb-6 flex justify-between items-center">
-          Sales Pipeline
-          <button onclick="openEventModal(new Date().toISOString().split('T')[0], activeCustomer?.id, 'Pipeline Review')" class="text-indigo-600 hover:text-indigo-700 text-xl">📅</button>
-        </h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          ${stages.map(stage => {
-            const deals = pipelineDeals.filter(d => d.stage === stage);
-            const totalValue = deals.reduce((sum, d) => sum + d.value, 0).toFixed(0);
-            return `<div class="kanban-column" ondrop="drop(event, '${stage}')" ondragover="allowDrop(event)">
-              <h3 class="font-bold text-center mb-1">${stage}</h3>
-              <p class="text-xs text-gray-600 mb-3 text-center">(${deals.length} Deals, $${totalValue})</p>
-              ${deals.map(deal => `<div class="deal-card" draggable="true" ondragstart="drag(event, '${deal.id}')" id="${deal.id}">
-                <p class="font-medium">${customers.find(c=>c.id===deal.customerId)?.name || 'N/A'}</p>
-                <p class="text-sm">${deal.name}</p>
-                <p class="font-bold text-indigo-600">$${deal.value.toFixed(0)}</p>
-              </div>`).join('')}
-            </div>`;
-          }).join('')}
-        </div>
-        <button class="bg-indigo-600 text-white py-2 px-4 rounded mt-4 hover:bg-indigo-700" onclick="addDeal()">+ Add Deal</button>
-      </div>`;
-    }
-    function addDeal() {
-      if (!activeCustomer) return showNotification('Select customer first.', 'bg-red-100 text-red-700');
-      const name = prompt("Deal Name:"); 
-      const value = parseFloat(prompt("Value ($):"));
-      if (name && !isNaN(value) && value > 0) {
-        pipelineDeals.push({ id: 'DEAL-'+Date.now(), customerId: activeCustomer.id, name, value, stage: 'Lead' });
-        saveData(); 
-        renderPipeline();
-        showNotification(`Deal ${name} added.`, 'bg-green-100 text-green-700');
-      } else if (name) {
-         showNotification('Invalid value entered for deal.', 'bg-red-100 text-red-700');
-      }
-    }
-    function allowDrop(ev) { ev.preventDefault(); }
-    function drag(ev, id) { ev.dataTransfer.setData("text", id); }
-    function drop(ev, stage) { 
-      ev.preventDefault(); 
-      const id = ev.dataTransfer.getData("text"); 
-      const deal = pipelineDeals.find(d => d.id === id); 
-      if (deal) { 
-        deal.stage = stage; 
-        saveData(); 
-        renderPipeline(); 
-        showNotification(`Deal moved to ${stage}`, 'bg-blue-100 text-blue-700');
-      } 
-    }
+        // Attach event listeners
+        document.getElementById('prev-month').addEventListener('click', () => changeMonth(-1));
+        document.getElementById('next-month').addEventListener('click', () => changeMonth(1));
+        document.getElementById('today-btn').addEventListener('click', goToToday);
 
-    // === EXPORT / IMPORT ===
-    document.getElementById('exportBtn').addEventListener('click', () => {
-      const data = JSON.stringify({ customers, vendors, orders, inventory, pipelineDeals, appointments, tasks, teamMembers }, null, 2);
-      const blob = new Blob([data], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = 'acoustiskin-crm-full.json'; a.click();
-    });
-    document.getElementById('importFile').addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        try {
-          const data = JSON.parse(ev.target.result);
-          customers = data.customers || []; vendors = data.vendors || []; orders = data.orders || []; inventory = data.inventory || [];
-          pipelineDeals = data.pipelineDeals || []; appointments = data.appointments || []; tasks = data.tasks || [];
-          teamMembers = data.teamMembers || [];
-          activeCustomer = customers[0] || null;
-          saveData(); renderCustomerList(); navigateTo('dashboard-view');
-          showNotification('Data imported!');
-        } catch (err) { showNotification('Invalid file', 'bg-red-100 text-red-700'); }
-      };
-      reader.readAsText(file);
-    });
-
-    // === INIT ===
-    function setupEventListeners() {
-      document.getElementById('newCustomerButton').addEventListener('click', () => {
-        const id = 'CUST-' + Math.random().toString(36).substring(2, 9).toUpperCase();
-        activeCustomer = { id, name: 'New Customer', primaryEmail: '', personalEmail: '', workEmail: '', mobilePhone: '', workPhone: '', status: 'Prospect', industry: '', revenue: '', employees: '', address: '', website: '', leadSource: '', clv: '$0', lastPurchase: null, firstPurchase: null, purchaseFrequency: 0, primaryProduct: null, subscriptionTier: null, lastContact: null, nextTask: '', nps: null, social: [], handle: '', accountOwner: '', teamDivision: '', notes: '', tags: [], specialHandling: '', poRequired: false, preferredShipping: '', preferredCarrier: '', paymentTerms: '', creditLimit: 0, billingCycle: '', currency: 'USD', aov: 0, lastOrderDate: null, lifetimeSpend: 0, ordersPlaced: 0, returnRate: 0, paddleBrandsUsed: [] };
-        customers.push(activeCustomer);
-        saveData();
-        renderCustomerList();
-        navigateTo('customers-view');
-      });
-      document.getElementById('newVendorButton').addEventListener('click', openNewVendorModal);
-
-      document.getElementById('editCustomerButton').addEventListener('click', () => navigateTo('customers-view'));
-      document.getElementById('backToDashboard').addEventListener('click', () => navigateTo('dashboard-view'));
-      document.querySelectorAll('.nav-link').forEach(link => {
-        link.addEventListener('click', e => { e.preventDefault(); navigateTo(link.dataset.view); });
-      });
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      // Handle Address Book initialization AFTER elements exist
-      const content = document.getElementById('addressBookContent');
-      const toggle = document.getElementById('addressBookToggle');
-      if (content && toggle) {
-          document.getElementById('addressBookHeader').addEventListener('click', () => {
-              content.classList.toggle('hidden');
-              toggle.textContent = content.classList.contains('hidden') ? '▶' : '▼';
-          });
-      }
-
-      loadData();
-      setupEventListeners();
-      renderCustomerList();
-      if (activeCustomer) {
-        document.getElementById('currentCustomerName').textContent = activeCustomer.name;
-        updateCustomerStatusUI(activeCustomer.status);
-      }
-      navigateTo('dashboard-view');
-    });
-  </script>
+        // Initial setup hook: If Firebase is not configured, render static data.
+        if (!firebaseConfig) {
+            document.addEventListener('DOMContentLoaded', renderCalendar);
+        }
+    </script>
 </body>
 </html>
