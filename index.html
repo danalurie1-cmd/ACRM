@@ -74,18 +74,18 @@
     /* Address Book Toggle */
     .collapsible { cursor: pointer; }
 
-    /* FIX: Order Line Styles - Precise Proportional Grid */
+    /* Order Line Styles */
     .line-item { 
         display: grid; 
-        /* Total grid is 7 columns: 1.5fr (Product) | 1fr (Specs) | 0.5fr (Qty) | 1fr (Price) | 1fr (Affiliate) | 1fr (Total) | auto (Remove button) */
         grid-template-columns: 1.5fr 1fr 0.5fr 1fr 1fr 1fr auto; 
         gap: 0.5rem; 
         align-items: center; 
         margin-bottom: 0.5rem; 
         padding-right: 20px; 
     }
-    .line-total { font-weight: bold; text-align: right; padding-right: 8px; } /* Added padding for visual offset */
-    
+    .line-total { font-weight: bold; text-align: right; padding-right: 8px; } 
+    .team-card { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
+
     /* Calendar */
     .calendar-day.today { background: #E0F7FA; border-color: var(--color-accent); }
     .appointment { background: var(--color-accent); }
@@ -1094,7 +1094,6 @@
           const dayDate = new Date(startOfWeek);
           dayDate.setDate(startOfWeek.getDate() + d);
           const dateStr = dayDate.toISOString().split('T')[0];
-          // FIX: Time slots are now correctly clickable
           weekBody += `<div class="time-slot day-column relative" onclick="openEventModal('${dateStr}', activeCustomer?.id, '', '${timeStr}')"></div>`;
         }
       }
@@ -1352,22 +1351,28 @@
       });
     }
 
-    // FIX: Vendor Creation Modal now correctly captures and saves all details.
+    // FIX: Vendor Creation Modal now includes all essential fields
     function openNewVendorModal() {
         const modal = document.createElement('div');
         modal.className = 'modal';
-        modal.innerHTML = `<div class="modal-content">
-            <h3 class="text-lg font-bold mb-4">Add New Vendor/Manufacturer</h3>
-            <div class="space-y-2">
-                <input type="text" id="vendorName" placeholder="Vendor Name *" class="w-full p-2 border rounded-lg">
-                <input type="email" id="vendorEmail" placeholder="Primary Email" class="w-full p-2 border rounded-lg">
-                <input type="text" id="vendorContact" placeholder="Main Contact Name" class="w-full p-2 border rounded-lg">
-                <select id="vendorType" class="w-full p-2 border rounded-lg">
-                    <option>Supplier</option>
-                    <option>Manufacturer</option>
-                    <option>Carrier</option>
-                    <option>Other</option>
-                </select>
+        modal.innerHTML = `<div class="modal-content max-w-lg">
+            <h3 class="text-xl font-bold mb-4">Add New Vendor/Manufacturer</h3>
+            <div class="space-y-3">
+                <h4 class="font-semibold border-b pb-1">Business Details</h4>
+                <input type="text" id="vendorName" placeholder="Company Name *" class="w-full p-2 border rounded-lg" required>
+                <input type="text" id="vendorAddress" placeholder="Physical Address (e.g. 123 Main St, ST 12345)" class="w-full p-2 border rounded-lg">
+                <h4 class="font-semibold border-b pb-1 pt-3">Contact Information</h4>
+                <div class="grid grid-cols-2 gap-2">
+                    <input type="email" id="vendorEmail" placeholder="Primary Email *" class="w-full p-2 border rounded-lg" required>
+                    <input type="text" id="vendorContact" placeholder="Main Contact Name" class="w-full p-2 border rounded-lg">
+                    <input type="tel" id="vendorPhone" placeholder="Phone Number" class="w-full p-2 border rounded-lg">
+                    <select id="vendorType" class="w-full p-2 border rounded-lg">
+                        <option>Supplier</option>
+                        <option>Manufacturer</option>
+                        <option>Carrier</option>
+                        <option>Other</option>
+                    </select>
+                </div>
             </div>
             <div class="flex justify-end mt-4 space-x-2">
                 <button onclick="this.closest('.modal').remove()" class="bg-gray-300 hover:bg-gray-400 px-4 py-2 rounded-lg text-sm">Cancel</button>
@@ -1379,20 +1384,24 @@
     
     function saveNewVendor() {
         const name = document.getElementById('vendorName').value.trim();
+        const address = document.getElementById('vendorAddress').value.trim();
         const email = document.getElementById('vendorEmail').value.trim();
         const contact = document.getElementById('vendorContact').value.trim();
+        const phone = document.getElementById('vendorPhone').value.trim();
         const type = document.getElementById('vendorType').value;
 
-        if (!name) {
-            showNotification('Vendor name is required.', 'bg-red-100 text-red-700');
+        if (!name || !email) {
+            showNotification('Company Name and Primary Email are required.', 'bg-red-100 text-red-700');
             return;
         }
 
         vendors.push({ 
             id: 'VEND-' + Date.now().toString(36).toUpperCase(), 
             name, 
+            address,
             primaryEmail: email, 
             contact, 
+            phone,
             type 
         });
 
