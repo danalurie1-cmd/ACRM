@@ -215,9 +215,9 @@
     <script type="module">
         
         // 🚨 FIX APPLIED: Direct Firebase Imports are now inside the main script module
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
-        import { getFirestore, doc, onSnapshot, collection, query, addDoc, setLogLevel } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, onSnapshot, collection, query, addDoc, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
         // Functions are now directly available: initializeApp, getAuth, etc.
         
@@ -226,7 +226,7 @@
         let db;
         let auth;
         let userId = null;
-        let firestoreEvents = []; // Array to hold Firestore events only
+        let events = []; // Array to hold combined events (Firestore + Holidays)
 
         // Firebase Configuration & Initialization
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
@@ -260,7 +260,7 @@
                         console.error("Firebase Auth Error:", error);
                         document.getElementById('user-info').textContent = `Auth Failed.`;
                         // Fallback: render static holidays and hide overlay
-                        firestoreEvents = [];
+                        events = getFederalHolidays(currentDate.getFullYear());
                         renderCalendar();
                         document.getElementById('loading-overlay').classList.add('hidden');
                     }
@@ -269,6 +269,7 @@
         } else {
             // FIX: If Firebase config is missing, ensure the page loads immediately with static data.
             console.warn("Firebase configuration is missing. Running in static mode.");
+            events = getFederalHolidays(currentDate.getFullYear());
             
             document.addEventListener('DOMContentLoaded', () => {
                 renderCalendar();
@@ -282,7 +283,7 @@
             const q = collection(db, eventsCollectionPath);
 
             onSnapshot(q, (snapshot) => {
-                firestoreEvents = [];
+                const firestoreEvents = [];
                 snapshot.forEach((doc) => {
                     const data = doc.data();
                     // Ensure the structure is compatible with the event object
@@ -295,15 +296,19 @@
                     });
                 });
 
-                console.log(`Fetched ${firestoreEvents.length} user events.`);
+                // Combine Firestore events with calculated Federal Holidays for the current year
+                const currentYear = currentDate.getFullYear();
+                const dynamicHolidays = getFederalHolidays(currentYear);
+                
+                // Prioritize user events to show them before holidays in the cell
+                events = [...firestoreEvents, ...dynamicHolidays];
+                console.log(`Fetched ${firestoreEvents.length} user events and ${dynamicHolidays.length} holidays.`);
                 
                 renderCalendar(); 
                 document.getElementById('loading-overlay').classList.add('hidden');
             }, (error) => {
                 console.error("Firestore Listener Error:", error);
-                // FIX: Ensure the overlay is hidden and calendar renders with holidays even if the data connection fails
-                firestoreEvents = [];
-                renderCalendar();
+                // FIX: Ensure the overlay is hidden even if the data connection fails
                 document.getElementById('loading-overlay').classList.add('hidden');
             });
         }
@@ -312,9 +317,8 @@
 
         const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
         
-        // Start date set to current month
-        let now = new Date();
-        let currentDate = new Date(now.getFullYear(), now.getMonth(), 1); 
+        // Start date is December 2025, as seen in the screenshot
+        let currentDate = new Date(2025, 11, 1); 
 
         // ----------------------------------------------------------------------
         // 1. DYNAMIC FEDERAL HOLIDAY CALCULATION LOGIC (PRESERVED FIX)
@@ -404,14 +408,8 @@
             const monthStr = (month + 1).toString().padStart(2, '0');
             const targetPrefix = `${year}-${monthStr}`;
 
-            // Filter Firestore events for the month
-            const monthFirestoreEvents = firestoreEvents.filter(event => event.date.startsWith(targetPrefix));
-
-            // Calculate and filter holidays for the specific year and month
-            const monthHolidays = getFederalHolidays(year).filter(holiday => holiday.date.startsWith(targetPrefix));
-
-            // Combine and return
-            return [...monthFirestoreEvents, ...monthHolidays];
+            // Filter the global 'events' array (which is already combined data)
+            return events.filter(event => event.date.startsWith(targetPrefix));
         }
 
         // ----------------------------------------------------------------------
@@ -436,7 +434,7 @@
             const daysInMonth = lastDayOfMonth.getDate();
             const firstDayOfWeek = firstDayOfMonth.getDay(); 
 
-            // Get events for the current month (includes dynamic holidays)
+            // Get events for the current month
             const currentMonthEvents = getEventsForMonth(year, month);
             const eventsByDate = {};
             currentMonthEvents.forEach(event => {
@@ -587,6 +585,8 @@
         // Navigation functions
         function changeMonth(delta) {
             currentDate.setMonth(currentDate.getMonth() + delta);
+            // Re-render will automatically pull in new holidays for the new year/month via the onSnapshot
+            // We just need to ensure the calendar renders the current state of 'events'
             renderCalendar(); 
         }
 
