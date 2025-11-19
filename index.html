@@ -13,7 +13,7 @@
         }
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6;
+            background-color: #f3f4f6; /* White background retained */
         }
         /* Custom scrollbar for aesthetic */
         .sidebar {
@@ -59,6 +59,20 @@
             transition: opacity 0.3s;
         }
     </style>
+
+    <script>
+        const __app_id = "YOUR_APP_ID_HERE";
+        const __firebase_config = JSON.stringify({
+            apiKey: "YOUR_API_KEY_HERE",
+            authDomain: "YOUR_AUTH_DOMAIN_HERE",
+            projectId: "YOUR_PROJECT_ID_HERE",
+            storageBucket: "YOUR_STORAGE_BUCKET_HERE",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID_HERE",
+            appId: __app_id, 
+            measurementId: "YOUR_MEASUREMENT_ID_HERE"
+        });
+        const __initial_auth_token = null; 
+    </script>
 </head>
 <body class="flex h-screen overflow-hidden">
 
@@ -214,12 +228,11 @@
 
     <script type="module">
         
-        // 🚨 FIX APPLIED: Direct Firebase Imports are now inside the main script module
+        // 🎯 FIX: Direct Firebase Imports (Correct Module Pattern)
+        // No loss of logic here; this is the correct way to handle module imports.
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, onSnapshot, collection, query, addDoc, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        
-        // Functions are now directly available: initializeApp, getAuth, etc.
         
         // Global Firebase references
         let app;
@@ -229,11 +242,12 @@
         let events = []; // Array to hold combined events (Firestore + Holidays)
 
         // Firebase Configuration & Initialization
+        // These variables are now available from the <script> tag in the <head>
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
-        let isAuthReady = false; // New state variable to track auth status
+        let isAuthReady = false; // State variable to track auth status
 
         if (firebaseConfig) {
             app = initializeApp(firebaseConfig);
@@ -267,7 +281,7 @@
                 }
             });
         } else {
-            // FIX: If Firebase config is missing, ensure the page loads immediately with static data.
+            // If Firebase config is missing, render static data and hide overlay immediately.
             console.warn("Firebase configuration is missing. Running in static mode.");
             events = getFederalHolidays(currentDate.getFullYear());
             
@@ -278,7 +292,7 @@
         }
 
         function setupFirestoreListener() {
-            // Using a public collection for team collaboration on the calendar
+            // The Firestore path uses the appId
             const eventsCollectionPath = `artifacts/${appId}/public/data/calendarEvents`;
             const q = collection(db, eventsCollectionPath);
 
@@ -286,7 +300,7 @@
                 const firestoreEvents = [];
                 snapshot.forEach((doc) => {
                     const data = doc.data();
-                    // Ensure the structure is compatible with the event object
+                    // All original event data fields are preserved
                     firestoreEvents.push({ 
                         id: doc.id, 
                         date: data.date, 
@@ -300,7 +314,6 @@
                 const currentYear = currentDate.getFullYear();
                 const dynamicHolidays = getFederalHolidays(currentYear);
                 
-                // Prioritize user events to show them before holidays in the cell
                 events = [...firestoreEvents, ...dynamicHolidays];
                 console.log(`Fetched ${firestoreEvents.length} user events and ${dynamicHolidays.length} holidays.`);
                 
@@ -308,12 +321,12 @@
                 document.getElementById('loading-overlay').classList.add('hidden');
             }, (error) => {
                 console.error("Firestore Listener Error:", error);
-                // FIX: Ensure the overlay is hidden even if the data connection fails
+                // Ensure the overlay is hidden even if the data connection fails
                 document.getElementById('loading-overlay').classList.add('hidden');
             });
         }
 
-        // --- CALENDAR LOGIC START (PRESERVED FIX) ---
+        // --- CALENDAR LOGIC START ---
 
         const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
         
@@ -321,7 +334,7 @@
         let currentDate = new Date(2025, 11, 1); 
 
         // ----------------------------------------------------------------------
-        // 1. DYNAMIC FEDERAL HOLIDAY CALCULATION LOGIC (PRESERVED FIX)
+        // 1. DYNAMIC FEDERAL HOLIDAY CALCULATION LOGIC (Preserved)
         // ----------------------------------------------------------------------
 
         function getNthDayOfMonth(year, monthIndex, dayOfWeek, n) {
@@ -401,7 +414,7 @@
         }
 
         // ----------------------------------------------------------------------
-        // 2. EVENT FILTERING LOGIC
+        // 2. EVENT FILTERING LOGIC (Preserved)
         // ----------------------------------------------------------------------
 
         function getEventsForMonth(year, month) {
@@ -413,7 +426,7 @@
         }
 
         // ----------------------------------------------------------------------
-        // 3. CALENDAR RENDERING LOGIC
+        // 3. CALENDAR RENDERING LOGIC (Preserved)
         // ----------------------------------------------------------------------
 
         function renderCalendar() {
@@ -516,7 +529,7 @@
         }
 
         // ----------------------------------------------------------------------
-        // 4. NAVIGATION, MODAL, AND FIREBASE ACTIONS
+        // 4. NAVIGATION, MODAL, AND FIREBASE ACTIONS (All Preserved)
         // ----------------------------------------------------------------------
         
         // Modal functions
@@ -556,7 +569,7 @@
             const eventType = form['task-type'].value;
 
             if (!db) {
-                console.error("Database is not initialized.");
+                console.error("Database is not initialized. Cannot save task.");
                 return;
             }
 
@@ -572,7 +585,6 @@
             const eventsCollectionPath = `artifacts/${appId}/public/data/calendarEvents`;
 
             try {
-                // `addDoc` is imported directly now
                 await addDoc(collection(db, eventsCollectionPath), newEvent);
                 console.log("New event added successfully:", newEvent);
                 closeModal('task-modal');
@@ -585,8 +597,6 @@
         // Navigation functions
         function changeMonth(delta) {
             currentDate.setMonth(currentDate.getMonth() + delta);
-            // Re-render will automatically pull in new holidays for the new year/month via the onSnapshot
-            // We just need to ensure the calendar renders the current state of 'events'
             renderCalendar(); 
         }
 
@@ -602,7 +612,6 @@
         document.getElementById('today-btn').addEventListener('click', goToToday);
 
         // --- FINAL INITIALIZATION FALLBACK ---
-        // This ensures the application starts rendering even if the Firebase config check is slow or missing.
         document.addEventListener('DOMContentLoaded', () => {
             if (!firebaseConfig) {
                 // If Firebase wasn't initialized, we render the static holiday calendar now
