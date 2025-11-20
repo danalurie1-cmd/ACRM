@@ -1,402 +1,846 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>AcoustiSkin CRM — Enterprise</title>
-
-  <!-- Tailwind -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AcoustiSkin CRM</title>
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- FullCalendar 6 -->
-  <link  href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js"></script>
-
-  <!-- SweetAlert2 -->
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    :root{ --purple:#6A1B9A; --purple-dark:#4a148c; }
-    body{font-family:Inter,sans-serif;background:#fff;color:var(--purple);}
-    h1,h2,h3,h4,h5,th,td,label,button,a{color:var(--purple);}
-    .sidebar{width:17rem;background:var(--purple-dark);}
-    .nav-link:hover,.sidebar .active{background:rgba(255,255,255,.12);}
-    .calendar-btn{background:var(--purple);color:#fff;padding:.35rem .8rem;border-radius:.375rem;font-size:.8125rem;}
-    .badge{padding:.15rem .55rem;border-radius:.25rem;font-size:.75rem}
+    body { font-family: 'Inter', sans-serif; background-color: #f9fafb; }
+    .sidebar { width: 280px; }
+    .main-content { flex-grow: 1; }
+    .app-header { box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .input-group label { font-weight: 500; font-size: 0.875rem; color: #4b5563; margin-bottom: 0.25rem; display: block; }
+    .input-group input, .input-group select, .input-group textarea {
+      width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem;
+    }
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.25rem; }
+    .calendar-day { min-height: 80px; border: 1px solid #e5e7eb; padding: 0.5rem; border-radius: 0.25rem; }
+    .kanban-column { background: #f3f4f6; padding: 1rem; border-radius: 0.5rem; min-height: 24rem; }
+    .deal-card { background: white; padding: 0.75rem; border-radius: 0.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 0.75rem; cursor: move; }
+    .field-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
   </style>
 </head>
+<body class="bg-gray-50 min-h-screen antialiased flex">
+  <div id="notification" class="fixed top-4 right-4 z-50 p-3 hidden rounded-lg shadow-xl text-sm font-medium transition-all duration-300" role="alert"></div>
 
-<body class="flex antialiased min-h-screen">
-<!-- ============  SIDEBAR  ============ -->
-<aside class="sidebar text-white fixed inset-y-0 left-0 flex flex-col shadow-lg">
-  <h1 class="p-6 text-2xl font-bold border-b border-purple-900">AcoustiSkin CRM</h1>
-
-  <nav id="nav" class="flex-1 overflow-y-auto text-sm uppercase tracking-wider px-3 py-4 space-y-1">
-    <a data-view="dashboard" class="nav-link block p-3 rounded">Dashboard</a>
-    <a data-view="customers" class="nav-link block p-3 rounded">Customers</a>
-    <a data-view="orders"    class="nav-link block p-3 rounded">Orders</a>
-    <a data-view="calendar"  class="nav-link block p-3 rounded">Calendar</a>
-    <a data-view="pipeline"  class="nav-link block p-3 rounded">Pipeline</a>
-  </nav>
-
-  <button id="newCustomerBtn"
-          class="m-4 bg-purple-500 hover:bg-purple-600 text-white py-2 rounded-lg font-semibold">
-    + New Customer
-  </button>
-</aside>
-
-<!-- ============  MAIN  ============ -->
-<main class="flex-1 ml-[17rem] flex flex-col">
-  <!-- top bar -->
-  <header class="bg-white p-4 flex justify-between items-center shadow-sm sticky top-0 z-10">
-    <h2 id="hdrCustomer" class="font-bold text-lg">
-      Customer: <span class="font-normal text-gray-500">None</span>
-    </h2>
-    <div class="flex items-center space-x-3">
-      <select id="csrSelect" class="border-gray-300 rounded text-sm">
-        <option value="">CSR login…</option>
-        <option>Jane Waters</option><option>Harry Chen</option><option>Aarav Patel</option>
-      </select>
-      <button id="hdrCalendarBtn" class="calendar-btn">📅 Schedule</button>
-      <button id="editCustBtn"    class="calendar-btn hidden">✎ Edit</button>
+  <!-- Sidebar -->
+  <aside class="sidebar bg-indigo-700 text-white flex flex-col h-screen fixed">
+    <div class="p-6 text-2xl font-bold border-b border-indigo-600">AcoustiSkin CRM</div>
+    <div class="p-6 flex-grow overflow-y-auto">
+      <h3 class="text-sm font-semibold mb-2 text-indigo-300 uppercase tracking-wider">Navigation</h3>
+      <nav class="space-y-1">
+        <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="dashboard-view">
+          Dashboard
+        </a>
+        <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="customers-view">
+          Customers
+        </a>
+        <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="orders-view">
+          Orders
+        </a>
+        <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="calendar-view">
+          Calendar
+        </a>
+        <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-indigo-600 transition-colors" data-view="pipeline-view">
+          Pipeline
+        </a>
+      </nav>
+      <button id="newCustomerButton" class="w-full mt-6 bg-indigo-500 hover:bg-indigo-400 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 shadow-md">
+        + New Customer
+      </button>
     </div>
-  </header>
+    <div class="p-6 border-t border-indigo-600">
+      <h3 class="text-sm font-semibold mb-2 text-indigo-300 uppercase tracking-wider">Customers</h3>
+      <ul id="customerList" class="space-y-1 max-h-64 overflow-y-auto">
+        <li class="p-3 text-center text-gray-400">Loading...</li>
+      </ul>
+    </div>
+  </aside>
 
-  <!-- toast -->
-  <div id="toast" class="fixed top-4 right-4 hidden px-4 py-2 rounded shadow"></div>
+  <!-- Main Content -->
+  <main class="main-content flex flex-col ml-72 w-full">
+    <header class="app-header bg-white p-4 flex justify-between items-center sticky top-0 z-10">
+      <h1 class="text-xl font-bold text-gray-800">Customer: <span id="currentCustomerName" class="text-indigo-600">Select Customer</span></h1>
+      <div class="flex items-center space-x-4">
+        <button id="backToDashboard" class="hidden bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg text-sm transition-colors">
+          Back to Dashboard
+        </button>
+        <button id="editCustomerButton" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg text-sm transition-colors">
+          Edit Profile
+        </button>
+      </div>
+    </header>
+    <div id="customerStatusBar" class="mx-6 mt-4 p-2 font-semibold text-sm rounded-lg bg-gray-200 text-gray-800">
+      Status: N/A
+    </div>
+    <div id="dashboard-view" class="app-view p-6"></div>
+    <div id="customers-view" class="app-view p-6 hidden"></div>
+    <div id="orders-view" class="app-view p-6 hidden"></div>
+    <div id="calendar-view" class="app-view p-6 hidden"></div>
+    <div id="pipeline-view" class="app-view p-6 hidden"></div>
+  </main>
 
-  <!-- dynamic views -->
-  <section id="dashboard" class="p-6"></section>
-  <section id="customers" class="p-6 hidden"></section>
-  <section id="orders"    class="p-6 hidden"></section>
-  <section id="calendar"  class="p-0  hidden"></section>
-  <section id="pipeline"  class="p-6 hidden"></section>
-</main>
+  <script>
+    let activeCustomer = null;
+    let customers = [
+      {
+        id: 'CUST-001',
+        name: 'Bay Area Sports Team',
+        firstName: 'John',
+        lastName: 'Smith',
+        email: 'john.smith@bayareasports.com',
+        phone: '415-555-0100',
+        address: '123 Sports Arena Blvd, San Francisco, CA',
+        website: 'bayareasports.com',
+        industry: 'Professional Sports',
+        revenue: '$150M',
+        employees: '500-1000',
+        status: 'Active Customer',
+        leadSource: 'Referral',
+        clv: '$48,000',
+        lastPurchase: '2024-10-15',
+        firstPurchase: '2023-01-10',
+        purchaseFrequency: 4,
+        primaryProduct: 'Team Uniforms',
+        subscriptionTier: 'Enterprise',
+        lastContact: '2024-11-01',
+        nextTask: 'Quarterly review meeting',
+        nps: 9,
+        social: ['LinkedIn', 'Instagram'],
+        handle: '@bayareasports'
+      },
+      {
+        id: 'CUST-002',
+        name: 'Tech Startup Inc',
+        firstName: 'Sarah',
+        lastName: 'Johnson',
+        email: 'sarah@techstartup.com',
+        phone: '650-555-0200',
+        address: '456 Innovation Way, Palo Alto, CA',
+        website: 'techstartup.com',
+        industry: 'Technology',
+        revenue: '$10M',
+        employees: '50-100',
+        status: 'Prospect',
+        leadSource: 'Website',
+        clv: '$12,000',
+        lastPurchase: null,
+        firstPurchase: null,
+        purchaseFrequency: 0,
+        primaryProduct: null,
+        subscriptionTier: null,
+        lastContact: '2024-11-10',
+        nextTask: 'Send proposal',
+        nps: null,
+        social: ['LinkedIn', 'Twitter'],
+        handle: '@techstartup'
+      }
+    ];
 
-<!-- JavaScript modules -->
-<script type="module" src="./data-model.js"></script>
-<script type="module" src="./app.js"></script>
+    let orderItems = [];
+    let appointments = [];
+    let tasks = [];
+    let pipelineDeals = [
+      { id: 'DEAL-001', customerId: 'CUST-001', name: 'Annual Uniform Contract', value: 48000, stage: 'Proposal', probability: 75, closeDate: '2025-12-15' },
+      { id: 'DEAL-002', customerId: 'CUST-002', name: 'Pilot Order', value: 8000, stage: 'Negotiation', probability: 90, closeDate: '2025-11-30' }
+    ];
+
+    // Auto-load saved data on refresh
+    const savedData = localStorage.getItem('AcoustiSkinCRM_Tailwind');
+    if (savedData) {
+      const parsed = JSON.parse(savedData);
+      customers = parsed.customers || customers;
+      pipelineDeals = parsed.pipelineDeals || pipelineDeals;
+      appointments = parsed.appointments || [];
+      tasks = parsed.tasks || [];
+      orderItems = parsed.orderItems || [];
+    }
+
+    // Auto-save everything whenever something changes
+    function autoSave() {
+      const toSave = { customers, pipelineDeals, appointments, tasks, orderItems };
+      localStorage.setItem('AcoustiSkinCRM_Tailwind', JSON.stringify(toSave));
+    }
+
+    function showNotification(msg, type = 'bg-blue-100 text-blue-700') {
+      const n = document.getElementById('notification');
+      n.textContent = msg;
+      n.className = `fixed top-4 right-4 z-50 p-3 rounded-lg shadow-xl text-sm font-medium ${type} transition-all duration-300`;
+      n.classList.remove('hidden');
+      setTimeout(() => n.classList.add('hidden'), 4000);
+    }
+
+    function navigateTo(view) {
+      document.querySelectorAll('.app-view').forEach(v => v.classList.add('hidden'));
+      document.getElementById(view)?.classList.remove('hidden');
+      document.getElementById('editCustomerButton')?.classList[view === 'customers-view' ? 'remove' : 'add']('hidden');
+      document.getElementById('backToDashboard')?.classList[view === 'dashboard-view' ? 'add' : 'remove']('hidden');
+      if (view === 'dashboard-view') renderDashboard();
+      if (view === 'customers-view') renderCustomers();
+      if (view === 'orders-view' && activeCustomer) renderOrderForm();
+      if (view === 'calendar-view') renderCalendar();
+      if (view === 'pipeline-view') renderPipeline();
+    }
+
+    function updateCustomerStatusUI(status) {
+      const bar = document.getElementById('customerStatusBar');
+      let color = 'bg-gray-200 text-gray-800';
+      if (status === 'Active Customer' || status === 'Customer') color = 'bg-green-100 text-green-700';
+      else if (status === 'Prospect') color = 'bg-blue-100 text-blue-700';
+      bar.className = `mx-6 mt-4 p-2 font-semibold text-sm rounded-lg ${color}`;
+      bar.textContent = `Status: ${status || 'N/A'}`;
+    }
+
+    function renderCustomerList() {
+      const list = document.getElementById('customerList');
+      list.innerHTML = customers.map(c => `
+        <li class="customer-item p-3 cursor-pointer hover:bg-indigo-600 rounded-lg text-sm ${activeCustomer?.id === c.id ? 'bg-indigo-600' : ''}" data-customer-id="${c.id}">
+          ${c.name} <button class="text-xs float-right text-indigo-300" onclick="event.stopPropagation(); editCustomer('${c.id}')">Edit</button>
+        </li>`).join('');
+      document.querySelectorAll('.customer-item').forEach(item => {
+        item.onclick = (e) => {
+          if (e.target.tagName === 'BUTTON') return;
+          document.querySelectorAll('.customer-item').forEach(i => i.classList.remove('bg-indigo-600'));
+          item.classList.add('bg-indigo-600');
+          activeCustomer = customers.find(c => c.id === item.dataset.customerId);
+          document.getElementById('currentCustomerName').textContent = activeCustomer.name;
+          updateCustomerStatusUI(activeCustomer.status);
+          navigateTo('dashboard-view');
+        };
+      });
+    }
+
+    function editCustomer(id) {
+      activeCustomer = customers.find(c => c.id === id);
+      navigateTo('customers-view');
+    }
+
+    function renderDashboard() {
+      const view = document.getElementById('dashboard-view');
+      if (!activeCustomer) {
+        view.innerHTML = `<div class="text-center text-gray-500 mt-20">Select a customer to view dashboard</div>`;
+        return;
+      }
+      view.innerHTML = `
+        <div class="max-w-7xl mx-auto">
+          <h2 class="text-2xl font-extrabold text-gray-900 mb-6">${activeCustomer.name} - Dashboard</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white p-6 rounded-xl shadow">
+              <h3 class="font-semibold text-gray-700">Company Info</h3>
+              <p><strong>Industry:</strong> ${activeCustomer.industry}</p>
+              <p><strong>Revenue:</strong> ${activeCustomer.revenue}</p>
+              <p><strong>Employees:</strong> ${activeCustomer.employees}</p>
+              <p><strong>Address:</strong> ${activeCustomer.address}</p>
+              <p><strong>Website:</strong> <a href="http://${activeCustomer.website}" target="_blank" class="text-indigo-600">${activeCustomer.website}</a></p>
+              <p><strong>Lead Source:</strong> ${activeCustomer.leadSource}</p>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow">
+              <h3 class="font-semibold text-gray-700">Financial & Transactional</h3>
+              <p><strong>CLV:</strong> ${activeCustomer.clv}</p>
+              <p><strong>Last Purchase:</strong> ${activeCustomer.lastPurchase || 'N/A'}</p>
+              <p><strong>First Purchase:</strong> ${activeCustomer.firstPurchase || 'N/A'}</p>
+              <p><strong>Purchase Frequency:</strong> ${activeCustomer.purchaseFrequency}</p>
+              <p><strong>Primary Product:</strong> ${activeCustomer.primaryProduct || 'N/A'}</p>
+              <p><strong>Subscription Tier:</strong> ${activeCustomer.subscriptionTier || 'N/A'}</p>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow">
+              <h3 class="font-semibold text-gray-700">Engagement</h3>
+              <p><strong>Last Contact:</strong> ${activeCustomer.lastContact || 'N/A'}</p>
+              <p><strong>Next Task:</strong> ${activeCustomer.nextTask || 'None'}</p>
+              <p><strong>NPS:</strong> ${activeCustomer.nps || 'N/A'}</p>
+              <p><strong>Social:</strong> ${activeCustomer.social ? activeCustomer.social.join(', ') : 'N/A'}</p>
+              <p><strong>Handle:</strong> ${activeCustomer.handle || 'N/A'}</p>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow">
+              <h3 class="font-semibold text-gray-700">Quick Actions</h3>
+              <button class="bg-indigo-600 text-white py-1 px-3 rounded text-sm" onclick="showNotification('Email sent')">Send Email</button>
+              <button class="bg-green-600 text-white py-1 px-3 rounded text-sm ml-2" onclick="showNotification('Call logged')">Log Call</button>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    function renderCustomers() {
+      const view = document.getElementById('customers-view');
+      view.innerHTML = `
+        <div class="max-w-7xl mx-auto">
+          <h2 class="text-2xl font-extrabold text-gray-900 mb-6">Edit Customer Profile</h2>
+          ${activeCustomer ? `
+            <form id="customerForm" class="bg-white p-6 rounded-xl shadow space-y-6">
+              <!-- I. Identity -->
+              <div class="section">
+                <h3 class="text-lg font-bold mb-4">I. Identity</h3>
+                <div class="field-grid">
+                  <div class="input-group">
+                    <label>Company Name *</label>
+                    <input type="text" name="name" value="${activeCustomer.name}" required>
+                  </div>
+                  <div class="input-group">
+                    <label>First Name</label>
+                    <input type="text" name="firstName" value="${activeCustomer.firstName || ''}" placeholder="John">
+                  </div>
+                  <div class="input-group">
+                    <label>Last Name</label>
+                    <input type="text" name="lastName" value="${activeCustomer.lastName || ''}" placeholder="Doe">
+                  </div>
+                  <div class="input-group">
+                    <label>Email Address</label>
+                    <input type="email" name="email" value="${activeCustomer.email}" required>
+                  </div>
+                  <div class="input-group">
+                    <label>Phone</label>
+                    <input type="tel" name="phone" value="${activeCustomer.phone || ''}" placeholder="555-0001">
+                  </div>
+                  <div class="input-group">
+                    <label>Website</label>
+                    <input type="text" name="website" value="${activeCustomer.website || ''}" placeholder="example.com">
+                  </div>
+                </div>
+              </div>
+              <!-- II. Firmographics -->
+              <div class="section">
+                <h3 class="text-lg font-bold mb-4">II. Firmographics</h3>
+                <div class="field-grid">
+                  <div class="input-group">
+                    <label>Industry</label>
+                    <input type="text" name="industry" value="${activeCustomer.industry || ''}">
+                  </div>
+                  <div class="input-group">
+                    <label>Annual Revenue</label>
+                    <input type="text" name="revenue" value="${activeCustomer.revenue || ''}">
+                  </div>
+                  <div class="input-group">
+                    <label>Number of Employees</label>
+                    <input type="text" name="employees" value="${activeCustomer.employees || ''}">
+                  </div>
+                  <div class="input-group">
+                    <label>Address</label>
+                    <input type="text" name="address" value="${activeCustomer.address || ''}">
+                  </div>
+                </div>
+              </div>
+              <!-- III. Relationship -->
+              <div class="section">
+                <h3 class="text-lg font-bold mb-4">III. Relationship</h3>
+                <div class="field-grid">
+                  <div class="input-group">
+                    <label>Account Status</label>
+                    <select name="status">
+                      <option ${activeCustomer.status === 'Prospect' ? 'selected' : ''}>Prospect</option>
+                      <option ${activeCustomer.status === 'Customer' ? 'selected' : ''}>Customer</option>
+                      <option ${activeCustomer.status === 'Active Customer' ? 'selected' : ''}>Active Customer</option>
+                      <option ${activeCustomer.status === 'Former Customer' ? 'selected' : ''}>Former Customer</option>
+                    </select>
+                  </div>
+                  <div class="input-group">
+                    <label>Lead Source</label>
+                    <input type="text" name="leadSource" value="${activeCustomer.leadSource || ''}">
+                  </div>
+                  <div class="input-group">
+                    <label>Customer Lifetime Value (CLV)</label>
+                    <input type="text" name="clv" value="${activeCustomer.clv || ''}">
+                  </div>
+                  <div class="input-group">
+                    <label>Last Contact Date</label>
+                    <input type="date" name="lastContact" value="${activeCustomer.lastContact || ''}">
+                  </div>
+                  <div class="input-group">
+                    <label>Next Task</label>
+                    <input type="text" name="nextTask" value="${activeCustomer.nextTask || ''}">
+                  </div>
+                </div>
+              </div>
+              <!-- IV. Transactional -->
+              <div class="section">
+                <h3 class="text-lg font-bold mb-4">IV. Transactional History</h3>
+                <div class="field-grid">
+                  <div class="input-group">
+                    <label>Last Purchase Date</label>
+                    <input type="date" name="lastPurchase" value="${activeCustomer.lastPurchase || ''}">
+                  </div>
+                  <div class="input-group">
+                    <label>First Purchase Date</label>
+                    <input type="date" name="firstPurchase" value="${activeCustomer.firstPurchase || ''}">
+                  </div>
+                  <div class="input-group">
+                    <label>Purchase Frequency</label>
+                    <input type="number" name="purchaseFrequency" value="${activeCustomer.purchaseFrequency || 0}">
+                  </div>
+                  <div class="input-group">
+                    <label>Primary Product</label>
+                    <input type="text" name="primaryProduct" value="${activeCustomer.primaryProduct || ''}">
+                  </div>
+                  <div class="input-group">
+                    <label>Subscription Tier</label>
+                    <select name="subscriptionTier">
+                      <option value="">None</option>
+                      <option ${activeCustomer.subscriptionTier === 'Standard' ? 'selected' : ''}>Standard</option>
+                      <option ${activeCustomer.subscriptionTier === 'Gold' ? 'selected' : ''}>Gold</option>
+                      <option ${activeCustomer.subscriptionTier === 'Enterprise' ? 'selected' : ''}>Enterprise</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <!-- V. Engagement -->
+              <div class="section">
+                <h3 class="text-lg font-bold mb-4">V. Engagement Data</h3>
+                <div class="field-grid">
+                  <div class="input-group">
+                    <label>NPS Score (0-10)</label>
+                    <input type="number" name="nps" value="${activeCustomer.nps || ''}" min="0" max="10">
+                  </div>
+                  <div class="input-group">
+                    <label>Social Handle</label>
+                    <input type="text" name="handle" value="${activeCustomer.handle || ''}">
+                  </div>
+                </div>
+              </div>
+              <div class="flex justify-end">
+                <button type="button" id="saveCustomerBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg">
+                  Save Changes
+                </button>
+              </div>
+            </form>` : '<p class="text-center text-gray-500">Select a customer</p>'}
+        </div>`;
+      
+      document.getElementById('saveCustomerBtn')?.addEventListener('click', () => {
+        const form = document.getElementById('customerForm');
+        const data = {};
+        form.querySelectorAll('input, select, textarea').forEach(f => {
+          if (f.type === 'checkbox') data[f.name] = f.checked;
+          else if (f.multiple) data[f.name] = Array.from(f.selectedOptions).map(o => o.value);
+          else data[f.name] = f.value;
+        });
+        Object.assign(activeCustomer, data);
+        autoSave();
+        showNotification('Customer saved permanently!', 'bg-green-100 text-green-700');
+        renderCustomerList();
+        updateCustomerStatusUI(activeCustomer.status);
+        navigateTo('dashboard-view');
+      });
+    }
+
+    function renderOrderForm() {
+      const view = document.getElementById('orders-view');
+      orderItems = [];
+      view.innerHTML = `
+        <div class="max-w-7xl mx-auto">
+          <h2 class="text-2xl font-extrabold text-gray-900 mb-6">New Order - ${activeCustomer.name}</h2>
+          <div class="space-y-6">
+            <!-- Customer Information -->
+            <div class="bg-white p-6 rounded-xl shadow">
+              <h3 class="text-xl font-bold mb-4">Customer Information</h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="input-group">
+                  <label>Full Name</label>
+                  <input type="text" value="${activeCustomer.name}" readonly>
+                </div>
+                <div class="input-group">
+                  <label>Email Address</label>
+                  <input type="email" value="${activeCustomer.email}" readonly>
+                </div>
+              </div>
+            </div>
+            <!-- Order Items -->
+            <div class="bg-white p-6 rounded-xl shadow">
+              <h3 class="text-xl font-bold mb-4">Order Items</h3>
+              <div class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div class="input-group">
+                    <label>Product</label>
+                    <input type="text" id="productName" placeholder="e.g. Team Jersey">
+                  </div>
+                  <div class="input-group">
+                    <label>Quantity</label>
+                    <input type="number" id="productQty" value="1" min="1">
+                  </div>
+                  <div class="input-group">
+                    <label>Price per Unit</label>
+                    <input type="number" id="productPrice" step="0.01" placeholder="29.95">
+                  </div>
+                </div>
+                <button id="addToOrder" class="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-lg">
+                  Add to Order
+                </button>
+                <div id="orderSummaryList" class="mt-4 space-y-2"></div>
+              </div>
+            </div>
+            <!-- Order Total -->
+            <div class="bg-white p-6 rounded-xl shadow">
+              <h3 class="text-xl font-bold mb-4">Order Total</h3>
+              <div id="finalTotal" class="space-y-2 text-lg">
+                <div class="flex justify-between"><span>Subtotal:</span><span id="subtotal">$0.00</span></div>
+                <div class="flex justify-between"><span>Tax (8%):</span><span id="tax">$0.00</span></div>
+                <div class="flex justify-between font-bold border-t pt-2"><span>TOTAL:</span><span id="grandTotal">$0.00</span></div>
+              </div>
+              <button id="placeOrder" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg mt-4">
+                Place Order
+              </button>
+            </div>
+          </div>
+        </div>`;
+      attachOrderEventListeners();
+    }
+
+    function attachOrderEventListeners() {
+      document.getElementById('addToOrder').onclick = () => {
+        const product = document.getElementById('productName').value;
+        const qty = parseInt(document.getElementById('productQty').value) || 1;
+        const price = parseFloat(document.getElementById('productPrice').value) || 0;
+        if (product && price > 0) {
+          orderItems.push({ product, qty, price: price * qty });
+          document.getElementById('productName').value = '';
+          document.getElementById('productQty').value = '1';
+          document.getElementById('productPrice').value = '';
+          updateOrderSummaryList();
+          autoSave();
+        } else {
+          showNotification('Please fill in product name and price', 'bg-red-100 text-red-700');
+        }
+      };
+      
+      document.getElementById('placeOrder').onclick = () => {
+        if (orderItems.length === 0) {
+          showNotification('Please add items to the order', 'bg-red-100 text-red-700');
+        } else {
+          showNotification('Order placed successfully!', 'bg-green-100 text-green-700');
+          orderItems = [];
+          updateOrderSummaryList();
+          autoSave();
+        }
+      };
+    }
+
+    function updateOrderSummaryList() {
+      const list = document.getElementById('orderSummaryList');
+      list.innerHTML = orderItems.map((item, idx) => `
+        <div class="p-3 bg-gray-50 rounded flex justify-between items-center">
+          <div>
+            <p class="font-medium">${item.qty}x ${item.product}</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <p class="font-medium">$${item.price.toFixed(2)}</p>
+            <button onclick="removeOrderItem(${idx})" class="text-red-600 text-sm">Remove</button>
+          </div>
+        </div>`).join('');
+      
+      const subtotal = orderItems.reduce((s, i) => s + i.price, 0);
+      const tax = subtotal * 0.08;
+      const grandTotal = subtotal + tax;
+      
+      document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
+      document.getElementById('tax').textContent = `$${tax.toFixed(2)}`;
+      document.getElementById('grandTotal').textContent = `$${grandTotal.toFixed(2)}`;
+    }
+
+    function removeOrderItem(index) {
+      orderItems.splice(index, 1);
+      updateOrderSummaryList();
+      autoSave();
+    }
+
+    function renderCalendar() {
+      const view = document.getElementById('calendar-view');
+      view.innerHTML = `
+        <div class="max-w-7xl mx-auto">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-2xl font-extrabold text-gray-900">Calendar</h2>
+            <div>
+              <button class="bg-gray-200 px-3 py-1 rounded mr-2" onclick="switchCalendarView('daily')">Daily</button>
+              <button class="bg-gray-200 px-3 py-1 rounded mr-2" onclick="switchCalendarView('weekly')">Weekly</button>
+              <button class="bg-indigo-600 text-white px-3 py-1 rounded" onclick="switchCalendarView('monthly')">Monthly</button>
+            </div>
+          </div>
+          <div id="calendarContent" class="bg-white p-6 rounded-xl shadow">
+            <p class="text-center text-gray-500">Loading calendar...</p>
+          </div>
+          <button class="bg-indigo-600 text-white py-2 px-4 rounded mt-4" onclick="addEvent()">+ Add Event</button>
+        </div>`;
+      switchCalendarView('monthly');
+    }
+
+    let currentCalendarView = 'monthly';
+    let currentMonth = new Date().getMonth();
+    let currentYear = new Date().getFullYear();
+
+    function switchCalendarView(view) {
+      currentCalendarView = view;
+      if (view === 'daily') renderDailyCalendar();
+      else if (view === 'weekly') renderWeeklyCalendar();
+      else renderMonthlyCalendar();
+    }
+
+    function renderMonthlyCalendar() {
+      const content = document.getElementById('calendarContent');
+      const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+      const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+      let html = `
+        <h3 class="font-semibold mb-2">${new Date(currentYear, currentMonth, 1).toLocaleString('default', { month: 'long' })} ${currentYear}</h3>
+        <div class="calendar-grid">
+          <div class="font-bold">Sun</div><div class="font-bold">Mon</div><div class="font-bold">Tue</div>
+          <div class="font-bold">Wed</div><div class="font-bold">Thu</div><div class="font-bold">Fri</div>
+          <div class="font-bold">Sat</div>`;
+      
+      for (let i = 0; i < firstDay; i++) html += '<div></div>';
+      
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = `${currentYear}-${String(currentMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+        const dayAppts = appointments.filter(a => a.date === dateStr);
+        const dayTasks = tasks.filter(t => t.due === dateStr);
+        html += `
+          <div class="calendar-day">
+            <div class="font-semibold text-sm">${day}</div>
+            ${dayAppts.map(a => `<div class="text-xs bg-blue-100 p-1 rounded mt-1">${a.title}</div>`).join('')}
+            ${dayTasks.map(t => `<div class="text-xs bg-yellow-100 p-1 rounded mt-1">${t.title}</div>`).join('')}
+          </div>`;
+      }
+      html += `</div>
+        <div class="flex justify-center mt-4">
+          <button class="bg-gray-200 px-3 py-1 rounded mr-2" onclick="previousMonth()">Previous</button>
+          <button class="bg-indigo-600 text-white px-3 py-1 rounded" onclick="nextMonth()">Next</button>
+        </div>`;
+      content.innerHTML = html;
+    }
+
+    function renderWeeklyCalendar() {
+      const content = document.getElementById('calendarContent');
+      const today = new Date();
+      const startOfWeek = new Date(today.setDate(today.getDate() - today.getDay()));
+      let html = `<h3 class="font-semibold mb-2">Week of ${startOfWeek.toLocaleDateString()}</h3><div class="calendar-grid">`;
+      
+      for (let i = 0; i < 7; i++) {
+        const date = new Date(startOfWeek);
+        date.setDate(startOfWeek.getDate() + i);
+        const dateStr = date.toISOString().split('T')[0];
+        const dayAppts = appointments.filter(a => a.date === dateStr);
+        const dayTasks = tasks.filter(t => t.due === dateStr);
+        const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        html += `
+          <div class="calendar-day">
+            <div class="font-semibold text-sm">${dayNames[date.getDay()]} ${date.getDate()}</div>
+            ${dayAppts.map(a => `<div class="text-xs bg-blue-100 p-1 rounded mt-1">${a.title}</div>`).join('')}
+            ${dayTasks.map(t => `<div class="text-xs bg-yellow-100 p-1 rounded mt-1">${t.title}</div>`).join('')}
+          </div>`;
+      }
+      html += '</div>';
+      content.innerHTML = html;
+    }
+
+    function renderDailyCalendar() {
+      const content = document.getElementById('calendarContent');
+      const today = new Date();
+      const dateStr = today.toISOString().split('T')[0];
+      const dayAppts = appointments.filter(a => a.date === dateStr);
+      const dayTasks = tasks.filter(t => t.due === dateStr);
+      let html = `<h3 class="font-semibold mb-4">Today: ${today.toLocaleDateString()}</h3><div class="space-y-2">`;
+      
+      if (dayAppts.length === 0 && dayTasks.length === 0) {
+        html += '<p class="text-gray-500">No events scheduled for today</p>';
+      } else {
+        dayAppts.forEach(a => html += `<div class="p-2 bg-blue-100 rounded">${a.title} at ${a.time || 'All day'}</div>`);
+        dayTasks.forEach(t => html += `<div class="p-2 bg-yellow-100 rounded">${t.title}</div>`);
+      }
+      html += '</div>';
+      content.innerHTML = html;
+    }
+
+    function previousMonth() {
+      currentMonth--;
+      if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear--;
+      }
+      renderMonthlyCalendar();
+    }
+
+    function nextMonth() {
+      currentMonth++;
+      if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear++;
+      }
+      renderMonthlyCalendar();
+    }
+
+    function addEvent() {
+      const title = prompt("Event Title:");
+      const date = prompt("Date (YYYY-MM-DD):");
+      const time = prompt("Time (HH:MM) - Optional:");
+      if (title && date) {
+        appointments.push({ 
+          id: 'APPT-' + Date.now(), 
+          customerId: activeCustomer?.id, 
+          title, 
+          date, 
+          time: time || '', 
+          type: 'Appointment', 
+          notes: '' 
+        });
+        autoSave();
+        showNotification('Event added!', 'bg-green-100 text-green-700');
+        renderCalendar();
+      }
+    }
+
+    function renderPipeline() {
+      const view = document.getElementById('pipeline-view');
+      const stages = ['Lead', 'Qualified', 'Proposal', 'Negotiation', 'Closed Won', 'Closed Lost'];
+      view.innerHTML = `
+        <div class="max-w-7xl mx-auto">
+          <h2 class="text-2xl font-extrabold text-gray-900 mb-6">Sales Pipeline</h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            ${stages.map(stage => {
+              const deals = pipelineDeals.filter(d => d.stage === stage);
+              const totalValue = deals.reduce((sum, d) => sum + d.value, 0);
+              return `
+                <div class="kanban-column" ondrop="drop(event, '${stage}')" ondragover="allowDrop(event)">
+                  <h3 class="font-bold text-center mb-2">${stage}</h3>
+                  <p class="text-center text-sm text-gray-600 mb-3">${deals.length} deals - $${totalValue.toLocaleString()}</p>
+                  ${deals.map(deal => {
+                    const cust = customers.find(c => c.id === deal.customerId);
+                    return `<div class="deal-card" draggable="true" ondragstart="drag(event, '${deal.id}')" id="${deal.id}">
+                      <p class="font-medium text-sm">${cust?.name || 'Unknown'}</p>
+                      <p class="text-xs text-gray-600">${deal.name}</p>
+                      <p class="font-bold text-indigo-600">$${deal.value.toLocaleString()}</p>
+                      <div class="mt-2 flex justify-between">
+                        <button class="text-xs text-indigo-600" onclick="editDeal('${deal.id}')">Edit</button>
+                        <button class="text-xs text-red-600" onclick="deleteDeal('${deal.id}')">Delete</button>
+                      </div>
+                    </div>`;
+                  }).join('')}
+                </div>`;
+            }).join('')}
+          </div>
+          <button class="bg-indigo-600 text-white py-2 px-4 rounded mt-4" onclick="addDeal()">+ Add Deal</button>
+        </div>`;
+    }
+
+    function addDeal() {
+      if (!activeCustomer) {
+        showNotification('Please select a customer first', 'bg-yellow-100 text-yellow-700');
+        return;
+      }
+      const name = prompt("Deal Name:");
+      const value = prompt("Deal Value ($):");
+      if (name && value) {
+        pipelineDeals.push({ 
+          id: 'DEAL-' + Date.now(), 
+          customerId: activeCustomer.id, 
+          name, 
+          value: parseFloat(value), 
+          stage: 'Lead', 
+          probability: 10, 
+          closeDate: '' 
+        });
+        autoSave();
+        showNotification('Deal added!', 'bg-green-100 text-green-700');
+        renderPipeline();
+      }
+    }
+
+    function editDeal(id) {
+      const deal = pipelineDeals.find(d => d.id === id);
+      const newName = prompt("Edit Name:", deal.name);
+      const newValue = prompt("Edit Value:", deal.value);
+      if (newName && newValue) {
+        deal.name = newName;
+        deal.value = parseFloat(newValue);
+        autoSave();
+        showNotification('Deal updated!', 'bg-green-100 text-green-700');
+        renderPipeline();
+      }
+    }
+
+    function deleteDeal(id) {
+      if (confirm('Are you sure you want to delete this deal?')) {
+        pipelineDeals = pipelineDeals.filter(d => d.id !== id);
+        autoSave();
+        showNotification('Deal deleted!', 'bg-red-100 text-red-700');
+        renderPipeline();
+      }
+    }
+
+    function allowDrop(ev) {
+      ev.preventDefault();
+    }
+
+    function drag(ev, id) {
+      ev.dataTransfer.setData("text", id);
+    }
+
+    function drop(ev, stage) {
+      ev.preventDefault();
+      const id = ev.dataTransfer.getData("text");
+      const deal = pipelineDeals.find(d => d.id === id);
+      if (deal) {
+        deal.stage = stage;
+        autoSave();
+        showNotification(`Deal moved to ${stage}!`, 'bg-green-100 text-green-700');
+        renderPipeline();
+      }
+    }
+
+    function setupEventListeners() {
+      document.getElementById('newCustomerButton').addEventListener('click', () => {
+        const id = 'CUST-' + Date.now();
+        activeCustomer = { 
+          id, 
+          name: 'New Customer', 
+          email: '', 
+          phone: '', 
+          address: '', 
+          website: '', 
+          industry: '', 
+          revenue: '', 
+          employees: '', 
+          status: 'Prospect', 
+          leadSource: '', 
+          clv: '0', 
+          purchaseFrequency: 0,
+          social: [],
+          handle: '',
+          nextTask: ''
+        };
+        customers.push(activeCustomer);
+        autoSave();
+        renderCustomerList();
+        navigateTo('customers-view');
+      });
+      
+      document.getElementById('editCustomerButton').addEventListener('click', () => {
+        if (activeCustomer) {
+          navigateTo('customers-view');
+        } else {
+          showNotification('Please select a customer first', 'bg-yellow-100 text-yellow-700');
+        }
+      });
+      
+      document.getElementById('backToDashboard').addEventListener('click', () => navigateTo('dashboard-view'));
+      
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', e => {
+          e.preventDefault();
+          const view = link.dataset.view;
+          if (view === 'orders-view' && !activeCustomer) {
+            showNotification('Please select a customer first', 'bg-yellow-100 text-yellow-700');
+            return;
+          }
+          navigateTo(view);
+        });
+      });
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      renderCustomerList();
+      setupEventListeners();
+      navigateTo('dashboard-view');
+      showNotification('Welcome to AcoustiSkin CRM!', 'bg-indigo-100 text-indigo-700');
+    });
+  </script>
 </body>
-</html>/* Local-storage “repository” layer */
-export const db = JSON.parse(localStorage.getItem('ASCRM') || `{
-  "customers": [], "orders": [], "appointments": [], "pipeline": []
-}`);
+</html>
 
-export const save = () => localStorage.setItem('ASCRM', JSON.stringify(db));
 
-export const uuid = () => Date.now().toString(36) + Math.random().toString(36).slice(2);
-
-/* factory helpers */
-export const newCustomer = csr => ({
-  id: uuid(), name:"", phone:"", emails:[], csr,
-  billTo:{}, shipTo:{},
-  createdAt: new Date().toLocaleString(),
-  updatedAt: new Date().toLocaleString()
-});
-
-export const newOrder = csr => ({
-  id: uuid(),
-  orderNo: 'ORD-' + Date.now().toString().slice(-5),
-  custId:"", status:"Pending", carrier:"", csr,
-  date: new Date().toLocaleDateString()
-});
-
-export const newAppointment = (date,custId,csr) => ({
-  id: uuid(), title:"", type:"Appointment",
-  date, time:"09:00", custId, notes:"", csr
-});/* AcoustiSkin CRM – main SPA logic */
-import {db,save,uuid,newCustomer,newOrder,newAppointment} from './data-model.js';
-
-/* tiny helpers */
-const $  = q => document.querySelector(q);
-const $$ = q => document.querySelectorAll(q);
-const toast = (msg,type='info') =>{
-  const t=$("#toast");
-  const palette = {
-    info   :'bg-purple-100 text-purple-800',
-    success:'bg-green-100 text-green-700',
-    error  :'bg-red-100 text-red-700'
-  };
-  t.textContent=msg;
-  t.className=`fixed top-4 right-4 px-4 py-2 rounded shadow ${palette[type]}`;
-  t.classList.remove('hidden');
-  clearTimeout(t._hide); t._hide=setTimeout(()=>t.classList.add('hidden'),3000);
-};
-
-/* state */
-let activeCustomer = null;
-let currentCSR     = '';
-
-/* ------------------------------------------------------------------
-   ROUTER & NAV
------------------------------------------------------------------- */
-const views=['dashboard','customers','orders','calendar','pipeline'];
-function show(id){
-  views.forEach(v=>$('#'+v).classList.toggle('hidden',v!==id));
-  if(id==='dashboard') renderDash();
-  if(id==='customers') renderCustomerForm();
-  if(id==='orders')    renderOrders();
-  if(id==='calendar')  renderCalendar();
-  if(id==='pipeline')  renderPipeline();
-}
-
-/* sidebar */
-$$('.nav-link').forEach(a=>{
-  a.onclick=e=>{
-    e.preventDefault();
-    $$('.nav-link').forEach(l=>l.classList.remove('active'));
-    a.classList.add('active');
-    show(a.dataset.view);
-  };
-});
-
-/* header items */
-$('#hdrCalendarBtn').onclick = ()=>show('calendar');
-$('#editCustBtn').onclick    = ()=>show('customers');
-$('#csrSelect').onchange     = e=>currentCSR=e.target.value;
-
-/* new customer */
-$('#newCustomerBtn').onclick=()=>{
-  activeCustomer=newCustomer(currentCSR);
-  db.customers.push(activeCustomer); save();
-  updateHeader();
-  $('#editCustBtn').classList.remove('hidden');
-  show('customers');
-};
-
-/* helper */
-const updateHeader=()=>$('#hdrCustomer').innerHTML=
-  `Customer: <span class="font-normal text-gray-500">${activeCustomer?activeCustomer.name||'Unnamed':'None'}</span>`;
-
-/* ------------------------------------------------------------------
-   DASHBOARD
------------------------------------------------------------------- */
-function renderDash(){
-  const el=$("#dashboard");
-  if(!activeCustomer){
-    el.innerHTML='<p class="text-gray-500 text-center mt-10">Select or create a customer.</p>';return;
-  }
-  el.innerHTML=`
-    <h2 class="text-2xl font-bold mb-4">${activeCustomer.name||'Unnamed'}</h2>
-    <div class="grid md:grid-cols-2 gap-6">
-      <div>
-        <p><strong>CSR:</strong> ${activeCustomer.csr||''}</p>
-        <p><strong>Email:</strong> ${activeCustomer.emails[0]||''}</p>
-        <p><strong>Phone:</strong> ${activeCustomer.phone||''}</p>
-      </div>
-      <div>
-        <p><strong>Ship To:</strong> ${(activeCustomer.shipTo.line1||'')+' '+(activeCustomer.shipTo.city||'')}</p>
-      </div>
-    </div>
-    <p class="text-sm mt-4 text-gray-500">Updated ${activeCustomer.updatedAt}</p>`;
-}
-
-/* ------------------------------------------------------------------
-   CUSTOMER MASTER
------------------------------------------------------------------- */
-function renderCustomerForm(){
-  const c=activeCustomer;
-  if(!c){ $('#customers').innerHTML='<p>Select a customer first.</p>'; return; }
-  $('#customers').innerHTML=`
-    <h2 class="text-xl font-bold mb-6">Customer Master</h2>
-    <div class="grid md:grid-cols-2 gap-6">
-      <div class="space-y-3">
-        <label>Name <input id="c-name"   class="border rounded w-full p-1" value="${c.name}"></label>
-        <label>Business Email <input id="c-e1" class="border rounded w-full p-1" value="${c.emails[0]||''}"></label>
-        <label>Personal Email <input id="c-e2" class="border rounded w-full p-1" value="${c.emails[1]||''}"></label>
-        <label>Phone <input id="c-phone" class="border rounded w-full p-1" value="${c.phone||''}"></label>
-        <label>CSR <input id="c-csr"     class="border rounded w-full p-1" value="${c.csr||currentCSR}"></label>
-      </div>
-      <div class="space-y-3">
-        <h3 class="font-semibold">Bill To</h3>
-        <input id="c-b1" class="border rounded w-full p-1" placeholder="Street" value="${c.billTo.line1||''}">
-        <input id="c-bcity" class="border rounded w-full p-1" placeholder="City, ST" value="${c.billTo.city||''}">
-        <input id="c-bzip"  class="border rounded w-full p-1" placeholder="ZIP" value="${c.billTo.zip||''}">
-        <h3 class="font-semibold mt-4">Ship To</h3>
-        <input id="c-s1" class="border rounded w-full p-1" placeholder="Street" value="${c.shipTo.line1||''}">
-        <input id="c-scity" class="border rounded w-full p-1" placeholder="City, ST" value="${c.shipTo.city||''}">
-        <input id="c-szip"  class="border rounded w-full p-1" placeholder="ZIP" value="${c.shipTo.zip||''}">
-      </div>
-    </div>
-    <div class="mt-6 flex justify-end gap-3">
-      <button id="delCust" class="bg-red-600 text-white px-4 py-2 rounded">Delete</button>
-      <button id="savCust" class="calendar-btn">💾 Save</button>
-    </div>
-    <p class="text-sm mt-4 text-gray-500">Created ${c.createdAt} | Updated ${c.updatedAt}</p>`;
-
-  $('#savCust').onclick=()=>{
-    Object.assign(c,{
-      name:$('#c-name').value.trim(),
-      emails:[$('#c-e1').value.trim(),$('#c-e2').value.trim()],
-      phone:$('#c-phone').value.trim(),
-      csr:$('#c-csr').value.trim(),
-      billTo:{line1:$('#c-b1').value,city:$('#c-bcity').value,zip:$('#c-bzip').value},
-      shipTo:{line1:$('#c-s1').value,city:$('#c-scity').value,zip:$('#c-szip').value},
-      updatedAt:new Date().toLocaleString()
-    });
-    save(); updateHeader(); toast('Customer saved','success');
-    renderDash();
-  };
-
-  $('#delCust').onclick=()=>{
-    if(confirm('Delete this customer?')){
-      db.customers=db.customers.filter(x=>x.id!==c.id);
-      activeCustomer=null; save(); updateHeader(); $('#editCustBtn').classList.add('hidden');
-      toast('Deleted','success'); show('dashboard');
-    }
-  };
-}
-
-/* ------------------------------------------------------------------
-   ORDERS
------------------------------------------------------------------- */
-function renderOrders(){
-  $('#orders').innerHTML=`
-   <div class="flex justify-between items-center mb-4">
-     <h2 class="text-xl font-bold">Orders</h2>
-     <button id="newOrderBtn" class="calendar-btn">+ New</button>
-   </div>
-   <table class="w-full text-sm">
-     <thead><tr class="border-b">
-       <th class="text-left py-1">#</th><th class="text-left">Customer</th>
-       <th>Status</th><th>Carrier</th><th>CSR</th><th>Date</th><th></th>
-     </tr></thead>
-     <tbody id="orderTbody"></tbody>
-   </table>`;
-  const tbody=$('#orderTbody');
-  tbody.innerHTML=db.orders.map(o=>{
-    const name=(db.customers.find(c=>c.id===o.custId)||{}).name||'';
-    const badge=o.status==='Shipped'?'bg-green-200 text-green-800':'bg-yellow-100 text-yellow-800';
-    return `<tr class="border-b">
-      <td>${o.orderNo}</td><td>${name}</td><td><span class="badge ${badge}">${o.status}</span></td>
-      <td>${o.carrier||''}</td><td>${o.csr||''}</td><td>${o.date}</td>
-      <td><button data-id="${o.id}" class="text-purple-600 text-xs">Edit</button></td>
-    </tr>`;}).join('');
-  tbody.querySelectorAll('button').forEach(b=>b.onclick=()=>editOrder(b.dataset.id));
-  $('#newOrderBtn').onclick=()=>editOrder();
-}
-
-function editOrder(id){
-  let o=id?db.orders.find(x=>x.id===id):newOrder(currentCSR);
-  Swal.fire({
-    title:id?'Edit Order':'New Order',
-    html:`<select id="o-cust" class="swal2-input">
-        ${db.customers.map(c=>`<option value="${c.id}" ${c.id===o.custId?'selected':''}>${c.name}</option>`).join('')}
-      </select>
-      <input id="o-no" class="swal2-input" value="${o.orderNo}">
-      <select id="o-st" class="swal2-input">
-        <option ${o.status==='Pending'?'selected':''}>Pending</option>
-        <option ${o.status==='Shipped'?'selected':''}>Shipped</option>
-        <option ${o.status==='Closed'?'selected':''}>Closed</option></select>
-      <input id="o-car"  class="swal2-input" placeholder="Carrier" value="${o.carrier||''}">
-      <input id="o-csr"  class="swal2-input" value="${o.csr||currentCSR}">`,
-    preConfirm:()=>{
-      o.custId=$('#o-cust').value; o.orderNo=$('#o-no').value;
-      o.status=$('#o-st').value;   o.carrier=$('#o-car').value;
-      o.csr=$('#o-csr').value;
-    }
-  }).then(r=>{
-    if(r.isConfirmed){
-      if(!id) db.orders.push(o);
-      save(); renderOrders(); toast('Order saved','success');
-    }
-  });
-}
-
-/* ------------------------------------------------------------------
-   CALENDAR (FullCalendar)
------------------------------------------------------------------- */
-let fc=null;
-function renderCalendar(){
-  $('#calendar').innerHTML='<div id="fc" class="p-4"></div>';
-  if(fc) fc.destroy();
-  fc=new FullCalendar.Calendar($('#fc'),{
-    height:'auto',
-    initialView:'dayGridMonth',
-    headerToolbar:{left:'prev,next today',center:'title',right:'dayGridMonth,timeGridWeek,timeGridDay,listWeek'},
-    events:db.appointments.map(a=>({...a,id:a.id,backgroundColor:'#d1b3ff',borderColor:'#b88aff'})),
-    dateClick: ({dateStr}) => openEventModal(null,dateStr),
-    eventClick: ({event})  => {
-      const ev=db.appointments.find(x=>x.id===event.id);
-      if(ev) openEventModal(ev,ev.date);
-    }
-  });
-  fc.render();
-}
-
-function openEventModal(ev,dateStr){
-  const item = ev ? {...ev} : newAppointment(dateStr,activeCustomer?.id,currentCSR);
-  Swal.fire({
-    title: ev?'Edit Event':'New Event',
-    html:`<input id="e-title" class="swal2-input" placeholder="Title" value="${item.title}">
-      <select id="e-type" class="swal2-input">
-        <option ${item.type==='Appointment'?'selected':''}>Appointment</option>
-        <option ${item.type==='Task'?'selected':''}>Task</option>
-        <option ${item.type==='To-Do'?'selected':''}>To-Do</option></select>
-      <input id="e-date" type="date" class="swal2-input" value="${item.date}">
-      <input id="e-time" type="time" class="swal2-input" value="${item.time}">
-      <select id="e-cust" class="swal2-input"><option value=""> — </option>
-        ${db.customers.map(c=>`<option value="${c.id}" ${c.id===item.custId?'selected':''}>${c.name}</option>`).join('')}</select>
-      <textarea id="e-notes" class="swal2-textarea" placeholder="Notes">${item.notes}</textarea>`,
-    preConfirm:()=>{
-      item.title=$('#e-title').value; item.type=$('#e-type').value; item.date=$('#e-date').value;
-      item.time=$('#e-time').value;   item.custId=$('#e-cust').value; item.notes=$('#e-notes').value;
-      item.csr=currentCSR;
-    }
-  }).then(r=>{
-    if(r.isConfirmed){
-      if(ev){ Object.assign(ev,item);} else{ db.appointments.push(item);}
-      save(); renderCalendar(); toast('Event saved','success');
-    }
-  });
-}
-
-/* ------------------------------------------------------------------
-   PIPELINE placeholder
------------------------------------------------------------------- */
-function renderPipeline(){
-  $('#pipeline').innerHTML='<p class="text-gray-500">Kanban pipeline (drag-and-drop) coming later.</p>';
-}
-
-/* ------------------------------------------------------------------
-   BOOT
------------------------------------------------------------------- */
-updateHeader();
-show('dashboard');
-/*  Extras (optional)  =========================================
-   1.  Dark-mode toggle
-   2.  Drag-and-drop Kanban pipeline with SortableJS
-----------------------------------------------------------------*/
-export function darkModeToggle(){
-  const btn=document.createElement('button');
-  btn.className='fixed bottom-4 right-4 bg-gray-200 text-sm px-3 py-1 rounded';
-  btn.textContent='🌓';
-  document.body.appendChild(btn);
-  btn.onclick=()=>{
-    document.documentElement.classList.toggle('dark');
-    localStorage.setItem('ASCRM_dark', document.documentElement.classList.contains('dark'));
-  };
-  if(localStorage.getItem('ASCRM_dark')==='true') document.documentElement.classList.add('dark');
-}
-
-/* Kanban pipeline (phase-2) – call initKanban() after you add
-   <section id="pipelineBoard"></section> in pipeline view      */
-import Sortable from 'https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/+esm';
-
-export function initKanban(stages,deals,onMove){
-  const board=document.getElementById('pipelineBoard');
-  board.innerHTML=stages.map(s=>`<div class="stage" data-stage="${s}">
-     <h3 class="font-bold mb-2">${s}</h3><div class="col space-y-2 p-2 bg-gray-50 rounded h-full"></div></div>`).join('');
-  stages.forEach(s=>{
-    const col=board.querySelector(`.stage[data-stage="${s}"] .col`);
-    deals.filter(d=>d.stage===s).forEach(d=>{
-      col.insertAdjacentHTML('beforeend',`<div class="card bg-white p-2 rounded shadow" data-id="${d.id}">
-          <p class="font-medium">${d.name}</p><p class="text-xs">${d.value}</p></div>`);
-    });
-    Sortable.create(col,{group:'kanban',animation:150,onEnd:e=>{
-      const id=e.item.dataset.id; const stage=e.to.parentElement.dataset.stage;
-      onMove(id,stage);
-    }});
-  });
-}
