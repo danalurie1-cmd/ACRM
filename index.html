@@ -83,11 +83,19 @@
   </main>
 
   <script>
-    let activeCustomer = null;
-    let customers = [
-      { id: 'CUST-001', name: 'Acme Corp', email: 'john@acme.com', phone: '555-0001', status: 'Active Customer', industry: 'Manufacturing', revenue: '$5M', employees: '200+', address: '123 Main St, City, ST 12345', website: 'acme.com', leadSource: 'Referral', clv: '$150,000', lastPurchase: '2025-10-15', firstPurchase: '2023-01-10', purchaseFrequency: 12, primaryProduct: 'Team Jerseys', subscriptionTier: 'Gold', lastContact: '2025-11-10', nextTask: 'Q4 Review Call', nps: 9, social: ['LinkedIn'], handle: '@acmecorp', companyType: 'Private', fiscalYearEnd: 'December', accountOwner: 'Dana Lurie', companyDescription: 'Manufacturing leader in widgets', firstName: 'John', lastName: 'Doe', jobTitle: 'CEO', directPhone: '555-0001', linkedIn: 'linkedin.com/in/johndoe', contactRole: 'Decision Maker', reportsTo: 'Board', preferredCommunication: 'Email', timeZone: 'PST', personalNotes: 'Likes golf', leadStatus: 'SQL', lifecycleStage: 'Customer', totalRevenueToDate: '$120,000', averageOrderValue: '$10,000', contractRenewalDate: '2026-01-01', healthScore: 85, customerStatus: 'Active', feedbackNPSDate: '2025-11-01', csatScore: 9, totalSupportTickets: 5, lastSupportTicketDate: '2025-10-20', socialPlatforms: ['LinkedIn'], preferredContentType: ['Webinars', 'Case Studies'], websiteActivity: 'High', emailEngagement: '80%', customerPersona: 'Technical Buyer', motivationsPainPoints: 'Cost reduction', referralPotential: 'Yes', internalChampion: 'John Doe', technologiesUsed: ['Salesforce', 'Slack'], languagePreference: 'English', preferredTimeZone: 'PST' },
-      { id: 'CUST-002', name: 'AcoustiSkin LLC', email: 'dana@acoustiskin.com', phone: '555-0002', status: 'Prospect', industry: 'Healthcare', revenue: '$2M', employees: '50-200', address: '456 Health Ave, Wellness, CA 67890', website: 'acoustiskin.com', leadSource: 'Website', clv: '$0', lastPurchase: null, firstPurchase: null, purchaseFrequency: 0, primaryProduct: null, subscriptionTier: null, lastContact: '2025-11-01', nextTask: 'Product Demo', nps: null, social: ['Instagram', 'X'], handle: '@acoustiskin', companyType: 'Private', fiscalYearEnd: 'June', accountOwner: 'Dana Lurie', companyDescription: 'Skincare innovation company', firstName: 'Dana', lastName: 'Lurie', jobTitle: 'Founder', directPhone: '555-0002', linkedIn: 'linkedin.com/in/danalurie', contactRole: 'Decision Maker', reportsTo: 'Self', preferredCommunication: 'Email', timeZone: 'PST', personalNotes: 'Coffee lover', leadStatus: 'MQL', lifecycleStage: 'Lead', totalRevenueToDate: '$0', averageOrderValue: '$0', contractRenewalDate: null, healthScore: 50, customerStatus: 'Prospect', feedbackNPSDate: null, csatScore: null, totalSupportTickets: 0, lastSupportTicketDate: null, socialPlatforms: ['Instagram', 'X'], preferredContentType: ['Videos', 'Blog Posts'], websiteActivity: 'Medium', emailEngagement: '50%', customerPersona: 'Budget Approver', motivationsPainPoints: 'Scalability', referralPotential: 'Maybe', internalChampion: 'Dana Lurie', technologiesUsed: ['HubSpot', 'Zoom'], languagePreference: 'English', preferredTimeZone: 'PST' }
-    ];
+l<script>
+  let activeCustomer = null;
+  let customers = [ /* your existing 2 customers */ ];
+
+  // ←←← ADD THESE 6 LINES BELOW ←←←
+  let orderItems = [];
+  let appointments = [];
+  let tasks = [];
+  let pipelineDeals = [
+    { id: 'DEAL-001', customerId: 'CUST-001', name: 'Annual Uniform Contract', value: 48000, stage: 'Proposal', probability: 75, closeDate: '2025-12-15' },
+    { id: 'DEAL-002', customerId: 'CUST-002', name: 'Pilot Order', value: 8000, stage: 'Negotiation', probability: 90, closeDate: '2025-11-30' }
+  ];
+  // ←←← END OF NEW LINES ←←←
 
     function showNotification(msg, type = 'bg-blue-100 text-blue-700') {
       const n = document.getElementById('notification');
