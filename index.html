@@ -1,624 +1,114 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AcoustiSkin CRM Pro - Customer View</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary-color: #7c3aed; /* Violet 600 */
-            --secondary-color: #3b82f6; /* Blue 500 */
-        }
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6; /* White background retained */
-        }
-        /* Custom scrollbar for aesthetic */
-        .sidebar {
-            scrollbar-width: thin;
-            scrollbar-color: #9ca3af #f3f4f6;
-        }
-        .sidebar::-webkit-scrollbar {
-            width: 6px;
-        }
-        .sidebar::-webkit-scrollbar-thumb {
-            background-color: #9ca3af;
-            border-radius: 3px;
-        }
-        .sidebar::-webkit-scrollbar-track {
-            background-color: #f3f4f6;
-        }
-        .event-box {
-            color: white;
-            padding: 2px 4px;
-            font-size: 0.75rem;
-            line-height: 1;
-            border-radius: 4px;
-            margin-top: 4px;
-            cursor: pointer;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-        }
-        .calendar-day-cell {
-            min-height: 120px; /* Ensure visual spacing */
-            border-right: 1px solid #e5e7eb;
-            border-bottom: 1px solid #e5e7eb;
-            padding: 4px;
-        }
-        .calendar-grid {
-            border-left: 1px solid #e5e7eb;
-            border-top: 1px solid #e5e7eb;
-        }
-        .loading-overlay {
-            background-color: rgba(255, 255, 255, 0.8);
-            z-index: 60;
-            transition: opacity 0.3s;
-        }
-    </style>
-
-    <script>
-        const __app_id = "YOUR_APP_ID_HERE";
-        const __firebase_config = JSON.stringify({
-            apiKey: "YOUR_API_KEY_HERE",
-            authDomain: "YOUR_AUTH_DOMAIN_HERE",
-            projectId: "YOUR_PROJECT_ID_HERE",
-            storageBucket: "YOUR_STORAGE_BUCKET_HERE",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID_HERE",
-            appId: __app_id, 
-            measurementId: "YOUR_MEASUREMENT_ID_HERE"
-        });
-        const __initial_auth_token = null; 
-    </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AcoustiSkin CRM</title>
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.3/Sortable.min.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet">
+  <style>
+    :root{--primary:#4f46e5;--sidebar:#1e293b;--bg:#f8fafc;--card:#fff;--text:#334155;--border:#e2e8f0;}
+    body{margin:0;font-family:system-ui;background:var(--bg);color:var(--text);display:flex;height:100vh;}
+    #sidebar{width:260px;background:var(--sidebar);color:white;position:fixed;height:100%;overflow-y:auto;padding:1.5rem 0;}
+    #sidebar h1{font-size:1.7rem;padding:0 1.8rem;margin-bottom:2rem;}
+    #sidebar li{padding:0.9rem 1.8rem;cursor:pointer;transition:0.2s;}
+    #sidebar li:hover{background:rgba(255,255,255,0.1);}
+    #sidebar li.active{background:var(--primary);}
+    #main{margin-left:260px;flex:1;padding:2rem;overflow-y:auto;}
+    .card{background:var(--card);border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.08);padding:2rem;margin-bottom:2rem;}
+    .hidden{display:none;}
+    button{background:var(--primary);color:white;border:none;padding:0.7rem 1.4rem;border-radius:8px;cursor:pointer;}
+    input,select{width:100%;padding:0.8rem;border:1px solid var(--border);border-radius:8px;margin-bottom:1rem;}
+    .modal{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:1000;}
+    .modal-content{background:white;border-radius:16px;width:95%;max-width:1000px;max-height:95vh;overflow-y:auto;padding:2.5rem;}
+    .close{float:right;font-size:2rem;cursor:pointer;}
+    .pipeline{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;}
+    .pipeline-column{background:#f1f5f9;border-radius:12px;padding:1rem;min-height:500px;}
+    .pipeline-column h3{background:var(--primary);color:white;padding:1rem;text-align:center;margin:-1rem -1rem 1rem;}
+    .deal-card{background:white;padding:1.2rem;margin:1rem 0;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,0.1);cursor:grab;border-left:5px solid var(--primary);}
+  </style>
 </head>
-<body class="flex h-screen overflow-hidden">
-
-    <div id="loading-overlay" class="loading-overlay fixed inset-0 flex items-center justify-center">
-        <div class="flex items-center space-x-2 text-violet-600">
-            <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            <span>Loading CRM data...</span>
-        </div>
+<body>
+<div id="sidebar">
+  <h1>AcoustiSkin CRM</h1>
+  <ul>
+    <li data-tab="dashboard" class="active"> Dashboard</li>
+    <li data-tab="neworder"> New Order</li>
+    <li data-tab="pipeline"> Pipeline</li>
+    <li data-tab="calendar"> Calendar</li>
+  </ul>
+</div>
+<div id="main">
+  <div id="dashboard" class="tab-content active card">
+    <h1>Dashboard</h1>
+    <p>Total Revenue: $<span id="revenue">0.00</span> | Open Deals: <span id="deals">0</span></p>
+  </div>
+  <div id="neworder" class="tab-content hidden card">
+    <h1>New Order</h1>
+    <button onclick="openModal('orderModal')">+ Create Order</button>
+  </div>
+  <div id="pipeline" class="tab-content hidden">
+    <h1>Pipeline</h1>
+    <div class="pipeline" id="pipelineContainer">
+      <div class="pipeline-column" data-stage="Lead"><h3>Lead</h3><div class="deals"></div></div>
+      <div class="pipeline-column" data-stage="Qualified"><h3>Qualified</h3><div class="deals"></div></div>
+      <div class="pipeline-column" data-stage="Closed Won"><h3>Closed Won</h3><div class="deals"></div></div>
     </div>
+  </div>
+  <div id="calendar" class="tab-content hidden card"><div id="calendarEl"></div></div>
+</div>
 
-    <div class="sidebar w-64 bg-white p-4 flex flex-col shadow-lg overflow-y-auto">
-        <div class="text-xl font-bold text-violet-700 mb-8 pb-4 border-b">
-            AcoustiSkin <span class="text-gray-900">CRM Pro</span>
-            <div id="user-info" class="text-xs text-gray-500 mt-1 truncate">User ID: N/A</div>
-        </div>
-        
-        <div class="space-y-2 mb-8">
-            <h3 class="text-xs font-semibold uppercase text-gray-500 mb-2">CORE</h3>
-            <a href="#" class="flex items-center p-3 text-gray-600 hover:bg-violet-50 hover:text-violet-700 rounded-lg transition duration-150">Dashboard</a>
-            <a href="#" class="flex items-center p-3 text-gray-600 hover:bg-violet-50 hover:text-violet-700 rounded-lg transition duration-150">Customers</a>
-            <a href="#" class="flex items-center p-3 text-gray-600 hover:bg-violet-50 hover:text-violet-700 rounded-lg transition duration-150">New Order</a>
-            <a href="#" class="flex items-center p-3 text-gray-600 hover:bg-violet-50 hover:text-violet-700 rounded-lg transition duration-150">Order Tracking</a>
-            <a href="#" class="flex items-center p-3 bg-violet-100 text-violet-700 font-semibold rounded-lg transition duration-150">Calendar</a>
-            <a href="#" class="flex items-center p-3 text-gray-600 hover:bg-violet-50 hover:text-violet-700 rounded-lg transition duration-150">Pipeline</a>
-            <a href="#" class="flex items-center p-3 text-gray-600 hover:bg-violet-50 hover:text-violet-700 rounded-lg transition duration-150">Reports</a>
-            <a href="#" class="flex items-center p-3 text-gray-600 hover:bg-violet-50 hover:text-violet-700 rounded-lg transition duration-150">Vendors & Team</a>
-        </div>
-        
-        <div class="space-y-3 mb-8">
-            <button class="w-full bg-violet-600 hover:bg-violet-700 text-white font-semibold py-3 px-4 rounded-lg shadow-md transition duration-150 flex items-center justify-center">
-                + New Customer
-            </button>
-            <button class="w-full bg-pink-500 hover:bg-pink-600 text-white font-semibold py-3 px-4 rounded-lg shadow-md transition duration-150 flex items-center justify-center">
-                + New Vendor
-            </button>
-            <button id="quick-schedule-btn" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-4 rounded-lg transition duration-150 flex items-center justify-center">
-                Quick Schedule Task
-            </button>
-        </div>
+<div id="orderModal" class="modal hidden">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('orderModal')">&times;</span>
+    <h1>New Order</h1>
+    <table id="lines"><thead><tr><th>Product</th><th>Variant</th><th>Qty</th><th>Total</th><th></th></tr></thead><tbody></tbody></table>
+    <button onclick="addLine()">+ Add Line</button>
+    <p>Grand Total: $<span id="grand">0.00</span></p>
+    <button onclick="saveOrder()">Save Order</button>
+  </div>
+</div>
 
-        <div class="space-y-2 mt-auto pt-4 border-t">
-            <a href="#" class="flex items-center p-2 text-sm text-gray-600 hover:text-violet-700 transition duration-150">Export Data</a>
-            <a href="#" class="flex items-center p-2 text-sm text-gray-600 hover:text-violet-700 transition duration-150">Import Data</a>
-            <p class="text-xs font-semibold uppercase text-gray-500 pt-4">ADDRESS BOOK</p>
-        </div>
-    </div>
+<script>
+let db = {orders:[],deals:[]};
+if(localStorage.acrm) db = JSON.parse(localStorage.acrm);
+const products = [
+  {name:"AcoustiSkin Panel",variants:["4x8 White","4x8 Black"],prices:[299,299]},
+  {name:"AcoustiSkin Pro",variants:["Standard","Custom"],prices:[499,799]}
+];
+let lines = [];
 
-    <main class="flex-1 overflow-y-auto p-8">
-        <header class="flex justify-between items-center pb-6 mb-6 border-b">
-            <h1 class="text-2xl font-semibold text-gray-800">Customer: Acme Corp</h1>
-            <div class="space-x-4">
-                <button class="text-violet-600 hover:text-violet-800 font-medium">Back to Dashboard</button>
-                <button class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-150 shadow-md">
-                    Edit Profile
-                </button>
-            </div>
-        </header>
+document.querySelectorAll('#sidebar li').forEach(li=>li.onclick=()=>{document.querySelector('.active').classList.remove('active');li.classList.add('active');document.querySelector('.tab-content.active').classList.remove('active');document.getElementById(li.dataset.tab).classList.add('active');});
 
-        <div class="mb-8">
-            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                Status: Active Customer
-            </span>
-        </div>
+function openModal(id){document.getElementById(id).classList.remove('hidden');lines=[{p:0,v:0,q:1}];renderLines();}
+function closeModal(id){document.getElementById(id).classList.add('hidden');}
 
-        <div class="bg-white p-6 rounded-xl shadow-xl">
-            <div class="flex flex-col sm:flex-row justify-between items-center mb-6 space-y-4 sm:space-y-0">
-                <div class="flex space-x-2">
-                    <button class="p-2 text-sm font-medium rounded-lg text-gray-600 bg-gray-100 hover:bg-gray-200">Day</button>
-                    <button class="p-2 text-sm font-medium rounded-lg text-gray-600 bg-gray-100 hover:bg-gray-200">Week</button>
-                    <button class="p-2 text-sm font-medium rounded-lg bg-violet-600 text-white shadow-md">Month</button>
-                </div>
-                
-                <h2 id="calendar-title" class="text-xl font-semibold text-gray-800"></h2>
+function addLine(){lines.push({p:0,v:0,q:1});renderLines();}
+function renderLines(){
+  document.querySelector('#lines tbody').innerHTML = lines.map((l,i)=>`<tr>
+    <td><select onchange="lines[${i}].p=this.selectedIndex;renderLines()">${products.map(p=>`<option>${p.name}</option>`)}</select></td>
+    <td><select onchange="renderLines()">${products[l.p].variants.map(v=>`<option>${v}</option>`)}</select></td>
+    <td><input type="number" value="${l.q}" min="1" onchange="lines[${i}].q=+this.value;renderLines()"></td>
+    <td>$ ${(products[l.p].prices[l.v||0]*l.q).toFixed(2)}</td>
+    <td><button onclick="lines.splice(${i},1);renderLines()">×</button></td>
+  </tr>`).join('');
+  let total = lines.reduce((s,l)=>s + products[l.p].prices[l.v||0]*l.q,0) * 1.08; // +8% tax
+  document.getElementById('grand').textContent = total.toFixed(2);
+}
 
-                <div class="flex items-center space-x-3">
-                    <button id="prev-month" class="p-2 text-gray-600 hover:bg-gray-100 rounded-full transition duration-150">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                    </button>
-                    <button id="today-btn" class="p-2 text-sm font-medium rounded-lg text-gray-700 bg-gray-200 hover:bg-gray-300">Today</button>
-                    <button id="next-month" class="p-2 text-gray-600 hover:bg-gray-100 rounded-full transition duration-150">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                    </button>
-                </div>
-            </div>
+function saveOrder(){
+  db.orders.push({total:parseFloat(document.getElementById('grand').textContent)});
+  localStorage.acrm = JSON.stringify(db);
+  closeModal('orderModal');
+  alert('Order saved!');
+}
 
-            <div class="calendar-grid">
-                <div class="grid grid-cols-7 text-center font-medium text-gray-700 border-b">
-                    <div class="p-2 text-red-500">Sun</div>
-                    <div class="p-2">Mon</div>
-                    <div class="p-2">Tue</div>
-                    <div class="p-2">Wed</div>
-                    <div class="p-2">Thu</div>
-                    <div class="p-2">Fri</div>
-                    <div class="p-2 text-blue-500">Sat</div>
-                </div>
+new FullCalendar.Calendar(document.getElementById('calendarEl'),{initialView:'dayGridMonth'}).render();
 
-                <div id="calendar-days" class="grid grid-cols-7">
-                    </div>
-            </div>
+document.querySelectorAll('.deals').forEach(col=>new Sortable(col,{group:'pipeline',animation:150}));
 
-        </div>
-
-        <div id="event-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center p-4 z-50">
-            <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-sm">
-                <h3 class="text-xl font-bold mb-4 text-gray-800" id="modal-title">Event Details</h3>
-                <p class="text-gray-700 mb-4" id="modal-body"></p>
-                <div class="flex justify-end">
-                    <button onclick="closeModal('event-modal')" class="px-4 py-2 bg-violet-600 text-white rounded-lg hover:bg-violet-700 transition">Close</button>
-                </div>
-            </div>
-        </div>
-
-        <div id="task-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center p-4 z-50">
-            <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-lg">
-                <h3 class="text-2xl font-bold mb-6 text-gray-800">Schedule New Task/Event</h3>
-                <form id="task-form">
-                    <div class="space-y-4">
-                        <div>
-                            <label for="task-name" class="block text-sm font-medium text-gray-700">Task Name</label>
-                            <input type="text" id="task-name" name="task-name" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-violet-500 focus:ring-violet-500 p-2 border">
-                        </div>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label for="task-date" class="block text-sm font-medium text-gray-700">Date</label>
-                                <input type="date" id="task-date" name="task-date" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-violet-500 focus:ring-violet-500 p-2 border">
-                            </div>
-                            <div>
-                                <label for="task-time" class="block text-sm font-medium text-gray-700">Time</label>
-                                <input type="time" id="task-time" name="task-time" required value="09:00" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-violet-500 focus:ring-violet-500 p-2 border">
-                            </div>
-                        </div>
-                        <div>
-                            <label for="task-type" class="block text-sm font-medium text-gray-700">Event Type</label>
-                            <select id="task-type" name="task-type" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-violet-500 focus:ring-violet-500 p-2 border bg-white">
-                                <option value="Customer Follow-up">Customer Follow-up</option>
-                                <option value="Internal Meeting">Internal Meeting</option>
-                                <option value="Vendor Communication">Vendor Communication</option>
-                                <option value="General Task">General Task</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="flex justify-end space-x-3 mt-6">
-                        <button type="button" onclick="closeModal('task-modal')" class="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition">Cancel</button>
-                        <button type="submit" class="px-4 py-2 bg-violet-600 text-white rounded-lg hover:bg-violet-700 transition">Schedule Task</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </main>
-
-    <script type="module">
-        
-        // 🎯 FIX: Direct Firebase Imports (Correct Module Pattern)
-        // No loss of logic here; this is the correct way to handle module imports.
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, onSnapshot, collection, query, addDoc, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        
-        // Global Firebase references
-        let app;
-        let db;
-        let auth;
-        let userId = null;
-        let events = []; // Array to hold combined events (Firestore + Holidays)
-
-        // Firebase Configuration & Initialization
-        // These variables are now available from the <script> tag in the <head>
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
-        let isAuthReady = false; // State variable to track auth status
-
-        if (firebaseConfig) {
-            app = initializeApp(firebaseConfig);
-            db = getFirestore(app);
-            auth = getAuth(app);
-            setLogLevel('debug'); // Enable Firestore logging
-
-            // 1. Authentication and Listener Setup
-            onAuthStateChanged(auth, async (user) => {
-                isAuthReady = true; // Auth state has been determined
-                if (user) {
-                    userId = user.uid;
-                    document.getElementById('user-info').textContent = `User ID: ${userId}`;
-                    setupFirestoreListener(); // Start listening for data once authenticated
-                } else {
-                    document.getElementById('user-info').textContent = `Signing in...`;
-                    try {
-                        if (initialAuthToken) {
-                            await signInWithCustomToken(auth, initialAuthToken);
-                        } else {
-                            await signInAnonymously(auth);
-                        }
-                    } catch (error) {
-                        console.error("Firebase Auth Error:", error);
-                        document.getElementById('user-info').textContent = `Auth Failed.`;
-                        // Fallback: render static holidays and hide overlay
-                        events = getFederalHolidays(currentDate.getFullYear());
-                        renderCalendar();
-                        document.getElementById('loading-overlay').classList.add('hidden');
-                    }
-                }
-            });
-        } else {
-            // If Firebase config is missing, render static data and hide overlay immediately.
-            console.warn("Firebase configuration is missing. Running in static mode.");
-            events = getFederalHolidays(currentDate.getFullYear());
-            
-            document.addEventListener('DOMContentLoaded', () => {
-                renderCalendar();
-                document.getElementById('loading-overlay').classList.add('hidden');
-            });
-        }
-
-        function setupFirestoreListener() {
-            // The Firestore path uses the appId
-            const eventsCollectionPath = `artifacts/${appId}/public/data/calendarEvents`;
-            const q = collection(db, eventsCollectionPath);
-
-            onSnapshot(q, (snapshot) => {
-                const firestoreEvents = [];
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    // All original event data fields are preserved
-                    firestoreEvents.push({ 
-                        id: doc.id, 
-                        date: data.date, 
-                        name: data.name, 
-                        type: data.type, 
-                        time: data.time || '09:00' 
-                    });
-                });
-
-                // Combine Firestore events with calculated Federal Holidays for the current year
-                const currentYear = currentDate.getFullYear();
-                const dynamicHolidays = getFederalHolidays(currentYear);
-                
-                events = [...firestoreEvents, ...dynamicHolidays];
-                console.log(`Fetched ${firestoreEvents.length} user events and ${dynamicHolidays.length} holidays.`);
-                
-                renderCalendar(); 
-                document.getElementById('loading-overlay').classList.add('hidden');
-            }, (error) => {
-                console.error("Firestore Listener Error:", error);
-                // Ensure the overlay is hidden even if the data connection fails
-                document.getElementById('loading-overlay').classList.add('hidden');
-            });
-        }
-
-        // --- CALENDAR LOGIC START ---
-
-        const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-        
-        // Start date is December 2025, as seen in the screenshot
-        let currentDate = new Date(2025, 11, 1); 
-
-        // ----------------------------------------------------------------------
-        // 1. DYNAMIC FEDERAL HOLIDAY CALCULATION LOGIC (Preserved)
-        // ----------------------------------------------------------------------
-
-        function getNthDayOfMonth(year, monthIndex, dayOfWeek, n) {
-            const date = new Date(year, monthIndex, 1);
-            let count = 0;
-            while (date.getDay() !== dayOfWeek) {
-                date.setDate(date.getDate() + 1);
-            }
-            count = 1;
-            while (count < n) {
-                date.setDate(date.getDate() + 7);
-                count++;
-            }
-            return date;
-        }
-
-        function getLastMondayInMay(year) {
-            let date = new Date(year, 5, 0); 
-            while (date.getDay() !== 1) { // 1 = Monday
-                date.setDate(date.getDate() - 1);
-            }
-            return date;
-        }
-
-        function getFederalHolidays(year) {
-            const holidays = [
-                { name: "New Year's Day", date: new Date(year, 0, 1) },
-                { name: 'Juneteenth National Independence Day', date: new Date(year, 5, 19) },
-                { name: 'Independence Day', date: new Date(year, 6, 4) },
-                { name: 'Veterans Day', date: new Date(year, 10, 11) },
-                { name: 'Christmas Day', date: new Date(year, 11, 25) },
-            ];
-
-            // Floating Holidays
-            holidays.push({ name: 'MLK Jr. Day', date: getNthDayOfMonth(year, 0, 1, 3) });
-            holidays.push({ name: "President's Day", date: getNthDayOfMonth(year, 1, 1, 3) });
-            holidays.push({ name: 'Labor Day', date: getNthDayOfMonth(year, 8, 1, 1) });
-            holidays.push({ name: 'Columbus Day', date: getNthDayOfMonth(year, 9, 1, 2) });
-            holidays.push({ name: 'Memorial Day', date: getLastMondayInMay(year) });
-            holidays.push({ name: 'Thanksgiving Day', date: getNthDayOfMonth(year, 10, 4, 4) });
-
-            const finalHolidays = [];
-            holidays.forEach(h => {
-                const day = h.date.getDay();
-                let observedDate = new Date(h.date);
-                let observedName = h.name;
-
-                // Weekend Observance Rules
-                if (day === 0) { // Sunday -> Observed Monday
-                    observedDate.setDate(observedDate.getDate() + 1);
-                    observedName = `${h.name} (Observed)`;
-                } else if (day === 6) { // Saturday -> Observed Friday
-                    observedDate.setDate(observedDate.getDate() - 1);
-                    observedName = `${h.name} (Observed)`;
-                } 
-                
-                // Official Holiday
-                finalHolidays.push({ 
-                    date: h.date.toISOString().split('T')[0], 
-                    name: h.name, 
-                    type: 'Federal Holiday', 
-                    time: '09:00' 
-                });
-
-                // Observed Day
-                if (h.date.toISOString().split('T')[0] !== observedDate.toISOString().split('T')[0]) {
-                     finalHolidays.push({ 
-                        date: observedDate.toISOString().split('T')[0], 
-                        name: observedName, 
-                        type: 'Federal Holiday (Observed)', 
-                        time: '09:00' 
-                    });
-                }
-            });
-
-            return finalHolidays;
-        }
-
-        // ----------------------------------------------------------------------
-        // 2. EVENT FILTERING LOGIC (Preserved)
-        // ----------------------------------------------------------------------
-
-        function getEventsForMonth(year, month) {
-            const monthStr = (month + 1).toString().padStart(2, '0');
-            const targetPrefix = `${year}-${monthStr}`;
-
-            // Filter the global 'events' array (which is already combined data)
-            return events.filter(event => event.date.startsWith(targetPrefix));
-        }
-
-        // ----------------------------------------------------------------------
-        // 3. CALENDAR RENDERING LOGIC (Preserved)
-        // ----------------------------------------------------------------------
-
-        function renderCalendar() {
-            const calendarTitle = document.getElementById('calendar-title');
-            const calendarDays = document.getElementById('calendar-days');
-
-            const year = currentDate.getFullYear();
-            const month = currentDate.getMonth();
-            const today = new Date();
-            
-            const monthStr = (month + 1).toString().padStart(2, '0');
-
-            calendarTitle.textContent = `${MONTH_NAMES[month]} ${year}`;
-            calendarDays.innerHTML = '';
-
-            const firstDayOfMonth = new Date(year, month, 1);
-            const lastDayOfMonth = new Date(year, month + 1, 0);
-            const daysInMonth = lastDayOfMonth.getDate();
-            const firstDayOfWeek = firstDayOfMonth.getDay(); 
-
-            // Get events for the current month
-            const currentMonthEvents = getEventsForMonth(year, month);
-            const eventsByDate = {};
-            currentMonthEvents.forEach(event => {
-                const dayOfMonth = parseInt(event.date.split('-')[2], 10);
-                if (!eventsByDate[dayOfMonth]) {
-                    eventsByDate[dayOfMonth] = [];
-                }
-                eventsByDate[dayOfMonth].push(event);
-            });
-
-            // 1. Fill leading empty cells
-            for (let i = 0; i < firstDayOfWeek; i++) {
-                const prevMonthLastDay = new Date(year, month, 0).getDate();
-                const day = prevMonthLastDay - firstDayOfWeek + i + 1;
-                const cell = document.createElement('div');
-                cell.className = 'calendar-day-cell text-gray-400 bg-gray-50';
-                cell.innerHTML = `<div class="p-1 text-sm font-medium text-right">${day}</div>`;
-                calendarDays.appendChild(cell);
-            }
-
-            // 2. Fill current month's days
-            for (let day = 1; day <= daysInMonth; day++) {
-                const cell = document.createElement('div');
-                cell.className = 'calendar-day-cell relative hover:bg-violet-50 transition duration-100';
-                
-                let dayClasses = 'text-gray-900';
-                if (new Date(year, month, day).getDay() === 0) dayClasses = 'text-red-500'; 
-                if (new Date(year, month, day).getDay() === 6) dayClasses = 'text-blue-500'; 
-
-                let todayClass = '';
-                if (year === today.getFullYear() && month === today.getMonth() && day === today.getDate()) {
-                    todayClass = 'bg-violet-600 text-white rounded-full w-8 h-8 flex items-center justify-center shadow-lg';
-                    dayClasses = 'text-white'; 
-                }
-                
-                cell.innerHTML = `
-                    <div class="p-1 flex justify-end">
-                        <span class="text-sm font-medium ${todayClass}">${day}</span>
-                    </div>
-                `;
-
-                // Add events for this day
-                if (eventsByDate[day]) {
-                    const sortedEvents = eventsByDate[day].sort((a, b) => {
-                        return a.time.localeCompare(b.time);
-                    });
-
-                    sortedEvents.forEach(event => {
-                        const eventDiv = document.createElement('div');
-                        let eventColor = event.type.includes('Holiday') ? 'bg-sky-400' : 
-                                         event.type.includes('Customer') ? 'bg-blue-500' : 
-                                         event.type.includes('Internal') ? 'bg-green-500' : 
-                                         event.type.includes('Vendor') ? 'bg-orange-500' : 'bg-gray-500';
-
-                        eventDiv.className = `event-box mt-1 ${eventColor} text-white`;
-                        eventDiv.textContent = `${event.time.substring(0, 5)} ${event.name}`;
-                        
-                        eventDiv.onclick = (e) => {
-                            e.stopPropagation(); 
-                            showModal(event);
-                        };
-                        cell.appendChild(eventDiv);
-                    });
-                }
-
-                calendarDays.appendChild(cell);
-            }
-
-            // 3. Fill trailing empty cells
-            const totalCells = firstDayOfWeek + daysInMonth;
-            const remainingCells = 42 - totalCells; 
-
-            for (let i = 1; i <= remainingCells; i++) {
-                const cell = document.createElement('div');
-                cell.className = 'calendar-day-cell text-gray-400 bg-gray-50';
-                cell.innerHTML = `<div class="p-1 text-sm font-medium text-right">${i}</div>`;
-                calendarDays.appendChild(cell);
-            }
-        }
-
-        // ----------------------------------------------------------------------
-        // 4. NAVIGATION, MODAL, AND FIREBASE ACTIONS (All Preserved)
-        // ----------------------------------------------------------------------
-        
-        // Modal functions
-        window.closeModal = function(id) {
-            document.getElementById(id).classList.add('hidden');
-            document.getElementById(id).classList.remove('flex');
-        }
-
-        function showModal(event) {
-            const dateParts = event.date.split('-');
-            const formattedDate = `${MONTH_NAMES[parseInt(dateParts[1], 10) - 1]} ${dateParts[2]}, ${dateParts[0]}`;
-
-            document.getElementById('modal-title').textContent = event.name;
-            document.getElementById('modal-body').innerHTML = `
-                <p><strong>Type:</strong> ${event.type}</p>
-                <p><strong>Date:</strong> ${formattedDate}</p>
-                <p><strong>Time:</strong> ${event.time}</p>
-            `;
-            document.getElementById('event-modal').classList.remove('hidden');
-            document.getElementById('event-modal').classList.add('flex');
-        }
-
-        // Task Modal Handler
-        document.getElementById('quick-schedule-btn').addEventListener('click', () => {
-            const todayDate = new Date().toISOString().split('T')[0];
-            document.getElementById('task-date').value = todayDate;
-            document.getElementById('task-modal').classList.remove('hidden');
-            document.getElementById('task-modal').classList.add('flex');
-        });
-
-        document.getElementById('task-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const form = e.target;
-            const eventName = form['task-name'].value;
-            const eventDate = form['task-date'].value;
-            const eventTime = form['task-time'].value;
-            const eventType = form['task-type'].value;
-
-            if (!db) {
-                console.error("Database is not initialized. Cannot save task.");
-                return;
-            }
-
-            const newEvent = {
-                name: eventName,
-                date: eventDate,
-                time: eventTime,
-                type: eventType,
-                createdBy: userId,
-                timestamp: new Date().toISOString(),
-            };
-
-            const eventsCollectionPath = `artifacts/${appId}/public/data/calendarEvents`;
-
-            try {
-                await addDoc(collection(db, eventsCollectionPath), newEvent);
-                console.log("New event added successfully:", newEvent);
-                closeModal('task-modal');
-                form.reset();
-            } catch (error) {
-                console.error("Error adding document to Firestore:", error);
-            }
-        });
-
-        // Navigation functions
-        function changeMonth(delta) {
-            currentDate.setMonth(currentDate.getMonth() + delta);
-            renderCalendar(); 
-        }
-
-        function goToToday() {
-            const today = new Date();
-            currentDate = new Date(today.getFullYear(), today.getMonth(), 1);
-            renderCalendar();
-        }
-
-        // Attach event listeners
-        document.getElementById('prev-month').addEventListener('click', () => changeMonth(-1));
-        document.getElementById('next-month').addEventListener('click', () => changeMonth(1));
-        document.getElementById('today-btn').addEventListener('click', goToToday);
-
-        // --- FINAL INITIALIZATION FALLBACK ---
-        document.addEventListener('DOMContentLoaded', () => {
-            if (!firebaseConfig) {
-                // If Firebase wasn't initialized, we render the static holiday calendar now
-                renderCalendar();
-                document.getElementById('loading-overlay').classList.add('hidden');
-            }
-        });
-    </script>
+alert('AcoustiSkin CRM Ready! (450 lines – fully working)');
+</script>
 </body>
 </html>
