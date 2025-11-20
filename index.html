@@ -96,7 +96,22 @@ l<script>
     { id: 'DEAL-002', customerId: 'CUST-002', name: 'Pilot Order', value: 8000, stage: 'Negotiation', probability: 90, closeDate: '2025-11-30' }
   ];
   // ←←← END OF NEW LINES ←←←
+      // Auto-load saved data on refresh
+  const savedData = localStorage.getItem('AcoustiSkinCRM_Tailwind');
+  if (savedData) {
+    const parsed = JSON.parse(savedData);
+    customers = parsed.customers || customers;
+    pipelineDeals = parsed.pipelineDeals || pipelineDeals;
+    appointments = parsed.appointments || [];
+    tasks = parsed.tasks || [];
+    orderItems = parsed.orderItems || [];
+  }
 
+  // Auto-save everything whenever something changes
+  function autoSave() {
+    const toSave = { customers, pipelineDeals, appointments, tasks, orderItems };
+    localStorage.setItem('AcoustiSkinCRM_Tailwind', JSON.stringify(toSave));
+  }
     function showNotification(msg, type = 'bg-blue-100 text-blue-700') {
       const n = document.getElementById('notification');
       n.textContent = msg;
@@ -544,17 +559,20 @@ l<script>
               </div>
             </form>` : '<p class="text-center text-gray-500">Select a customer</p>'}
         </div>`;
-      document.getElementById('saveCustomerBtn')?.addEventListener('click', () => {
-        const form = document.getElementById('customerForm');
-        const data = {};
-        form.querySelectorAll('input, select, textarea').forEach(f => {
-          if (f.name) data[f.name] = f.value;
-        });
-        Object.assign(activeCustomer, data);
-        showNotification('Customer saved!', 'bg-green-100 text-green-700');
-        renderCustomerList();
-        navigateTo('dashboard-view');
-      });
+        document.getElementById('saveCustomerBtn')?.addEventListener('click', () => {
+    const form = document.getElementById('customerForm');
+    const data = {};
+    form.querySelectorAll('input, select, textarea').forEach(f => {
+      if (f.type === 'checkbox') data[f.name] = f.checked;
+      else if (f.multiple) data[f.name] = Array.from(f.selectedOptions).map(o => o.value);
+      else data[f.name] = f.value;
+    });
+    Object.assign(activeCustomer, data);
+    autoSave();                     // ← NEW: saves to localStorage
+    showNotification('Customer saved permanently!', 'bg-green-100 text-green-700');
+    renderCustomerList();
+    navigateTo('dashboard-view');
+  });
     }
 
     function renderOrderForm() {
