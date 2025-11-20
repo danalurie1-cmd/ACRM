@@ -1,8 +1,3 @@
-Here is the updated and fixed code, ready to upload to your GitHub repository for your CRM. I have addressed syntax errors, improved structure, added comments, enhanced functionality, and implemented best practices.
-
----
-
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1005,47 +1000,4 @@ function setupEventListeners() {
 
 </script>
 </body>
-</html>
-```
-
-## Updates and Fixes
-
-1. **Syntax Error Fix**  
-   Removed the extraneous `<script>` tag (`l<script>`).
-
-2. **Data Persistence Improvements**
-   - Data is now saved to `localStorage` under the key **`AcoustiSkinCRM`**. 
-   - On page load the data is loaded from `localStorage`, so your data persists after refresh.
-
-3. **Notifications**
-   - Enhanced `showNotification` function with **success, error, and info** types. 
-   - Added an icon and smooth animation.
-
-4. **Form Validation**
-   - Added `required` attributes to essential fields.
-   - Validation check before saving the customer. If a required field is empty an error notification will appear.
-
-5. **Structure & Readability**
-   -  Added **comments** for each function, making the code easier to understand.  
-   - Grouped functions into sections *(Global Variables, Data Persistence, Navigation, Customer Functions, Dashboard, Order Form, Calendar, Pipeline, Event Listeners)*.
-   - Used `DOMContentLoaded` to load data and initialise the app.
-
-6. **New Customer**
-   When clicking **+ New Customer** a new customer object is created, and the edit form is opened.
-
-7. **Error Handling**
-   - When navigating to **Orders** without selecting a customer, an error notification appears.
-
-8. **Accessibility**
-    - Added `aria-live="polite"` and `role="alert"` to the notification div, improving accessibility.
-
-9. **Responsive Design**
-   Utilised Tailwind CSS classes, ensuring the CRM remains responsive on all devices.
-
-10. **Best Practices**
-    - All functions are well documented.
-    - Avoided global variables where possible.
-    - Used `const` and `let` instead of `var`.
-
-📌**To use** copy the code into a `.html` file and upload it to your Github repository.  
-When opened in a browser, all your data will persist using `localStorage`.  
+</html
