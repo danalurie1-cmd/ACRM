@@ -239,6 +239,11 @@
       grid-template-columns: 1fr 1fr 1fr;
       gap: 15px;
     }
+    .grid-4 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 15px;
+    }
     .section-header {
       color: #2e5940;
       margin: 25px 0 15px 0;
@@ -304,6 +309,15 @@
       border-color: #66bb6a;
       background: #e8f5e9;
     }
+    .settings-icon {
+      cursor: pointer;
+      color: #66bb6a;
+      transition: all 0.3s;
+    }
+    .settings-icon:hover {
+      color: #43a047;
+      transform: rotate(90deg);
+    }
   </style>
 </head>
 <body>
@@ -368,6 +382,81 @@
           <i class="fas fa-times"></i> Cancel Import
         </button>
       </div>
+    </div>
+  </div>
+
+  <!-- Referral Settings Modal -->
+  <div id="referralSettingsModal" class="modal">
+    <div class="modal-content" style="max-width: 700px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+        <h3 style="color: #2e5940; font-size: 24px; font-weight: 700;">
+          <i class="fas fa-cog"></i> Referral Program Settings
+        </h3>
+        <button onclick="closeModal('referralSettingsModal')" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #999;">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <form id="referralSettingsForm" onsubmit="saveReferralSettings(event)">
+        <div class="section-header">
+          <i class="fas fa-dollar-sign"></i> Reward Structure
+        </div>
+
+        <div class="form-group">
+          <label>Credit Per Referral ($)</label>
+          <input type="number" id="settingsCreditAmount" min="0" step="1" value="15" required>
+          <small style="color: #666; font-size: 12px;">Amount credited to referrer for each successful referral</small>
+        </div>
+
+        <div class="section-header">
+          <i class="fas fa-trophy"></i> Tier Thresholds
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Bronze Tier (min referrals)</label>
+            <input type="number" id="settingsBronzeMin" min="1" value="1" required>
+          </div>
+          <div class="form-group">
+            <label>Bronze Tier (max referrals)</label>
+            <input type="number" id="settingsBronzeMax" min="1" value="2" required>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Silver Tier (min referrals)</label>
+            <input type="number" id="settingsSilverMin" min="1" value="3" required>
+          </div>
+          <div class="form-group">
+            <label>Silver Tier (max referrals)</label>
+            <input type="number" id="settingsSilverMax" min="1" value="5" required>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Gold Tier (min referrals)</label>
+            <input type="number" id="settingsGoldMin" min="1" value="6" required>
+          </div>
+          <div class="form-group">
+            <label>Gold Tier (max referrals)</label>
+            <input type="number" id="settingsGoldMax" min="1" value="10" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Platinum Tier (min referrals)</label>
+          <input type="number" id="settingsPlatinumMin" min="1" value="11" required>
+        </div>
+
+        <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 30px;">
+          <button type="button" class="btn-secondary" onclick="closeModal('referralSettingsModal')">Cancel</button>
+          <button type="submit" class="btn-primary">
+            <i class="fas fa-save"></i> Save Settings
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -535,7 +624,8 @@
                 <th>Status</th>
                 <th>AI Score</th>
                 <th>Lead Source</th>
-                <th>Referrals</th>
+                <th>Referrals Made</th>
+                <th>Potential Referrals</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -711,22 +801,27 @@
 
     <!-- Referrals View -->
     <div id="referralsView" class="view" style="display: none;">
-      <div style="margin-bottom: 30px;">
-        <h2 style="color: #2e5940; font-size: 28px; font-weight: 700;">
-          <i class="fas fa-gift"></i> Referral Program
-        </h2>
-        <p style="color: #666; margin-top: 5px;">Track and reward customer referrals</p>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <div>
+          <h2 style="color: #2e5940; font-size: 28px; font-weight: 700;">
+            <i class="fas fa-gift"></i> Referral Program
+          </h2>
+          <p style="color: #666; margin-top: 5px;">Track and reward customer referrals</p>
+        </div>
+        <button class="btn-secondary" onclick="openReferralSettings()">
+          <i class="fas fa-cog"></i> Program Settings
+        </button>
       </div>
 
       <div class="card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; margin-bottom: 20px;">
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <div>
             <h3 style="font-size: 24px; margin-bottom: 10px;">Referral Program Benefits</h3>
-            <p style="opacity: 0.9;">Earn <strong>$15 credit</strong> for each successful referral!</p>
+            <p style="opacity: 0.9;">Earn <strong id="displayCreditAmount">$15</strong> credit for each successful referral!</p>
             <p style="opacity: 0.9; margin-top: 5px;">Share with friends and unlock exclusive rewards.</p>
           </div>
           <div style="text-align: center; background: rgba(255,255,255,0.2); padding: 20px; border-radius: 12px;">
-            <div style="font-size: 36px; font-weight: 700;">$15</div>
+            <div style="font-size: 36px; font-weight: 700;" id="displayCreditLarge">$15</div>
             <div style="font-size: 14px; opacity: 0.9;">Per Referral</div>
           </div>
         </div>
@@ -736,22 +831,22 @@
         <div class="card" style="text-align: center; background: linear-gradient(135deg, #cd7f32 0%, #b87333 100%); color: white;">
           <div style="font-size: 32px; margin-bottom: 10px;"><i class="fas fa-award"></i></div>
           <div style="font-size: 18px; font-weight: 700;">Bronze</div>
-          <div style="font-size: 12px; opacity: 0.9; margin-top: 5px;">1-2 Referrals</div>
+          <div style="font-size: 12px; opacity: 0.9; margin-top: 5px;" id="bronzeTierText">1-2 Referrals</div>
         </div>
         <div class="card" style="text-align: center; background: linear-gradient(135deg, #c0c0c0 0%, #a8a8a8 100%); color: white;">
           <div style="font-size: 32px; margin-bottom: 10px;"><i class="fas fa-medal"></i></div>
           <div style="font-size: 18px; font-weight: 700;">Silver</div>
-          <div style="font-size: 12px; opacity: 0.9; margin-top: 5px;">3-5 Referrals</div>
+          <div style="font-size: 12px; opacity: 0.9; margin-top: 5px;" id="silverTierText">3-5 Referrals</div>
         </div>
         <div class="card" style="text-align: center; background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); color: #2e5940;">
           <div style="font-size: 32px; margin-bottom: 10px;"><i class="fas fa-trophy"></i></div>
           <div style="font-size: 18px; font-weight: 700;">Gold</div>
-          <div style="font-size: 12px; opacity: 0.9; margin-top: 5px;">6-10 Referrals</div>
+          <div style="font-size: 12px; opacity: 0.9; margin-top: 5px;" id="goldTierText">6-10 Referrals</div>
         </div>
         <div class="card" style="text-align: center; background: linear-gradient(135deg, #e5e4e2 0%, #d4d4d4 100%); color: #2e5940;">
           <div style="font-size: 32px; margin-bottom: 10px;"><i class="fas fa-crown"></i></div>
           <div style="font-size: 18px; font-weight: 700;">Platinum</div>
-          <div style="font-size: 12px; opacity: 0.9; margin-top: 5px;">11+ Referrals</div>
+          <div style="font-size: 12px; opacity: 0.9; margin-top: 5px;" id="platinumTierText">11+ Referrals</div>
         </div>
       </div>
 
@@ -836,18 +931,22 @@
           </div>
         </div>
 
-        <!-- Location -->
+        <!-- Billing Address -->
         <div class="section-header">
-          <i class="fas fa-map-marker-alt"></i> Location
+          <i class="fas fa-map-marker-alt"></i> Billing Address
         </div>
-        <div class="grid-2">
+        <div class="form-group">
+          <label>Street Address</label>
+          <input type="text" id="customerBillingStreet" placeholder="123 Main St">
+        </div>
+        <div class="grid-3">
           <div class="form-group">
             <label>City</label>
-            <input type="text" id="customerCity">
+            <input type="text" id="customerBillingCity">
           </div>
           <div class="form-group">
             <label>State</label>
-            <select id="customerState">
+            <select id="customerBillingState">
               <option value="">Select...</option>
               <option value="AL">Alabama</option>
               <option value="AK">Alaska</option>
@@ -901,16 +1000,92 @@
               <option value="WY">Wyoming</option>
             </select>
           </div>
+          <div class="form-group">
+            <label>Zip Code</label>
+            <input type="text" id="customerBillingZip" placeholder="12345">
+          </div>
         </div>
 
-        <div class="grid-2">
+        <!-- Shipping Address -->
+        <div class="section-header">
+          <i class="fas fa-shipping-fast"></i> Shipping Address
+        </div>
+        
+        <div class="form-group">
+          <div class="checkbox-item" style="margin-bottom: 15px;">
+            <input type="checkbox" id="sameAsBilling" onchange="copySameAsBilling()">
+            <label for="sameAsBilling" style="margin: 0; font-weight: normal;">Same as billing address</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Street Address</label>
+          <input type="text" id="customerShippingStreet" placeholder="123 Main St">
+        </div>
+        <div class="grid-3">
           <div class="form-group">
-            <label>Billing Address</label>
-            <textarea id="customerBillingAddress" rows="2"></textarea>
+            <label>City</label>
+            <input type="text" id="customerShippingCity">
           </div>
           <div class="form-group">
-            <label>Shipping Address</label>
-            <textarea id="customerShippingAddress" rows="2"></textarea>
+            <label>State</label>
+            <select id="customerShippingState">
+              <option value="">Select...</option>
+              <option value="AL">Alabama</option>
+              <option value="AK">Alaska</option>
+              <option value="AZ">Arizona</option>
+              <option value="AR">Arkansas</option>
+              <option value="CA">California</option>
+              <option value="CO">Colorado</option>
+              <option value="CT">Connecticut</option>
+              <option value="DE">Delaware</option>
+              <option value="FL">Florida</option>
+              <option value="GA">Georgia</option>
+              <option value="HI">Hawaii</option>
+              <option value="ID">Idaho</option>
+              <option value="IL">Illinois</option>
+              <option value="IN">Indiana</option>
+              <option value="IA">Iowa</option>
+              <option value="KS">Kansas</option>
+              <option value="KY">Kentucky</option>
+              <option value="LA">Louisiana</option>
+              <option value="ME">Maine</option>
+              <option value="MD">Maryland</option>
+              <option value="MA">Massachusetts</option>
+              <option value="MI">Michigan</option>
+              <option value="MN">Minnesota</option>
+              <option value="MS">Mississippi</option>
+              <option value="MO">Missouri</option>
+              <option value="MT">Montana</option>
+              <option value="NE">Nebraska</option>
+              <option value="NV">Nevada</option>
+              <option value="NH">New Hampshire</option>
+              <option value="NJ">New Jersey</option>
+              <option value="NM">New Mexico</option>
+              <option value="NY">New York</option>
+              <option value="NC">North Carolina</option>
+              <option value="ND">North Dakota</option>
+              <option value="OH">Ohio</option>
+              <option value="OK">Oklahoma</option>
+              <option value="OR">Oregon</option>
+              <option value="PA">Pennsylvania</option>
+              <option value="RI">Rhode Island</option>
+              <option value="SC">South Carolina</option>
+              <option value="SD">South Dakota</option>
+              <option value="TN">Tennessee</option>
+              <option value="TX">Texas</option>
+              <option value="UT">Utah</option>
+              <option value="VT">Vermont</option>
+              <option value="VA">Virginia</option>
+              <option value="WA">Washington</option>
+              <option value="WV">West Virginia</option>
+              <option value="WI">Wisconsin</option>
+              <option value="WY">Wyoming</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Zip Code</label>
+            <input type="text" id="customerShippingZip" placeholder="12345">
           </div>
         </div>
 
@@ -1027,7 +1202,39 @@
           </div>
           <div class="form-group">
             <label>Current Paddle Brand</label>
-            <input type="text" id="customerPaddleBrand" placeholder="e.g., Selkirk, Joola">
+            <select id="customerPaddleBrand">
+              <option value="">Select...</option>
+              <option value="Bantam">Bantam</option>
+              <option value="BREAD">BREAD</option>
+              <option value="CRBN">CRBN</option>
+              <option value="Diadem">Diadem</option>
+              <option value="Electrum">Electrum</option>
+              <option value="Engage">Engage</option>
+              <option value="Franklin">Franklin</option>
+              <option value="Gamma">Gamma</option>
+              <option value="Gearbox">Gearbox</option>
+              <option value="HEAD">HEAD</option>
+              <option value="Holbrook">Holbrook</option>
+              <option value="Hudef">Hudef</option>
+              <option value="Joola">Joola</option>
+              <option value="Legacy">Legacy</option>
+              <option value="Nomex">Nomex</option>
+              <option value="Onix">Onix</option>
+              <option value="Paddletek">Paddletek</option>
+              <option value="Prince">Prince</option>
+              <option value="ProKennex">ProKennex</option>
+              <option value="Prolite">Prolite</option>
+              <option value="Selkirk">Selkirk</option>
+              <option value="Six Zero">Six Zero</option>
+              <option value="Slinger">Slinger</option>
+              <option value="Thrive">Thrive</option>
+              <option value="Vatic Pro">Vatic Pro</option>
+              <option value="Viking">Viking</option>
+              <option value="Vulcan">Vulcan</option>
+              <option value="Wilson">Wilson</option>
+              <option value="Yonex">Yonex</option>
+              <option value="Other">Other</option>
+            </select>
           </div>
         </div>
 
@@ -1510,6 +1717,17 @@
       events: []
     };
 
+    // Referral Settings
+    let referralSettings = {
+      creditAmount: 15,
+      tiers: {
+        bronze: { min: 1, max: 2 },
+        silver: { min: 3, max: 5 },
+        gold: { min: 6, max: 10 },
+        platinum: { min: 11 }
+      }
+    };
+
     let currentMonth = new Date().getMonth();
     let currentYear = new Date().getFullYear();
     let currentEventId = null;
@@ -1518,12 +1736,14 @@
     // Initialize
     document.addEventListener('DOMContentLoaded', function() {
       loadData();
+      loadReferralSettings();
       updateDashboard();
       updateCurrentDate();
       renderCalendar();
       populateCustomerDropdowns();
       setDefaultOrderDate();
       checkBackupReminder();
+      updateReferralDisplays();
       
       // Set up drag and drop for import
       setupDragDrop();
@@ -1569,6 +1789,92 @@
         crmData = JSON.parse(saved);
       }
       updateLastBackupIndicator();
+    }
+
+    // Referral Settings Functions
+    function loadReferralSettings() {
+      const saved = localStorage.getItem('acoustiskinReferralSettings');
+      if (saved) {
+        referralSettings = JSON.parse(saved);
+      }
+    }
+
+    function saveReferralSettings(event) {
+      event.preventDefault();
+      
+      referralSettings = {
+        creditAmount: parseInt(document.getElementById('settingsCreditAmount').value),
+        tiers: {
+          bronze: {
+            min: parseInt(document.getElementById('settingsBronzeMin').value),
+            max: parseInt(document.getElementById('settingsBronzeMax').value)
+          },
+          silver: {
+            min: parseInt(document.getElementById('settingsSilverMin').value),
+            max: parseInt(document.getElementById('settingsSilverMax').value)
+          },
+          gold: {
+            min: parseInt(document.getElementById('settingsGoldMin').value),
+            max: parseInt(document.getElementById('settingsGoldMax').value)
+          },
+          platinum: {
+            min: parseInt(document.getElementById('settingsPlatinumMin').value)
+          }
+        }
+      };
+      
+      localStorage.setItem('acoustiskinReferralSettings', JSON.stringify(referralSettings));
+      
+      // Recalculate all customer referral credits
+      crmData.customers.forEach(c => {
+        if (c.referralsMade > 0) {
+          c.referralCredits = c.referralsMade * referralSettings.creditAmount;
+        }
+      });
+      saveData();
+      
+      closeModal('referralSettingsModal');
+      updateReferralDisplays();
+      updateReferralsView();
+      showNotification('Referral settings saved successfully!');
+    }
+
+    function openReferralSettings() {
+      document.getElementById('settingsCreditAmount').value = referralSettings.creditAmount;
+      document.getElementById('settingsBronzeMin').value = referralSettings.tiers.bronze.min;
+      document.getElementById('settingsBronzeMax').value = referralSettings.tiers.bronze.max;
+      document.getElementById('settingsSilverMin').value = referralSettings.tiers.silver.min;
+      document.getElementById('settingsSilverMax').value = referralSettings.tiers.silver.max;
+      document.getElementById('settingsGoldMin').value = referralSettings.tiers.gold.min;
+      document.getElementById('settingsGoldMax').value = referralSettings.tiers.gold.max;
+      document.getElementById('settingsPlatinumMin').value = referralSettings.tiers.platinum.min;
+      
+      document.getElementById('referralSettingsModal').style.display = 'block';
+    }
+
+    function updateReferralDisplays() {
+      // Update credit amount displays
+      const creditAmount = referralSettings.creditAmount;
+      document.getElementById('displayCreditAmount').textContent = '$' + creditAmount;
+      document.getElementById('displayCreditLarge').textContent = '$' + creditAmount;
+      
+      // Update tier text
+      document.getElementById('bronzeTierText').textContent = 
+        referralSettings.tiers.bronze.min + '-' + referralSettings.tiers.bronze.max + ' Referrals';
+      document.getElementById('silverTierText').textContent = 
+        referralSettings.tiers.silver.min + '-' + referralSettings.tiers.silver.max + ' Referrals';
+      document.getElementById('goldTierText').textContent = 
+        referralSettings.tiers.gold.min + '-' + referralSettings.tiers.gold.max + ' Referrals';
+      document.getElementById('platinumTierText').textContent = 
+        referralSettings.tiers.platinum.min + '+ Referrals';
+    }
+
+    function getReferralTier(referralCount) {
+      if (referralCount >= referralSettings.tiers.platinum.min) return 'Platinum';
+      if (referralCount >= referralSettings.tiers.gold.min && referralCount <= referralSettings.tiers.gold.max) return 'Gold';
+      if (referralCount >= referralSettings.tiers.silver.min && referralCount <= referralSettings.tiers.silver.max) return 'Silver';
+      if (referralCount >= referralSettings.tiers.bronze.min && referralCount <= referralSettings.tiers.bronze.max) return 'Bronze';
+      return 'None';
     }
 
     // Backup Functions
@@ -1619,7 +1925,14 @@
     }
 
     function exportData() {
-      const dataStr = JSON.stringify(crmData, null, 2);
+      const exportPackage = {
+        crmData: crmData,
+        referralSettings: referralSettings,
+        exportDate: new Date().toISOString(),
+        version: '2.0'
+      };
+      
+      const dataStr = JSON.stringify(exportPackage, null, 2);
       const blob = new Blob([dataStr], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -1633,15 +1946,14 @@
     }
 
     function emailBackup() {
-      const dataStr = JSON.stringify(crmData, null, 2);
       const subject = encodeURIComponent('AcoustiSkin CRM Backup - ' + new Date().toLocaleDateString());
-      const body = encodeURIComponent('Please find attached CRM backup data.\n\nTo restore: Go to CRM > Import Data > Select this file\n\nBackup Date: ' + new Date().toLocaleString());
+      const body = encodeURIComponent('Please save the backup file that will download automatically.\n\nTo restore: Go to CRM > Import Data > Select the backup file\n\nBackup Date: ' + new Date().toLocaleString());
       
       window.location.href = `mailto:?subject=${subject}&body=${body}`;
-      showNotification('Email client opened. Please attach the backup file manually.');
+      showNotification('Opening email client. The backup will download automatically.');
       
       // Also trigger download
-      exportData();
+      setTimeout(() => exportData(), 500);
     }
 
     function showImportOptions() {
@@ -1662,10 +1974,17 @@
         }
       };
       reader.readAsText(file);
+      
+      // Reset file input
+      event.target.value = '';
     }
 
     function handleImportData(data) {
-      pendingImportData = data;
+      // Handle both old format and new format
+      let importCrmData = data.crmData || data;
+      let importSettings = data.referralSettings || referralSettings;
+      
+      pendingImportData = { crmData: importCrmData, settings: importSettings };
       
       // Check for conflicts
       const hasCustomers = crmData.customers.length > 0;
@@ -1681,9 +2000,9 @@
           • ${crmData.orders.length} orders<br>
           • ${crmData.events.length} events<br><br>
           <strong>Importing:</strong><br>
-          • ${data.customers?.length || 0} customers<br>
-          • ${data.orders?.length || 0} orders<br>
-          • ${data.events?.length || 0} events
+          • ${importCrmData.customers?.length || 0} customers<br>
+          • ${importCrmData.orders?.length || 0} orders<br>
+          • ${importCrmData.events?.length || 0} events
         `;
         document.getElementById('conflictModal').style.display = 'block';
       } else {
@@ -1694,26 +2013,30 @@
 
     function resolveConflict(action) {
       if (action === 'replace') {
-        crmData = pendingImportData;
+        crmData = pendingImportData.crmData;
+        referralSettings = pendingImportData.settings;
       } else if (action === 'merge') {
         // Merge data
-        if (pendingImportData.customers) {
-          crmData.customers = [...crmData.customers, ...pendingImportData.customers];
+        if (pendingImportData.crmData.customers) {
+          crmData.customers = [...crmData.customers, ...pendingImportData.crmData.customers];
         }
-        if (pendingImportData.orders) {
-          crmData.orders = [...crmData.orders, ...pendingImportData.orders];
+        if (pendingImportData.crmData.orders) {
+          crmData.orders = [...crmData.orders, ...pendingImportData.crmData.orders];
         }
-        if (pendingImportData.events) {
-          crmData.events = [...crmData.events, ...pendingImportData.events];
+        if (pendingImportData.crmData.events) {
+          crmData.events = [...crmData.events, ...pendingImportData.crmData.events];
         }
       }
       
       saveData();
+      localStorage.setItem('acoustiskinReferralSettings', JSON.stringify(referralSettings));
+      
       updateDashboard();
       updateCustomersView();
       updateOrdersView();
       renderCalendar();
       populateCustomerDropdowns();
+      updateReferralDisplays();
       
       closeModal('conflictModal');
       showNotification(`Data imported successfully (${action} mode)`);
@@ -1751,7 +2074,10 @@
     // Modal Functions
     function closeModal(modalId) {
       document.getElementById(modalId).style.display = 'none';
-      if (modalId === 'customerModal') document.getElementById('customerForm').reset();
+      if (modalId === 'customerModal') {
+        document.getElementById('customerForm').reset();
+        document.getElementById('sameAsBilling').checked = false;
+      }
       if (modalId === 'orderModal') document.getElementById('orderForm').reset();
       if (modalId === 'eventModal') document.getElementById('eventForm').reset();
     }
@@ -1824,10 +2150,23 @@
       return icons[type] || 'calendar';
     }
 
+    // Copy Billing to Shipping Function
+    function copySameAsBilling() {
+      const checked = document.getElementById('sameAsBilling').checked;
+      
+      if (checked) {
+        document.getElementById('customerShippingStreet').value = document.getElementById('customerBillingStreet').value;
+        document.getElementById('customerShippingCity').value = document.getElementById('customerBillingCity').value;
+        document.getElementById('customerShippingState').value = document.getElementById('customerBillingState').value;
+        document.getElementById('customerShippingZip').value = document.getElementById('customerBillingZip').value;
+      }
+    }
+
     // Customer Functions
     function openCustomerModal(customerId = null) {
       document.getElementById('customerModal').style.display = 'block';
       document.getElementById('customerForm').reset();
+      document.getElementById('sameAsBilling').checked = false;
       
       if (customerId) {
         const customer = crmData.customers.find(c => c.id === customerId);
@@ -1841,10 +2180,19 @@
           document.getElementById('customerStatus').value = customer.status;
           document.getElementById('customerIndustry').value = customer.industry || '';
           document.getElementById('customerAgeRange').value = customer.ageRange || '';
-          document.getElementById('customerCity').value = customer.city || '';
-          document.getElementById('customerState').value = customer.state || '';
-          document.getElementById('customerBillingAddress').value = customer.billingAddress || '';
-          document.getElementById('customerShippingAddress').value = customer.shippingAddress || '';
+          
+          // Billing address
+          document.getElementById('customerBillingStreet').value = customer.billingStreet || '';
+          document.getElementById('customerBillingCity').value = customer.billingCity || '';
+          document.getElementById('customerBillingState').value = customer.billingState || '';
+          document.getElementById('customerBillingZip').value = customer.billingZip || '';
+          
+          // Shipping address
+          document.getElementById('customerShippingStreet').value = customer.shippingStreet || '';
+          document.getElementById('customerShippingCity').value = customer.shippingCity || '';
+          document.getElementById('customerShippingState').value = customer.shippingState || '';
+          document.getElementById('customerShippingZip').value = customer.shippingZip || '';
+          
           document.getElementById('customerLeadSource').value = customer.leadSource || '';
           document.getElementById('customerReferrer').value = customer.referrer || '';
           
@@ -1917,10 +2265,14 @@
         status: document.getElementById('customerStatus').value,
         industry: document.getElementById('customerIndustry').value,
         ageRange: document.getElementById('customerAgeRange').value,
-        city: document.getElementById('customerCity').value,
-        state: document.getElementById('customerState').value,
-        billingAddress: document.getElementById('customerBillingAddress').value,
-        shippingAddress: document.getElementById('customerShippingAddress').value,
+        billingStreet: document.getElementById('customerBillingStreet').value,
+        billingCity: document.getElementById('customerBillingCity').value,
+        billingState: document.getElementById('customerBillingState').value,
+        billingZip: document.getElementById('customerBillingZip').value,
+        shippingStreet: document.getElementById('customerShippingStreet').value,
+        shippingCity: document.getElementById('customerShippingCity').value,
+        shippingState: document.getElementById('customerShippingState').value,
+        shippingZip: document.getElementById('customerShippingZip').value,
         leadSource: document.getElementById('customerLeadSource').value,
         referrer: document.getElementById('customerReferrer').value,
         socialPlatforms: socialPlatforms,
@@ -1936,7 +2288,7 @@
         smsOptIn: document.getElementById('customerSMSOptIn').checked,
         referralInterest: document.getElementById('customerReferralInterest').value,
         discountInterest: document.getElementById('customerDiscountInterest').value,
-        potentialReferrals: document.getElementById('customerPotentialReferrals').value,
+        potentialReferrals: parseInt(document.getElementById('customerPotentialReferrals').value) || 0,
         notes: document.getElementById('customerNotes').value,
         createdAt: customerId ? crmData.customers.find(c => c.id === customerId)?.createdAt : new Date().toISOString()
       };
@@ -1947,6 +2299,19 @@
         customerData.referralsMade = 0;
         customerData.referredCustomers = [];
         customerData.referralCredits = 0;
+        
+        // Handle referrer tracking for new customers
+        if (customerData.referrer) {
+          const referrerCustomer = crmData.customers.find(c => 
+            c.name.toLowerCase() === customerData.referrer.toLowerCase()
+          );
+          if (referrerCustomer) {
+            referrerCustomer.referralsMade = (referrerCustomer.referralsMade || 0) + 1;
+            referrerCustomer.referredCustomers = referrerCustomer.referredCustomers || [];
+            referrerCustomer.referredCustomers.push(customerData.id);
+            referrerCustomer.referralCredits = referrerCustomer.referralsMade * referralSettings.creditAmount;
+          }
+        }
       } else {
         const existingCustomer = crmData.customers.find(c => c.id === customerId);
         customerData.referralCode = existingCustomer.referralCode;
@@ -2023,6 +2388,7 @@
           <td><span class="score-badge score-${c.aiScore >= 70 ? 'high' : c.aiScore >= 40 ? 'medium' : 'low'}">${c.aiScore || 0}/100</span></td>
           <td>${c.leadSource || '-'}</td>
           <td>${c.referralsMade || 0}</td>
+          <td>${c.potentialReferrals || 0}</td>
           <td>
             <button class="btn-secondary" style="padding: 6px 12px; margin-right: 5px;" onclick="openCustomerModal('${c.id}')">
               <i class="fas fa-edit"></i>
@@ -2033,7 +2399,7 @@
           </td>
         </tr>
       `).join('');
-      tbody.innerHTML = html || '<tr><td colspan="7" style="text-align: center; padding: 40px; color: #999;">No customers yet. Click "Add Customer" to get started.</td></tr>';
+      tbody.innerHTML = html || '<tr><td colspan="8" style="text-align: center; padding: 40px; color: #999;">No customers yet. Click "Add Customer" to get started.</td></tr>';
     }
 
     function filterCustomers() {
@@ -2056,7 +2422,6 @@
         showNotification('Customer deleted');
       }
     }
-
     // Order Functions
     function openOrderModal(orderId = null) {
       document.getElementById('orderModal').style.display = 'block';
@@ -2115,14 +2480,25 @@
       const customerId = document.getElementById('orderCustomer').value;
       const customer = crmData.customers.find(c => c.id === customerId);
       
-      if (customer && customer.shippingAddress) {
-        document.getElementById('orderShipAddress').value = customer.shippingAddress;
-      } else if (customer && customer.billingAddress) {
-        document.getElementById('orderShipAddress').value = customer.billingAddress;
-      }
-      
-      if (customer && customer.state) {
-        document.getElementById('orderState').value = customer.state;
+      if (customer) {
+        // Build full shipping address from separate fields
+        let address = '';
+        if (customer.shippingStreet) {
+          address += customer.shippingStreet + '\n';
+          address += (customer.shippingCity || '') + ', ' + (customer.shippingState || '') + ' ' + (customer.shippingZip || '');
+        } else if (customer.billingStreet) {
+          // Fallback to billing if no shipping
+          address += customer.billingStreet + '\n';
+          address += (customer.billingCity || '') + ', ' + (customer.billingState || '') + ' ' + (customer.billingZip || '');
+        }
+        document.getElementById('orderShipAddress').value = address.trim();
+        
+        // Set state for tax calculation
+        if (customer.shippingState) {
+          document.getElementById('orderState').value = customer.shippingState;
+        } else if (customer.billingState) {
+          document.getElementById('orderState').value = customer.billingState;
+        }
         calculateOrderTotal();
       }
     }
@@ -2226,6 +2602,7 @@
         showNotification('Order deleted');
       }
     }
+
     // Event Functions
     function openEventModal(eventId = null, date = null) {
       document.getElementById('eventModal').style.display = 'block';
@@ -2646,10 +3023,9 @@
       
       document.getElementById('aiInsights').innerHTML = html || '<p style="color: #999; text-align: center; padding: 20px;">Not enough data for insights yet.</p>';
     }
-
     // Marketing View
     function updateMarketingView() {
-      // Recommendations
+      // Smart Recommendations
       const recommendations = [];
       
       const emailOptIns = crmData.customers.filter(c => c.emailOptIn).length;
@@ -2660,7 +3036,8 @@
           icon: 'envelope',
           title: 'Email Campaign Ready',
           description: `${emailOptIns} customers opted in for email marketing. Launch a targeted campaign.`,
-          action: 'Create Campaign'
+          action: 'Create Email List',
+          onclick: 'createEmailList()'
         });
       }
       
@@ -2669,7 +3046,8 @@
           icon: 'sms',
           title: 'SMS Marketing Opportunity',
           description: `${smsOptIns} customers opted in for SMS. Send them exclusive offers.`,
-          action: 'Send SMS'
+          action: 'Create SMS List',
+          onclick: 'createSMSList()'
         });
       }
       
@@ -2679,7 +3057,8 @@
           icon: 'hashtag',
           title: 'Social Media Campaign',
           description: `${socialActive.length} customers are active on social media. Perfect for viral content.`,
-          action: 'Plan Campaign'
+          action: 'View Social Contacts',
+          onclick: 'viewSocialContacts()'
         });
       }
       
@@ -2695,7 +3074,7 @@
                 <div style="color: #666; font-size: 14px;">${r.description}</div>
               </div>
             </div>
-            <button class="btn-primary">${r.action}</button>
+            <button class="btn-primary" onclick="${r.onclick}">${r.action}</button>
           </div>
         </div>
       `).join('');
@@ -2729,6 +3108,139 @@
       document.getElementById('referralOpportunities').innerHTML = referralHtml || '<p style="color: #999; text-align: center; padding: 20px;">No referral opportunities yet.</p>';
     }
 
+    // Marketing Campaign Functions
+    function createEmailList() {
+      const emailCustomers = crmData.customers.filter(c => c.emailOptIn && c.email);
+      const emails = emailCustomers.map(c => c.email).join(', ');
+      
+      const modal = document.createElement('div');
+      modal.className = 'modal';
+      modal.style.display = 'block';
+      modal.innerHTML = `
+        <div class="modal-content" style="max-width: 700px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+            <h3 style="color: #2e5940; font-size: 24px; font-weight: 700;">
+              <i class="fas fa-envelope"></i> Email Campaign List
+            </h3>
+            <button onclick="this.closest('.modal').remove()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #999;">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          
+          <div class="info-box">
+            <strong>${emailCustomers.length} customers</strong> have opted in for email marketing.
+          </div>
+          
+          <div style="margin: 20px 0;">
+            <label style="display: block; margin-bottom: 10px; color: #2e5940; font-weight: 600;">Email Addresses:</label>
+            <textarea readonly style="width: 100%; height: 150px; padding: 10px; border: 2px solid #c8e6c9; border-radius: 6px; font-family: monospace; font-size: 12px;">${emails}</textarea>
+          </div>
+          
+          <div style="display: flex; gap: 10px; justify-content: flex-end;">
+            <button class="btn-secondary" onclick="navigator.clipboard.writeText('${emails.replace(/'/g, "\\'")}').then(() => showNotification('Email list copied to clipboard!'))">
+              <i class="fas fa-copy"></i> Copy to Clipboard
+            </button>
+            <button class="btn-primary" onclick="window.location.href='mailto:?bcc=${encodeURIComponent(emails)}'">
+              <i class="fas fa-paper-plane"></i> Open in Email Client
+            </button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+
+    function createSMSList() {
+      const smsCustomers = crmData.customers.filter(c => c.smsOptIn && c.phone);
+      const phones = smsCustomers.map(c => c.phone).join(', ');
+      
+      const modal = document.createElement('div');
+      modal.className = 'modal';
+      modal.style.display = 'block';
+      modal.innerHTML = `
+        <div class="modal-content" style="max-width: 700px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+            <h3 style="color: #2e5940; font-size: 24px; font-weight: 700;">
+              <i class="fas fa-sms"></i> SMS Campaign List
+            </h3>
+            <button onclick="this.closest('.modal').remove()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #999;">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          
+          <div class="info-box">
+            <strong>${smsCustomers.length} customers</strong> have opted in for SMS marketing.
+          </div>
+          
+          <div style="margin: 20px 0;">
+            <label style="display: block; margin-bottom: 10px; color: #2e5940; font-weight: 600;">Phone Numbers:</label>
+            <textarea readonly style="width: 100%; height: 150px; padding: 10px; border: 2px solid #c8e6c9; border-radius: 6px; font-family: monospace; font-size: 12px;">${phones}</textarea>
+          </div>
+          
+          <div style="display: flex; gap: 10px; justify-content: flex-end;">
+            <button class="btn-secondary" onclick="navigator.clipboard.writeText('${phones.replace(/'/g, "\\'")}').then(() => showNotification('Phone list copied to clipboard!'))">
+              <i class="fas fa-copy"></i> Copy to Clipboard
+            </button>
+            <button class="btn-primary" onclick="this.closest('.modal').remove()">
+              <i class="fas fa-check"></i> Done
+            </button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+
+    function viewSocialContacts() {
+      const socialCustomers = crmData.customers.filter(c => c.socialPlatforms && c.socialPlatforms.length > 0);
+      
+      const modal = document.createElement('div');
+      modal.className = 'modal';
+      modal.style.display = 'block';
+      modal.innerHTML = `
+        <div class="modal-content" style="max-width: 800px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+            <h3 style="color: #2e5940; font-size: 24px; font-weight: 700;">
+              <i class="fas fa-share-alt"></i> Social Media Contacts
+            </h3>
+            <button onclick="this.closest('.modal').remove()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #999;">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          
+          <div class="info-box">
+            <strong>${socialCustomers.length} customers</strong> are active on social media.
+          </div>
+          
+          <div style="margin: 20px 0; max-height: 400px; overflow-y: auto;">
+            ${socialCustomers.map(c => `
+              <div style="padding: 15px; background: #f1f8e9; border-radius: 8px; margin-bottom: 10px;">
+                <div style="font-weight: 600; color: #2e5940; margin-bottom: 8px;">${c.name}</div>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 5px;">
+                  ${c.socialPlatforms.map(p => `
+                    <span style="background: #66bb6a; color: white; padding: 3px 8px; border-radius: 12px; font-size: 11px;">
+                      ${p}
+                    </span>
+                  `).join('')}
+                </div>
+                ${c.socialHandle ? `
+                  <div style="font-size: 12px; color: #666;">Handle: ${c.socialHandle}</div>
+                ` : ''}
+                ${c.socialEngagement ? `
+                  <div style="font-size: 12px; color: #666;">Engagement: ${c.socialEngagement}</div>
+                ` : ''}
+              </div>
+            `).join('')}
+          </div>
+          
+          <div style="text-align: right;">
+            <button class="btn-primary" onclick="this.closest('.modal').remove()">
+              <i class="fas fa-check"></i> Done
+            </button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+
     // Referrals View
     function updateReferralsView() {
       const topReferrers = [...crmData.customers]
@@ -2737,17 +3249,17 @@
         .slice(0, 10);
       
       const html = topReferrers.map((c, index) => {
-        const tier = c.referralsMade >= 11 ? 'Platinum' : c.referralsMade >= 6 ? 'Gold' : c.referralsMade >= 3 ? 'Silver' : 'Bronze';
+        const tier = getReferralTier(c.referralsMade);
         const tierColor = tier === 'Platinum' ? '#e5e4e2' : tier === 'Gold' ? '#ffd700' : tier === 'Silver' ? '#c0c0c0' : '#cd7f32';
         
         return `
           <div style="padding: 20px; background: white; border-radius: 8px; border: 2px solid #e8f5e9; margin-bottom: 15px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
-              <div style="display: flex; align-items: center; gap: 15px;">
+              <div style="display: flex; align-items: center; gap: 15px; flex: 1;">
                 <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #66bb6a, #43a047); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 18px;">
                   ${index + 1}
                 </div>
-                <div>
+                <div style="flex: 1;">
                   <div style="font-weight: 600; color: #2e5940; font-size: 18px;">${c.name}</div>
                   <div style="font-size: 14px; color: #666; margin-top: 3px;">
                     Code: <strong>${c.referralCode}</strong> | Credits: <strong>$${c.referralCredits || 0}</strong>
@@ -2761,12 +3273,18 @@
                 <div style="font-size: 24px; font-weight: 700; color: #2e5940;">${c.referralsMade} referrals</div>
               </div>
             </div>
-            <div style="margin-top: 15px;">
-              <button class="btn-secondary" onclick="showReferralDetails('${c.id}')" style="margin-right: 10px;">
-                <i class="fas fa-qrcode"></i> View QR Code
+            <div style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
+              <button class="btn-secondary" onclick="showReferralDetails('${c.id}')">
+                <i class="fas fa-qrcode"></i> QR Code
               </button>
               <button class="btn-secondary" onclick="shareReferral('${c.id}')">
                 <i class="fas fa-share"></i> Share
+              </button>
+              <button class="btn-secondary" onclick="openCustomerModal('${c.id}')">
+                <i class="fas fa-edit"></i> Edit Customer
+              </button>
+              <button class="btn-danger" onclick="deleteCustomer('${c.id}')">
+                <i class="fas fa-trash"></i> Delete
               </button>
             </div>
           </div>
@@ -2841,7 +3359,7 @@
       // Generate QR Code
       setTimeout(() => {
         new QRCode(document.getElementById(`qrcode-${customerId}`), {
-          text: `AcoustiSkin Referral Code: ${customer.referralCode}\nUse this code for $15 off your first order!`,
+          text: `AcoustiSkin Referral Code: ${customer.referralCode}\nUse this code for $${referralSettings.creditAmount} off your first order!`,
           width: 200,
           height: 200
         });
@@ -2853,29 +3371,29 @@
     }
 
     function shareToEmail(code) {
-      const subject = encodeURIComponent('Get $15 off AcoustiSkin!');
-      const body = encodeURIComponent(`Hey! I'm loving my AcoustiSkin paddle cover. Use my referral code "${code}" to get $15 off your first order!\n\nCheck them out: [Your Website URL]`);
+      const subject = encodeURIComponent(`Get $${referralSettings.creditAmount} off AcoustiSkin!`);
+      const body = encodeURIComponent(`Hey! I'm loving my AcoustiSkin paddle cover. Use my referral code "${code}" to get $${referralSettings.creditAmount} off your first order!\n\nCheck them out at [Your Website URL]`);
       window.location.href = `mailto:?subject=${subject}&body=${body}`;
     }
 
     function shareToSMS(code) {
-      const message = encodeURIComponent(`Check out AcoustiSkin! Use my code "${code}" for $15 off!`);
+      const message = encodeURIComponent(`Check out AcoustiSkin! Use my code "${code}" for $${referralSettings.creditAmount} off!`);
       window.location.href = `sms:?body=${message}`;
     }
 
     function shareToFacebook(code) {
       const url = encodeURIComponent(window.location.origin);
-      const text = encodeURIComponent(`Get $15 off AcoustiSkin with my referral code: ${code}`);
+      const text = encodeURIComponent(`Get $${referralSettings.creditAmount} off AcoustiSkin with my referral code: ${code}`);
       window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${text}`, '_blank');
     }
 
     function shareToTwitter(code) {
-      const text = encodeURIComponent(`Get $15 off @AcoustiSkin paddle covers with my code: ${code}`);
+      const text = encodeURIComponent(`Get $${referralSettings.creditAmount} off @AcoustiSkin paddle covers with my code: ${code}`);
       window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
     }
 
     function shareToWhatsApp(code) {
-      const text = encodeURIComponent(`Check out AcoustiSkin! Use my code "${code}" for $15 off!`);
+      const text = encodeURIComponent(`Check out AcoustiSkin! Use my code "${code}" for $${referralSettings.creditAmount} off!`);
       window.open(`https://wa.me/?text=${text}`, '_blank');
     }
 
