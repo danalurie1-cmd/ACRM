@@ -662,11 +662,9 @@
           <h3 style="color: #2e5940; margin-bottom: 15px;">
             <i class="fas fa-crown"></i> Reward Tiers
           </h3>
-          <div style="padding: 15px;">
-            <div style="margin-bottom: 15px; padding: 12px; background: #f5f5f5; border-left: 4px solid #cd7f32; border-radius: 6px;">
-              <div style="font-weight: 600; color: #cd7f32;"><i class="fas fa-medal"></i> BRONZE (${REFERRAL_TIERS.bronze.min}-${REFERRAL_TIERS.bronze.max} referrals)</div>
-              ${REFERRAL_TIERS.bronze.benefits.map(b => `<div style="font-size: 13px; color: #666; margin-top: 5px;">• ${b}</div>`).join('')}
-            </div>
+         <div id="referralRewardTiersDisplay" style="padding: 15px;">
+  <!-- Tiers will be loaded dynamically -->
+</div>
             
             <div style="margin-bottom: 15px; padding: 12px; background: #f5f5f5; border-left: 4px solid #c0c0c0; border-radius: 6px;">
               <div style="font-weight: 600; color: #808080;"><i class="fas fa-medal"></i> SILVER (${REFERRAL_TIERS.silver.min}-${REFERRAL_TIERS.silver.max} referrals)</div>
@@ -3265,47 +3263,32 @@ Your AcoustiSkin CRM`);
       }
     }
 
-    function renderReferrals() {
-      const totalReferrals = customers.reduce((sum, c) => sum + (c.referralsMade || 0), 0);
-      const totalCredits = totalReferrals * REFERRAL_CREDIT_AMOUNT;
-      const activeAdvocates = customers.filter(c => (c.referralsMade || 0) > 0).length;
-      
-      const referredCustomers = customers.filter(c => c.referrer).length;
-      const conversionRate = referredCustomers > 0 ? Math.round((referredCustomers / customers.length) * 100) : 0;
-      
-      document.getElementById('totalReferrals').textContent = totalReferrals;
-      document.getElementById('totalCredits').textContent = '$' + totalCredits.toLocaleString();
-      document.getElementById('activeAdvocates').textContent = activeAdvocates;
-      document.getElementById('conversionRate').textContent = conversionRate + '%';
-      
-      const topReferrers = [...customers]
-        .filter(c => (c.referralsMade || 0) > 0)
-        .sort((a, b) => (b.referralsMade || 0) - (a.referralsMade || 0))
-        .slice(0, 10);
-      
-      const leaderboard = document.getElementById('topReferrersList');
-      if (topReferrers.length > 0) {
-        leaderboard.innerHTML = topReferrers.map((c, index) => {
-          const tier = getReferralTier(c.referralsMade || 0);
-          const tierInfo = getTierInfo(tier);
-          const credits = calculateReferralCredits(c.id);
-          
-          return `
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #e8f5e9; cursor: pointer;" onclick="viewReferralInfo(${c.id})">
-              <div style="display: flex; align-items: center; gap: 15px;">
-                <div style="font-size: 20px; font-weight: 700; color: #999; min-width: 30px;">#${index + 1}</div>
-                <div>
-                  <div style="font-weight: 600; color: #2e5940;">${c.name}</div>
-                  <div style="font-size: 12px; color: #666;">
-                    <i class="fas fa-${tierInfo.icon}" style="color: ${tierInfo.color};"></i> ${tierInfo.name}
-                  </div>
-                </div>
-              </div>
-              <div style="text-align: right;">
-                <div style="font-weight: 600; color: #43a047;">${c.referralsMade || 0} referrals</div>
-                <div style="font-size: 12px; color: #666;">$${credits} earned</div>
-              </div>
-            </div>
+    function renderReferralRewardTiers() {
+  const container = document.getElementById('referralRewardTiersDisplay');
+  if (!container) return;
+  
+  const tiers = REFERRAL_TIERS;
+  
+  container.innerHTML = `
+    <div style="margin-bottom: 15px; padding: 12px; background: #f5f5f5; border-left: 4px solid #cd7f32; border-radius: 6px;">
+      <div style="font-weight: 600; color: #cd7f32;"><i class="fas fa-medal"></i> BRONZE (${tiers.bronze.min}-${tiers.bronze.max} referrals)</div>
+      ${tiers.bronze.benefits.map(b => `<div style="font-size: 13px; color: #666; margin-top: 5px;">• ${b}</div>`).join('')}
+    </div>
+    
+    <div style="margin-bottom: 15px; padding: 12px; background: #f5f5f5; border-left: 4px solid #c0c0c0; border-radius: 6px;">
+      <div style="font-weight: 600; color: #808080;"><i class="fas fa-medal"></i> SILVER (${tiers.silver.min}-${tiers.silver.max} referrals)</div>
+      ${tiers.silver.benefits.map(b => `<div style="font-size: 13px; color: #666; margin-top: 5px;">• ${b}</div>`).join('')}
+    </div>
+    
+    <div style="margin-bottom: 15px; padding: 12px; background: #f5f5f5; border-left: 4px solid #ffd700; border-radius: 6px;">
+      <div style="font-weight: 600; color: #b8860b;"><i class="fas fa-medal"></i> GOLD (${tiers.gold.min}-${tiers.gold.max} referrals)</div>
+      ${tiers.gold.benefits.map(b => `<div style="font-size: 13px; color: #666; margin-top: 5px;">• ${b}</div>`).join('')}
+    </div>
+    
+    <div style="padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 6px;">
+      <div style="font-weight: 600;"><i class="fas fa-gem"></i> PLATINUM (${tiers.platinum.min}+ referrals)</div>
+      ${tiers.platinum.benefits.map(b => `<div style="font-size: 13px; margin-top: 5px;">• ${b}</div>`).join('')}
+    </div>
           `;
         }).join('');
       } else {
