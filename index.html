@@ -343,7 +343,7 @@
         <i class="fas fa-exclamation-triangle" style="color: #ffa726;"></i> Data Import Options
       </h3>
       
-      <div class="info-box" style="background: #fff3cd; border-left-color: #ffc107;">
+      <div class="info-box">
         <strong>You're importing data that may conflict with existing data.</strong><br>
         Choose how you want to handle this:
       </div>
@@ -407,9 +407,6 @@
       <div class="nav-item" onclick="showView('referrals')">
         <i class="fas fa-gift" style="margin-right: 10px;"></i>Referral Program
       </div>
-      <div class="nav-item" onclick="showView('settings')">
-        <i class="fas fa-cog" style="margin-right: 10px;"></i>Settings
-      </div>
     </nav>
 
     <div style="padding: 20px; border-top: 1px solid rgba(255,255,255,0.2);">
@@ -444,98 +441,122 @@
       </div>
     </div>
   </aside>
-
   <!-- Main Content -->
   <main class="main-content" style="padding: 30px;">
+    
     <!-- Dashboard View -->
-    <div id="dashboard-view" class="view-content">
-      <h2 style="font-size: 28px; color: #2e5940; margin-bottom: 20px;">
-        AI-Powered Dashboard <span class="ai-badge"><i class="fas fa-sparkles"></i> Smart Insights</span>
-      </h2>
-      
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px;">
-        <div class="card" style="background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%); color: white;">
-          <div style="font-size: 14px; opacity: 0.9;">Total Customers</div>
-          <div style="font-size: 36px; font-weight: 700; margin: 10px 0;" id="totalCustomers">0</div>
-          <div style="font-size: 12px; opacity: 0.8;"><i class="fas fa-arrow-up"></i> Active accounts</div>
+    <div id="dashboardView" class="view">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <div>
+          <h2 style="color: #2e5940; font-size: 28px; font-weight: 700;">Dashboard</h2>
+          <p style="color: #666; margin-top: 5px;">Welcome back! Here's what's happening today.</p>
         </div>
-        
-        <div class="card" style="background: linear-gradient(135deg, #42a5f5 0%, #1e88e5 100%); color: white;">
-          <div style="font-size: 14px; opacity: 0.9;">Total Orders</div>
-          <div style="font-size: 36px; font-weight: 700; margin: 10px 0;" id="totalOrders">0</div>
-          <div style="font-size: 12px; opacity: 0.8;"><i class="fas fa-shopping-bag"></i> Completed</div>
-        </div>
-        
-        <div class="card" style="background: linear-gradient(135deg, #ffa726 0%, #fb8c00 100%); color: white;">
-          <div style="font-size: 14px; opacity: 0.9;">Revenue</div>
-          <div style="font-size: 36px; font-weight: 700; margin: 10px 0;" id="totalRevenue">$0</div>
-          <div style="font-size: 12px; opacity: 0.8;"><i class="fas fa-dollar-sign"></i> This month</div>
-        </div>
-        
-        <div class="card" style="background: linear-gradient(135deg, #ab47bc 0%, #8e24aa 100%); color: white;">
-          <div style="font-size: 14px; opacity: 0.9;">Referral Rate</div>
-          <div style="font-size: 36px; font-weight: 700; margin: 10px 0;" id="referralRate">0%</div>
-          <div style="font-size: 12px; opacity: 0.8;"><i class="fas fa-users"></i> Willing to refer</div>
+        <div style="text-align: right;">
+          <div style="color: #666; font-size: 14px;">Today</div>
+          <div id="currentDate" style="color: #2e5940; font-size: 18px; font-weight: 600;"></div>
         </div>
       </div>
 
-      <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px;">
-        <div class="card">
-          <h3 style="color: #2e5940; margin-bottom: 15px; font-size: 18px;">
-            <i class="fas fa-bolt"></i> AI Insights & Recommendations
-          </h3>
-          <div id="aiInsights"></div>
+      <!-- Stats Cards -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 30px;">
+        <div class="card" style="background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%); color: white;">
+          <div style="font-size: 14px; opacity: 0.9; margin-bottom: 8px;">Total Customers</div>
+          <div style="font-size: 36px; font-weight: 700;" id="totalCustomers">0</div>
+          <div style="font-size: 12px; opacity: 0.8; margin-top: 8px;">
+            <i class="fas fa-arrow-up"></i> Active in system
+          </div>
         </div>
-        
+        <div class="card" style="background: linear-gradient(135deg, #42a5f5 0%, #1e88e5 100%); color: white;">
+          <div style="font-size: 14px; opacity: 0.9; margin-bottom: 8px;">Total Orders</div>
+          <div style="font-size: 36px; font-weight: 700;" id="totalOrders">0</div>
+          <div style="font-size: 12px; opacity: 0.8; margin-top: 8px;">
+            <i class="fas fa-shopping-cart"></i> All time
+          </div>
+        </div>
+        <div class="card" style="background: linear-gradient(135deg, #ffa726 0%, #fb8c00 100%); color: white;">
+          <div style="font-size: 14px; opacity: 0.9; margin-bottom: 8px;">Total Revenue</div>
+          <div style="font-size: 36px; font-weight: 700;" id="totalRevenue">$0</div>
+          <div style="font-size: 12px; opacity: 0.8; margin-top: 8px;">
+            <i class="fas fa-dollar-sign"></i> Lifetime value
+          </div>
+        </div>
+        <div class="card" style="background: linear-gradient(135deg, #ab47bc 0%, #8e24aa 100%); color: white;">
+          <div style="font-size: 14px; opacity: 0.9; margin-bottom: 8px;">Events Today</div>
+          <div style="font-size: 36px; font-weight: 700;" id="eventsToday">0</div>
+          <div style="font-size: 12px; opacity: 0.8; margin-top: 8px;">
+            <i class="fas fa-calendar-check"></i> Scheduled tasks
+          </div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <!-- Recent Customers -->
         <div class="card">
-          <h3 style="color: #2e5940; margin-bottom: 15px; font-size: 18px;">Today's Tasks</h3>
-          <div id="todayTasks"></div>
+          <h3 style="color: #2e5940; font-size: 18px; margin-bottom: 15px;">
+            <i class="fas fa-users"></i> Recent Customers
+          </h3>
+          <div id="recentCustomers"></div>
+        </div>
+
+        <!-- Today's Tasks -->
+        <div class="card">
+          <h3 style="color: #2e5940; font-size: 18px; margin-bottom: 15px;">
+            <i class="fas fa-tasks"></i> Today's Tasks
+          </h3>
+          <div id="todaysTasks"></div>
         </div>
       </div>
     </div>
 
     <!-- Customers View -->
-    <div id="customers-view" class="view-content" style="display: none;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h2 style="font-size: 28px; color: #2e5940;">Customers</h2>
+    <div id="customersView" class="view" style="display: none;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <div>
+          <h2 style="color: #2e5940; font-size: 28px; font-weight: 700;">Customers</h2>
+          <p style="color: #666; margin-top: 5px;">Manage your customer relationships</p>
+        </div>
         <button class="btn-primary" onclick="openCustomerModal()">
           <i class="fas fa-plus"></i> Add Customer
         </button>
       </div>
-      
+
       <div class="card">
-        <div style="margin-bottom: 15px;">
-          <input type="text" id="searchCustomers" placeholder="Search customers..." 
-                 style="width: 100%; padding: 10px; border: 2px solid #c8e6c9; border-radius: 6px;"
-                 oninput="filterCustomers()">
+        <div style="margin-bottom: 20px;">
+          <input type="text" id="customerSearch" placeholder="Search customers..." 
+            style="width: 100%; padding: 12px; border: 2px solid #c8e6c9; border-radius: 8px;" 
+            oninput="filterCustomers()">
         </div>
         <div style="overflow-x: auto;">
-          <table class="table" id="customersTable">
+          <table class="table">
             <thead>
               <tr>
                 <th>Name</th>
-                <th>Email</th>
-                <th>Lead Source</th>
+                <th>Contact</th>
                 <th>Status</th>
                 <th>AI Score</th>
+                <th>Lead Source</th>
+                <th>Referrals</th>
                 <th>Actions</th>
               </tr>
             </thead>
-            <tbody id="customersTableBody"></tbody>
+            <tbody id="customersTable"></tbody>
           </table>
         </div>
       </div>
     </div>
 
     <!-- Orders View -->
-    <div id="orders-view" class="view-content" style="display: none;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h2 style="font-size: 28px; color: #2e5940;">Orders</h2>
+    <div id="ordersView" class="view" style="display: none;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <div>
+          <h2 style="color: #2e5940; font-size: 28px; font-weight: 700;">Orders</h2>
+          <p style="color: #666; margin-top: 5px;">Track and manage all orders</p>
+        </div>
         <button class="btn-primary" onclick="openOrderModal()">
           <i class="fas fa-plus"></i> New Order
         </button>
       </div>
-      
+
       <div class="card">
         <div style="overflow-x: auto;">
           <table class="table">
@@ -544,481 +565,797 @@
                 <th>Order ID</th>
                 <th>Customer</th>
                 <th>Date</th>
+                <th>Product</th>
                 <th>Total</th>
                 <th>Status</th>
                 <th>Actions</th>
               </tr>
             </thead>
-            <tbody id="ordersTableBody"></tbody>
+            <tbody id="ordersTable"></tbody>
           </table>
         </div>
       </div>
     </div>
 
     <!-- Calendar View -->
-    <div id="calendar-view" class="view-content" style="display: none;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h2 style="font-size: 28px; color: #2e5940;" id="calendarTitle">Calendar</h2>
+    <div id="calendarView" class="view" style="display: none;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
         <div>
+          <h2 style="color: #2e5940; font-size: 28px; font-weight: 700;">Calendar</h2>
+          <p style="color: #666; margin-top: 5px;">Schedule and track events</p>
+        </div>
+        <button class="btn-primary" onclick="openEventModal()">
+          <i class="fas fa-plus"></i> New Event
+        </button>
+      </div>
+
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
           <button class="btn-secondary" onclick="changeMonth(-1)">
             <i class="fas fa-chevron-left"></i>
           </button>
-          <button class="btn-secondary" onclick="changeMonth(0)" style="margin: 0 10px;">Today</button>
+          <h3 id="calendarTitle" style="color: #2e5940; font-size: 20px; font-weight: 600;"></h3>
           <button class="btn-secondary" onclick="changeMonth(1)">
             <i class="fas fa-chevron-right"></i>
           </button>
-          <button class="btn-primary" onclick="openEventModal()" style="margin-left: 10px;">
-            <i class="fas fa-plus"></i> Add Event
-          </button>
         </div>
-      </div>
-      
-      <div class="card">
-        <div class="calendar-grid" style="margin-bottom: 10px;">
-          <div style="text-align: center; font-weight: 600; color: #2e5940; padding: 10px;">Sun</div>
-          <div style="text-align: center; font-weight: 600; color: #2e5940; padding: 10px;">Mon</div>
-          <div style="text-align: center; font-weight: 600; color: #2e5940; padding: 10px;">Tue</div>
-          <div style="text-align: center; font-weight: 600; color: #2e5940; padding: 10px;">Wed</div>
-          <div style="text-align: center; font-weight: 600; color: #2e5940; padding: 10px;">Thu</div>
-          <div style="text-align: center; font-weight: 600; color: #2e5940; padding: 10px;">Fri</div>
-          <div style="text-align: center; font-weight: 600; color: #2e5940; padding: 10px;">Sat</div>
-        </div>
-        <div class="calendar-grid" id="calendarGrid"></div>
-      </div>
-    </div>
 
-    <!-- Marketing View -->
-    <div id="marketing-view" class="view-content" style="display: none;">
-      <h2 style="font-size: 28px; color: #2e5940; margin-bottom: 20px;">Marketing Intelligence</h2>
-      
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
-        <div class="card">
-          <h3 style="color: #2e5940; margin-bottom: 15px;">Lead Sources</h3>
-          <canvas id="leadSourceChart"></canvas>
+        <div class="calendar-grid">
+          <div style="text-align: center; font-weight: 600; padding: 10px; color: #2e5940;">Sun</div>
+          <div style="text-align: center; font-weight: 600; padding: 10px; color: #2e5940;">Mon</div>
+          <div style="text-align: center; font-weight: 600; padding: 10px; color: #2e5940;">Tue</div>
+          <div style="text-align: center; font-weight: 600; padding: 10px; color: #2e5940;">Wed</div>
+          <div style="text-align: center; font-weight: 600; padding: 10px; color: #2e5940;">Thu</div>
+          <div style="text-align: center; font-weight: 600; padding: 10px; color: #2e5940;">Fri</div>
+          <div style="text-align: center; font-weight: 600; padding: 10px; color: #2e5940;">Sat</div>
         </div>
-        
-        <div class="card">
-          <h3 style="color: #2e5940; margin-bottom: 15px;">Social Media Presence</h3>
-          <canvas id="socialMediaChart"></canvas>
-        </div>
-        
-        <div class="card">
-          <h3 style="color: #2e5940; margin-bottom: 15px;">Referral Insights</h3>
-          <div id="referralInsights"></div>
-        </div>
-        
-        <div class="card">
-          <h3 style="color: #2e5940; margin-bottom: 15px;">Discount Interest</h3>
-          <div id="discountInsights"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Referral Program View -->
-    <div id="referrals-view" class="view-content" style="display: none;">
-      <h2 style="font-size: 28px; color: #2e5940; margin-bottom: 20px;">
-        <i class="fas fa-gift"></i> Referral Program Dashboard
-      </h2>
-      
-      <div class="info-box" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;">
-        <strong><i class="fas fa-rocket"></i> Growth Hack Alert!</strong> Referral programs can increase customer acquisition by 300%! Track every referral and reward your advocates with $<span id="referralCreditDisplay">15</span> per successful referral.
-      </div>
-
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
-        <div class="card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-          <div style="font-size: 14px; opacity: 0.9;">Total Referrals</div>
-          <div style="font-size: 36px; font-weight: 700; margin: 10px 0;" id="totalReferrals">0</div>
-          <div style="font-size: 12px; opacity: 0.8;"><i class="fas fa-users"></i> New customers</div>
-        </div>
-        
-        <div class="card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
-          <div style="font-size: 14px; opacity: 0.9;">Credits Issued</div>
-          <div style="font-size: 36px; font-weight: 700; margin: 10px 0;" id="totalCredits">$0</div>
-          <div style="font-size: 12px; opacity: 0.8;"><i class="fas fa-dollar-sign"></i> In rewards</div>
-        </div>
-        
-        <div class="card" style="background: linear-gradient(135deg, #ffa726 0%, #fb8c00 100%); color: white;">
-          <div style="font-size: 14px; opacity: 0.9;">Active Advocates</div>
-          <div style="font-size: 36px; font-weight: 700; margin: 10px 0;" id="activeAdvocates">0</div>
-          <div style="font-size: 12px; opacity: 0.8;"><i class="fas fa-star"></i> Top referrers</div>
-        </div>
-        
-        <div class="card" style="background: linear-gradient(135deg, #4fc3f7 0%, #29b6f6 100%); color: white;">
-          <div style="font-size: 14px; opacity: 0.9;">Conversion Rate</div>
-          <div style="font-size: 36px; font-weight: 700; margin: 10px 0;" id="conversionRate">0%</div>
-          <div style="font-size: 12px; opacity: 0.8;"><i class="fas fa-chart-line"></i> Referred → Customer</div>
-        </div>
-      </div>
-
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-        <div class="card">
-          <h3 style="color: #2e5940; margin-bottom: 15px;">
-            <i class="fas fa-trophy"></i> Top Referrers Leaderboard
-          </h3>
-          <div id="topReferrersList"></div>
-        </div>
-        
-        <div class="card">
-          <h3 style="color: #2e5940; margin-bottom: 15px;">
-            <i class="fas fa-crown"></i> Reward Tiers
-          </h3>
-          <div id="referralRewardTiersDisplay" style="padding: 15px;">
-            <!-- Tiers will be loaded dynamically -->
-          </div>
-        </div>
-      </div>
-
-      <div class="card" style="margin-top: 20px;">
-        <h3 style="color: #2e5940; margin-bottom: 15px;">
-          <i class="fas fa-history"></i> Recent Referrals
-        </h3>
-        <div style="overflow-x: auto;">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Referrer</th>
-                <th>New Customer</th>
-                <th>Date</th>
-                <th>Status</th>
-                <th>Credit Earned</th>
-              </tr>
-            </thead>
-            <tbody id="recentReferralsTable"></tbody>
-          </table>
-        </div>
+        <div id="calendarDays" class="calendar-grid"></div>
       </div>
     </div>
 
     <!-- Pipeline View -->
-    <div id="pipeline-view" class="view-content" style="display: none;">
-      <h2 style="font-size: 28px; color: #2e5940; margin-bottom: 20px;">Sales Pipeline</h2>
-      <div id="pipelineContent"></div>
+    <div id="pipelineView" class="view" style="display: none;">
+      <div style="margin-bottom: 30px;">
+        <h2 style="color: #2e5940; font-size: 28px; font-weight: 700;">Sales Pipeline</h2>
+        <p style="color: #666; margin-top: 5px;">Track your sales progress</p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+        <div class="card" style="border-top: 4px solid #42a5f5;">
+          <h3 style="color: #2e5940; margin-bottom: 15px;">
+            <i class="fas fa-user-plus"></i> Prospects
+          </h3>
+          <div id="prospectsList"></div>
+        </div>
+        <div class="card" style="border-top: 4px solid #ffa726;">
+          <h3 style="color: #2e5940; margin-bottom: 15px;">
+            <i class="fas fa-handshake"></i> Active
+          </h3>
+          <div id="activeList"></div>
+        </div>
+        <div class="card" style="border-top: 4px solid #66bb6a;">
+          <h3 style="color: #2e5940; margin-bottom: 15px;">
+            <i class="fas fa-pause-circle"></i> Inactive
+          </h3>
+          <div id="inactiveList"></div>
+        </div>
+      </div>
     </div>
 
     <!-- Analytics View -->
-    <div id="analytics-view" class="view-content" style="display: none;">
-      <h2 style="font-size: 28px; color: #2e5940; margin-bottom: 20px;">Analytics</h2>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px;">
+    <div id="analyticsView" class="view" style="display: none;">
+      <div style="margin-bottom: 30px;">
+        <h2 style="color: #2e5940; font-size: 28px; font-weight: 700;">Analytics Dashboard</h2>
+        <p style="color: #666; margin-top: 5px;">Data-driven insights for your business</p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
         <div class="card">
-          <h3 style="color: #2e5940; margin-bottom: 15px;">Revenue Over Time</h3>
-          <canvas id="revenueChart"></canvas>
+          <h3 style="color: #2e5940; margin-bottom: 20px;">
+            <i class="fas fa-chart-pie"></i> Lead Sources
+          </h3>
+          <canvas id="leadSourceChart"></canvas>
         </div>
-        
         <div class="card">
-          <h3 style="color: #2e5940; margin-bottom: 15px;">Customer Status</h3>
-          <canvas id="statusChart"></canvas>
+          <h3 style="color: #2e5940; margin-bottom: 20px;">
+            <i class="fas fa-share-alt"></i> Social Media Presence
+          </h3>
+          <canvas id="socialChart"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="color: #2e5940; margin-bottom: 20px;">
+          <i class="fas fa-chart-line"></i> Revenue Trend
+        </h3>
+        <canvas id="revenueChart"></canvas>
+      </div>
+
+      <div class="card" style="margin-top: 20px;">
+        <h3 style="color: #2e5940; margin-bottom: 20px;">
+          <i class="fas fa-brain"></i> AI-Powered Insights
+        </h3>
+        <div id="aiInsights"></div>
+      </div>
+    </div>
+
+    <!-- Marketing View -->
+    <div id="marketingView" class="view" style="display: none;">
+      <div style="margin-bottom: 30px;">
+        <h2 style="color: #2e5940; font-size: 28px; font-weight: 700;">Marketing Hub</h2>
+        <p style="color: #666; margin-top: 5px;">AI-powered marketing opportunities</p>
+      </div>
+
+      <div class="card">
+        <h3 style="color: #2e5940; margin-bottom: 20px;">
+          <i class="fas fa-lightbulb"></i> Smart Recommendations
+        </h3>
+        <div id="marketingRecommendations"></div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px;">
+        <div class="card">
+          <h3 style="color: #2e5940; margin-bottom: 15px;">
+            <i class="fas fa-users"></i> High-Value Customers
+          </h3>
+          <div id="highValueCustomers"></div>
+        </div>
+        <div class="card">
+          <h3 style="color: #2e5940; margin-bottom: 15px;">
+            <i class="fas fa-user-friends"></i> Referral Opportunities
+          </h3>
+          <div id="referralOpportunities"></div>
         </div>
       </div>
     </div>
 
-    <!-- Settings View -->
-    <div id="settings-view" class="view-content" style="display: none;">
-      <h2 style="font-size: 28px; color: #2e5940; margin-bottom: 20px;">
-        <i class="fas fa-cog"></i> CRM Settings
-      </h2>
-      
-      <div class="card">
-        <h3 style="color: #2e5940; margin-bottom: 20px; font-size: 20px;">
-          <i class="fas fa-gift"></i> Referral Program Configuration
-        </h3>
-        
-        <div class="info-box" style="background: #fff3cd; border-left-color: #ffc107;">
-          <i class="fas fa-exclamation-triangle" style="color: #ffc107;"></i> <strong>Important:</strong> Changes here will affect how referral credits and tiers are calculated for all customers.
+    <!-- Referrals View -->
+    <div id="referralsView" class="view" style="display: none;">
+      <div style="margin-bottom: 30px;">
+        <h2 style="color: #2e5940; font-size: 28px; font-weight: 700;">
+          <i class="fas fa-gift"></i> Referral Program
+        </h2>
+        <p style="color: #666; margin-top: 5px;">Track and reward customer referrals</p>
+      </div>
+
+      <div class="card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; margin-bottom: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <h3 style="font-size: 24px; margin-bottom: 10px;">Referral Program Benefits</h3>
+            <p style="opacity: 0.9;">Earn <strong>$15 credit</strong> for each successful referral!</p>
+            <p style="opacity: 0.9; margin-top: 5px;">Share with friends and unlock exclusive rewards.</p>
+          </div>
+          <div style="text-align: center; background: rgba(255,255,255,0.2); padding: 20px; border-radius: 12px;">
+            <div style="font-size: 36px; font-weight: 700;">$15</div>
+            <div style="font-size: 14px; opacity: 0.9;">Per Referral</div>
+          </div>
         </div>
-        
-        <form id="settingsForm" onsubmit="saveSettings(event)">
-          <div class="section-header">
-            <i class="fas fa-dollar-sign"></i> Credit Amount
-          </div>
-          
-          <div class="form-group" style="max-width: 300px;">
-            <label>Credit Per Successful Referral</label>
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <span style="font-size: 20px; font-weight: 600;">$</span>
-              <input type="number" id="settingsCreditAmount" min="0" step="1" required 
-                     style="width: 100px;" placeholder="15">
-              <span style="color: #666; font-size: 14px;">per referral</span>
-            </div>
-            <small style="color: #666; display: block; margin-top: 5px;">Both referrer and new customer get this amount</small>
-          </div>
-          
-          <div class="section-header">
-            <i class="fas fa-medal"></i> Tier Thresholds
-          </div>
-          
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px;">
-            <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; border-left: 4px solid #cd7f32;">
-              <div style="font-weight: 600; color: #cd7f32; margin-bottom: 10px;">
-                <i class="fas fa-medal"></i> BRONZE TIER
-              </div>
-              <div class="grid-2" style="gap: 10px;">
-                <div class="form-group" style="margin-bottom: 0;">
-                  <label style="font-size: 12px;">Min Referrals</label>
-                  <input type="number" id="bronzeMin" min="1" required style="padding: 8px;">
-                </div>
-                <div class="form-group" style="margin-bottom: 0;">
-                  <label style="font-size: 12px;">Max Referrals</label>
-                  <input type="number" id="bronzeMax" min="1" required style="padding: 8px;">
-                </div>
-              </div>
-              <div class="form-group" style="margin-top: 10px; 
+      </div>
 
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px;">
+        <div class="card" style="text-align: center; background: linear-gradient(135deg, #cd7f32 0%, #b87333 100%); color: white;">
+          <div style="font-size: 32px; margin-bottom: 10px;"><i class="fas fa-award"></i></div>
+          <div style="font-size: 18px; font-weight: 700;">Bronze</div>
+          <div style="font-size: 12px; opacity: 0.9; margin-top: 5px;">1-2 Referrals</div>
+        </div>
+        <div class="card" style="text-align: center; background: linear-gradient(135deg, #c0c0c0 0%, #a8a8a8 100%); color: white;">
+          <div style="font-size: 32px; margin-bottom: 10px;"><i class="fas fa-medal"></i></div>
+          <div style="font-size: 18px; font-weight: 700;">Silver</div>
+          <div style="font-size: 12px; opacity: 0.9; margin-top: 5px;">3-5 Referrals</div>
+        </div>
+        <div class="card" style="text-align: center; background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); color: #2e5940;">
+          <div style="font-size: 32px; margin-bottom: 10px;"><i class="fas fa-trophy"></i></div>
+          <div style="font-size: 18px; font-weight: 700;">Gold</div>
+          <div style="font-size: 12px; opacity: 0.9; margin-top: 5px;">6-10 Referrals</div>
+        </div>
+        <div class="card" style="text-align: center; background: linear-gradient(135deg, #e5e4e2 0%, #d4d4d4 100%); color: #2e5940;">
+          <div style="font-size: 32px; margin-bottom: 10px;"><i class="fas fa-crown"></i></div>
+          <div style="font-size: 18px; font-weight: 700;">Platinum</div>
+          <div style="font-size: 12px; opacity: 0.9; margin-top: 5px;">11+ Referrals</div>
+        </div>
+      </div>
 
-margin-bottom: 0;">
-                  <label style="font-size: 12px;">Bonus Credit</label>
-                  <input type="number" id="bronzeBonus" min="0" step="1" required style="padding: 8px;" placeholder="5">
-                </div>
-              </div>
-            </div>
-            
-            <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; border-left: 4px solid #c0c0c0;">
-              <div style="font-weight: 600; color: #808080; margin-bottom: 10px;">
-                <i class="fas fa-medal"></i> SILVER TIER
-              </div>
-              <div class="grid-2" style="gap: 10px;">
-                <div class="form-group" style="margin-bottom: 0;">
-                  <label style="font-size: 12px;">Min Referrals</label>
-                  <input type="number" id="silverMin" min="1" required style="padding: 8px;">
-                </div>
-                <div class="form-group" style="margin-bottom: 0;">
-                  <label style="font-size: 12px;">Max Referrals</label>
-                  <input type="number" id="silverMax" min="1" required style="padding: 8px;">
-                </div>
-              </div>
-              <div class="form-group" style="margin-top: 10px; margin-bottom: 0;">
-                <label style="font-size: 12px;">Bonus Credit</label>
-                <input type="number" id="silverBonus" min="0" step="1" required style="padding: 8px;" placeholder="10">
-              </div>
-            </div>
-            
-            <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; border-left: 4px solid #ffd700;">
-              <div style="font-weight: 600; color: #daa520; margin-bottom: 10px;">
-                <i class="fas fa-medal"></i> GOLD TIER
-              </div>
-              <div class="grid-2" style="gap: 10px;">
-                <div class="form-group" style="margin-bottom: 0;">
-                  <label style="font-size: 12px;">Min Referrals</label>
-                  <input type="number" id="goldMin" min="1" required style="padding: 8px;">
-                </div>
-                <div class="form-group" style="margin-bottom: 0;">
-                  <label style="font-size: 12px;">Max Referrals</label>
-                  <input type="number" id="goldMax" min="1" required style="padding: 8px;">
-                </div>
-              </div>
-              <div class="form-group" style="margin-top: 10px; margin-bottom: 0;">
-                <label style="font-size: 12px;">Bonus Credit</label>
-                <input type="number" id="goldBonus" min="0" step="1" required style="padding: 8px;" placeholder="20">
-              </div>
-            </div>
-            
-            <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; border-left: 4px solid #b9f2ff;">
-              <div style="font-weight: 600; color: #4dd0e1; margin-bottom: 10px;">
-                <i class="fas fa-gem"></i> PLATINUM TIER
-              </div>
-              <div class="form-group" style="margin-bottom: 0;">
-                <label style="font-size: 12px;">Min Referrals</label>
-                <input type="number" id="platinumMin" min="1" required style="padding: 8px;">
-              </div>
-              <div class="form-group" style="margin-top: 10px; margin-bottom: 0;">
-                <label style="font-size: 12px;">Bonus Credit</label>
-                <input type="number" id="platinumBonus" min="0" step="1" required style="padding: 8px;" placeholder="50">
-              </div>
-            </div>
-          </div>
-          
-          <div class="section-header">
-            <i class="fas fa-clock"></i> Backup Reminder Settings
-          </div>
-          
-          <div class="form-group" style="max-width: 400px;">
-            <label>Backup Reminder Interval (days)</label>
-            <input type="number" id="backupReminderDays" min="1" max="365" required placeholder="7">
-            <small style="color: #666; display: block; margin-top: 5px;">Get reminded to backup your data every X days</small>
-          </div>
-          
-          <div style="margin-top: 30px; padding-top: 20px; border-top: 2px solid #e8f5e9;">
-            <button type="submit" class="btn-primary" style="padding: 12px 30px;">
-              <i class="fas fa-save"></i> Save All Settings
-            </button>
-            <button type="button" class="btn-secondary" onclick="resetSettings()" style="margin-left: 10px; padding: 12px 30px;">
-              <i class="fas fa-undo"></i> Reset to Defaults
-            </button>
-          </div>
-        </form>
+      <div class="card">
+        <h3 style="color: #2e5940; margin-bottom: 20px;">
+          <i class="fas fa-star"></i> Top Referrers
+        </h3>
+        <div id="referralLeaderboard"></div>
       </div>
     </div>
   </main>
-
   <!-- Customer Modal -->
   <div id="customerModal" class="modal">
     <div class="modal-content">
-      <h3 style="color: #2e5940; margin-bottom: 20px; font-size: 24px;">
-        <span id="customerModalTitle">Add New Customer</span>
-        <span class="ai-badge"><i class="fas fa-brain"></i> AI Enhanced</span>
-      </h3>
-      
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+        <h3 style="color: #2e5940; font-size: 24px; font-weight: 700;">
+          <i class="fas fa-user-plus"></i> <span id="customerModalTitle">Add New Customer</span>
+        </h3>
+        <button onclick="closeModal('customerModal')" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #999;">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
       <form id="customerForm" onsubmit="saveCustomer(event)">
         <input type="hidden" id="customerId">
-        
+
+        <!-- Basic Information -->
         <div class="section-header">
-          <i class="fas fa-user"></i> Basic Information
+          <i class="fas fa-info-circle"></i> Basic Information
         </div>
-        
         <div class="grid-2">
           <div class="form-group">
-            <label>First Name *</label>
-            <input type="text" id="customerFirstName" required>
+            <label>Full Name *</label>
+            <input type="text" id="customerName" required>
           </div>
-          
           <div class="form-group">
-            <label>Last Name *</label>
-            <input type="text" id="customerLastName" required>
+            <label>Contact Type *</label>
+            <select id="customerContact" required>
+              <option value="">Select...</option>
+              <option value="Individual">Individual</option>
+              <option value="Business">Business</option>
+              <option value="Organization">Organization</option>
+            </select>
           </div>
         </div>
-        
+
         <div class="grid-2">
           <div class="form-group">
-            <label>Email *</label>
-            <input type="email" id="customerEmail" required>
+            <label>Email</label>
+            <input type="email" id="customerEmail">
           </div>
-          
           <div class="form-group">
             <label>Phone</label>
             <input type="tel" id="customerPhone">
           </div>
         </div>
-        
-        <div class="section-header">
-          <i class="fas fa-map-marker-alt"></i> Address Information
-        </div>
-        
-        <div class="form-group">
-          <label>Street Address</label>
-          <input type="text" id="customerAddress">
-        </div>
-        
+
         <div class="grid-3">
           <div class="form-group">
-            <label>City</label>
-            <input type="text" id="customerCity">
-          </div>
-          
-          <div class="form-group">
-            <label>State</label>
-            <input type="text" id="customerState">
-          </div>
-          
-          <div class="form-group">
-            <label>ZIP Code</label>
-            <input type="text" id="customerZip">
-          </div>
-        </div>
-        
-        <div class="section-header">
-          <i class="fas fa-chart-line"></i> Marketing & Lead Information
-        </div>
-        
-        <div class="grid-2">
-          <div class="form-group">
-            <label>Lead Source *</label>
-            <select id="customerLeadSource" required>
-              <option value="">Select Source</option>
-              <option value="Google">Google Search</option>
-              <option value="Facebook">Facebook</option>
-              <option value="Instagram">Instagram</option>
-              <option value="Referral">Referral</option>
-              <option value="Direct">Direct Contact</option>
-              <option value="Website">Website</option>
-              <option value="Trade Show">Trade Show</option>
-              <option value="Other">Other</option>
-            </select>
-          </div>
-          
-          <div class="form-group">
-            <label>Status</label>
-            <select id="customerStatus">
+            <label>Status *</label>
+            <select id="customerStatus" required>
               <option value="Prospect">Prospect</option>
               <option value="Active">Active</option>
               <option value="Inactive">Inactive</option>
             </select>
           </div>
-        </div>
-        
-        <div class="form-group">
-          <label>Social Media Accounts (select all that apply)</label>
-          <div class="checkbox-group">
-            <div class="checkbox-item">
-              <input type="checkbox" id="socialFacebook" value="Facebook">
-              <label for="socialFacebook" style="margin: 0; font-weight: normal;">Facebook</label>
-            </div>
-            <div class="checkbox-item">
-              <input type="checkbox" id="socialInstagram" value="Instagram">
-              <label for="socialInstagram" style="margin: 0; font-weight: normal;">Instagram</label>
-            </div>
-            <div class="checkbox-item">
-              <input type="checkbox" id="socialTwitter" value="Twitter">
-              <label for="socialTwitter" style="margin: 0; font-weight: normal;">Twitter</label>
-            </div>
-            <div class="checkbox-item">
-              <input type="checkbox" id="socialLinkedIn" value="LinkedIn">
-              <label for="socialLinkedIn" style="margin: 0; font-weight: normal;">LinkedIn</label>
-            </div>
-            <div class="checkbox-item">
-              <input type="checkbox" id="socialYouTube" value="YouTube">
-              <label for="socialYouTube" style="margin: 0; font-weight: normal;">YouTube</label>
-            </div>
-            <div class="checkbox-item">
-              <input type="checkbox" id="socialTikTok" value="TikTok">
-              <label for="socialTikTok" style="margin: 0; font-weight: normal;">TikTok</label>
-            </div>
+          <div class="form-group">
+            <label>Industry</label>
+            <input type="text" id="customerIndustry" placeholder="e.g., Healthcare, Tech">
+          </div>
+          <div class="form-group">
+            <label>Age Range</label>
+            <select id="customerAgeRange">
+              <option value="">Select...</option>
+              <option value="18-24">18-24</option>
+              <option value="25-34">25-34</option>
+              <option value="35-44">35-44</option>
+              <option value="45-54">45-54</option>
+              <option value="55-64">55-64</option>
+              <option value="65+">65+</option>
+            </select>
           </div>
         </div>
-        
+
+        <!-- Location -->
         <div class="section-header">
-          <i class="fas fa-bullhorn"></i> Marketing Preferences
+          <i class="fas fa-map-marker-alt"></i> Location
         </div>
-        
         <div class="grid-2">
           <div class="form-group">
-            <label>Interested in Discounts?</label>
-            <select id="customerDiscountInterest">
-              <option value="Yes">Yes</option>
-              <option value="No">No</option>
-              <option value="Maybe">Maybe</option>
-            </select>
+            <label>City</label>
+            <input type="text" id="customerCity">
           </div>
-          
           <div class="form-group">
-            <label>Willing to Refer Others?</label>
-            <select id="customerReferralWillingness">
-              <option value="Yes">Yes</option>
-              <option value="No">No</option>
-              <option value="Maybe">Maybe</option>
+            <label>State</label>
+            <select id="customerState">
+              <option value="">Select...</option>
+              <option value="AL">Alabama</option>
+              <option value="AK">Alaska</option>
+              <option value="AZ">Arizona</option>
+              <option value="AR">Arkansas</option>
+              <option value="CA">California</option>
+              <option value="CO">Colorado</option>
+              <option value="CT">Connecticut</option>
+              <option value="DE">Delaware</option>
+              <option value="FL">Florida</option>
+              <option value="GA">Georgia</option>
+              <option value="HI">Hawaii</option>
+              <option value="ID">Idaho</option>
+              <option value="IL">Illinois</option>
+              <option value="IN">Indiana</option>
+              <option value="IA">Iowa</option>
+              <option value="KS">Kansas</option>
+              <option value="KY">Kentucky</option>
+              <option value="LA">Louisiana</option>
+              <option value="ME">Maine</option>
+              <option value="MD">Maryland</option>
+              <option value="MA">Massachusetts</option>
+              <option value="MI">Michigan</option>
+              <option value="MN">Minnesota</option>
+              <option value="MS">Mississippi</option>
+              <option value="MO">Missouri</option>
+              <option value="MT">Montana</option>
+              <option value="NE">Nebraska</option>
+              <option value="NV">Nevada</option>
+              <option value="NH">New Hampshire</option>
+              <option value="NJ">New Jersey</option>
+              <option value="NM">New Mexico</option>
+              <option value="NY">New York</option>
+              <option value="NC">North Carolina</option>
+              <option value="ND">North Dakota</option>
+              <option value="OH">Ohio</option>
+              <option value="OK">Oklahoma</option>
+              <option value="OR">Oregon</option>
+              <option value="PA">Pennsylvania</option>
+              <option value="RI">Rhode Island</option>
+              <option value="SC">South Carolina</option>
+              <option value="SD">South Dakota</option>
+              <option value="TN">Tennessee</option>
+              <option value="TX">Texas</option>
+              <option value="UT">Utah</option>
+              <option value="VT">Vermont</option>
+              <option value="VA">Virginia</option>
+              <option value="WA">Washington</option>
+              <option value="WV">West Virginia</option>
+              <option value="WI">Wisconsin</option>
+              <option value="WY">Wyoming</option>
             </select>
           </div>
         </div>
-        
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Billing Address</label>
+            <textarea id="customerBillingAddress" rows="2"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Shipping Address</label>
+            <textarea id="customerShippingAddress" rows="2"></textarea>
+          </div>
+        </div>
+
+        <!-- Lead Information -->
         <div class="section-header">
-          <i class="fas fa-gift"></i> Referral Information
+          <i class="fas fa-bullseye"></i> Lead Information
         </div>
-        
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Lead Source</label>
+            <select id="customerLeadSource">
+              <option value="">Select...</option>
+              <option value="Google">Google Search</option>
+              <option value="Facebook">Facebook</option>
+              <option value="Instagram">Instagram</option>
+              <option value="Twitter">Twitter/X</option>
+              <option value="LinkedIn">LinkedIn</option>
+              <option value="TikTok">TikTok</option>
+              <option value="Referral">Customer Referral</option>
+              <option value="Tournament">Pickleball Tournament</option>
+              <option value="Club">Pickleball Club</option>
+              <option value="Website">Direct Website</option>
+              <option value="Email">Email Campaign</option>
+              <option value="Event">Event/Trade Show</option>
+              <option value="Retail">Retail Store</option>
+              <option value="Partner">Partner/Affiliate</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Referred By (Customer Name)</label>
+            <input type="text" id="customerReferrer" placeholder="If applicable">
+          </div>
+        </div>
+
+        <!-- Social Media -->
+        <div class="section-header">
+          <i class="fas fa-share-alt"></i> Social Media
+        </div>
         <div class="form-group">
-          <label>Referred By (Customer Name)</label>
-          <input type="text" id="customerReferredBy" placeholder="Leave blank if not a referral">
-          <small style="color: #666; display: block; margin-top: 5px;">Enter the name of the customer who referred this person</small>
+          <label>Active Social Platforms</label>
+          <div class="checkbox-group">
+            <div class="checkbox-item">
+              <input type="checkbox" id="social_facebook" value="Facebook">
+              <label for="social_facebook">Facebook</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="social_instagram" value="Instagram">
+              <label for="social_instagram">Instagram</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="social_twitter" value="Twitter/X">
+              <label for="social_twitter">Twitter/X</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="social_tiktok" value="TikTok">
+              <label for="social_tiktok">TikTok</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="social_youtube" value="YouTube">
+              <label for="social_youtube">YouTube</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="social_linkedin" value="LinkedIn">
+              <label for="social_linkedin">LinkedIn</label>
+            </div>
+          </div>
         </div>
-        
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Primary Social Handle</label>
+            <input type="text" id="customerSocialHandle" placeholder="@username">
+          </div>
+          <div class="form-group">
+            <label>Social Engagement Level</label>
+            <select id="customerSocialEngagement">
+              <option value="">Select...</option>
+              <option value="Very High">Very High (Daily posts)</option>
+              <option value="High">High (Several times/week)</option>
+              <option value="Medium">Medium (Weekly)</option>
+              <option value="Low">Low (Occasional)</option>
+              <option value="None">None/Not Active</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Pickleball Profile -->
+        <div class="section-header">
+          <i class="fas fa-table-tennis"></i> Pickleball Profile
+        </div>
+        <div class="grid-3">
+          <div class="form-group">
+            <label>Skill Level</label>
+            <select id="customerSkillLevel">
+              <option value="">Select...</option>
+              <option value="Beginner">Beginner (1.0-2.5)</option>
+              <option value="Intermediate">Intermediate (3.0-3.5)</option>
+              <option value="Advanced">Advanced (4.0-4.5)</option>
+              <option value="Expert">Expert (5.0+)</option>
+              <option value="Professional">Professional</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Play Frequency</label>
+            <select id="customerPlayFrequency">
+              <option value="">Select...</option>
+              <option value="Daily">Daily</option>
+              <option value="Several times/week">Several times/week</option>
+              <option value="Weekly">Weekly</option>
+              <option value="Monthly">Monthly</option>
+              <option value="Occasional">Occasional</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Current Paddle Brand</label>
+            <input type="text" id="customerPaddleBrand" placeholder="e.g., Selkirk, Joola">
+          </div>
+        </div>
+
+        <!-- Product Interests -->
+        <div class="section-header">
+          <i class="fas fa-heart"></i> Product Interests
+        </div>
+        <div class="form-group">
+          <label>Interested In (Check all that apply)</label>
+          <div class="checkbox-group">
+            <div class="checkbox-item">
+              <input type="checkbox" id="interest_noise" value="Noise Reduction">
+              <label for="interest_noise">Noise Reduction</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="interest_performance" value="Performance Enhancement">
+              <label for="interest_performance">Performance Enhancement</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="interest_durability" value="Durability">
+              <label for="interest_durability">Durability</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="interest_custom" value="Customization">
+              <label for="interest_custom">Customization</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="interest_gift" value="Gift Purchase">
+              <label for="interest_gift">Gift Purchase</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Communication Preferences -->
+        <div class="section-header">
+          <i class="fas fa-envelope"></i> Communication Preferences
+        </div>
+        <div class="grid-3">
+          <div class="form-group">
+            <label>Preferred Contact Method</label>
+            <select id="customerContactMethod">
+              <option value="">Select...</option>
+              <option value="Email">Email</option>
+              <option value="Phone">Phone</option>
+              <option value="SMS">SMS/Text</option>
+              <option value="Social Media">Social Media</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Best Time to Contact</label>
+            <select id="customerContactTime">
+              <option value="">Select...</option>
+              <option value="Morning">Morning (8AM-12PM)</option>
+              <option value="Afternoon">Afternoon (12PM-5PM)</option>
+              <option value="Evening">Evening (5PM-8PM)</option>
+              <option value="Anytime">Anytime</option>
+            </select>
+          </div>
+          <div class="form-group" style="display: flex; flex-direction: column; gap: 8px; padding-top: 25px;">
+            <div class="checkbox-item">
+              <input type="checkbox" id="customerEmailOptIn">
+              <label for="customerEmailOptIn">Email Marketing Opt-in</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="customerSMSOptIn">
+              <label for="customerSMSOptIn">SMS Marketing Opt-in</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Referral Potential -->
+        <div class="section-header">
+          <i class="fas fa-user-friends"></i> Referral & Marketing Potential
+        </div>
+        <div class="grid-3">
+          <div class="form-group">
+            <label>Interested in Referral Program?</label>
+            <select id="customerReferralInterest">
+              <option value="">Select...</option>
+              <option value="Very Interested">Very Interested</option>
+              <option value="Somewhat Interested">Somewhat Interested</option>
+              <option value="Not Interested">Not Interested</option>
+              <option value="Unknown">Unknown</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Interested in Discounts/Promotions?</label>
+            <select id="customerDiscountInterest">
+              <option value="">Select...</option>
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+              <option value="Unknown">Unknown</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Potential Referrals</label>
+            <input type="number" id="customerPotentialReferrals" min="0" placeholder="Estimated number">
+          </div>
+        </div>
+
+        <!-- Notes -->
+        <div class="section-header">
+          <i class="fas fa-sticky-note"></i> Additional Notes
+        </div>
         <div class="form-group">
           <label>Notes</label>
-          <textarea id="customerNotes" rows="3" placeholder="Additional notes about this customer..."></textarea>
+          <textarea id="customerNotes" rows="4" placeholder="Any additional information..."></textarea>
         </div>
-        
-        <div style="margin-top: 20px; display: flex; gap: 10px;">
+
+        <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 30px;">
+          <button type="button" class="btn-secondary" onclick="closeModal('customerModal')">Cancel</button>
           <button type="submit" class="btn-primary">
             <i class="fas fa-save"></i> Save Customer
           </button>
-          <button type="button" class="btn-secondary" onclick="closeModal('customerModal')">
-            <i class="fas fa-times"></i> Cancel
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Order Modal -->
+  <div id="orderModal" class="modal">
+    <div class="modal-content" style="max-width: 800px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+        <h3 style="color: #2e5940; font-size: 24px; font-weight: 700;">
+          <i class="fas fa-shopping-cart"></i> <span id="orderModalTitle">New Order</span>
+        </h3>
+        <button onclick="closeModal('orderModal')" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #999;">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <form id="orderForm" onsubmit="saveOrder(event)">
+        <input type="hidden" id="orderId">
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Customer *</label>
+            <select id="orderCustomer" required onchange="updateShipAddress()">
+              <option value="">Select Customer...</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Order Date *</label>
+            <input type="date" id="orderDate" required>
+          </div>
+        </div>
+
+        <div class="section-header">
+          <i class="fas fa-box"></i> Product Information
+        </div>
+
+        <div class="form-group">
+          <label>Product/Service *</label>
+          <input type="text" id="orderProduct" required placeholder="e.g., AcoustiSkin Paddle Cover">
+        </div>
+
+        <div class="form-group">
+          <label>Paddle Manufacturer (if applicable)</label>
+          <select id="orderManufacturer">
+            <option value="">Select manufacturer...</option>
+            <option value="Bantam">Bantam</option>
+            <option value="BREAD">BREAD</option>
+            <option value="CRBN">CRBN</option>
+            <option value="Diadem">Diadem</option>
+            <option value="Electrum">Electrum</option>
+            <option value="Engage">Engage</option>
+            <option value="Franklin">Franklin</option>
+            <option value="Gamma">Gamma</option>
+            <option value="Gearbox">Gearbox</option>
+            <option value="HEAD">HEAD</option>
+            <option value="Holbrook">Holbrook</option>
+            <option value="Hudef">Hudef</option>
+            <option value="Joola">Joola</option>
+            <option value="Legacy">Legacy</option>
+            <option value="Nomex">Nomex</option>
+            <option value="Onix">Onix</option>
+            <option value="Paddletek">Paddletek</option>
+            <option value="Prince">Prince</option>
+            <option value="ProKennex">ProKennex</option>
+            <option value="Prolite">Prolite</option>
+            <option value="Selkirk">Selkirk</option>
+            <option value="Six Zero">Six Zero</option>
+            <option value="Slinger">Slinger</option>
+            <option value="Thrive">Thrive</option>
+            <option value="Vatic Pro">Vatic Pro</option>
+            <option value="Viking">Viking</option>
+            <option value="Vulcan">Vulcan</option>
+            <option value="Wilson">Wilson</option>
+            <option value="Yonex">Yonex</option>
+          </select>
+        </div>
+
+        <div class="grid-3">
+          <div class="form-group">
+            <label>Quantity *</label>
+            <input type="number" id="orderQuantity" required min="1" value="1" oninput="calculateOrderTotal()">
+          </div>
+          <div class="form-group">
+            <label>Unit Price ($) *</label>
+            <input type="number" id="orderPrice" required min="0" step="0.01" oninput="calculateOrderTotal()">
+          </div>
+          <div class="form-group">
+            <label>Shipping ($)</label>
+            <input type="number" id="orderShipping" min="0" step="0.01" value="0" oninput="calculateOrderTotal()">
+          </div>
+        </div>
+
+        <div class="section-header">
+          <i class="fas fa-truck"></i> Shipping & Tax
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Shipping Company</label>
+            <select id="orderShipper">
+              <option value="">Select...</option>
+              <option value="USPS">USPS</option>
+              <option value="FedEx">FedEx</option>
+              <option value="UPS">UPS</option>
+              <option value="DHL">DHL</option>
+              <option value="Amazon">Amazon Logistics</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Tracking Number</label>
+            <input type="text" id="orderTracking" placeholder="Optional">
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label>State (for tax calculation) *</label>
+            <select id="orderState" required onchange="calculateOrderTotal()">
+              <option value="">Select...</option>
+              <option value="AL">Alabama</option>
+              <option value="AK">Alaska</option>
+              <option value="AZ">Arizona</option>
+              <option value="AR">Arkansas</option>
+              <option value="CA">California</option>
+              <option value="CO">Colorado</option>
+              <option value="CT">Connecticut</option>
+              <option value="DE">Delaware</option>
+              <option value="FL">Florida</option>
+              <option value="GA">Georgia</option>
+              <option value="HI">Hawaii</option>
+              <option value="ID">Idaho</option>
+              <option value="IL">Illinois</option>
+              <option value="IN">Indiana</option>
+              <option value="IA">Iowa</option>
+              <option value="KS">Kansas</option>
+              <option value="KY">Kentucky</option>
+              <option value="LA">Louisiana</option>
+              <option value="ME">Maine</option>
+              <option value="MD">Maryland</option>
+              <option value="MA">Massachusetts</option>
+              <option value="MI">Michigan</option>
+              <option value="MN">Minnesota</option>
+              <option value="MS">Mississippi</option>
+              <option value="MO">Missouri</option>
+              <option value="MT">Montana</option>
+              <option value="NE">Nebraska</option>
+              <option value="NV">Nevada</option>
+              <option value="NH">New Hampshire</option>
+              <option value="NJ">New Jersey</option>
+              <option value="NM">New Mexico</option>
+              <option value="NY">New York</option>
+              <option value="NC">North Carolina</option>
+              <option value="ND">North Dakota</option>
+              <option value="OH">Ohio</option>
+              <option value="OK">Oklahoma</option>
+              <option value="OR">Oregon</option>
+              <option value="PA">Pennsylvania</option>
+              <option value="RI">Rhode Island</option>
+              <option value="SC">South Carolina</option>
+              <option value="SD">South Dakota</option>
+              <option value="TN">Tennessee</option>
+              <option value="TX">Texas</option>
+              <option value="UT">Utah</option>
+              <option value="VT">Vermont</option>
+              <option value="VA">Virginia</option>
+              <option value="WA">Washington</option>
+              <option value="WV">West Virginia</option>
+              <option value="WI">Wisconsin</option>
+              <option value="WY">Wyoming</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Status *</label>
+            <select id="orderStatus" required>
+              <option value="Pending">Pending</option>
+              <option value="Processing">Processing</option>
+              <option value="Shipped">Shipped</option>
+              <option value="Delivered">Delivered</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Ship-to Address</label>
+          <textarea id="orderShipAddress" rows="2" placeholder="Auto-filled from customer data"></textarea>
+        </div>
+
+        <div class="info-box">
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+            <div>
+              <strong>Subtotal:</strong>
+              <div style="font-size: 20px; color: #2e5940;" id="orderSubtotalDisplay">$0.00</div>
+            </div>
+            <div>
+              <strong>Tax:</strong>
+              <div style="font-size: 20px; color: #2e5940;" id="orderTaxDisplay">$0.00</div>
+            </div>
+            <div>
+              <strong>Total:</strong>
+              <div style="font-size: 24px; color: #43a047; font-weight: 700;" id="orderTotalDisplay">$0.00</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Notes</label>
+          <textarea id="orderNotes" rows="3" placeholder="Any additional order notes..."></textarea>
+        </div>
+
+        <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+          <button type="button" class="btn-secondary" onclick="closeModal('orderModal')">Cancel</button>
+          <button type="submit" class="btn-primary">
+            <i class="fas fa-save"></i> Save Order
           </button>
         </div>
       </form>
@@ -1028,1417 +1365,287 @@ margin-bottom: 0;">
   <!-- Event Modal -->
   <div id="eventModal" class="modal">
     <div class="modal-content" style="max-width: 600px;">
-      <h3 style="color: #2e5940; margin-bottom: 20px;">Schedule Event</h3>
-      
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+        <h3 style="color: #2e5940; font-size: 24px; font-weight: 700;">
+          <i class="fas fa-calendar-plus"></i> <span id="eventModalTitle">New Event</span>
+        </h3>
+        <button onclick="closeModal('eventModal')" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #999;">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
       <form id="eventForm" onsubmit="saveEvent(event)">
         <input type="hidden" id="eventId">
-        
+
         <div class="form-group">
-          <label>Event Title *</label>
-          <input type="text" id="eventTitle" required>
-        </div>
-        
-        <div class="form-group">
-          <label>Customer</label>
-          <select id="eventCustomer">
-            <option value="">Select Customer (Optional)</option>
+          <label>Event Type *</label>
+          <select id="eventType" required>
+            <option value="meeting">Meeting</option>
+            <option value="call">Phone Call</option>
+            <option value="task">Task</option>
+            <option value="appointment">Appointment</option>
+            <option value="todo">To-Do</option>
+            <option value="deadline">Deadline</option>
           </select>
         </div>
-        
+
+        <div class="form-group">
+          <label>Title *</label>
+          <input type="text" id="eventTitle" required placeholder="e.g., Follow-up call with John">
+        </div>
+
         <div class="grid-2">
           <div class="form-group">
             <label>Date *</label>
             <input type="date" id="eventDate" required>
           </div>
-          
           <div class="form-group">
             <label>Time</label>
             <input type="time" id="eventTime">
           </div>
         </div>
-        
+
         <div class="form-group">
-          <label>Event Type</label>
-          <select id="eventType">
-            <option value="Consultation">Consultation</option>
-            <option value="Installation">Installation</option>
-            <option value="Follow-up">Follow-up</option>
-            <option value="Meeting">Meeting</option>
-            <option value="Other">Other</option>
+          <label>Related Customer</label>
+          <select id="eventCustomer">
+            <option value="">None</option>
           </select>
         </div>
-        
+
         <div class="form-group">
-          <label>Notes</label>
-          <textarea id="eventNotes" rows="3"></textarea>
+          <label>Description</label>
+          <textarea id="eventDescription" rows="4" placeholder="Event details..."></textarea>
         </div>
-        
-        <div style="margin-top: 20px; display: flex; gap: 10px;">
+
+        <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+          <button type="button" class="btn-secondary" onclick="closeModal('eventModal')">Cancel</button>
           <button type="submit" class="btn-primary">
             <i class="fas fa-save"></i> Save Event
           </button>
-          <button type="button" class="btn-secondary" onclick="closeModal('eventModal')">
-            <i class="fas fa-times"></i> Cancel
-          </button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- Order Modal -->
-  <div id="orderModal" class="modal">
-    <div class="modal-content" style="max-width: 700px;">
-      <h3 style="color: #2e5940; margin-bottom: 20px;">Create Order</h3>
-      
-      <form id="orderForm" onsubmit="saveOrder(event)">
-        <input type="hidden" id="orderId">
-        
-        <div class="form-group">
-          <label>Customer *</label>
-          <select id="orderCustomer" required>
-            <option value="">Select Customer</option>
-          </select>
-        </div>
-        
-        <div class="grid-2">
-          <div class="form-group">
-            <label>Order Date *</label>
-            <input type="date" id="orderDate" required>
-          </div>
-          
-          <div class="form-group">
-            <label>Order Total *</label>
-            <input type="number" id="orderTotal" step="0.01" min="0" required placeholder="0.00">
-          </div>
-        </div>
-        
-        <div class="form-group">
-          <label>Products/Services</label>
-          <textarea id="orderProducts" rows="3" placeholder="List products or services included in this order..."></textarea>
-        </div>
-        
-        <div class="form-group">
-          <label>Status</label>
-          <select id="orderStatus">
-            <option value="Pending">Pending</option>
-            <option value="Processing">Processing</option>
-            <option value="Completed">Completed</option>
-            <option value="Cancelled">Cancelled</option>
-          </select>
-        </div>
-        
-        <div class="form-group">
-          <label>Notes</label>
-          <textarea id="orderNotes" rows="3"></textarea>
-        </div>
-        
-        <div style="margin-top: 20px; display: flex; gap: 10px;">
-          <button type="submit" class="btn-primary">
-            <i class="fas fa-save"></i> Save Order
-          </button>
-          <button type="button" class="btn-secondary" onclick="closeModal('orderModal')">
-            <i class="fas fa-times"></i> Cancel
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
+  <!-- Event Details Modal -->
+  <div id="eventDetailsModal" class="modal">
+    <div class="modal-content" style="max-width: 600px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+        <h3 style="color: #2e5940; font-size: 24px; font-weight: 700;">
+          <i class="fas fa-calendar-alt"></i> Event Details
+        </h3>
+        <button onclick="closeModal('eventDetailsModal')" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #999;">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
 
-  <!-- Import Options Modal -->
-  <div id="importOptionsModal" class="modal">
-    <div class="modal-content" style="max-width: 500px;">
-      <h3 style="color: #2e5940; margin-bottom: 20px;">
-        <i class="fas fa-upload"></i> Import Data
-      </h3>
-      
-      <div class="info-box">
-        Import your customer data from a backup file. You can choose to replace all existing data or merge with current data.
-      </div>
-      
-      <div class="drag-drop-zone" id="dragDropZone" onclick="document.getElementById('importFile').click()">
-        <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: #66bb6a; margin-bottom: 15px;"></i>
-        <div style="font-size: 18px; color: #2e5940; font-weight: 600; margin-bottom: 10px;">
-          Drop your backup file here
-        </div>
-        <div style="color: #666; font-size: 14px;">
-          or click to browse for a file
-        </div>
-        <div style="color: #999; font-size: 12px; margin-top: 10px;">
-          Accepts .json files only
-        </div>
-      </div>
-      
-      <div style="text-align: center; margin-top: 15px;">
-        <button class="btn-secondary" onclick="closeModal('importOptionsModal')">
-          <i class="fas fa-times"></i> Cancel
+      <div id="eventDetailsContent"></div>
+
+      <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+        <button class="btn-danger" onclick="deleteEventFromDetails()">
+          <i class="fas fa-trash"></i> Delete
+        </button>
+        <button class="btn-primary" onclick="editEventFromDetails()">
+          <i class="fas fa-edit"></i> Edit
         </button>
       </div>
     </div>
   </div>
-
   <script>
-    // Data Storage
-    let customers = [];
-    let orders = [];
-    let events = [];
-    let currentView = 'dashboard';
+    // State Tax Rates by State
+    const stateTaxRates = {
+      'AL': 4.00, 'AK': 0.00, 'AZ': 5.60, 'AR': 6.50, 'CA': 7.25,
+      'CO': 2.90, 'CT': 6.35, 'DE': 0.00, 'FL': 6.00, 'GA': 4.00,
+      'HI': 4.00, 'ID': 6.00, 'IL': 6.25, 'IN': 7.00, 'IA': 6.00,
+      'KS': 6.50, 'KY': 6.00, 'LA': 4.45, 'ME': 5.50, 'MD': 6.00,
+      'MA': 6.25, 'MI': 6.00, 'MN': 6.88, 'MS': 7.00, 'MO': 4.23,
+      'MT': 0.00, 'NE': 5.50, 'NV': 6.85, 'NH': 0.00, 'NJ': 6.63,
+      'NM': 5.13, 'NY': 4.00, 'NC': 4.75, 'ND': 5.00, 'OH': 5.75,
+      'OK': 4.50, 'OR': 0.00, 'PA': 6.00, 'RI': 7.00, 'SC': 6.00,
+      'SD': 4.50, 'TN': 7.00, 'TX': 6.25, 'UT': 6.10, 'VT': 6.00,
+      'VA': 5.30, 'WA': 6.50, 'WV': 6.00, 'WI': 5.00, 'WY': 4.00
+    };
+
+    // US Holidays
+    const holidays = {
+      '2024-01-01': "New Year's Day",
+      '2024-01-15': "Martin Luther King Jr. Day",
+      '2024-02-19': "Presidents' Day",
+      '2024-05-27': "Memorial Day",
+      '2024-06-19': "Juneteenth",
+      '2024-07-04': "Independence Day",
+      '2024-09-02': "Labor Day",
+      '2024-10-14': "Columbus Day",
+      '2024-11-11': "Veterans Day",
+      '2024-11-28': "Thanksgiving",
+      '2024-12-25': "Christmas",
+      '2025-01-01': "New Year's Day",
+      '2025-01-20': "Martin Luther King Jr. Day",
+      '2025-02-17': "Presidents' Day",
+      '2025-05-26': "Memorial Day",
+      '2025-06-19': "Juneteenth",
+      '2025-07-04': "Independence Day",
+      '2025-09-01': "Labor Day",
+      '2025-10-13': "Columbus Day",
+      '2025-11-11': "Veterans Day",
+      '2025-11-27': "Thanksgiving",
+      '2025-12-25': "Christmas",
+      '2026-01-01': "New Year's Day",
+      '2026-01-19': "Martin Luther King Jr. Day",
+      '2026-02-16': "Presidents' Day",
+      '2026-05-25': "Memorial Day",
+      '2026-06-19': "Juneteenth",
+      '2026-07-04': "Independence Day",
+      '2026-09-07': "Labor Day",
+      '2026-10-12': "Columbus Day",
+      '2026-11-11': "Veterans Day",
+      '2026-11-26': "Thanksgiving",
+      '2026-12-25': "Christmas"
+    };
+
+    // Data Structure
+    let crmData = {
+      customers: [],
+      orders: [],
+      events: []
+    };
+
     let currentMonth = new Date().getMonth();
     let currentYear = new Date().getFullYear();
-    let lastBackupDate = null;
-    let backupReminderInterval = 7; // days
-    let currentImportData = null;
-    
-    // Settings
-    let settings = {
-      creditAmount: 15,
-      tiers: {
-        bronze: { min: 1, max: 4, bonus: 5 },
-        silver: { min: 5, max: 9, bonus: 10 },
-        gold: { min: 10, max: 19, bonus: 20 },
-        platinum: { min: 20, bonus: 50 }
-      },
-      backupReminderDays: 7
-    };
-
-    // US Holidays 2024-2026
-    const holidays = {
-      2024: [
-        { date: '2024-01-01', name: 'New Year\'s Day' },
-        { date: '2024-01-15', name: 'MLK Day' },
-        { date: '2024-02-19', name: 'Presidents Day' },
-        { date: '2024-05-27', name: 'Memorial Day' },
-        { date: '2024-07-04', name: 'Independence Day' },
-        { date: '2024-09-02', name: 'Labor Day' },
-        { date: '2024-10-14', name: 'Columbus Day' },
-        { date: '2024-11-11', name: 'Veterans Day' },
-        { date: '2024-11-28', name: 'Thanksgiving' },
-        { date: '2024-12-25', name: 'Christmas' }
-      ],
-      2025: [
-        { date: '2025-01-01', name: 'New Year\'s Day' },
-        { date: '2025-01-20', name: 'MLK Day' },
-        { date: '2025-02-17', name: 'Presidents Day' },
-        { date: '2025-05-26', name: 'Memorial Day' },
-        { date: '2025-07-04', name: 'Independence Day' },
-        { date: '2025-09-01', name: 'Labor Day' },
-        { date: '2025-10-13', name: 'Columbus Day' },
-        { date: '2025-11-11', name: 'Veterans Day' },
-        { date: '2025-11-27', name: 'Thanksgiving' },
-        { date: '2025-12-25', name: 'Christmas' }
-      ],
-      2026: [
-        { date: '2026-01-01', name: 'New Year\'s Day' },
-        { date: '2026-01-19', name: 'MLK Day' },
-        { date: '2026-02-16', name: 'Presidents Day' },
-        { date: '2026-05-25', name: 'Memorial Day' },
-        { date: '2026-07-03', name: 'Independence Day' },
-        { date: '2026-09-07', name: 'Labor Day' },
-        { date: '2026-10-12', name: 'Columbus Day' },
-        { date: '2026-11-11', name: 'Veterans Day' },
-        { date: '2026-11-26', name: 'Thanksgiving' },
-        { date: '2026-12-25', name: 'Christmas' }
-      ]
-    };
+    let currentEventId = null;
+    let pendingImportData = null;
 
     // Initialize
-    function init() {
+    document.addEventListener('DOMContentLoaded', function() {
       loadData();
-      loadSettings();
       updateDashboard();
-      renderCustomersTable();
-      renderOrdersTable();
+      updateCurrentDate();
       renderCalendar();
-      updateMarketingView();
-      updateReferralsView();
+      populateCustomerDropdowns();
+      setDefaultOrderDate();
       checkBackupReminder();
+      
+      // Set up drag and drop for import
       setupDragDrop();
-      
-      // Set today's date as default for forms
-      const today = new Date().toISOString().split('T')[0];
-      document.getElementById('eventDate').value = today;
-      document.getElementById('orderDate').value = today;
-    }
+    });
 
-    // Load/Save Data
-    function loadData() {
-      const savedCustomers = localStorage.getItem('acoustiskin_customers');
-      const savedOrders = localStorage.getItem('acoustiskin_orders');
-      const savedEvents = localStorage.getItem('acoustiskin_events');
-      const savedBackupDate = localStorage.getItem('acoustiskin_last_backup');
+    // Drag and Drop Setup
+    function setupDragDrop() {
+      const body = document.body;
       
-      if (savedCustomers) customers = JSON.parse(savedCustomers);
-      if (savedOrders) orders = JSON.parse(savedOrders);
-      if (savedEvents) events = JSON.parse(savedEvents);
-      if (savedBackupDate) lastBackupDate = new Date(savedBackupDate);
-    }
-
-    function saveData() {
-      localStorage.setItem('acoustiskin_customers', JSON.stringify(customers));
-      localStorage.setItem('acoustiskin_orders', JSON.stringify(orders));
-      localStorage.setItem('acoustiskin_events', JSON.stringify(events));
-    }
-
-    function loadSettings() {
-      const savedSettings = localStorage.getItem('acoustiskin_settings');
-      if (savedSettings) {
-        settings = JSON.parse(savedSettings);
-      }
-      document.getElementById('referralCreditDisplay').textContent = settings.creditAmount;
-      backupReminderInterval = settings.backupReminderDays;
-    }
-
-    function saveSettings(event) {
-      event.preventDefault();
-      
-      settings.creditAmount = parseInt(document.getElementById('settingsCreditAmount').value);
-      settings.tiers = {
-        bronze: {
-          min: parseInt(document.getElementById('bronzeMin').value),
-          max: parseInt(document.getElementById('bronzeMax').value),
-          bonus: parseInt(document.getElementById('bronzeBonus').value)
-        },
-        silver: {
-          min: parseInt(document.getElementById('silverMin').value),
-          max: parseInt(document.getElementById('silverMax').value),
-          bonus: parseInt(document.getElementById('silverBonus').value)
-        },
-        gold: {
-          min: parseInt(document.getElementById('goldMin').value),
-          max: parseInt(document.getElementById('goldMax').value),
-          bonus: parseInt(document.getElementById('goldBonus').value)
-        },
-        platinum: {
-          min: parseInt(document.getElementById('platinumMin').value),
-          bonus: parseInt(document.getElementById('platinumBonus').value)
-        }
-      };
-      settings.backupReminderDays = parseInt(document.getElementById('backupReminderDays').value);
-      
-      localStorage.setItem('acoustiskin_settings', JSON.stringify(settings));
-      backupReminderInterval = settings.backupReminderDays;
-      
-      showNotification('Settings saved successfully!');
-      updateReferralsView();
-      document.getElementById('referralCreditDisplay').textContent = settings.creditAmount;
-    }
-
-    function resetSettings() {
-      settings = {
-        creditAmount: 15,
-        tiers: {
-          bronze: { min: 1, max: 4, bonus: 5 },
-          silver: { min: 5, max: 9, bonus: 10 },
-          gold: { min: 10, max: 19, bonus: 20 },
-          platinum: { min: 20, bonus: 50 }
-        },
-        backupReminderDays: 7
-      };
-      
-      localStorage.setItem('acoustiskin_settings', JSON.stringify(settings));
-      populateSettingsForm();
-      showNotification('Settings reset to defaults');
-      document.getElementById('referralCreditDisplay').textContent = settings.creditAmount;
-    }
-
-    function populateSettingsForm() {
-      document.getElementById('settingsCreditAmount').value = settings.creditAmount;
-      document.getElementById('bronzeMin').value = settings.tiers.bronze.min;
-      document.getElementById('bronzeMax').value = settings.tiers.bronze.max;
-      document.getElementById('bronzeBonus').value = settings.tiers.bronze.bonus;
-      document.getElementById('silverMin').value = settings.tiers.silver.min;
-      document.getElementById('silverMax').value = settings.tiers.silver.max;
-      document.getElementById('silverBonus').value = settings.tiers.silver.bonus;
-      document.getElementById('goldMin').value = settings.tiers.gold.min;
-      document.getElementById('goldMax').value = settings.tiers.gold.max;
-      document.getElementById('goldBonus').value = settings.tiers.gold.bonus;
-      document.getElementById('platinumMin').value = settings.tiers.platinum.min;
-      document.getElementById('platinumBonus').value = settings.tiers.platinum.bonus;
-      document.getElementById('backupReminderDays').value = settings.backupReminderDays;
-    }
-
-    // Navigation
-    function showView(viewName) {
-      document.querySelectorAll('.view-content').forEach(v => v.style.display = 'none');
-      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-      
-      document.getElementById(viewName + '-view').style.display = 'block';
-      event.target.closest('.nav-item').classList.add('active');
-      currentView = viewName;
-      
-      if (viewName === 'calendar') renderCalendar();
-      if (viewName === 'pipeline') updatePipelineView();
-      if (viewName === 'analytics') updateAnalyticsView();
-      if (viewName === 'marketing') updateMarketingView();
-      if (viewName === 'referrals') updateReferralsView();
-      if (viewName === 'settings') populateSettingsForm();
-    }
-
-    // Dashboard
-    function updateDashboard() {
-      document.getElementById('totalCustomers').textContent = customers.length;
-      document.getElementById('totalOrders').textContent = orders.length;
-      
-      const revenue = orders.reduce((sum, order) => sum + parseFloat(order.total || 0), 0);
-      document.getElementById('totalRevenue').textContent = '$' + revenue.toFixed(0);
-      
-      const willingToRefer = customers.filter(c => c.referralWillingness === 'Yes').length;
-      const referralRate = customers.length > 0 ? (willingToRefer / customers.length * 100).toFixed(0) : 0;
-      document.getElementById('referralRate').textContent = referralRate + '%';
-      
-      generateAIInsights();
-      updateTodayTasks();
-    }
-
-    function generateAIInsights() {
-      const insights = [];
-      
-      // High-value customers
-      const highValueCustomers = customers.filter(c => calculateAIScore(c) >= 80);
-      if (highValueCustomers.length > 0) {
-        insights.push({
-          icon: 'star',
-          color: '#ffa726',
-          title: 'High-Value Customers',
-          text: `You have ${highValueCustomers.length} customers with scores of 80+. Consider offering them VIP benefits or exclusive discounts.`
-        });
-      }
-      
-      // Referral opportunity
-      const referralReady = customers.filter(c => c.referralWillingness === 'Yes' && !c.hasReferred);
-      if (referralReady.length > 0) {
-        insights.push({
-          icon: 'gift',
-          color: '#ab47bc',
-          title: 'Referral Opportunity',
-          text: `${referralReady.length} customers are willing to refer others but haven't yet. Send them a personalized referral link!`
-        });
-      }
-      
-      // Social media presence
-      const socialCustomers = customers.filter(c => c.socialMedia && c.socialMedia.length > 0);
-      if (socialCustomers.length > customers.length * 0.7) {
-        insights.push({
-          icon: 'thumbs-up',
-          color: '#66bb6a',
-          title: 'Strong Social Presence',
-          text: `${Math.round(socialCustomers.length / customers.length * 100)}% of your customers are on social media. Consider running social media campaigns!`
-        });
-      }
-      
-      // Discount interest
-      const discountInterested = customers.filter(c => c.discountInterest === 'Yes').length;
-      if (discountInterested > customers.length * 0.5) {
-        insights.push({
-          icon: 'percentage',
-          color: '#42a5f5',
-          title: 'Discount Campaign',
-          text: `${discountInterested} customers expressed interest in discounts. Create a limited-time offer to boost sales!`
-        });
-      }
-      
-      // Recent orders
-      const recentOrders = orders.filter(o => {
-        const orderDate = new Date(o.date);
-        const daysSince = (new Date() - orderDate) / (1000 * 60 * 60 * 24);
-        return daysSince <= 30;
+      body.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
       });
       
-      if (recentOrders.length > 0) {
-        insights.push({
-          icon: 'chart-line',
-          color: '#26a69a',
-          title: 'Recent Activity',
-          text: `${recentOrders.length} orders in the past 30 days. ${recentOrders.length > orders.length * 0.3 ? 'Great momentum!' : 'Focus on lead conversion.'}`
-        });
-      }
-      
-      const insightsHTML = insights.length > 0 
-        ? insights.map(insight => `
-            <div style="padding: 15px; background: #f5f5f5; border-radius: 8px; margin-bottom: 12px; border-left: 4px solid ${insight.color};">
-              <div style="display: flex; align-items: start; gap: 12px;">
-                <i class="fas fa-${insight.icon}" style="color: ${insight.color}; font-size: 24px; margin-top: 3px;"></i>
-                <div>
-                  <div style="font-weight: 600; color: #2e5940; margin-bottom: 5px;">${insight.title}</div>
-                  <div style="color: #666; font-size: 14px;">${insight.text}</div>
-                </div>
-              </div>
-            </div>
-          `).join('')
-        : '<div style="text-align: center; color: #999; padding: 30px;"><i class="fas fa-inbox" style="font-size: 48px; margin-bottom: 15px; display: block;"></i>Add more customers to generate AI insights</div>';
-      
-      document.getElementById('aiInsights').innerHTML = insightsHTML;
-    }
-
-    function updateTodayTasks() {
-      const today = new Date().toISOString().split('T')[0];
-      const todayEvents = events.filter(e => e.date === today);
-      
-      const tasksHTML = todayEvents.length > 0
-        ? todayEvents.map(e => `
-            <div style="padding: 12px; background: #e8f5e9; border-radius: 6px; margin-bottom: 8px; border-left: 3px solid #66bb6a;">
-              <div style="font-weight: 600; color: #2e5940; margin-bottom: 3px;">${e.title}</div>
-              <div style="color: #666; font-size: 13px;">
-                <i class="fas fa-clock"></i> ${e.time || 'All day'}
-                ${e.customer ? ` • ${e.customer}` : ''}
-              </div>
-            </div>
-          `).join('')
-        : '<div style="text-align: center; color: #999; padding: 20px;">No tasks scheduled for today</div>';
-      
-      document.getElementById('todayTasks').innerHTML = tasksHTML;
-    }
-
-    // Customer Management
-    function openCustomerModal(customerId = null) {
-      const modal = document.getElementById('customerModal');
-      const form = document.getElementById('customerForm');
-      form.reset();
-      
-      if (customerId) {
-        const customer = customers.find(c => c.id === customerId);
-        if (customer) {
-          document.getElementById('customerModalTitle').textContent = 'Edit Customer';
-          document.getElementById('customerId').value = customer.id;
-          document.getElementById('customerFirstName').value = customer.firstName;
-          document.getElementById('customerLastName').value = customer.lastName;
-          document.getElementById('customerEmail').value = customer.email;
-          document.getElementById('customerPhone').value = customer.phone || '';
-          document.getElementById('customerAddress').value = customer.address || '';
-          document.getElementById('customerCity').value = customer.city || '';
-          document.getElementById('customerState').value = customer.state || '';
-          document.getElementById('customerZip').value = customer.zip || '';
-          document.getElementById('customerLeadSource').value = customer.leadSource;
-          document.getElementById('customerStatus').value = customer.status || 'Prospect';
-          document.getElementById('customerDiscountInterest').value = customer.discountInterest || 'No';
-          document.getElementById('customerReferralWillingness').value = customer.referralWillingness || 'No';
-          document.getElementById('customerReferredBy').value = customer.referredBy || '';
-          document.getElementById('customerNotes').value = customer.notes || '';
-          
-          // Set social media checkboxes
-          if (customer.socialMedia) {
-            customer.socialMedia.forEach(platform => {
-              const checkbox = document.getElementById('social' + platform);
-              if (checkbox) checkbox.checked = true;
-            });
-          }
-        }
-      } else {
-        document.getElementById('customerModalTitle').textContent = 'Add New Customer';
-        document.getElementById('customerId').value = '';
-      }
-      
-      modal.style.display = 'block';
-    }
-
-    function saveCustomer(event) {
-      event.preventDefault();
-      
-      const socialMedia = [];
-      ['Facebook', 'Instagram', 'Twitter', 'LinkedIn', 'YouTube', 'TikTok'].forEach(platform => {
-        if (document.getElementById('social' + platform).checked) {
-          socialMedia.push(platform);
-        }
-      });
-      
-      const customer = {
-        id: document.getElementById('customerId').value || Date.now().toString(),
-        firstName: document.getElementById('customerFirstName').value,
-        lastName: document.getElementById('customerLastName').value,
-        email: document.getElementById('customerEmail').value,
-        phone: document.getElementById('customerPhone').value,
-        address: document.getElementById('customerAddress').value,
-        city: document.getElementById('customerCity').value,
-        state: document.getElementById('customerState').value,
-        zip: document.getElementById('customerZip').value,
-        leadSource: document.getElementById('customerLeadSource').value,
-        status: document.getElementById('customerStatus').value,
-        socialMedia: socialMedia,
-        discountInterest: document.getElementById('customerDiscountInterest').value,
-        referralWillingness: document.getElementById('customerReferralWillingness').value,
-        referredBy: document.getElementById('customerReferredBy').value,
-        notes: document.getElementById('customerNotes').value,
-        dateAdded: new Date().toISOString()
-      };
-      
-      // Handle referral
-      if (customer.referredBy) {
-        const referrer = customers.find(c => 
-          `${c.firstName} ${c.lastName}`.toLowerCase() === customer.referredBy.toLowerCase()
-        );
+      body.addEventListener('drop', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
         
-        if (referrer) {
-          // Mark that referrer has referred someone
-          referrer.hasReferred = true;
-          referrer.totalReferrals = (referrer.totalReferrals || 0) + 1;
-          referrer.referralCredits = (referrer.referralCredits || 0) + settings.creditAmount;
-          
-          // Also give credit to new customer
-          customer.referralCredits = settings.creditAmount;
-          customer.isReferral = true;
-          customer.referrerId = referrer.id;
-        }
-      }
-      
-      const existingIndex = customers.findIndex(c => c.id === customer.id);
-      if (existingIndex >= 0) {
-        // Preserve referral data when editing
-        customer.hasReferred = customers[existingIndex].hasReferred;
-        customer.totalReferrals = customers[existingIndex].totalReferrals;
-        customer.referralCredits = customers[existingIndex].referralCredits;
-        customers[existingIndex] = customer;
-        showNotification('Customer updated successfully!');
-      } else {
-        customers.push(customer);
-        showNotification('Customer added successfully!');
-      }
-      
-      saveData();
-      closeModal('customerModal');
-      renderCustomersTable();
-      updateDashboard();
-      updateMarketingView();
-      updateReferralsView();
-      updateEventCustomerDropdown();
-      updateOrderCustomerDropdown();
-    }
-
-    function deleteCustomer(customerId) {
-      if (confirm('Are you sure you want to delete this customer?')) {
-        customers = customers.filter(c => c.id !== customerId);
-        saveData();
-        renderCustomersTable();
-        updateDashboard();
-        updateMarketingView();
-        updateReferralsView();
-        showNotification('Customer deleted successfully!');
-      }
-    }
-
-    function renderCustomersTable() {
-      const tbody = document.getElementById('customersTableBody');
-      
-      if (customers.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #999; padding: 40px;">No customers yet. Add your first customer!</td></tr>';
-        return;
-      }
-      
-      tbody.innerHTML = customers.map(customer => {
-        const score = calculateAIScore(customer);
-        const scoreClass = score >= 70 ? 'score-high' : score >= 40 ? 'score-medium' : 'score-low';
-        const statusClass = customer.status === 'Active' ? 'status-active' : 
-                           customer.status === 'Prospect' ? 'status-prospect' : 'status-inactive';
-        
-        return `
-          <tr>
-            <td>
-              <div style="font-weight: 600;">${customer.firstName} ${customer.lastName}</div>
-              ${customer.referralCredits ? `<div style="font-size: 11px; color: #ab47bc;"><i class="fas fa-gift"></i> $${customer.referralCredits} credit</div>` : ''}
-            </td>
-            <td>${customer.email}</td>
-            <td>${customer.leadSource}</td>
-            <td><span class="status-badge ${statusClass}">${customer.status}</span></td>
-            <td><span class="score-badge ${scoreClass}">${score}</span></td>
-            <td>
-              <button class="btn-secondary" style="padding: 6px 12px; margin-right: 5px;" onclick="openCustomerModal('${customer.id}')">
-                <i class="fas fa-edit"></i>
-              </button>
-              <button class="btn-danger" style="padding: 6px 12px;" onclick="deleteCustomer('${customer.id}')">
-                <i class="fas fa-trash"></i>
-              </button>
-            </td>
-          </tr>
-        `;
-      }).join('');
-    }
-
-    function filterCustomers() {
-      const search = document.getElementById('searchCustomers').value.toLowerCase();
-      const filtered = customers.filter(c => 
-        c.firstName.toLowerCase().includes(search) ||
-        c.lastName.toLowerCase().includes(search) ||
-        c.email.toLowerCase().includes(search) ||
-        c.leadSource.toLowerCase().includes(search)
-      );
-      
-      const tbody = document.getElementById('customersTableBody');
-      tbody.innerHTML = filtered.map(customer => {
-        const score = calculateAIScore(customer);
-        const scoreClass = score >= 70 ? 'score-high' : score >= 40 ? 'score-medium' : 'score-low';
-        const statusClass = customer.status === 'Active' ? 'status-active' : 
-                           customer.status === 'Prospect' ? 'status-prospect' : 'status-inactive';
-        
-        return `
-          <tr>
-            <td>
-              <div style="font-weight: 600;">${customer.firstName} ${customer.lastName}</div>
-              ${customer.referralCredits ? `<div style="font-size: 11px; color: #ab47bc;"><i class="fas fa-gift"></i> $${customer.referralCredits} credit</div>` : ''}
-            </td>
-            <td>${customer.email}</td>
-            <td>${customer.leadSource}</td>
-            <td><span class="status-badge ${statusClass}">${customer.status}</span></td>
-            <td><span class="score-badge ${scoreClass}">${score}</span></td>
-            <td>
-              <button class="btn-secondary" style="padding: 6px 12px; margin-right: 5px;" onclick="openCustomerModal('${customer.id}')">
-                <i class="fas fa-edit"></i>
-              </button>
-              <button class="btn-danger" style="padding: 6px 12px;" onclick="deleteCustomer('${customer.id}')">
-                <i class="fas fa-trash"></i>
-              </button>
-            </td>
-          </tr>
-        `;
-      }).join('');
-    }
-
-    function calculateAIScore(customer) {
-      let score = 50; // Base score
-      
-      // Lead source quality
-      const qualitySources = ['Referral', 'Google', 'Website'];
-      if (qualitySources.includes(customer.leadSource)) score += 15;
-      
-      // Social media presence
-      if (customer.socialMedia && customer.socialMedia.length > 0) {
-        score += customer.socialMedia.length * 3; // Up to 18 points
-      }
-      
-      // Willingness to refer
-      if (customer.referralWillingness === 'Yes') score += 20;
-      if (customer.referralWillingness === 'Maybe') score += 10;
-      
-      // Status
-      if (customer.status === 'Active') score += 15;
-      
-      // Discount interest (lower score if they need discounts)
-      if (customer.discountInterest === 'No') score += 7;
-      
-      return Math.min(100, score);
-    }
-
-    // Order Management
-    function openOrderModal(orderId = null) {
-      const modal = document.getElementById('orderModal');
-      const form = document.getElementById('orderForm');
-      form.reset();
-      
-      updateOrderCustomerDropdown();
-      
-      if (orderId) {
-        const order = orders.find(o => o.id === orderId);
-        if (order) {
-          document.getElementById('orderId').value = order.id;
-          document.getElementById('orderCustomer').value = order.customerId;
-          document.getElementById('orderDate').value = order.date;
-          document.getElementById('orderTotal').value = order.total;
-          document.getElementById('orderProducts').value = order.products || '';
-          document.getElementById('orderStatus').value = order.status || 'Pending';
-          document.getElementById('orderNotes').value = order.notes || '';
-        }
-      } else {
-        document.getElementById('orderId').value = '';
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('orderDate').value = today;
-      }
-      
-      modal.style.display = 'block';
-    }
-
-    function updateOrderCustomerDropdown() {
-      const select = document.getElementById('orderCustomer');
-      select.innerHTML = '<option value="">Select Customer</option>' +
-        customers.map(c => `<option value="${c.id}">${c.firstName} ${c.lastName}</option>`).join('');
-    }
-
-    function saveOrder(event) {
-      event.preventDefault();
-      
-      const customerId = document.getElementById('orderCustomer').value;
-      const customer = customers.find(c => c.id === customerId);
-      
-      const order = {
-        id: document.getElementById('orderId').value || Date.now().toString(),
-        customerId: customerId,
-        customerName: customer ? `${customer.firstName} ${customer.lastName}` : '',
-        date: document.getElementById('orderDate').value,
-        total: parseFloat(document.getElementById('orderTotal').value),
-        products: document.getElementById('orderProducts').value,
-        status: document.getElementById('orderStatus').value,
-        notes: document.getElementById('orderNotes').value
-      };
-      
-      const existingIndex = orders.findIndex(o => o.id === order.id);
-      if (existingIndex >= 0) {
-        orders[existingIndex] = order;
-        showNotification('Order updated successfully!');
-      } else {
-        orders.push(order);
-        showNotification('Order created successfully!');
-      }
-      
-      saveData();
-      closeModal('orderModal');
-      renderOrdersTable();
-      updateDashboard();
-    }
-
-    function deleteOrder(orderId) {
-      if (confirm('Are you sure you want to delete this order?')) {
-        orders = orders.filter(o => o.id !== orderId);
-        saveData();
-        renderOrdersTable();
-        updateDashboard();
-        showNotification('Order deleted successfully!');
-      }
-    }
-
-    function renderOrdersTable() {
-      const tbody = document.getElementById('ordersTableBody');
-      
-      if (orders.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #999; padding: 40px;">No orders yet. Create your first order!</td></tr>';
-        return;
-      }
-      
-      tbody.innerHTML = orders.map(order => `
-        <tr>
-          <td><strong>#${order.id.substring(0, 8)}</strong></td>
-          <td>${order.customerName}</td>
-          <td>${new Date(order.date).toLocaleDateString()}</td>
-          <td><strong>$${order.total.toFixed(2)}</strong></td>
-          <td><span class="status-badge ${order.status === 'Completed' ? 'status-active' : 'status-prospect'}">${order.status}</span></td>
-          <td>
-            <button class="btn-secondary" style="padding: 6px 12px; margin-right: 5px;" onclick="openOrderModal('${order.id}')">
-              <i class="fas fa-edit"></i>
-            </button>
-            <button class="btn-danger" style="padding: 6px 12px;" onclick="deleteOrder('${order.id}')">
-              <i class="fas fa-trash"></i>
-            </button>
-          </td>
-        </tr>
-      `).join('');
-    }
-
-    // Event/Calendar Management
-    function openEventModal(eventId = null, date = null) {
-      const modal = document.getElementById('eventModal');
-      const form = document.getElementById('eventForm');
-      form.reset();
-      
-      updateEventCustomerDropdown();
-      
-      if (eventId) {
-        const event = events.find(e => e.id === eventId);
-        if (event) {
-          document.getElementById('eventId').value = event.id;
-          document.getElementById('eventTitle').value = event.title;
-          document.getElementById('eventCustomer').value = event.customerId || '';
-          document.getElementById('eventDate').value = event.date;
-          document.getElementById('eventTime').value = event.time || '';
-          document.getElementById('eventType').value = event.type || 'Meeting';
-          document.getElementById('eventNotes').value = event.notes || '';
-        }
-      } else {
-        document.getElementById('eventId').value = '';
-        if (date) {
-          document.getElementById('eventDate').value = date;
-        } else {
-          const today = new Date().toISOString().split('T')[0];
-          document.getElementById('eventDate').value = today;
-        }
-      }
-      
-      modal.style.display = 'block';
-    }
-
-    function updateEventCustomerDropdown() {
-      const select = document.getElementById('eventCustomer');
-      select.innerHTML = '<option value="">Select Customer (Optional)</option>' +
-        customers.map(c => `<option value="${c.id}">${c.firstName} ${c.lastName}</option>`).join('');
-    }
-
-    function saveEvent(event) {
-      event.preventDefault();
-      
-      const customerId = document.getElementById('eventCustomer').value;
-      const customer = customerId ? customers.find(c => c.id === customerId) : null;
-      
-      const evt = {
-        id: document.getElementById('eventId').value || Date.now().toString(),
-        title: document.getElementById('eventTitle').value,
-        customerId: customerId,
-        customer: customer ? `${customer.firstName} ${customer.lastName}` : '',
-        date: document.getElementById('eventDate').value,
-        time: document.getElementById('eventTime').value,
-        type: document.getElementById('eventType').value,
-        notes: document.getElementById('eventNotes').value
-      };
-      
-      const existingIndex = events.findIndex(e => e.id === evt.id);
-      if (existingIndex >= 0) {
-        events[existingIndex] = evt;
-        showNotification('Event updated successfully!');
-      } else {
-        events.push(evt);
-        showNotification('Event created successfully!');
-      }
-      
-      saveData();
-      closeModal('eventModal');
-      renderCalendar();
-      updateTodayTasks();
-    }
-
-    function deleteEvent(eventId) {
-      if (confirm('Are you sure you want to delete this event?')) {
-        events = events.filter(e => e.id !== eventId);
-        saveData();
-        renderCalendar();
-        updateTodayTasks();
-        showNotification('Event deleted successfully!');
-      }
-    }
-
-    function renderCalendar() {
-      const grid = document.getElementById('calendarGrid');
-      const title = document.getElementById('calendarTitle');
-      
-      const firstDay = new Date(currentYear, currentMonth, 1);
-      const lastDay = new Date(currentYear, currentMonth + 1, 0);
-      const startingDayOfWeek = firstDay.getDay();
-      const monthDays = lastDay.getDate();
-      
-      const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
-                         'July', 'August', 'September', 'October', 'November', 'December'];
-      title.textContent = `${monthNames[currentMonth]} ${currentYear}`;
-      
-      let html = '';
-      
-      // Empty cells for days before month starts
-      for (let i = 0; i < startingDayOfWeek; i++) {
-        html += '<div class="calendar-day" style="opacity: 0.3;"></div>';
-      }
-      
-      // Days of the month
-      const today = new Date();
-      const currentYearHolidays = holidays[currentYear] || [];
-      
-      for (let day = 1; day <= monthDays; day++) {
-        const date = new Date(currentYear, currentMonth, day);
-        const dateStr = date.toISOString().split('T')[0];
-        const isToday = dateStr === today.toISOString().split('T')[0];
-        
-        const dayEvents = events.filter(e => e.date === dateStr);
-        const dayHolidays = currentYearHolidays.filter(h => h.date === dateStr);
-        
-        html += `
-          <div class="calendar-day ${isToday ? 'today' : ''}" onclick="openEventModal(null, '${dateStr}')">
-            <div style="font-weight: 600; color: #2e5940; margin-bottom: 8px;">${day}</div>
-            ${dayHolidays.map(h => `<div class="holiday-item">${h.name}</div>`).join('')}
-            ${dayEvents.map(e => `
-              <div class="event-item" onclick="event.stopPropagation(); openEventModal('${e.id}')">
-                ${e.time ? e.time + ' - ' : ''}${e.title}
-              </div>
-            `).join('')}
-          </div>
-        `;
-      }
-      
-      grid.innerHTML = html;
-    }
-
-    function changeMonth(delta) {
-      if (delta === 0) {
-        // Go to today
-        const today = new Date();
-        currentMonth = today.getMonth();
-        currentYear = today.getFullYear();
-      } else {
-        currentMonth += delta;
-        if (currentMonth > 11) {
-          currentMonth = 0;
-          currentYear++;
-        } else if (currentMonth < 0) {
-          currentMonth = 11;
-          currentYear--;
-        }
-      }
-      renderCalendar();
-    }
-
-    // Marketing View
-    function updateMarketingView() {
-      renderLeadSourceChart();
-      renderSocialMediaChart();
-      updateReferralInsights();
-      updateDiscountInsights();
-    }
-
-    function renderLeadSourceChart() {
-      const ctx = document.getElementById('leadSourceChart');
-      if (!ctx) return;
-      
-      const sources = {};
-      customers.forEach(c => {
-        sources[c.leadSource] = (sources[c.leadSource] || 0) + 1;
-      });
-      
-      if (window.leadSourceChartInstance) {
-        window.leadSourceChartInstance.destroy();
-      }
-      
-      window.leadSourceChartInstance = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-          labels: Object.keys(sources),
-          datasets: [{
-            data: Object.values(sources),
-            backgroundColor: ['#66bb6a', '#42a5f5', '#ffa726', '#ab47bc', '#26a69a', '#ef5350', '#78909c']
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: true,
-          plugins: {
-            legend: { position: 'bottom' }
-          }
-        }
-      });
-    }
-
-    function renderSocialMediaChart() {
-      const ctx = document.getElementById('socialMediaChart');
-      if (!ctx) return;
-      
-      const platforms = {};
-      customers.forEach(c => {
-        if (c.socialMedia) {
-          c.socialMedia.forEach(p => {
-            platforms[p] = (platforms[p] || 0) + 1;
-          });
-        }
-      });
-      
-      if (window.socialMediaChartInstance) {
-        window.socialMediaChartInstance.destroy();
-      }
-      
-      window.socialMediaChartInstance = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: Object.keys(platforms),
-          datasets: [{
-            label: 'Customers',
-            data: Object.values(platforms),
-            backgroundColor: '#66bb6a'
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: true,
-          plugins: {
-            legend: { display: false }
-          },
-          scales: {
-            y: { beginAtZero: true }
-          }
-        }
-      });
-    }
-
-    function updateReferralInsights() {
-      const willing = customers.filter(c => c.referralWillingness === 'Yes').length;
-      const maybe = customers.filter(c => c.referralWillingness === 'Maybe').length;
-      const notWilling = customers.filter(c => c.referralWillingness === 'No').length;
-      
-      document.getElementById('referralInsights').innerHTML = `
-        <div style="padding: 15px; background: #e8f5e9; border-radius: 8px; margin-bottom: 10px;">
-          <div style="font-size: 32px; font-weight: 700; color: #2e7d32;">${willing}</div>
-          <div style="color: #2e5940; font-weight: 600;">Willing to Refer</div>
-        </div>
-        <div style="padding: 15px; background: #fff9c4; border-radius: 8px; margin-bottom: 10px;">
-          <div style="font-size: 32px; font-weight: 700; color: #f57f17;">${maybe}</div>
-          <div style="color: #f57f17; font-weight: 600;">Maybe</div>
-        </div>
-        <div style="padding: 15px; background: #ffcdd2; border-radius: 8px;">
-          <div style="font-size: 32px; font-weight: 700; color: #c62828;">${notWilling}</div>
-          <div style="color: #c62828; font-weight: 600;">Not Interested</div>
-        </div>
-      `;
-    }
-
-    function updateDiscountInsights() {
-      const interested = customers.filter(c => c.discountInterest === 'Yes').length;
-      const maybe = customers.filter(c => c.discountInterest === 'Maybe').length;
-      const notInterested = customers.filter(c => c.discountInterest === 'No').length;
-      
-      document.getElementById('discountInsights').innerHTML = `
-        <div style="padding: 15px; background: #e3f2fd; border-radius: 8px; margin-bottom: 10px;">
-          <div style="font-size: 32px; font-weight: 700; color: #1565c0;">${interested}</div>
-          <div style="color: #1565c0; font-weight: 600;">Interested</div>
-        </div>
-        <div style="padding: 15px; background: #fff3e0; border-radius: 8px; margin-bottom: 10px;">
-          <div style="font-size: 32px; font-weight: 700; color: #e65100;">${maybe}</div>
-          <div style="color: #e65100; font-weight: 600;">Maybe</div>
-        </div>
-        <div style="padding: 15px; background: #f5f5f5; border-radius: 8px;">
-          <div style="font-size: 32px; font-weight: 700; color: #757575;">${notInterested}</div>
-          <div style="color: #757575; font-weight: 600;">Not Interested</div>
-        </div>
-      `;
-    }
-
-    // Referral Program
-    function updateReferralsView() {
-      const totalReferrals = customers.filter(c => c.isReferral).length;
-      const totalCredits = customers.reduce((sum, c) => sum + (c.referralCredits || 0), 0);
-      const activeAdvocates = customers.filter(c => c.totalReferrals > 0).length;
-      const conversionRate = customers.length > 0 ? (totalReferrals / customers.length * 100).toFixed(1) : 0;
-      
-      document.getElementById('totalReferrals').textContent = totalReferrals;
-      document.getElementById('totalCredits').textContent = '$' + totalCredits;
-      document.getElementById('activeAdvocates').textContent = activeAdvocates;
-      document.getElementById('conversionRate').textContent = conversionRate + '%';
-      
-      renderTopReferrersList();
-      renderReferralRewardTiers();
-      renderRecentReferralsTable();
-    }
-
-    function renderTopReferrersList() {
-      const topReferrers = customers
-        .filter(c => c.totalReferrals > 0)
-        .sort((a, b) => b.totalReferrals - a.totalReferrals)
-        .slice(0, 10);
-      
-      if (topReferrers.length === 0) {
-        document.getElementById('topReferrersList').innerHTML = `
-          <div style="text-align: center; color: #999; padding: 40px;">
-            <i class="fas fa-trophy" style="font-size: 48px; margin-bottom: 15px; display: block;"></i>
-            No referrers yet. Start building your referral network!
-          </div>
-        `;
-        return;
-      }
-      
-      const html = topReferrers.map((c, index) => {
-        const tier = getTierForReferrals(c.totalReferrals);
-        const medals = ['🥇', '🥈', '🥉'];
-        const medal = index < 3 ? medals[index] : '';
-        
-        return `
-          <div style="padding: 15px; background: ${index === 0 ? '#fff9c4' : '#f5f5f5'}; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid ${tier.color};">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-              <div>
-                <div style="font-weight: 600; color: #2e5940; margin-bottom: 3px;">
-                  ${medal} ${c.firstName} ${c.lastName}
-                  <span style="margin-left: 10px; padding: 3px 8px; background: ${tier.color}; color: white; border-radius: 4px; font-size: 10px; font-weight: 600;">
-                    ${tier.name}
-                  </span>
-                </div>
-                <div style="color: #666; font-size: 13px;">
-                  <i class="fas fa-users"></i> ${c.totalReferrals} referral${c.totalReferrals !== 1 ? 's' : ''}
-                </div>
-              </div>
-              <div style="text-align: right;">
-                <div style="font-size: 20px; font-weight: 700; color: #ab47bc;">$${c.referralCredits || 0}</div>
-                <div style="font-size: 11px; color: #666;">earned</div>
-              </div>
-            </div>
-          </div>
-        `;
-      }).join('');
-      
-      document.getElementById('topReferrersList').innerHTML = html;
-    }
-
-    function getTierForReferrals(count) {
-      if (count >= settings.tiers.platinum.min) {
-        return { name: 'PLATINUM', color: '#4dd0e1', bonus: settings.tiers.platinum.bonus };
-      } else if (count >= settings.tiers.gold.min && count <= settings.tiers.gold.max) {
-        return { name: 'GOLD', color: '#ffd700', bonus: settings.tiers.gold.bonus };
-      } else if (count >= settings.tiers.silver.min && count <= settings.tiers.silver.max) {
-        return { name: 'SILVER', color: '#c0c0c0', bonus: settings.tiers.silver.bonus };
-      } else if (count >= settings.tiers.bronze.min && count <= settings.tiers.bronze.max) {
-        return { name: 'BRONZE', color: '#cd7f32', bonus: settings.tiers.bronze.bonus };
-      }
-      return { name: 'STARTER', color: '#999', bonus: 0 };
-    }
-
-    function renderReferralRewardTiers() {
-      const html = `
-        <div style="padding: 15px; background: #f5f5f5; border-radius: 8px; border-left: 4px solid #cd7f32; margin-bottom: 12px;">
-          <div style="font-weight: 600; color: #cd7f32; margin-bottom: 8px;">
-            <i class="fas fa-medal"></i> BRONZE (${settings.tiers.bronze.min}-${settings.tiers.bronze.max} referrals)
-          </div>
-          <div style="font-size: 13px; color: #666;">Base credit: $${settings.creditAmount}</div>
-          <div style="font-size: 13px; color: #666;">Bonus: +$${settings.tiers.bronze.bonus} per referral</div>
-        </div>
-        
-        <div style="padding: 15px; background: #f5f5f5; border-radius: 8px; border-left: 4px solid #c0c0c0; margin-bottom: 12px;">
-          <div style="font-weight: 600; color: #808080; margin-bottom: 8px;">
-            <i class="fas fa-medal"></i> SILVER (${settings.tiers.silver.min}-${settings.tiers.silver.max} referrals)
-          </div>
-          <div style="font-size: 13px; color: #666;">Base credit: $${settings.creditAmount}</div>
-          <div style="font-size: 13px; color: #666;">Bonus: +$${settings.tiers.silver.bonus} per referral</div>
-        </div>
-        
-        <div style="padding: 15px; background: #f5f5f5; border-radius: 8px; border-left: 4px solid #ffd700; margin-bottom: 12px;">
-          <div style="font-weight: 600; color: #daa520; margin-bottom: 8px;">
-            <i class="fas fa-medal"></i> GOLD (${settings.tiers.gold.min}-${settings.tiers.gold.max} referrals)
-          </div>
-          <div style="font-size: 13px; color: #666;">Base credit: $${settings.creditAmount}</div>
-          <div style="font-size: 13px; color: #666;">Bonus: +$${settings.tiers.gold.bonus} per referral</div>
-        </div>
-        
-        <div style="padding: 15px; background: #f5f5f5; border-radius: 8px; border-left: 4px solid #4dd0e1;">
-          <div style="font-weight: 600; color: #4dd0e1; margin-bottom: 8px;">
-            <i class="fas fa-gem"></i> PLATINUM (${settings.tiers.platinum.min}+ referrals)
-          </div>
-          <div style="font-size: 13px; color: #666;">Base credit: $${settings.creditAmount}</div>
-          <div style="font-size: 13px; color: #666;">Bonus: +$${settings.tiers.platinum.bonus} per referral</div>
-        </div>
-      `;
-      
-      document.getElementById('referralRewardTiersDisplay').innerHTML = html;
-    }
-
-    function renderRecentReferralsTable() {
-      const referrals = customers
-        .filter(c => c.isReferral)
-        .sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded))
-        .slice(0, 20);
-      
-      const tbody = document.getElementById('recentReferralsTable');
-      
-      if (referrals.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #999; padding: 40px;">No referrals yet. Start your referral program!</td></tr>';
-        return;
-      }
-      
-      tbody.innerHTML = referrals.map(r => {
-        const referrer = customers.find(c => c.id === r.referrerId);
-        return `
-          <tr>
-            <td>${referrer ? `${referrer.firstName} ${referrer.lastName}` : 'Unknown'}</td>
-            <td><strong>${r.firstName} ${r.lastName}</strong></td>
-            <td>${new Date(r.dateAdded).toLocaleDateString()}</td>
-            <td><span class="status-badge status-active">Completed</span></td>
-            <td><strong style="color: #ab47bc;">$${settings.creditAmount}</strong></td>
-          </tr>
-        `;
-      }).join('');
-    }
-
-    // Pipeline View
-    function updatePipelineView() {
-      const prospects = customers.filter(c => c.status === 'Prospect');
-      const active = customers.filter(c => c.status === 'Active');
-      const inactive = customers.filter(c => c.status === 'Inactive');
-      
-      document.getElementById('pipelineContent').innerHTML = `
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
-          <div class="card" style="border-top: 4px solid #42a5f5;">
-            <h3 style="color: #1565c0; margin-bottom: 15px;">
-              <i class="fas fa-users"></i> Prospects (${prospects.length})
-            </h3>
-            ${prospects.map(c => `
-              <div style="padding: 12px; background: #e3f2fd; border-radius: 6px; margin-bottom: 8px;">
-                <div style="font-weight: 600; color: #1565c0;">${c.firstName} ${c.lastName}</div>
-                <div style="font-size: 12px; color: #666; margin-top: 3px;">
-                  <i class="fas fa-envelope"></i> ${c.email}
-                </div>
-                <div style="font-size: 12px; color: #666;">
-                  <i class="fas fa-chart-line"></i> Score: <span class="score-badge ${calculateAIScore(c) >= 70 ? 'score-high' : calculateAIScore(c) >= 40 ? 'score-medium' : 'score-low'}">${calculateAIScore(c)}</span>
-                </div>
-              </div>
-            `).join('') || '<div style="text-align: center; color: #999; padding: 20px;">No prospects</div>'}
-          </div>
-          
-          <div class="card" style="border-top: 4px solid #66bb6a;">
-            <h3 style="color: #2e7d32; margin-bottom: 15px;">
-              <i class="fas fa-check-circle"></i> Active (${active.length})
-            </h3>
-            ${active.map(c => `
-              <div style="padding: 12px; background: #e8f5e9; border-radius: 6px; margin-bottom: 8px;">
-                <div style="font-weight: 600; color: #2e7d32;">${c.firstName} ${c.lastName}</div>
-                <div style="font-size: 12px; color: #666; margin-top: 3px;">
-                  <i class="fas fa-envelope"></i> ${c.email}
-                </div>
-                <div style="font-size: 12px; color: #666;">
-                  <i class="fas fa-chart-line"></i> Score: <span class="score-badge ${calculateAIScore(c) >= 70 ? 'score-high' : calculateAIScore(c) >= 40 ? 'score-medium' : 'score-low'}">${calculateAIScore(c)}</span>
-                </div>
-              </div>
-            `).join('') || '<div style="text-align: center; color: #999; padding: 20px;">No active customers</div>'}
-          </div>
-          
-          <div class="card" style="border-top: 4px solid #ef5350;">
-            <h3 style="color: #c62828; margin-bottom: 15px;">
-              <i class="fas fa-pause-circle"></i> Inactive (${inactive.length})
-            </h3>
-            ${inactive.map(c => `
-              <div style="padding: 12px; background: #ffebee; border-radius: 6px; margin-bottom: 8px;">
-                <div style="font-weight: 600; color: #c62828;">${c.firstName} ${c.lastName}</div>
-                <div style="font-size: 12px; color: #666; margin-top: 3px;">
-                  <i class="fas fa-envelope"></i> ${c.email}
-                </div>
-                <div style="font-size: 12px; color: #666;">
-                  <i class="fas fa-chart-line"></i> Score: <span class="score-badge ${calculateAIScore(c) >= 70 ? 'score-high' : calculateAIScore(c) >= 40 ? 'score-medium' : 'score-low'}">${calculateAIScore(c)}</span>
-                </div>
-              </div>
-            `).join('') || '<div style="text-align: center; color: #999; padding: 20px;">No inactive customers</div>'}
-          </div>
-        </div>
-      `;
-    }
-
-    // Analytics View
-    function updateAnalyticsView() {
-      renderRevenueChart();
-      renderStatusChart();
-    }
-
-    function renderRevenueChart() {
-      const ctx = document.getElementById('revenueChart');
-      if (!ctx) return;
-      
-      // Group orders by month
-      const monthlyRevenue = {};
-      orders.forEach(o => {
-        const date = new Date(o.date);
-        const key = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
-        monthlyRevenue[key] = (monthlyRevenue[key] || 0) + parseFloat(o.total);
-      });
-      
-      const sortedKeys = Object.keys(monthlyRevenue).sort();
-      const labels = sortedKeys.map(k => {
-        const [year, month] = k.split('-');
-        const date = new Date(year, month - 1);
-        return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
-      });
-      const data = sortedKeys.map(k => monthlyRevenue[k]);
-      
-      if (window.revenueChartInstance) {
-        window.revenueChartInstance.destroy();
-      }
-      
-      window.revenueChartInstance = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: labels,
-          datasets: [{
-            label: 'Revenue',
-            data: data,
-            borderColor: '#66bb6a',
-            backgroundColor: 'rgba(102, 187, 106, 0.1)',
-            tension: 0.4,
-            fill: true
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: true,
-          plugins: {
-            legend: { display: false }
-          },
-          scales: {
-            y: {
-              beginAtZero: true,
-              ticks: {
-                callback: function(value) {
-                  return '$' + value;
-                }
-              }
+        const files = e.dataTransfer.files;
+        if (files.length > 0 && files[0].name.endsWith('.json')) {
+          const reader = new FileReader();
+          reader.onload = function(event) {
+            try {
+              const data = JSON.parse(event.target.result);
+              handleImportData(data);
+            } catch (error) {
+              showNotification('Invalid JSON file', 'error');
             }
-          }
+          };
+          reader.readAsText(files[0]);
         }
       });
     }
 
-    function renderStatusChart() {
-      const ctx = document.getElementById('statusChart');
-      if (!ctx) return;
-      
-      const prospects = customers.filter(c => c.status === 'Prospect').length;
-      const active = customers.filter(c => c.status === 'Active').length;
-      const inactive = customers.filter(c => c.status === 'Inactive').length;
-      
-      if (window.statusChartInstance) {
-        window.statusChartInstance.destroy();
+    // Save & Load Data
+    function saveData() {
+      localStorage.setItem('acoustiskinCRM_AI', JSON.stringify(crmData));
+    }
+
+    function loadData() {
+      const saved = localStorage.getItem('acoustiskinCRM_AI');
+      if (saved) {
+        crmData = JSON.parse(saved);
       }
-      
-      window.statusChartInstance = new Chart(ctx, {
-        type: 'pie',
-        data: {
-          labels: ['Prospects', 'Active', 'Inactive'],
-          datasets: [{
-            data: [prospects, active, inactive],
-            backgroundColor: ['#42a5f5', '#66bb6a', '#ef5350']
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: true,
-          plugins: {
-            legend: { position: 'bottom' }
-          }
-        }
-      });
+      updateLastBackupIndicator();
     }
 
-    // Backup & Import/Export
+    // Backup Functions
+    function updateLastBackupIndicator() {
+      const lastBackup = localStorage.getItem('lastBackupTime');
+      const indicator = document.getElementById('lastBackupTime');
+      
+      if (lastBackup) {
+        const date = new Date(parseInt(lastBackup));
+        const now = new Date();
+        const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+        
+        if (diffDays === 0) {
+          indicator.textContent = 'Today';
+        } else if (diffDays === 1) {
+          indicator.textContent = 'Yesterday';
+        } else {
+          indicator.textContent = `${diffDays} days ago`;
+        }
+      } else {
+        indicator.textContent = 'Never';
+      }
+    }
+
+    function checkBackupReminder() {
+      const lastBackup = localStorage.getItem('lastBackupTime');
+      const lastReminder = localStorage.getItem('lastBackupReminder');
+      const now = Date.now();
+      
+      // Check if it's been more than 3 days since last backup
+      if (!lastBackup || (now - parseInt(lastBackup)) > (3 * 24 * 60 * 60 * 1000)) {
+        // Check if we haven't shown reminder in last 24 hours
+        if (!lastReminder || (now - parseInt(lastReminder)) > (24 * 60 * 60 * 1000)) {
+          document.getElementById('backupReminderModal').style.display = 'block';
+          localStorage.setItem('lastBackupReminder', now.toString());
+        }
+      }
+    }
+
+    function snoozeBackupReminder() {
+      closeModal('backupReminderModal');
+      localStorage.setItem('lastBackupReminder', Date.now().toString());
+    }
+
+    function quickBackup() {
+      exportData();
+      closeModal('backupReminderModal');
+    }
+
     function exportData() {
-      const data = {
-        customers: customers,
-        orders: orders,
-        events: events,
-        settings: settings,
-        exportDate: new Date().toISOString(),
-        version: '1.0'
-      };
-      
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const dataStr = JSON.stringify(crmData, null, 2);
+      const blob = new Blob([dataStr], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `acoustiskin-backup-${new Date().toISOString().split('T')[0]}.json`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `acoustiskin-crm-backup-${new Date().toISOString().split('T')[0]}.json`;
+      link.click();
       
-      lastBackupDate = new Date();
-      localStorage.setItem('acoustiskin_last_backup', lastBackupDate.toISOString());
-      updateBackupIndicator();
-      
+      localStorage.setItem('lastBackupTime', Date.now().toString());
+      updateLastBackupIndicator();
       showNotification('Backup downloaded successfully!');
     }
 
     function emailBackup() {
-      const data = {
-        customers: customers,
-        orders: orders,
-        events: events,
-        settings: settings,
-        exportDate: new Date().toISOString(),
-        version: '1.0'
-      };
+      const dataStr = JSON.stringify(crmData, null, 2);
+      const subject = encodeURIComponent('AcoustiSkin CRM Backup - ' + new Date().toLocaleDateString());
+      const body = encodeURIComponent('Please find attached CRM backup data.\n\nTo restore: Go to CRM > Import Data > Select this file\n\nBackup Date: ' + new Date().toLocaleString());
       
-      const jsonStr = JSON.stringify(data, null, 2);
-      const encoded = encodeURIComponent(jsonStr);
-      const subject = `AcoustiSkin CRM Backup - ${new Date().toLocaleDateString()}`;
-      const body = `Your CRM backup is attached as JSON data. Save this email for safekeeping.\n\n${jsonStr}`;
+      window.location.href = `mailto:?subject=${subject}&body=${body}`;
+      showNotification('Email client opened. Please attach the backup file manually.');
       
-      window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-      
-      lastBackupDate = new Date();
-      localStorage.setItem('acoustiskin_last_backup', lastBackupDate.toISOString());
-      updateBackupIndicator();
-      
-      showNotification('Opening email client with backup data...');
+      // Also trigger download
+      exportData();
     }
 
     function showImportOptions() {
-      document.getElementById('importOptionsModal').style.display = 'block';
+      document.getElementById('importFile').click();
     }
 
     function importData(event) {
@@ -2449,158 +1656,107 @@ margin-bottom: 0;">
       reader.onload = function(e) {
         try {
           const data = JSON.parse(e.target.result);
-          currentImportData = data;
-          
-          // Check for conflicts
-          if (customers.length > 0 || orders.length > 0 || events.length > 0) {
-            showConflictResolution(data);
-          } else {
-            // No conflicts, just import
-            performImport(data, 'replace');
-          }
+          handleImportData(data);
         } catch (error) {
-          alert('Error reading backup file. Please ensure it\'s a valid JSON file.');
-          console.error(error);
+          showNotification('Invalid backup file format', 'error');
         }
       };
       reader.readAsText(file);
-      
-      closeModal('importOptionsModal');
-      event.target.value = ''; // Reset file input
     }
 
-    function showConflictResolution(data) {
-      const info = `
-        <strong>Existing Data:</strong><br>
-        • ${customers.length} customer(s)<br>
-        • ${orders.length} order(s)<br>
-        • ${events.length} event(s)<br>
-        <br>
-        <strong>Importing:</strong><br>
-        • ${data.customers?.length || 0} customer(s)<br>
-        • ${data.orders?.length || 0} order(s)<br>
-        • ${data.events?.length || 0} event(s)
-      `;
+    function handleImportData(data) {
+      pendingImportData = data;
       
-      document.getElementById('conflictInfo').innerHTML = info;
-      document.getElementById('conflictModal').style.display = 'block';
+      // Check for conflicts
+      const hasCustomers = crmData.customers.length > 0;
+      const hasOrders = crmData.orders.length > 0;
+      const hasEvents = crmData.events.length > 0;
+      
+      if (hasCustomers || hasOrders || hasEvents) {
+        // Show conflict resolution modal
+        const conflictInfo = document.getElementById('conflictInfo');
+        conflictInfo.innerHTML = `
+          <strong>Current Data:</strong><br>
+          • ${crmData.customers.length} customers<br>
+          • ${crmData.orders.length} orders<br>
+          • ${crmData.events.length} events<br><br>
+          <strong>Importing:</strong><br>
+          • ${data.customers?.length || 0} customers<br>
+          • ${data.orders?.length || 0} orders<br>
+          • ${data.events?.length || 0} events
+        `;
+        document.getElementById('conflictModal').style.display = 'block';
+      } else {
+        // No conflict, import directly
+        resolveConflict('replace');
+      }
     }
 
     function resolveConflict(action) {
-      if (currentImportData) {
-        performImport(currentImportData, action);
-        currentImportData = null;
-      }
-      closeModal('conflictModal');
-    }
-
-    function performImport(data, action) {
       if (action === 'replace') {
-        customers = data.customers || [];
-        orders = data.orders || [];
-        events = data.events || [];
+        crmData = pendingImportData;
       } else if (action === 'merge') {
-        customers = [...customers, ...(data.customers || [])];
-        orders = [...orders, ...(data.orders || [])];
-        events = [...events, ...(data.events || [])];
-      }
-      
-      if (data.settings) {
-        settings = data.settings;
-        localStorage.setItem('acoustiskin_settings', JSON.stringify(settings));
-        document.getElementById('referralCreditDisplay').textContent = settings.creditAmount;
+        // Merge data
+        if (pendingImportData.customers) {
+          crmData.customers = [...crmData.customers, ...pendingImportData.customers];
+        }
+        if (pendingImportData.orders) {
+          crmData.orders = [...crmData.orders, ...pendingImportData.orders];
+        }
+        if (pendingImportData.events) {
+          crmData.events = [...crmData.events, ...pendingImportData.events];
+        }
       }
       
       saveData();
-      renderCustomersTable();
-      renderOrdersTable();
-      renderCalendar();
       updateDashboard();
-      updateMarketingView();
-      updateReferralsView();
-      updateEventCustomerDropdown();
-      updateOrderCustomerDropdown();
+      updateCustomersView();
+      updateOrdersView();
+      renderCalendar();
+      populateCustomerDropdowns();
       
-      showNotification(`Data imported successfully! (${action === 'replace' ? 'Replaced' : 'Merged'} existing data)`);
+      closeModal('conflictModal');
+      showNotification(`Data imported successfully (${action} mode)`);
+      pendingImportData = null;
     }
 
-    function setupDragDrop() {
-      const zone = document.getElementById('dragDropZone');
+    // Navigation
+    function showView(viewName) {
+      document.querySelectorAll('.view').forEach(v => v.style.display = 'none');
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
       
-      zone.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        zone.classList.add('drag-over');
-      });
+      const viewMap = {
+        'dashboard': 'dashboardView',
+        'customers': 'customersView',
+        'orders': 'ordersView',
+        'calendar': 'calendarView',
+        'pipeline': 'pipelineView',
+        'analytics': 'analyticsView',
+        'marketing': 'marketingView',
+        'referrals': 'referralsView'
+      };
       
-      zone.addEventListener('dragleave', () => {
-        zone.classList.remove('drag-over');
-      });
+      document.getElementById(viewMap[viewName]).style.display = 'block';
+      event.target.closest('.nav-item').classList.add('active');
       
-      zone.addEventListener('drop', (e) => {
-        e.preventDefault();
-        zone.classList.remove('drag-over');
-        
-        const file = e.dataTransfer.files[0];
-        if (file && file.name.endsWith('.json')) {
-          const input = document.getElementById('importFile');
-          const dt = new DataTransfer();
-          dt.items.add(file);
-          input.files = dt.files;
-          importData({ target: input });
-        } else {
-          alert('Please drop a valid .json backup file');
-        }
-      });
+      if (viewName === 'customers') updateCustomersView();
+      if (viewName === 'orders') updateOrdersView();
+      if (viewName === 'calendar') renderCalendar();
+      if (viewName === 'pipeline') updatePipelineView();
+      if (viewName === 'analytics') updateAnalyticsView();
+      if (viewName === 'marketing') updateMarketingView();
+      if (viewName === 'referrals') updateReferralsView();
     }
 
-    function quickBackup() {
-      exportData();
-      closeModal('backupReminderModal');
-    }
-
-    function snoozeBackupReminder() {
-      lastBackupDate = new Date();
-      localStorage.setItem('acoustiskin_last_backup', lastBackupDate.toISOString());
-      updateBackupIndicator();
-      closeModal('backupReminderModal');
-      showNotification('Backup reminder snoozed');
-    }
-
-    function checkBackupReminder() {
-      if (!lastBackupDate) return;
-      
-      const daysSinceBackup = (new Date() - lastBackupDate) / (1000 * 60 * 60 * 24);
-      
-      if (daysSinceBackup >= backupReminderInterval) {
-        document.getElementById('backupReminderModal').style.display = 'block';
-      }
-    }
-
-    function updateBackupIndicator() {
-      const indicator = document.getElementById('lastBackupTime');
-      
-      if (!lastBackupDate) {
-        indicator.textContent = 'Never';
-        return;
-      }
-      
-      const daysSince = Math.floor((new Date() - lastBackupDate) / (1000 * 60 * 60 * 24));
-      
-      if (daysSince === 0) {
-        indicator.textContent = 'Today';
-      } else if (daysSince === 1) {
-        indicator.textContent = '1 day ago';
-      } else {
-        indicator.textContent = `${daysSince} days ago`;
-      }
-    }
-
-    // Utility Functions
+    // Modal Functions
     function closeModal(modalId) {
       document.getElementById(modalId).style.display = 'none';
+      if (modalId === 'customerModal') document.getElementById('customerForm').reset();
+      if (modalId === 'orderModal') document.getElementById('orderForm').reset();
+      if (modalId === 'eventModal') document.getElementById('eventForm').reset();
     }
 
-    function showNotification(message) {
+    function showNotification(message, type = 'success') {
       const notification = document.getElementById('notification');
       const text = document.getElementById('notificationText');
       text.textContent = message;
@@ -2611,18 +1767,1122 @@ margin-bottom: 0;">
       }, 3000);
     }
 
-    // Close modals when clicking outside
-    window.onclick = function(event) {
-      const modals = document.querySelectorAll('.modal');
-      modals.forEach(modal => {
-        if (event.target === modal) {
-          modal.style.display = 'none';
+    // Dashboard Functions
+    function updateCurrentDate() {
+      const date = new Date();
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      document.getElementById('currentDate').textContent = date.toLocaleDateString('en-US', options);
+    }
+
+    function updateDashboard() {
+      // Update stats
+      document.getElementById('totalCustomers').textContent = crmData.customers.length;
+      document.getElementById('totalOrders').textContent = crmData.orders.length;
+      
+      const totalRevenue = crmData.orders.reduce((sum, order) => sum + (order.total || 0), 0);
+      document.getElementById('totalRevenue').textContent = '$' + totalRevenue.toFixed(2);
+      
+      const today = new Date().toISOString().split('T')[0];
+      const todayEvents = crmData.events.filter(e => e.date === today);
+      document.getElementById('eventsToday').textContent = todayEvents.length;
+      
+      // Recent customers
+      const recentCustomers = [...crmData.customers].reverse().slice(0, 5);
+      const recentHtml = recentCustomers.map(c => `
+        <div style="padding: 12px; border-bottom: 1px solid #e8f5e9; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <div style="font-weight: 600; color: #2e5940;">${c.name}</div>
+            <div style="font-size: 12px; color: #666;">${c.email || c.phone || 'No contact'}</div>
+          </div>
+          <span class="status-badge status-${c.status.toLowerCase()}">${c.status}</span>
+        </div>
+      `).join('');
+      document.getElementById('recentCustomers').innerHTML = recentHtml || '<p style="color: #999; text-align: center; padding: 20px;">No customers yet</p>';
+      
+      // Today's tasks
+      const tasksHtml = todayEvents.map(e => `
+        <div style="padding: 12px; border-bottom: 1px solid #e8f5e9;">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+            <i class="fas fa-${getEventIcon(e.type)}" style="color: #66bb6a;"></i>
+            <span style="font-weight: 600; color: #2e5940;">${e.title}</span>
+          </div>
+          <div style="font-size: 12px; color: #666;">${e.time || 'No time set'}</div>
+        </div>
+      `).join('');
+      document.getElementById('todaysTasks').innerHTML = tasksHtml || '<p style="color: #999; text-align: center; padding: 20px;">No tasks for today</p>';
+    }
+
+    function getEventIcon(type) {
+      const icons = {
+        'meeting': 'users',
+        'call': 'phone',
+        'task': 'tasks',
+        'appointment': 'calendar-check',
+        'todo': 'check-circle',
+        'deadline': 'flag'
+      };
+      return icons[type] || 'calendar';
+    }
+
+    // Customer Functions
+    function openCustomerModal(customerId = null) {
+      document.getElementById('customerModal').style.display = 'block';
+      document.getElementById('customerForm').reset();
+      
+      if (customerId) {
+        const customer = crmData.customers.find(c => c.id === customerId);
+        if (customer) {
+          document.getElementById('customerModalTitle').textContent = 'Edit Customer';
+          document.getElementById('customerId').value = customer.id;
+          document.getElementById('customerName').value = customer.name;
+          document.getElementById('customerContact').value = customer.contact;
+          document.getElementById('customerEmail').value = customer.email || '';
+          document.getElementById('customerPhone').value = customer.phone || '';
+          document.getElementById('customerStatus').value = customer.status;
+          document.getElementById('customerIndustry').value = customer.industry || '';
+          document.getElementById('customerAgeRange').value = customer.ageRange || '';
+          document.getElementById('customerCity').value = customer.city || '';
+          document.getElementById('customerState').value = customer.state || '';
+          document.getElementById('customerBillingAddress').value = customer.billingAddress || '';
+          document.getElementById('customerShippingAddress').value = customer.shippingAddress || '';
+          document.getElementById('customerLeadSource').value = customer.leadSource || '';
+          document.getElementById('customerReferrer').value = customer.referrer || '';
+          
+          // Social platforms
+          if (customer.socialPlatforms) {
+            customer.socialPlatforms.forEach(platform => {
+              const checkbox = document.getElementById('social_' + platform.toLowerCase().replace('/', '').replace(' ', ''));
+              if (checkbox) checkbox.checked = true;
+            });
+          }
+          
+          document.getElementById('customerSocialHandle').value = customer.socialHandle || '';
+          document.getElementById('customerSocialEngagement').value = customer.socialEngagement || '';
+          document.getElementById('customerSkillLevel').value = customer.skillLevel || '';
+          document.getElementById('customerPlayFrequency').value = customer.playFrequency || '';
+          document.getElementById('customerPaddleBrand').value = customer.paddleBrand || '';
+          
+          // Product interests
+          if (customer.productInterests) {
+            customer.productInterests.forEach(interest => {
+              const checkbox = document.getElementById('interest_' + interest.toLowerCase().split(' ')[0]);
+              if (checkbox) checkbox.checked = true;
+            });
+          }
+          
+          document.getElementById('customerContactMethod').value = customer.contactMethod || '';
+          document.getElementById('customerContactTime').value = customer.contactTime || '';
+          document.getElementById('customerEmailOptIn').checked = customer.emailOptIn || false;
+          document.getElementById('customerSMSOptIn').checked = customer.smsOptIn || false;
+          document.getElementById('customerReferralInterest').value = customer.referralInterest || '';
+          document.getElementById('customerDiscountInterest').value = customer.discountInterest || '';
+          document.getElementById('customerPotentialReferrals').value = customer.potentialReferrals || '';
+          document.getElementById('customerNotes').value = customer.notes || '';
+        }
+      } else {
+        document.getElementById('customerModalTitle').textContent = 'Add New Customer';
+        document.getElementById('customerId').value = '';
+      }
+    }
+
+    function saveCustomer(event) {
+      event.preventDefault();
+      
+      const customerId = document.getElementById('customerId').value;
+      
+      // Get social platforms
+      const socialPlatforms = [];
+      ['facebook', 'instagram', 'twitter', 'tiktok', 'youtube', 'linkedin'].forEach(platform => {
+        const checkbox = document.getElementById('social_' + platform);
+        if (checkbox && checkbox.checked) {
+          socialPlatforms.push(checkbox.value);
         }
       });
-    };
+      
+      // Get product interests
+      const productInterests = [];
+      ['noise', 'performance', 'durability', 'custom', 'gift'].forEach(interest => {
+        const checkbox = document.getElementById('interest_' + interest);
+        if (checkbox && checkbox.checked) {
+          productInterests.push(checkbox.value);
+        }
+      });
+      
+      const customerData = {
+        id: customerId || 'CUST' + Date.now(),
+        name: document.getElementById('customerName').value,
+        contact: document.getElementById('customerContact').value,
+        email: document.getElementById('customerEmail').value,
+        phone: document.getElementById('customerPhone').value,
+        status: document.getElementById('customerStatus').value,
+        industry: document.getElementById('customerIndustry').value,
+        ageRange: document.getElementById('customerAgeRange').value,
+        city: document.getElementById('customerCity').value,
+        state: document.getElementById('customerState').value,
+        billingAddress: document.getElementById('customerBillingAddress').value,
+        shippingAddress: document.getElementById('customerShippingAddress').value,
+        leadSource: document.getElementById('customerLeadSource').value,
+        referrer: document.getElementById('customerReferrer').value,
+        socialPlatforms: socialPlatforms,
+        socialHandle: document.getElementById('customerSocialHandle').value,
+        socialEngagement: document.getElementById('customerSocialEngagement').value,
+        skillLevel: document.getElementById('customerSkillLevel').value,
+        playFrequency: document.getElementById('customerPlayFrequency').value,
+        paddleBrand: document.getElementById('customerPaddleBrand').value,
+        productInterests: productInterests,
+        contactMethod: document.getElementById('customerContactMethod').value,
+        contactTime: document.getElementById('customerContactTime').value,
+        emailOptIn: document.getElementById('customerEmailOptIn').checked,
+        smsOptIn: document.getElementById('customerSMSOptIn').checked,
+        referralInterest: document.getElementById('customerReferralInterest').value,
+        discountInterest: document.getElementById('customerDiscountInterest').value,
+        potentialReferrals: document.getElementById('customerPotentialReferrals').value,
+        notes: document.getElementById('customerNotes').value,
+        createdAt: customerId ? crmData.customers.find(c => c.id === customerId)?.createdAt : new Date().toISOString()
+      };
+      
+      // Generate referral code if new customer
+      if (!customerId) {
+        customerData.referralCode = generateReferralCode(customerData.name);
+        customerData.referralsMade = 0;
+        customerData.referredCustomers = [];
+        customerData.referralCredits = 0;
+      } else {
+        const existingCustomer = crmData.customers.find(c => c.id === customerId);
+        customerData.referralCode = existingCustomer.referralCode;
+        customerData.referralsMade = existingCustomer.referralsMade || 0;
+        customerData.referredCustomers = existingCustomer.referredCustomers || [];
+        customerData.referralCredits = existingCustomer.referralCredits || 0;
+      }
+      
+      // Calculate AI score
+      customerData.aiScore = calculateAIScore(customerData);
+      
+      if (customerId) {
+        const index = crmData.customers.findIndex(c => c.id === customerId);
+        crmData.customers[index] = customerData;
+      } else {
+        crmData.customers.push(customerData);
+      }
+      
+      saveData();
+      closeModal('customerModal');
+      updateDashboard();
+      updateCustomersView();
+      populateCustomerDropdowns();
+      showNotification('Customer saved successfully!');
+    }
 
-    // Initialize on load
-    window.addEventListener('DOMContentLoaded', init);
+    function generateReferralCode(name) {
+      const namePart = name.split(' ')[0].toUpperCase().substring(0, 5);
+      const randomPart = Math.floor(1000 + Math.random() * 9000);
+      return `ACOUS-${namePart}-${randomPart}`;
+    }
+
+    function calculateAIScore(customer) {
+      let score = 0;
+      
+      // Contact completeness (20 points)
+      if (customer.email) score += 10;
+      if (customer.phone) score += 10;
+      
+      // Social engagement (15 points)
+      score += customer.socialPlatforms.length * 2;
+      if (customer.socialEngagement === 'Very High') score += 5;
+      else if (customer.socialEngagement === 'High') score += 3;
+      
+      // Pickleball involvement (20 points)
+      if (customer.skillLevel) score += 5;
+      if (customer.playFrequency === 'Daily') score += 10;
+      else if (customer.playFrequency === 'Several times/week') score += 7;
+      else if (customer.playFrequency === 'Weekly') score += 5;
+      if (customer.paddleBrand) score += 5;
+      
+      // Product interest (15 points)
+      score += customer.productInterests.length * 3;
+      
+      // Marketing receptiveness (15 points)
+      if (customer.emailOptIn) score += 7;
+      if (customer.smsOptIn) score += 8;
+      
+      // Referral potential (15 points)
+      if (customer.referralInterest === 'Very Interested') score += 10;
+      else if (customer.referralInterest === 'Somewhat Interested') score += 5;
+      if (customer.potentialReferrals) score += Math.min(5, parseInt(customer.potentialReferrals));
+      
+      return Math.min(100, score);
+    }
+
+    function updateCustomersView() {
+      const tbody = document.getElementById('customersTable');
+      const html = crmData.customers.map(c => `
+        <tr>
+          <td><strong>${c.name}</strong></td>
+          <td>${c.email || c.phone || '-'}</td>
+          <td><span class="status-badge status-${c.status.toLowerCase()}">${c.status}</span></td>
+          <td><span class="score-badge score-${c.aiScore >= 70 ? 'high' : c.aiScore >= 40 ? 'medium' : 'low'}">${c.aiScore || 0}/100</span></td>
+          <td>${c.leadSource || '-'}</td>
+          <td>${c.referralsMade || 0}</td>
+          <td>
+            <button class="btn-secondary" style="padding: 6px 12px; margin-right: 5px;" onclick="openCustomerModal('${c.id}')">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn-danger" style="padding: 6px 12px;" onclick="deleteCustomer('${c.id}')">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+      `).join('');
+      tbody.innerHTML = html || '<tr><td colspan="7" style="text-align: center; padding: 40px; color: #999;">No customers yet. Click "Add Customer" to get started.</td></tr>';
+    }
+
+    function filterCustomers() {
+      const search = document.getElementById('customerSearch').value.toLowerCase();
+      const rows = document.getElementById('customersTable').querySelectorAll('tr');
+      
+      rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(search) ? '' : 'none';
+      });
+    }
+
+    function deleteCustomer(id) {
+      if (confirm('Are you sure you want to delete this customer?')) {
+        crmData.customers = crmData.customers.filter(c => c.id !== id);
+        saveData();
+        updateDashboard();
+        updateCustomersView();
+        populateCustomerDropdowns();
+        showNotification('Customer deleted');
+      }
+    }
+
+    // Order Functions
+    function openOrderModal(orderId = null) {
+      document.getElementById('orderModal').style.display = 'block';
+      document.getElementById('orderForm').reset();
+      populateCustomerDropdowns();
+      setDefaultOrderDate();
+      
+      if (orderId) {
+        const order = crmData.orders.find(o => o.id === orderId);
+        if (order) {
+          document.getElementById('orderModalTitle').textContent = 'Edit Order';
+          document.getElementById('orderId').value = order.id;
+          document.getElementById('orderCustomer').value = order.customerId;
+          document.getElementById('orderDate').value = order.date;
+          document.getElementById('orderProduct').value = order.product;
+          document.getElementById('orderManufacturer').value = order.manufacturer || '';
+          document.getElementById('orderQuantity').value = order.quantity;
+          document.getElementById('orderPrice').value = order.price;
+          document.getElementById('orderShipping').value = order.shipping || 0;
+          document.getElementById('orderShipper').value = order.shipper || '';
+          document.getElementById('orderTracking').value = order.tracking || '';
+          document.getElementById('orderState').value = order.state;
+          document.getElementById('orderStatus').value = order.status;
+          document.getElementById('orderShipAddress').value = order.shipAddress || '';
+          document.getElementById('orderNotes').value = order.notes || '';
+          calculateOrderTotal();
+        }
+      } else {
+        document.getElementById('orderModalTitle').textContent = 'New Order';
+        document.getElementById('orderId').value = '';
+      }
+    }
+
+    function setDefaultOrderDate() {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('orderDate').value = today;
+    }
+
+    function populateCustomerDropdowns() {
+      const orderSelect = document.getElementById('orderCustomer');
+      const eventSelect = document.getElementById('eventCustomer');
+      
+      const options = crmData.customers.map(c => 
+        `<option value="${c.id}">${c.name}</option>`
+      ).join('');
+      
+      if (orderSelect) {
+        orderSelect.innerHTML = '<option value="">Select Customer...</option>' + options;
+      }
+      if (eventSelect) {
+        eventSelect.innerHTML = '<option value="">None</option>' + options;
+      }
+    }
+
+    function updateShipAddress() {
+      const customerId = document.getElementById('orderCustomer').value;
+      const customer = crmData.customers.find(c => c.id === customerId);
+      
+      if (customer && customer.shippingAddress) {
+        document.getElementById('orderShipAddress').value = customer.shippingAddress;
+      } else if (customer && customer.billingAddress) {
+        document.getElementById('orderShipAddress').value = customer.billingAddress;
+      }
+      
+      if (customer && customer.state) {
+        document.getElementById('orderState').value = customer.state;
+        calculateOrderTotal();
+      }
+    }
+
+    function calculateOrderTotal() {
+      const quantity = parseFloat(document.getElementById('orderQuantity').value) || 0;
+      const price = parseFloat(document.getElementById('orderPrice').value) || 0;
+      const shipping = parseFloat(document.getElementById('orderShipping').value) || 0;
+      const state = document.getElementById('orderState').value;
+      
+      const subtotal = (quantity * price) + shipping;
+      const taxRate = stateTaxRates[state] || 0;
+      const tax = subtotal * (taxRate / 100);
+      const total = subtotal + tax;
+      
+      document.getElementById('orderSubtotalDisplay').textContent = '$' + subtotal.toFixed(2);
+      document.getElementById('orderTaxDisplay').textContent = '$' + tax.toFixed(2);
+      document.getElementById('orderTotalDisplay').textContent = '$' + total.toFixed(2);
+    }
+
+    function saveOrder(event) {
+      event.preventDefault();
+      
+      const orderId = document.getElementById('orderId').value;
+      const quantity = parseFloat(document.getElementById('orderQuantity').value);
+      const price = parseFloat(document.getElementById('orderPrice').value);
+      const shipping = parseFloat(document.getElementById('orderShipping').value) || 0;
+      const state = document.getElementById('orderState').value;
+      
+      const subtotal = (quantity * price) + shipping;
+      const taxRate = stateTaxRates[state] || 0;
+      const tax = subtotal * (taxRate / 100);
+      const total = subtotal + tax;
+      
+      const orderData = {
+        id: orderId || 'ORD' + Date.now(),
+        customerId: document.getElementById('orderCustomer').value,
+        date: document.getElementById('orderDate').value,
+        product: document.getElementById('orderProduct').value,
+        manufacturer: document.getElementById('orderManufacturer').value,
+        quantity: quantity,
+        price: price,
+        shipping: shipping,
+        shipper: document.getElementById('orderShipper').value,
+        state: state,
+        subtotal: subtotal,
+        tax: tax,
+        total: total,
+        status: document.getElementById('orderStatus').value,
+        tracking: document.getElementById('orderTracking').value,
+        shipAddress: document.getElementById('orderShipAddress').value,
+        notes: document.getElementById('orderNotes').value
+      };
+      
+      if (orderId) {
+        const index = crmData.orders.findIndex(o => o.id === orderId);
+        crmData.orders[index] = orderData;
+      } else {
+        crmData.orders.push(orderData);
+      }
+      
+      saveData();
+      closeModal('orderModal');
+      updateDashboard();
+      updateOrdersView();
+      showNotification('Order saved successfully!');
+    }
+
+    function updateOrdersView() {
+      const tbody = document.getElementById('ordersTable');
+      const html = crmData.orders.map(o => {
+        const customer = crmData.customers.find(c => c.id === o.customerId);
+        return `
+          <tr>
+            <td><strong>${o.id}</strong></td>
+            <td>${customer ? customer.name : 'Unknown'}</td>
+            <td>${new Date(o.date).toLocaleDateString()}</td>
+            <td>${o.product}${o.manufacturer ? ' (' + o.manufacturer + ')' : ''}</td>
+            <td><strong>$${o.total.toFixed(2)}</strong></td>
+            <td><span class="status-badge status-${o.status.toLowerCase()}">${o.status}</span></td>
+            <td>
+              <button class="btn-secondary" style="padding: 6px 12px; margin-right: 5px;" onclick="openOrderModal('${o.id}')">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn-danger" style="padding: 6px 12px;" onclick="deleteOrder('${o.id}')">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+      tbody.innerHTML = html || '<tr><td colspan="7" style="text-align: center; padding: 40px; color: #999;">No orders yet. Click "New Order" to create one.</td></tr>';
+    }
+
+    function deleteOrder(id) {
+      if (confirm('Are you sure you want to delete this order?')) {
+        crmData.orders = crmData.orders.filter(o => o.id !== id);
+        saveData();
+        updateDashboard();
+        updateOrdersView();
+        showNotification('Order deleted');
+      }
+    }
+    // Event Functions
+    function openEventModal(eventId = null, date = null) {
+      document.getElementById('eventModal').style.display = 'block';
+      document.getElementById('eventForm').reset();
+      populateCustomerDropdowns();
+      
+      if (eventId) {
+        const event = crmData.events.find(e => e.id === eventId);
+        if (event) {
+          document.getElementById('eventModalTitle').textContent = 'Edit Event';
+          document.getElementById('eventId').value = event.id;
+          document.getElementById('eventType').value = event.type;
+          document.getElementById('eventTitle').value = event.title;
+          document.getElementById('eventDate').value = event.date;
+          document.getElementById('eventTime').value = event.time || '';
+          document.getElementById('eventCustomer').value = event.customerId || '';
+          document.getElementById('eventDescription').value = event.description || '';
+        }
+      } else {
+        document.getElementById('eventModalTitle').textContent = 'New Event';
+        document.getElementById('eventId').value = '';
+        if (date) {
+          document.getElementById('eventDate').value = date;
+        } else {
+          document.getElementById('eventDate').value = new Date().toISOString().split('T')[0];
+        }
+      }
+    }
+
+    function saveEvent(event) {
+      event.preventDefault();
+      
+      const eventId = document.getElementById('eventId').value;
+      const eventData = {
+        id: eventId || 'EVT' + Date.now(),
+        type: document.getElementById('eventType').value,
+        title: document.getElementById('eventTitle').value,
+        date: document.getElementById('eventDate').value,
+        time: document.getElementById('eventTime').value,
+        customerId: document.getElementById('eventCustomer').value,
+        description: document.getElementById('eventDescription').value
+      };
+      
+      if (eventId) {
+        const index = crmData.events.findIndex(e => e.id === eventId);
+        crmData.events[index] = eventData;
+      } else {
+        crmData.events.push(eventData);
+      }
+      
+      saveData();
+      closeModal('eventModal');
+      updateDashboard();
+      renderCalendar();
+      showNotification('Event saved successfully!');
+    }
+
+    function showEventDetails(eventId) {
+      const event = crmData.events.find(e => e.id === eventId);
+      if (!event) return;
+      
+      const customer = event.customerId ? crmData.customers.find(c => c.id === event.customerId) : null;
+      
+      const content = `
+        <div style="background: #f1f8e9; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+            <i class="fas fa-${getEventIcon(event.type)}" style="font-size: 24px; color: #66bb6a;"></i>
+            <div>
+              <div style="font-size: 12px; color: #666; text-transform: uppercase;">${event.type}</div>
+              <div style="font-size: 20px; font-weight: 600; color: #2e5940;">${event.title}</div>
+            </div>
+          </div>
+        </div>
+        
+        <div style="margin-bottom: 15px;">
+          <div style="color: #666; font-size: 12px; margin-bottom: 5px;">DATE & TIME</div>
+          <div style="color: #2e5940; font-weight: 600;">
+            ${new Date(event.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+            ${event.time ? ' at ' + event.time : ''}
+          </div>
+        </div>
+        
+        ${customer ? `
+          <div style="margin-bottom: 15px;">
+            <div style="color: #666; font-size: 12px; margin-bottom: 5px;">RELATED CUSTOMER</div>
+            <div style="color: #2e5940; font-weight: 600;">${customer.name}</div>
+          </div>
+        ` : ''}
+        
+        ${event.description ? `
+          <div style="margin-bottom: 15px;">
+            <div style="color: #666; font-size: 12px; margin-bottom: 5px;">DESCRIPTION</div>
+            <div style="color: #2e5940;">${event.description}</div>
+          </div>
+        ` : ''}
+      `;
+      
+      document.getElementById('eventDetailsContent').innerHTML = content;
+      currentEventId = eventId;
+      document.getElementById('eventDetailsModal').style.display = 'block';
+    }
+
+    function editEventFromDetails() {
+      closeModal('eventDetailsModal');
+      openEventModal(currentEventId);
+    }
+
+    function deleteEventFromDetails() {
+      if (confirm('Are you sure you want to delete this event?')) {
+        crmData.events = crmData.events.filter(e => e.id !== currentEventId);
+        saveData();
+        closeModal('eventDetailsModal');
+        updateDashboard();
+        renderCalendar();
+        showNotification('Event deleted');
+      }
+    }
+
+    // Calendar Functions
+    function renderCalendar() {
+      const firstDay = new Date(currentYear, currentMonth, 1);
+      const lastDay = new Date(currentYear, currentMonth + 1, 0);
+      const prevLastDay = new Date(currentYear, currentMonth, 0);
+      
+      const firstDayIndex = firstDay.getDay();
+      const lastDayIndex = lastDay.getDay();
+      const nextDays = 7 - lastDayIndex - 1;
+      
+      const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+      document.getElementById('calendarTitle').textContent = `${monthNames[currentMonth]} ${currentYear}`;
+      
+      let days = '';
+      
+      // Previous month days
+      for (let x = firstDayIndex; x > 0; x--) {
+        days += `<div class="calendar-day" style="opacity: 0.3;">
+          <div style="font-weight: 600; margin-bottom: 8px;">${prevLastDay.getDate() - x + 1}</div>
+        </div>`;
+      }
+      
+      // Current month days
+      const today = new Date();
+      for (let i = 1; i <= lastDay.getDate(); i++) {
+        const date = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+        const isToday = today.getDate() === i && today.getMonth() === currentMonth && today.getFullYear() === currentYear;
+        
+        const dayEvents = crmData.events.filter(e => e.date === date);
+        const holiday = holidays[date];
+        
+        let eventsHtml = '';
+        dayEvents.forEach(e => {
+          eventsHtml += `<div class="event-item" onclick="showEventDetails('${e.id}')">${e.title}</div>`;
+        });
+        
+        if (holiday) {
+          eventsHtml += `<div class="holiday-item">${holiday}</div>`;
+        }
+        
+        days += `<div class="calendar-day ${isToday ? 'today' : ''}" onclick="openEventModal(null, '${date}')">
+          <div style="font-weight: 600; margin-bottom: 8px;">${i}</div>
+          ${eventsHtml}
+        </div>`;
+      }
+      
+      // Next month days
+      for (let j = 1; j <= nextDays; j++) {
+        days += `<div class="calendar-day" style="opacity: 0.3;">
+          <div style="font-weight: 600; margin-bottom: 8px;">${j}</div>
+        </div>`;
+      }
+      
+      document.getElementById('calendarDays').innerHTML = days;
+    }
+
+    function changeMonth(direction) {
+      currentMonth += direction;
+      if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear++;
+      } else if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear--;
+      }
+      renderCalendar();
+    }
+
+    // Pipeline View
+    function updatePipelineView() {
+      const prospects = crmData.customers.filter(c => c.status === 'Prospect');
+      const active = crmData.customers.filter(c => c.status === 'Active');
+      const inactive = crmData.customers.filter(c => c.status === 'Inactive');
+      
+      const prospectsList = document.getElementById('prospectsList');
+      const activeList = document.getElementById('activeList');
+      const inactiveList = document.getElementById('inactiveList');
+      
+      prospectsList.innerHTML = prospects.map(c => `
+        <div style="padding: 12px; background: #f1f8e9; border-radius: 8px; margin-bottom: 10px; cursor: pointer;" onclick="openCustomerModal('${c.id}')">
+          <div style="font-weight: 600; color: #2e5940; margin-bottom: 5px;">${c.name}</div>
+          <div style="font-size: 12px; color: #666;">${c.leadSource || 'Unknown source'}</div>
+          <div style="margin-top: 5px;">
+            <span class="score-badge score-${c.aiScore >= 70 ? 'high' : c.aiScore >= 40 ? 'medium' : 'low'}">${c.aiScore || 0}/100</span>
+          </div>
+        </div>
+      `).join('') || '<p style="color: #999; text-align: center; padding: 20px;">No prospects</p>';
+      
+      activeList.innerHTML = active.map(c => `
+        <div style="padding: 12px; background: #f1f8e9; border-radius: 8px; margin-bottom: 10px; cursor: pointer;" onclick="openCustomerModal('${c.id}')">
+          <div style="font-weight: 600; color: #2e5940; margin-bottom: 5px;">${c.name}</div>
+          <div style="font-size: 12px; color: #666;">${c.email || c.phone || 'No contact'}</div>
+          <div style="margin-top: 5px;">
+            <span class="score-badge score-${c.aiScore >= 70 ? 'high' : c.aiScore >= 40 ? 'medium' : 'low'}">${c.aiScore || 0}/100</span>
+          </div>
+        </div>
+      `).join('') || '<p style="color: #999; text-align: center; padding: 20px;">No active customers</p>';
+      
+      inactiveList.innerHTML = inactive.map(c => `
+        <div style="padding: 12px; background: #f1f8e9; border-radius: 8px; margin-bottom: 10px; cursor: pointer;" onclick="openCustomerModal('${c.id}')">
+          <div style="font-weight: 600; color: #2e5940; margin-bottom: 5px;">${c.name}</div>
+          <div style="font-size: 12px; color: #666;">Last contact: ${new Date(c.createdAt).toLocaleDateString()}</div>
+        </div>
+      `).join('') || '<p style="color: #999; text-align: center; padding: 20px;">No inactive customers</p>';
+    }
+
+    // Analytics View
+    function updateAnalyticsView() {
+      renderLeadSourceChart();
+      renderSocialChart();
+      renderRevenueChart();
+      generateAIInsights();
+    }
+
+    function renderLeadSourceChart() {
+      const ctx = document.getElementById('leadSourceChart');
+      if (!ctx) return;
+      
+      const sources = {};
+      crmData.customers.forEach(c => {
+        const source = c.leadSource || 'Unknown';
+        sources[source] = (sources[source] || 0) + 1;
+      });
+      
+      if (window.leadSourceChartInstance) {
+        window.leadSourceChartInstance.destroy();
+      }
+      
+      window.leadSourceChartInstance = new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: Object.keys(sources),
+          datasets: [{
+            data: Object.values(sources),
+            backgroundColor: ['#66bb6a', '#42a5f5', '#ffa726', '#ab47bc', '#ef5350', '#26c6da', '#ffee58', '#ec407a', '#7e57c2', '#26a69a']
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'bottom'
+            }
+          }
+        }
+      });
+    }
+
+    function renderSocialChart() {
+      const ctx = document.getElementById('socialChart');
+      if (!ctx) return;
+      
+      const platforms = { Facebook: 0, Instagram: 0, 'Twitter/X': 0, TikTok: 0, YouTube: 0, LinkedIn: 0 };
+      crmData.customers.forEach(c => {
+        if (c.socialPlatforms) {
+          c.socialPlatforms.forEach(p => {
+            if (platforms.hasOwnProperty(p)) platforms[p]++;
+          });
+        }
+      });
+      
+      if (window.socialChartInstance) {
+        window.socialChartInstance.destroy();
+      }
+      
+      window.socialChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: Object.keys(platforms),
+          datasets: [{
+            label: 'Active Users',
+            data: Object.values(platforms),
+            backgroundColor: '#66bb6a'
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                stepSize: 1
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function renderRevenueChart() {
+      const ctx = document.getElementById('revenueChart');
+      if (!ctx) return;
+      
+      const monthlyRevenue = {};
+      crmData.orders.forEach(o => {
+        const month = o.date.substring(0, 7); // YYYY-MM
+        monthlyRevenue[month] = (monthlyRevenue[month] || 0) + o.total;
+      });
+      
+      const sortedMonths = Object.keys(monthlyRevenue).sort();
+      const revenues = sortedMonths.map(m => monthlyRevenue[m]);
+      
+      if (window.revenueChartInstance) {
+        window.revenueChartInstance.destroy();
+      }
+      
+      window.revenueChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: sortedMonths.map(m => {
+            const [year, month] = m.split('-');
+            return new Date(year, month - 1).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+          }),
+          datasets: [{
+            label: 'Revenue',
+            data: revenues,
+            borderColor: '#66bb6a',
+            backgroundColor: 'rgba(102, 187, 106, 0.1)',
+            tension: 0.4,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function(value) {
+                  return '$' + value.toFixed(2);
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function generateAIInsights() {
+      const insights = [];
+      
+      // High-value customers
+      const highScoreCustomers = crmData.customers.filter(c => c.aiScore >= 70);
+      if (highScoreCustomers.length > 0) {
+        insights.push({
+          icon: 'star',
+          color: '#ffa726',
+          title: 'High-Value Customers',
+          text: `You have ${highScoreCustomers.length} high-value customers with AI scores above 70. Focus on maintaining these relationships.`
+        });
+      }
+      
+      // Social media opportunity
+      const highSocialEngagement = crmData.customers.filter(c => c.socialEngagement === 'Very High' || c.socialEngagement === 'High');
+      if (highSocialEngagement.length > 0) {
+        insights.push({
+          icon: 'share-alt',
+          color: '#42a5f5',
+          title: 'Social Media Opportunity',
+          text: `${highSocialEngagement.length} customers are highly active on social media. Consider launching a social media campaign.`
+        });
+      }
+      
+      // Referral potential
+      const referralInterested = crmData.customers.filter(c => c.referralInterest === 'Very Interested');
+      if (referralInterested.length > 0) {
+        insights.push({
+          icon: 'user-friends',
+          color: '#66bb6a',
+          title: 'Referral Potential',
+          text: `${referralInterested.length} customers are very interested in your referral program. Reach out to activate them.`
+        });
+      }
+      
+      // Revenue trend
+      if (crmData.orders.length >= 2) {
+        const recentOrders = crmData.orders.slice(-5);
+        const avgRecent = recentOrders.reduce((sum, o) => sum + o.total, 0) / recentOrders.length;
+        insights.push({
+          icon: 'chart-line',
+          color: '#ab47bc',
+          title: 'Revenue Insight',
+          text: `Your average order value in recent transactions is $${avgRecent.toFixed(2)}.`
+        });
+      }
+      
+      const html = insights.map(i => `
+        <div style="padding: 20px; background: #f1f8e9; border-radius: 8px; border-left: 4px solid ${i.color}; margin-bottom: 15px;">
+          <div style="display: flex; align-items: center; gap: 15px;">
+            <div style="font-size: 32px; color: ${i.color};">
+              <i class="fas fa-${i.icon}"></i>
+            </div>
+            <div>
+              <div style="font-weight: 600; color: #2e5940; margin-bottom: 5px;">${i.title}</div>
+              <div style="color: #666; font-size: 14px;">${i.text}</div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+      
+      document.getElementById('aiInsights').innerHTML = html || '<p style="color: #999; text-align: center; padding: 20px;">Not enough data for insights yet.</p>';
+    }
+
+    // Marketing View
+    function updateMarketingView() {
+      // Recommendations
+      const recommendations = [];
+      
+      const emailOptIns = crmData.customers.filter(c => c.emailOptIn).length;
+      const smsOptIns = crmData.customers.filter(c => c.smsOptIn).length;
+      
+      if (emailOptIns > 0) {
+        recommendations.push({
+          icon: 'envelope',
+          title: 'Email Campaign Ready',
+          description: `${emailOptIns} customers opted in for email marketing. Launch a targeted campaign.`,
+          action: 'Create Campaign'
+        });
+      }
+      
+      if (smsOptIns > 0) {
+        recommendations.push({
+          icon: 'sms',
+          title: 'SMS Marketing Opportunity',
+          description: `${smsOptIns} customers opted in for SMS. Send them exclusive offers.`,
+          action: 'Send SMS'
+        });
+      }
+      
+      const socialActive = crmData.customers.filter(c => c.socialPlatforms && c.socialPlatforms.length > 0);
+      if (socialActive.length > 0) {
+        recommendations.push({
+          icon: 'hashtag',
+          title: 'Social Media Campaign',
+          description: `${socialActive.length} customers are active on social media. Perfect for viral content.`,
+          action: 'Plan Campaign'
+        });
+      }
+      
+      const html = recommendations.map(r => `
+        <div style="padding: 20px; background: white; border-radius: 8px; border: 2px solid #e8f5e9; margin-bottom: 15px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 15px;">
+              <div style="width: 50px; height: 50px; background: #e8f5e9; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; color: #66bb6a;">
+                <i class="fas fa-${r.icon}"></i>
+              </div>
+              <div>
+                <div style="font-weight: 600; color: #2e5940; margin-bottom: 5px;">${r.title}</div>
+                <div style="color: #666; font-size: 14px;">${r.description}</div>
+              </div>
+            </div>
+            <button class="btn-primary">${r.action}</button>
+          </div>
+        </div>
+      `).join('');
+      
+      document.getElementById('marketingRecommendations').innerHTML = html || '<p style="color: #999; text-align: center; padding: 20px;">No recommendations yet. Add more customer data.</p>';
+      
+      // High-value customers
+      const highValue = crmData.customers.filter(c => c.aiScore >= 70).slice(0, 5);
+      const highValueHtml = highValue.map(c => `
+        <div style="padding: 15px; background: #f1f8e9; border-radius: 8px; margin-bottom: 10px; cursor: pointer;" onclick="openCustomerModal('${c.id}')">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-weight: 600; color: #2e5940;">${c.name}</div>
+              <div style="font-size: 12px; color: #666; margin-top: 3px;">${c.email || c.phone || 'No contact'}</div>
+            </div>
+            <span class="score-badge score-high">${c.aiScore}/100</span>
+          </div>
+        </div>
+      `).join('');
+      document.getElementById('highValueCustomers').innerHTML = highValueHtml || '<p style="color: #999; text-align: center; padding: 20px;">No high-value customers yet.</p>';
+      
+      // Referral opportunities
+      const referralOpps = crmData.customers.filter(c => c.referralInterest === 'Very Interested' || c.referralInterest === 'Somewhat Interested').slice(0, 5);
+      const referralHtml = referralOpps.map(c => `
+        <div style="padding: 15px; background: #f1f8e9; border-radius: 8px; margin-bottom: 10px; cursor: pointer;" onclick="openCustomerModal('${c.id}')">
+          <div style="font-weight: 600; color: #2e5940; margin-bottom: 5px;">${c.name}</div>
+          <div style="font-size: 12px; color: #666;">Interest: ${c.referralInterest}</div>
+          <div style="font-size: 12px; color: #666;">Potential Referrals: ${c.potentialReferrals || 0}</div>
+        </div>
+      `).join('');
+      document.getElementById('referralOpportunities').innerHTML = referralHtml || '<p style="color: #999; text-align: center; padding: 20px;">No referral opportunities yet.</p>';
+    }
+
+    // Referrals View
+    function updateReferralsView() {
+      const topReferrers = [...crmData.customers]
+        .filter(c => c.referralsMade > 0)
+        .sort((a, b) => b.referralsMade - a.referralsMade)
+        .slice(0, 10);
+      
+      const html = topReferrers.map((c, index) => {
+        const tier = c.referralsMade >= 11 ? 'Platinum' : c.referralsMade >= 6 ? 'Gold' : c.referralsMade >= 3 ? 'Silver' : 'Bronze';
+        const tierColor = tier === 'Platinum' ? '#e5e4e2' : tier === 'Gold' ? '#ffd700' : tier === 'Silver' ? '#c0c0c0' : '#cd7f32';
+        
+        return `
+          <div style="padding: 20px; background: white; border-radius: 8px; border: 2px solid #e8f5e9; margin-bottom: 15px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div style="display: flex; align-items: center; gap: 15px;">
+                <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #66bb6a, #43a047); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 18px;">
+                  ${index + 1}
+                </div>
+                <div>
+                  <div style="font-weight: 600; color: #2e5940; font-size: 18px;">${c.name}</div>
+                  <div style="font-size: 14px; color: #666; margin-top: 3px;">
+                    Code: <strong>${c.referralCode}</strong> | Credits: <strong>$${c.referralCredits || 0}</strong>
+                  </div>
+                </div>
+              </div>
+              <div style="text-align: right;">
+                <div style="display: inline-block; padding: 8px 16px; background: ${tierColor}; color: ${tier === 'Platinum' || tier === 'Silver' ? '#2e5940' : 'white'}; border-radius: 20px; font-weight: 600; margin-bottom: 5px;">
+                  ${tier}
+                </div>
+                <div style="font-size: 24px; font-weight: 700; color: #2e5940;">${c.referralsMade} referrals</div>
+              </div>
+            </div>
+            <div style="margin-top: 15px;">
+              <button class="btn-secondary" onclick="showReferralDetails('${c.id}')" style="margin-right: 10px;">
+                <i class="fas fa-qrcode"></i> View QR Code
+              </button>
+              <button class="btn-secondary" onclick="shareReferral('${c.id}')">
+                <i class="fas fa-share"></i> Share
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+      
+      document.getElementById('referralLeaderboard').innerHTML = html || '<p style="color: #999; text-align: center; padding: 40px;">No referrals yet. Encourage your customers to refer friends!</p>';
+    }
+
+    function showReferralDetails(customerId) {
+      const customer = crmData.customers.find(c => c.id === customerId);
+      if (!customer) return;
+      
+      const modal = document.createElement('div');
+      modal.className = 'modal';
+      modal.style.display = 'block';
+      modal.innerHTML = `
+        <div class="modal-content" style="max-width: 600px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+            <h3 style="color: #2e5940; font-size: 24px; font-weight: 700;">
+              <i class="fas fa-gift"></i> Referral Details
+            </h3>
+            <button onclick="this.closest('.modal').remove()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #999;">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          
+          <div style="text-align: center; margin-bottom: 30px;">
+            <div style="font-size: 20px; font-weight: 600; color: #2e5940; margin-bottom: 15px;">${customer.name}</div>
+            <div style="background: #f1f8e9; padding: 15px; border-radius: 8px; display: inline-block;">
+              <div style="font-size: 14px; color: #666; margin-bottom: 5px;">Referral Code</div>
+              <div style="font-size: 28px; font-weight: 700; color: #43a047; letter-spacing: 2px;">${customer.referralCode}</div>
+            </div>
+          </div>
+          
+          <div id="qrcode-${customerId}" style="text-align: center; margin: 30px 0;"></div>
+          
+          <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; margin: 20px 0;">
+            <div style="text-align: center;">
+              <div style="font-size: 14px; color: #666; margin-bottom: 10px;">Share on Social Media</div>
+              <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                <button class="btn-secondary" onclick="shareToEmail('${customer.referralCode}')">
+                  <i class="fas fa-envelope"></i> Email
+                </button>
+                <button class="btn-secondary" onclick="shareToSMS('${customer.referralCode}')">
+                  <i class="fas fa-sms"></i> SMS
+                </button>
+                <button class="btn-secondary" onclick="shareToFacebook('${customer.referralCode}')">
+                  <i class="fab fa-facebook"></i> Facebook
+                </button>
+                <button class="btn-secondary" onclick="shareToTwitter('${customer.referralCode}')">
+                  <i class="fab fa-twitter"></i> Twitter
+                </button>
+                <button class="btn-secondary" onclick="shareToWhatsApp('${customer.referralCode}')">
+                  <i class="fab fa-whatsapp"></i> WhatsApp
+                </button>
+                <button class="btn-secondary" onclick="shareToLinkedIn('${customer.referralCode}')">
+                  <i class="fab fa-linkedin"></i> LinkedIn
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <div style="text-align: center;">
+            <button class="btn-primary" onclick="this.closest('.modal').remove()">Close</button>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(modal);
+      
+      // Generate QR Code
+      setTimeout(() => {
+        new QRCode(document.getElementById(`qrcode-${customerId}`), {
+          text: `AcoustiSkin Referral Code: ${customer.referralCode}\nUse this code for $15 off your first order!`,
+          width: 200,
+          height: 200
+        });
+      }, 100);
+    }
+
+    function shareReferral(customerId) {
+      showReferralDetails(customerId);
+    }
+
+    function shareToEmail(code) {
+      const subject = encodeURIComponent('Get $15 off AcoustiSkin!');
+      const body = encodeURIComponent(`Hey! I'm loving my AcoustiSkin paddle cover. Use my referral code "${code}" to get $15 off your first order!\n\nCheck them out: [Your Website URL]`);
+      window.location.href = `mailto:?subject=${subject}&body=${body}`;
+    }
+
+    function shareToSMS(code) {
+      const message = encodeURIComponent(`Check out AcoustiSkin! Use my code "${code}" for $15 off!`);
+      window.location.href = `sms:?body=${message}`;
+    }
+
+    function shareToFacebook(code) {
+      const url = encodeURIComponent(window.location.origin);
+      const text = encodeURIComponent(`Get $15 off AcoustiSkin with my referral code: ${code}`);
+      window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${text}`, '_blank');
+    }
+
+    function shareToTwitter(code) {
+      const text = encodeURIComponent(`Get $15 off @AcoustiSkin paddle covers with my code: ${code}`);
+      window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
+    }
+
+    function shareToWhatsApp(code) {
+      const text = encodeURIComponent(`Check out AcoustiSkin! Use my code "${code}" for $15 off!`);
+      window.open(`https://wa.me/?text=${text}`, '_blank');
+    }
+
+    function shareToLinkedIn(code) {
+      const url = encodeURIComponent(window.location.origin);
+      window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}`, '_blank');
+    }
   </script>
 </body>
 </html>
