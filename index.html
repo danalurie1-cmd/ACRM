@@ -1585,7 +1585,7 @@ Next <i class="fas fa-chevron-right"></i>
 <h4 style="color: #2e5940; font-size: 18px;">
 <i class="fas fa-comments"></i> Communication History
 </h4>
-<button class="btn-primary" onclick="openCommunicationModal()">
+<button class="btn-primary" onclick="openCommunicationModal(document.getElementById('customerId').value)">
 <i class="fas fa-plus"></i> Log Communication
 </button>
 </div>
@@ -1601,10 +1601,9 @@ Next <i class="fas fa-chevron-right"></i>
 <h4 style="color: #2e5940; font-size: 18px;">
 <i class="fas fa-tasks"></i> Customer Tasks
 </h4>
-<button class="btn-primary" onclick="openTaskModal()">
+<button class="btn-primary" onclick="openTaskModal(document.getElementById('customerId').value)">
 <i class="fas fa-plus"></i> Add Task
 </button>
-</div>
 
 <div id="customerTasks">
 <p style="color: #999; text-align: center; padding: 40px;">No tasks assigned yet.</p>
@@ -3031,7 +3030,6 @@ document.getElementById('orderTotal').textContent = '$0.00';
 }
 
 document.getElementById('orderModal').style.display = 'block';
-}
 
 // Open Order Modal for Customer (from Purchases tab)
 function openOrderModalForCustomer() {
