@@ -2731,18 +2731,30 @@
       const today = new Date().toISOString().split('T')[0];
       document.getElementById('orderDate').value = today;
       
-      if (orderId) {
-        const order = crmData.orders.find(o => o.id === orderId);
-        if (order) {
-          document.getElementById('orderId').value = order.id;
-          customerSelect.value = order.customerId;
-          document.getElementById('orderProduct').value = order.product;
-          document.getElementById('orderManufacturer').value = order.manufacturer || '';
-          document.getElementById('orderQuantity').value = order.quantity;
-          document.getElementById('orderPrice').value = order.price;
-          document.getElementById('orderDiscount').value = order.discount || 0;
-          document.getElementById('orderShippingAddress').value = order.shippingAddress;
-          document.getElementById('orderShippingState').value = order.shippingState;
+     if (orderId) {
+  const order = crmData.orders.find(o => o.id === orderId);
+  if (order) {
+    document.getElementById('orderId').value = order.id;
+    customerSelect.value = order.customerId;
+    document.getElementById('orderProduct').value = order.product;
+    document.getElementById('orderManufacturer').value = order.manufacturer || '';
+    document.getElementById('orderQuantity').value = order.quantity;
+    document.getElementById('orderPrice').value = order.price;
+    document.getElementById('orderDiscount').value = order.discount || 0;
+    
+    // Handle shipping address - could be object or string (legacy)
+    if (typeof order.shippingAddress === 'object') {
+      document.getElementById('orderShippingStreet').value = order.shippingAddress.street || '';
+      document.getElementById('orderShippingCity').value = order.shippingAddress.city || '';
+      document.getElementById('orderShippingState').value = order.shippingAddress.state || '';
+      document.getElementById('orderShippingZip').value = order.shippingAddress.zip || '';
+    } else {
+      // Legacy string format - leave blank
+      document.getElementById('orderShippingStreet').value = '';
+      document.getElementById('orderShippingCity').value = '';
+      document.getElementById('orderShippingState').value = '';
+      document.getElementById('orderShippingZip').value = '';
+    }
           document.getElementById('orderShippingCost').value = order.shippingCost || 0;
           document.getElementById('orderShippingCompany').value = order.shippingCompany || '';
           document.getElementById('orderTrackingNumber').value = order.trackingNumber || '';
@@ -2760,19 +2772,21 @@
     }
 
     // Update Shipping Address
-    function updateShipAddress() {
-      const customerId = document.getElementById('orderCustomer').value;
-      if (customerId) {
-        const customer = crmData.customers.find(c => c.id === customerId);
-        if (customer && customer.shippingAddress) {
-          const addr = customer.shippingAddress;
-          const fullAddress = `${addr.street}\n${addr.city}, ${addr.state} ${addr.zip}`;
-          document.getElementById('orderShippingAddress').value = fullAddress;
-          document.getElementById('orderShippingState').value = addr.state;
-          calculateOrderTotal();
-        }
-      }
+    // Update Shipping Address
+function updateShipAddress() {
+  const customerId = document.getElementById('orderCustomer').value;
+  if (customerId) {
+    const customer = crmData.customers.find(c => c.id === customerId);
+    if (customer && customer.shippingAddress) {
+      const addr = customer.shippingAddress;
+      document.getElementById('orderShippingStreet').value = addr.street || '';
+      document.getElementById('orderShippingCity').value = addr.city || '';
+      document.getElementById('orderShippingState').value = addr.state || '';
+      document.getElementById('orderShippingZip').value = addr.zip || '';
+      calculateOrderTotal();
     }
+  }
+}
 
     // Calculate Order Total
     function calculateOrderTotal() {
@@ -2811,19 +2825,24 @@
       const total = subtotal + tax + shippingCost;
       
       const order = {
-        id: orderId || Date.now().toString(),
-        customerId: customerId,
-        product: document.getElementById('orderProduct').value,
-        manufacturer: document.getElementById('orderManufacturer').value,
-        quantity: quantity,
-        price: price,
-        discount: discount,
-        subtotal: subtotal,
-        tax: tax,
-        shippingCost: shippingCost,
-        total: total,
-        shippingAddress: document.getElementById('orderShippingAddress').value,
-        shippingState: state,
+  id: orderId || Date.now().toString(),
+  customerId: customerId,
+  product: document.getElementById('orderProduct').value,
+  manufacturer: document.getElementById('orderManufacturer').value,
+  quantity: quantity,
+  price: price,
+  discount: discount,
+  subtotal: subtotal,
+  tax: tax,
+  shippingCost: shippingCost,
+  total: total,
+  shippingAddress: {
+    street: document.getElementById('orderShippingStreet').value,
+    city: document.getElementById('orderShippingCity').value,
+    state: document.getElementById('orderShippingState').value,
+    zip: document.getElementById('orderShippingZip').value
+  },
+  shippingState: state,
         shippingCompany: document.getElementById('orderShippingCompany').value,
         trackingNumber: document.getElementById('orderTrackingNumber').value,
         date: document.getElementById('orderDate').value,
