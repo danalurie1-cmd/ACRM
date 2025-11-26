@@ -3022,6 +3022,12 @@ document.getElementById('orderDate').value = today;
 document.getElementById('orderQuantity').value = 1;
 document.getElementById('orderDiscount').value = 0;
 document.getElementById('orderShippingCost').value = 0;
+
+// Reset order totals display for new orders
+document.getElementById('orderSubtotal').textContent = '$0.00';
+document.getElementById('orderTax').textContent = '$0.00';
+document.getElementById('orderShipping').textContent = '$0.00';
+document.getElementById('orderTotal').textContent = '$0.00';
 }
 
 document.getElementById('orderModal').style.display = 'block';
