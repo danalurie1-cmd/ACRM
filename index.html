@@ -1126,112 +1126,27 @@
     </div>
   </div>
   <!-- Customer Modal with Phase 1 Tabs -->
-  <div id="customerModal" class="modal">
-    <div class="modal-content">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
-        <h3 style="color: #2e5940; font-size: 24px; font-weight: 700;">
-          <i class="fas fa-user-plus"></i> <span id="customerModalTitle">Add New Customer</span>
-        </h3>
-        <button onclick="closeModal('customerModal')" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #999;">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
-
-      <!-- Phase 1: Tab Navigation -->
-      <div class="tab-navigation">
-        <button type="button" class="tab-button active" onclick="switchCustomerTab('info')">
-          <i class="fas fa-info-circle"></i> Customer Info
-        </button>
-        <button type="button" class="tab-button" onclick="switchCustomerTab('communications')" id="commTabBtn" style="display: none;">
-          <i class="fas fa-comments"></i> Communications
-        </button>
-        <button type="button" class="tab-button" onclick="switchCustomerTab('tasks')" id="tasksTabBtn" style="display: none;">
-          <i class="fas fa-tasks"></i> Tasks
-        </button>
-        <button type="button" class="tab-button" onclick="switchCustomerTab('purchases')" id="purchasesTabBtn" style="display: none;">
-          <i class="fas fa-shopping-cart"></i> Purchases
-        </button>
-      </div>
-
-      <!-- Tab 1: Customer Info (Form) -->
-      <div id="infoTab" class="tab-content active">
-        <form id="customerForm" onsubmit="saveCustomer(event)">
-          <input type="hidden" id="customerId">
-
-          <!-- Basic Information -->
+ <!-- Shipping Address -->
           <div class="section-header">
-            <i class="fas fa-info-circle"></i> Basic Information
+            <i class="fas fa-shipping-fast"></i> Shipping Address
           </div>
-          <div class="grid-2">
-            <div class="form-group">
-              <label>Full Name *</label>
-              <input type="text" id="customerName" required>
-            </div>
-            <div class="form-group">
-              <label>Contact Type *</label>
-              <select id="customerContact" required>
-                <option value="">Select...</option>
-                <option value="Individual">Individual</option>
-                <option value="Business">Business</option>
-                <option value="Organization">Organization</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="grid-2">
-            <div class="form-group">
-              <label>Email</label>
-              <input type="email" id="customerEmail">
-            </div>
-            <div class="form-group">
-              <label>Phone</label>
-              <input type="tel" id="customerPhone">
-            </div>
-          </div>
-
-          <div class="grid-3">
-            <div class="form-group">
-              <label>Status *</label>
-              <select id="customerStatus" required>
-                <option value="Prospect">Prospect</option>
-                <option value="Active">Active</option>
-                <option value="Inactive">Inactive</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Industry</label>
-              <input type="text" id="customerIndustry" placeholder="e.g., Healthcare, Tech">
-            </div>
-            <div class="form-group">
-              <label>Age Range</label>
-              <select id="customerAgeRange">
-                <option value="">Select...</option>
-                <option value="18-24">18-24</option>
-                <option value="25-34">25-34</option>
-                <option value="35-44">35-44</option>
-                <option value="45-54">45-54</option>
-                <option value="55-64">55-64</option>
-                <option value="65+">65+</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Billing Address -->
-          <div class="section-header">
-            <i class="fas fa-map-marker-alt"></i> Billing Address
+          <div class="form-group">
+            <label>
+              <input type="checkbox" id="sameAsBilling" onchange="copySameAsBilling()"> Same as Billing Address
+            </label>
           </div>
           <div class="form-group">
             <label>Street Address</label>
-            <input type="text" id="customerBillingStreet">
+            <input type="text" id="customerShippingStreet">
           </div>
           <div class="grid-3">
             <div class="form-group">
               <label>City</label>
-              <input type="text" id="customerBillingCity">
+              <input type="text" id="customerShippingCity">
             </div>
             <div class="form-group">
               <label>State</label>
-              <select id="customerBillingState">
+              <select id="customerShippingState">
                 <option value="">Select...</option>
                 <option value="AL">Alabama</option>
                 <option value="AK">Alaska</option>
@@ -1287,10 +1202,11 @@
             </div>
             <div class="form-group">
               <label>ZIP Code</label>
-              <input type="text" id="customerBillingZip">
+              <input type="text" id="customerShippingZip">
             </div>
           </div>
 
+          <!-- Lead Information -->
           <!-- Shipping Address -->
           <div class="section-header">
   <i class="fas fa-shipping-fast"></i> Shipping Details
