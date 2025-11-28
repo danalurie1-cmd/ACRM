@@ -2024,11 +2024,13 @@ const defaultData = {
 
 let crmData = loadData();
 
-// Load Data
+// Load Data - CORRECTED FOR ID COUNTER SAFETY
 function loadData() {
     const data = localStorage.getItem('acoustiskinCRM');
     if (data) {
-        return JSON.parse(data);
+        const parsedData = JSON.parse(data);
+        // Safely merge parsed data with default structure to ensure new ID counters exist
+        return { ...defaultData, ...parsedData };
     }
     // If no data, return default structure
     return defaultData; 
@@ -2733,17 +2735,24 @@ document.getElementById('tasksTabBtn').style.display = 'block';
 document.getElementById('purchasesTabBtn').style.display = 'block';
 }
 
-if (customerId) {
-const customer = crmData.customers.find(c => c.id === customerId);
-if (customer) {
-document.getElementById('customerId').value = customer.id;
-document.getElementById('customerName').value = customer.name;
-document.getElementById('customerContact').value = customer.contactType || '';
-document.getElementById('customerEmail').value = customer.email || '';
-document.getElementById('customerPhone').value = customer.phone || '';
-document.getElementById('customerStatus').value = customer.status;
-document.getElementById('customerIndustry').value = customer.industry || '';
-document.getElementById('customerAgeRange').value = customer.ageRange || '';
+// Helper Function: Update customer status from 'Prospect' to 'Active' after first order
+function updateCustomerStatus(customerId) {
+    const customer = crmData.customers.find(c => c.id === parseInt(customerId));
+    if (customer && customer.status === 'Prospect') {
+        // Filter orders using the parsed ID
+        const customerOrders = crmData.orders.filter(o => o.customerId === parseInt(customerId)); 
+        
+        // Only update status if this is their first order (1 order exists)
+        if (customerOrders.length === 1) { 
+            customer.status = 'Active';
+            // Find and update the customer record in the main array
+            const index = crmData.customers.findIndex(c => c.id === customer.id);
+            if(index !== -1) {
+                crmData.customers[index] = customer;
+            }
+        }
+    }
+}
 
 // Billing Address
 document.getElementById('customerBillingStreet').value = customer.billingAddress?.street || '';
