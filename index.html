@@ -2006,20 +2006,18 @@ const holidays = {
 '2026-12-25': 'Christmas Day'
 };
 
-// Data Structure with Phase 1
-// Global Data Structure Initialization (Ensure all objects and counters are set up)
+// --- CORE DATA STRUCTURE AND INITIALIZATION ---
 const defaultData = {
     customers: [],
     orders: [],
     events: [],
-    tasks: [],
-    communications: [],
-    // **CORRECTION 1: New customer ID counter for consistency**
-    nextCustomerId: 1000, 
+    communications: [], 
+    tasks: [], 
+    nextCustomerId: 1000,
     nextOrderId: 2000,
-    nextTaskId: 3000,
-    nextCommId: 4000,
-    nextEventId: 5000,
+    nextTaskId: 3000, // Counter for Tasks
+    nextCommId: 4000, // Counter for Communications
+    nextEventId: 5000 // Counter for Calendar Events
 };
 
 let crmData = loadData();
@@ -2031,8 +2029,8 @@ function loadData() {
         const parsedData = JSON.parse(data);
         // Safely merge parsed data with default structure to ensure new ID counters exist
         return { ...defaultData, ...parsedData };
-    }
-    // If no data, return default structure
+    }// Global State Variable - MUST BE DEFINED ONCE AFTER loadData()
+let crmData = loadData();    // If no data, return default structure
     return defaultData; 
 }
 // Save Data
@@ -2125,18 +2123,16 @@ reader.readAsText(files[0]);
 });
 });
 
-// Load Data
+// Load Data - CRITICAL FIX: Ensures ID counters are always available
 function loadData() {
-const saved = localStorage.getItem('acoustiskinCRM_AI');
-if (saved) {
-const parsed = JSON.parse(saved);
-crmData = {
-customers: parsed.customers || [],
-orders: parsed.orders || [],
-events: parsed.events || [],
-communications: parsed.communications || [], // PHASE 1
-tasks: parsed.tasks || [] // PHASE 1
-};
+    const data = localStorage.getItem('acoustiskinCRM');
+    if (data) {
+        const parsedData = JSON.parse(data);
+        // Safely merge parsed data with default structure to ensure all new fields/ID counters exist
+        return { ...defaultData, ...parsedData };
+    }
+    // If no data exists, return the structure with starting counters
+    return defaultData; 
 }
 }
 
