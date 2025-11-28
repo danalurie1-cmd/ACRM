@@ -2805,20 +2805,92 @@ document.getElementById('customerReferralCode').value = generateReferralCode();
 document.getElementById('customerModal').style.display = 'block';
 }
 
-// Save Customer
+// Save Customer - FIXED VERSION: Uses nextCustomerId counter
 function saveCustomer(event) {
-event.preventDefault();
+    event.preventDefault();
+    const customerIdValue = document.getElementById('customerId').value;
+    
+    // Determine ID: Use existing ID if present, otherwise assign the next available ID
+    const newId = customerIdValue ? parseInt(customerIdValue) : crmData.nextCustomerId;
 
-const customerId = document.getElementById('customerId').value;
-const name = document.getElementById('customerName').value;
+    // Get social platforms
+    const socialPlatforms = [];
+    ['Facebook', 'Instagram', 'Twitter', 'LinkedIn', 'TikTok', 'YouTube'].forEach(platform => {
+        if (document.getElementById(`social${platform}`).checked) {
+            socialPlatforms.push(platform);
+        }
+    });
 
-// Get social platforms
-const socialPlatforms = [];
-['Facebook', 'Instagram', 'Twitter', 'LinkedIn', 'TikTok', 'YouTube'].forEach(platform => {
-if (document.getElementById(`social${platform}`).checked) {
-socialPlatforms.push(platform);
+    // Create the customer object
+    const customer = {
+        id: newId, 
+        name: document.getElementById('customerName').value,
+        contactType: document.getElementById('customerContact').value,
+        email: document.getElementById('customerEmail').value,
+        phone: document.getElementById('customerPhone').value,
+        status: document.getElementById('customerStatus').value,
+        industry: document.getElementById('customerIndustry').value,
+        ageRange: document.getElementById('customerAgeRange').value,
+        // Calculate AI score only for new customers
+        aiScore: customerIdValue ? crmData.customers.find(c => c.id === parseInt(customerIdValue))?.aiScore : calculateAIScore(),
+        // Billing Address
+        billingAddress: {
+            street: document.getElementById('customerBillingStreet').value,
+            city: document.getElementById('customerBillingCity').value,
+            state: document.getElementById('customerBillingState').value,
+            zip: document.getElementById('customerBillingZip').value,
+        },
+        // Shipping Address
+        shippingAddress: {
+            street: document.getElementById('customerShippingStreet').value,
+            city: document.getElementById('customerShippingCity').value,
+            state: document.getElementById('customerShippingState').value,
+            zip: document.getElementById('customerShippingZip').value,
+        },
+        leadSource: document.getElementById('customerLeadSource').value,
+        referredBy: document.getElementById('customerReferredBy').value,
+        socialPlatforms: socialPlatforms,
+        socialHandle: document.getElementById('customerSocialHandle').value,
+        socialEngagement: document.getElementById('customerSocialEngagement').value,
+        skillLevel: document.getElementById('customerSkillLevel').value,
+        playFrequency: document.getElementById('customerPlayFrequency').value,
+        paddleBrand: document.getElementById('customerPaddleBrand').value,
+        interests: document.getElementById('customerInterests').value,
+        preferredContact: document.getElementById('customerPreferredContact').value,
+        contactFrequency: document.getElementById('customerContactFrequency').value,
+        referralCode: document.getElementById('customerReferralCode').value,
+        referralPotential: document.getElementById('customerReferralPotential').value,
+        // Use optional chaining (?) for safe access
+        referralCount: customerIdValue ? crmData.customers.find(c => c.id === parseInt(customerIdValue))?.referralCount || 0 : 0,
+        referralCredit: customerIdValue ? crmData.customers.find(c => c.id === parseInt(customerIdValue))?.referralCredit || 0 : 0,
+        notes: document.getElementById('customerNotes').value,
+        createdAt: customerIdValue ? crmData.customers.find(c => c.id === parseInt(customerIdValue))?.createdAt : new Date().toISOString()
+    };
+
+    if (customerIdValue) {
+        // EDIT existing customer
+        const index = crmData.customers.findIndex(c => c.id === parseInt(customerIdValue));
+        if (index !== -1) {
+            crmData.customers[index] = customer;
+            showNotification('Customer updated successfully!');
+        } else {
+            showNotification('Error: Customer ID not found for update.', 'error');
+            return;
+        }
+    } else {
+        // ADD new customer
+        crmData.customers.push(customer);
+        crmData.nextCustomerId++; // Increment the counter
+        showNotification('New customer added successfully!');
+    }
+
+    closeModal('customerModal');
+    saveData();
+    updateDashboard();
+    updateCustomersView();
+    updatePipelineView();
+    return false;
 }
-});
 
 const customer = {
 id: customerId || Date.now().toString(),
