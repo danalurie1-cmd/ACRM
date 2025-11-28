@@ -2007,7 +2007,37 @@ const holidays = {
 };
 
 // Data Structure with Phase 1
-let crmData = {
+// Global Data Structure Initialization (Ensure all objects and counters are set up)
+const defaultData = {
+    customers: [],
+    orders: [],
+    events: [],
+    tasks: [],
+    communications: [],
+    // **CORRECTION 1: New customer ID counter for consistency**
+    nextCustomerId: 1000, 
+    nextOrderId: 2000,
+    nextTaskId: 3000,
+    nextCommId: 4000,
+    nextEventId: 5000,
+};
+
+let crmData = loadData();
+
+// Load Data
+function loadData() {
+    const data = localStorage.getItem('acoustiskinCRM');
+    if (data) {
+        return JSON.parse(data);
+    }
+    // If no data, return default structure
+    return defaultData; 
+}
+// Save Data
+function saveData() {
+    localStorage.setItem('acoustiskinCRM', JSON.stringify(crmData));
+    updateBackupIndicator();
+} 
 customers: [],
 orders: [],
 events: [],
