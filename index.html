@@ -3937,30 +3937,7 @@ container.innerHTML = html;
 
 // ========== UTILITY FUNCTIONS ==========
 
-// Function: Show View
-function showView(viewName, elementId) { // ADDED elementId
-    // ... hide all views ...
 
-    // Remove active class from all nav items
-    document.querySelectorAll('.nav-item').forEach(item => {
-        item.classList.remove('active');
-    });
-
-    // Show selected view
-    const viewId = viewName + 'View';
-    const view = document.getElementById(viewId);
-    if (view) {
-        view.style.display = 'block';
-    }
-
-    // Add active class to selected nav item
-    const navItem = document.getElementById(elementId); // Use passed ID
-    if (navItem) {
-        navItem.classList.add('active');
-    }
-
-    // ... view-specific updates ...
-}
 <ul>
         <li>• Active Customers (Purchased in last 30 days)</li>
         <li>• Dormant Customers (No purchase in 90+ days)</li>
