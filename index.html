@@ -2374,46 +2374,50 @@ document.getElementById('commDateTime').value = datetime;
 document.getElementById('communicationModal').style.display = 'block';
 }
 
-// Save Communication
+// Save Communication - FIXED VERSION: Counter Increment Added
 function saveCommunication(event) {
-event.preventDefault();
+    event.preventDefault();
+    const commIdValue = document.getElementById('commId').value;
+    const customerId = document.getElementById('commCustomer').value;
 
-const commId = document.getElementById('commId').value;
-const customerId = document.getElementById('commCustomerId').value;
-const type = document.getElementById('commType').value;
-const dateTime = document.getElementById('commDateTime').value;
-const subject = document.getElementById('commSubject').value;
-const notes = document.getElementById('commNotes').value;
-const outcome = document.getElementById('commOutcome').value;
+    // Determine ID: Use existing ID if present, otherwise assign the next available ID
+    const commId = commIdValue ? parseInt(commIdValue) : crmData.nextCommId;
+    
+    const customer = crmData.customers.find(c => c.id === parseInt(customerId));
 
-const communication = {
-id: commId || Date.now().toString(),
-customerId: customerId,
-type: type,
-dateTime: dateTime,
-subject: subject,
-notes: notes,
-outcome: outcome,
-createdAt: new Date().toISOString()
-};
+    const communication = {
+        id: commId, 
+        customerId: parseInt(customerId),
+        customerName: customer?.name || 'Unknown',
+        type: document.getElementById('commType').value,
+        dateTime: document.getElementById('commDateTime').value,
+        subject: document.getElementById('commSubject').value,
+        notes: document.getElementById('commNotes').value,
+        outcome: document.getElementById('commOutcome').value,
+        createdAt: commIdValue ? crmData.communications.find(c => c.id === parseInt(commIdValue))?.createdAt : new Date().toISOString()
+    };
 
-if (commId) {
-const index = crmData.communications.findIndex(c => c.id === commId);
-crmData.communications[index] = communication;
-} else {
-crmData.communications.push(communication);
-}
+    const index = crmData.communications.findIndex(c => c.id === commId);
 
-saveData();
-closeModal('communicationModal');
-showNotification('Communication logged successfully!');
+    if (index !== -1) {
+        // Edit existing communication
+        crmData.communications[index] = communication;
+    } else {
+        // Add new communication
+        crmData.communications.push(communication);
+        // <<< CRITICAL FIX APPLIED HERE
+        crmData.nextCommId++; 
+    }
 
-// Refresh customer communications if modal is open
-if (document.getElementById('customerModal').style.display === 'block') {
-loadCustomerCommunications(customerId);
-}
+    saveData();
+    closeModal('communicationModal');
+    showNotification('Communication logged successfully!');
 
-return false;
+    // Refresh customer communications if modal is open
+    if (document.getElementById('customerModal').style.display === 'block') {
+        loadCustomerCommunications(customerId);
+    }
+    return false;
 }
 
 // Load Customer Communications
@@ -2761,117 +2765,92 @@ document.getElementById('customerReferralCode').value = generateReferralCode();
 document.getElementById('customerModal').style.display = 'block';
 }
 
-// Save Communication - FIXED VERSION: Uses nextCommId counter
-function saveCommunication(event) {
+// Save Customer - FIXED VERSION: Counter Increment Added
+function saveCustomer(event) {
     event.preventDefault();
-    const commIdValue = document.getElementById('commId').value;
-    const customerId = document.getElementById('commCustomer').value;
-
-    // Determine ID: Use existing ID if present, otherwise assign the next available ID
-    const commId = commIdValue ? parseInt(commIdValue) : crmData.nextCommId;
+    const customerIdValue = document.getElementById('customerId').value;
     
-    const customer = crmData.customers.find(c => c.id === parseInt(customerId));
+    // Determine ID: Use existing ID if present, otherwise assign the next available ID
+    const newId = customerIdValue ? parseInt(customerIdValue) : crmData.nextCustomerId;
 
-    const communication = {
-        id: commId, // <<< CRITICAL FIX: Use commId
-        customerId: parseInt(customerId),
-        customerName: customer?.name || 'Unknown',
-        type: document.getElementById('commType').value,
-        dateTime: document.getElementById('commDateTime').value,
-        subject: document.getElementById('commSubject').value,
-        notes: document.getElementById('commNotes').value,
-        outcome: document.getElementById('commOutcome').value,
-        createdAt: commIdValue ? crmData.communications.find(c => c.id === parseInt(commIdValue))?.createdAt : new Date().toISOString()
+    // Get social platforms
+    const socialPlatforms = [];
+    ['Facebook', 'Instagram', 'Twitter', 'LinkedIn', 'TikTok', 'YouTube'].forEach(platform => {
+        if (document.getElementById(`social${platform}`).checked) {
+            socialPlatforms.push(platform);
+        }
+    });
+
+    // Create the customer object
+    const customer = {
+        id: newId, 
+        name: document.getElementById('customerName').value,
+        contactType: document.getElementById('customerContact').value,
+        email: document.getElementById('customerEmail').value,
+        phone: document.getElementById('customerPhone').value,
+        status: document.getElementById('customerStatus').value,
+        industry: document.getElementById('customerIndustry').value,
+        ageRange: document.getElementById('customerAgeRange').value,
+        // Calculate AI score only for new customers
+        aiScore: customerIdValue ? crmData.customers.find(c => c.id === parseInt(customerIdValue))?.aiScore : calculateAIScore(),
+        // Billing Address
+        billingAddress: {
+            street: document.getElementById('customerBillingStreet').value,
+            city: document.getElementById('customerBillingCity').value,
+            state: document.getElementById('customerBillingState').value,
+            zip: document.getElementById('customerBillingZip').value,
+        },
+        // Shipping Address
+        shippingAddress: {
+            street: document.getElementById('customerShippingStreet').value,
+            city: document.getElementById('customerShippingCity').value,
+            state: document.getElementById('customerShippingState').value,
+            zip: document.getElementById('customerShippingZip').value,
+        },
+        leadSource: document.getElementById('customerLeadSource').value,
+        referredBy: document.getElementById('customerReferredBy').value,
+        socialPlatforms: socialPlatforms,
+        socialHandle: document.getElementById('customerSocialHandle').value,
+        socialEngagement: document.getElementById('customerSocialEngagement').value,
+        skillLevel: document.getElementById('customerSkillLevel').value,
+        playFrequency: document.getElementById('customerPlayFrequency').value,
+        paddleBrand: document.getElementById('customerPaddleBrand').value,
+        interests: document.getElementById('customerInterests').value,
+        preferredContact: document.getElementById('customerPreferredContact').value,
+        contactFrequency: document.getElementById('customerContactFrequency').value,
+        referralCode: document.getElementById('customerReferralCode').value,
+        referralPotential: document.getElementById('customerReferralPotential').value,
+        // Use optional chaining (?) for safe access
+        referralCount: customerIdValue ? crmData.customers.find(c => c.id === parseInt(customerIdValue))?.referralCount || 0 : 0,
+        referralCredit: customerIdValue ? crmData.customers.find(c => c.id === parseInt(customerIdValue))?.referralCredit || 0 : 0,
+        notes: document.getElementById('customerNotes').value,
+        createdAt: customerIdValue ? crmData.customers.find(c => c.id === parseInt(customerIdValue))?.createdAt : new Date().toISOString()
     };
 
-    const index = crmData.communications.findIndex(c => c.id === commId);
-
-    if (index !== -1) {
-        // Edit existing communication
-        crmData.communications[index] = communication;
+    if (customerIdValue) {
+        // EDIT existing customer
+        const index = crmData.customers.findIndex(c => c.id === parseInt(customerIdValue));
+        if (index !== -1) {
+            crmData.customers[index] = customer;
+            showNotification('Customer updated successfully!');
+        } else {
+            showNotification('Error: Customer ID not found for update.', 'error');
+            return;
+        }
     } else {
-        // Add new communication
-        crmData.communications.push(communication);
-        crmData.nextCommId++; // <<< CRITICAL FIX: Increment the counter
+        // ADD new customer
+        crmData.customers.push(customer);
+        // <<< CRITICAL FIX APPLIED HERE
+        crmData.nextCustomerId++; 
+        showNotification('New customer added successfully!');
     }
 
+    closeModal('customerModal');
     saveData();
-    closeModal('communicationModal');
-    showNotification('Communication logged successfully!');
-
-    // Refresh customer communications if modal is open
-    if (document.getElementById('customerModal').style.display === 'block') {
-        loadCustomerCommunications(customerId);
-    }
+    updateDashboard();
+    updateCustomersView();
+    updatePipelineView();
     return false;
-}
-const customer = {
-id: customerId || Date.now().toString(),
-name: name,
-contactType: document.getElementById('customerContact').value,
-email: document.getElementById('customerEmail').value,
-phone: document.getElementById('customerPhone').value,
-status: document.getElementById('customerStatus').value,
-industry: document.getElementById('customerIndustry').value,
-ageRange: document.getElementById('customerAgeRange').value,
-billingAddress: {
-street: document.getElementById('customerBillingStreet').value,
-city: document.getElementById('customerBillingCity').value,
-state: document.getElementById('customerBillingState').value,
-zip: document.getElementById('customerBillingZip').value
-},
-shippingAddress: {
-street: document.getElementById('customerShippingStreet').value,
-city: document.getElementById('customerShippingCity').value,
-state: document.getElementById('customerShippingState').value,
-zip: document.getElementById('customerShippingZip').value
-},
-leadSource: document.getElementById('customerLeadSource').value,
-referredBy: document.getElementById('customerReferredBy').value,
-socialPlatforms: socialPlatforms,
-socialHandle: document.getElementById('customerSocialHandle').value,
-socialEngagement: document.getElementById('customerSocialEngagement').value,
-skillLevel: document.getElementById('customerSkillLevel').value,
-playFrequency: document.getElementById('customerPlayFrequency').value,
-paddleBrand: document.getElementById('customerPaddleBrand').value,
-interests: document.getElementById('customerInterests').value,
-preferredContact: document.getElementById('customerPreferredContact').value,
-contactFrequency: document.getElementById('customerContactFrequency').value,
-referralCode: document.getElementById('customerReferralCode').value,
-referralPotential: document.getElementById('customerReferralPotential').value,
-notes: document.getElementById('customerNotes').value,
-aiScore: customerId ? crmData.customers.find(c => c.id === customerId)?.aiScore : calculateAIScore(),
-referralCount: customerId ? crmData.customers.find(c => c.id === customerId)?.referralCount || 0 : 0,
-referralCredit: customerId ? crmData.customers.find(c => c.id === customerId)?.referralCredit || 0 : 0,
-createdAt: customerId ? crmData.customers.find(c => c.id === customerId).createdAt : new Date().toISOString()
-};
-
-if (customerId) {
-const index = crmData.customers.findIndex(c => c.id === customerId);
-crmData.customers[index] = customer;
-} else {
-crmData.customers.push(customer);
-}
-
-// Update referrer's count
-if (customer.referredBy) {
-const referrer = crmData.customers.find(c => 
-c.name.toLowerCase() === customer.referredBy.toLowerCase()
-);
-if (referrer) {
-referrer.referralCount = (referrer.referralCount || 0) + 1;
-referrer.referralCredit = referrer.referralCount * referralSettings.creditAmount;
-}
-}
-
-saveData();
-updateDashboard();
-updateCustomersView();
-updatePipelineView();
-closeModal('customerModal');
-showNotification(customerId ? 'Customer updated successfully!' : 'Customer added successfully!');
-
-return false;
 }
 
 // Delete Customer
@@ -4572,50 +4551,56 @@ function openTaskModal(customerId) {
     document.getElementById('taskModal').style.display = 'block';
 }
 
-function saveTask(e) {
-    e.preventDefault();
-    const task = {
-        id: Date.now(),
-        customerId: parseInt(document.getElementById('taskCustomerId').value),
-        title: document.getElementById('taskTitle').value,
-        priority: document.getElementById('taskPriority').value,
-        status: document.getElementById('taskStatus').value,
-        dueDate: document.getElementById('taskDueDate').value,
-        description: document.getElementById('taskDescription').value
-    };
+// Save Task - FIXED VERSION: Counter Increment Added
+function saveTask(event) {
+    event.preventDefault();
+    const taskIdValue = document.getElementById('taskId').value;
+    const customerId = document.getElementById('taskCustomer').value;
+    const title = document.getElementById('taskTitle').value;
+    const priority = document.getElementById('taskPriority').value;
+    const status = document.getElementById('taskStatus').value;
+    const dueDate = document.getElementById('taskDueDate').value;
+    const description = document.getElementById('taskDescription').value;
+
+    // Determine ID: Use existing ID if present, otherwise assign the next available ID
+    const taskId = taskIdValue ? parseInt(taskIdValue) : crmData.nextTaskId;
     
-    state.tasks.push(task);
+    const customer = crmData.customers.find(c => c.id === parseInt(customerId));
+
+    const task = {
+        id: taskId, 
+        customerId: parseInt(customerId),
+        customerName: customer?.name || 'Unknown',
+        title: title,
+        priority: priority,
+        status: status,
+        dueDate: dueDate,
+        description: description,
+        createdAt: taskIdValue ? crmData.tasks.find(t => t.id === parseInt(taskIdValue))?.createdAt : new Date().toISOString()
+    };
+
+    const index = crmData.tasks.findIndex(t => t.id === taskId);
+
+    if (index !== -1) {
+        // Edit existing task
+        crmData.tasks[index] = task;
+    } else {
+        // Add new task
+        crmData.tasks.push(task);
+        // <<< CRITICAL FIX APPLIED HERE
+        crmData.nextTaskId++; 
+    }
+
     saveData();
     closeModal('taskModal');
-    
-    if(document.getElementById('customerModal').style.display === 'block') {
-        renderCustomerTasks(task.customerId);
-    }
-    updateTodaysTasks();
-}
+    showNotification('Task saved successfully!');
 
-function renderCustomerTasks(customerId) {
-    const tasks = state.tasks.filter(t => t.customerId === parseInt(customerId)).sort((a,b) => new Date(a.dueDate) - new Date(b.dueDate));
-    const container = document.getElementById('customerTaskList');
-    
-    if(tasks.length === 0) {
-        container.innerHTML = '<p style="color:#999; padding:20px; text-align:center;">No tasks found.</p>';
-        return;
+    // Refresh views
+    if (document.getElementById('customerModal').style.display === 'block') {
+        loadCustomerTasks(customerId);
     }
-    
-    container.innerHTML = tasks.map(t => `
-        <div class="task-item priority-${t.priority.toLowerCase()} ${t.status === 'Completed' ? 'completed' : ''}">
-            <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-                <strong>${t.title}</strong>
-                <span class="status-badge status-${t.status === 'In Progress' ? 'prospect' : (t.status === 'Completed' ? 'active' : 'inactive')}">${t.status}</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; font-size:12px; color:#666;">
-                <span>Due: ${t.dueDate}</span>
-                <span>${t.priority} Priority</span>
-            </div>
-            ${t.description ? `<div style="font-size:12px; margin-top:5px;">${t.description}</div>` : ''}
-        </div>
-    `).join('');
+    updateDashboard();
+    return false;
 }
 
 // --- ORDERS ---
