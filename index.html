@@ -2015,20 +2015,35 @@ communications: [], // PHASE 1: Communication tracking
 tasks: [] // PHASE 1: Task management
 };
 
-// Referral Settings
-let referralSettings = {
-creditAmount: 15,
-tiers: {
-bronze: { min: 1, max: 2 },
-silver: { min: 3, max: 5 },
-gold: { min: 6, max: 10 },
-platinum: { min: 11 }
-}
+// --- CRUCIAL GLOBAL DEFINITIONS ---
+const referralSettings = {
+    creditAmount: 25.00,
+    tiers: {
+        bronze: { min: 1, max: 2 },
+        silver: { min: 3, max: 5 },
+        gold: { min: 6, max: 10 },
+        platinum: { min: 11, max: 999 }
+    }
 };
 
-// Calendar State
+const stateTaxRates = {
+    'CA': 7.25, // California
+    'NY': 4.00, // New York
+    'TX': 6.25, // Texas
+    'FL': 6.00, // Florida
+    'WA': 6.50, // Washington
+    'UNKNOWN': 0.00
+};
+
 let currentDate = new Date();
-let currentEventId = null;
+let holidays = {
+    '2025-12-25': 'Christmas Day',
+    '2026-01-01': 'New Year\'s Day'
+    // Add more dates here
+};
+
+let currentEventId = null; 
+// -----------------------------------
 
 // Initialize
 document.addEventListener('DOMContentLoaded', function() {
@@ -3956,71 +3971,30 @@ container.innerHTML = html;
 
 // ========== UTILITY FUNCTIONS ==========
 
-// Show View
-function showView(viewName) {
-// Hide all views
-document.querySelectorAll('.view').forEach(view => {
-view.style.display = 'none';
-});
+// Function: Show View
+function showView(viewName, elementId) { // ADDED elementId
+    // ... hide all views ...
 
-// Remove active class from all nav items
-document.querySelectorAll('.nav-item').forEach(item => {
-item.classList.remove('active');
-});
+    // Remove active class from all nav items
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+    });
 
-// Show selected view
-const viewId = viewName + 'View';
-const view = document.getElementById(viewId);
-if (view) {
-view.style.display = 'block';
+    // Show selected view
+    const viewId = viewName + 'View';
+    const view = document.getElementById(viewId);
+    if (view) {
+        view.style.display = 'block';
+    }
+
+    // Add active class to selected nav item
+    const navItem = document.getElementById(elementId); // Use passed ID
+    if (navItem) {
+        navItem.classList.add('active');
+    }
+
+    // ... view-specific updates ...
 }
 
-// Add active class to selected nav item
-event.target.classList.add('active');
 
-// Update view-specific content
-if (viewName === 'calendar') {
-renderCalendar();
-} else if (viewName === 'pipeline') {
-updatePipelineView();
-} else if (viewName === 'marketing') {
-updateMarketingView();
-} else if (viewName === 'referrals') {
-updateReferralsView();
-}
-}
-
-// Close Modal
-function closeModal(modalId) {
-document.getElementById(modalId).style.display = 'none';
-}
-
-// Show Notification
-function showNotification(message, type = 'success') {
-const notification = document.getElementById('notification');
-const notificationText = document.getElementById('notificationText');
-
-notificationText.textContent = message;
-
-if (type === 'error') {
-notification.style.borderLeftColor = '#e53935';
-} else {
-notification.style.borderLeftColor = '#66bb6a';
-}
-
-notification.style.display = 'block';
-
-setTimeout(() => {
-notification.style.display = 'none';
-}, 3000);
-}
-
-// Close modal when clicking outside
-window.onclick = function(event) {
-if (event.target.classList.contains('modal')) {
-event.target.style.display = 'none';
-}
-}
-</script>
-</body>
-</html>
+  
