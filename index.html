@@ -375,30 +375,30 @@ border-left-color: #999;
 </div>
 
 <nav style="padding: 20px 0;">
-<div class="nav-item active" onclick="showView('dashboard')">
-<i class="fas fa-home" style="margin-right: 10px;"></i>Dashboard
-</div>
-<div class="nav-item" onclick="showView('customers')">
-<i class="fas fa-users" style="margin-right: 10px;"></i>Customers
-</div>
-<div class="nav-item" onclick="showView('orders')">
-<i class="fas fa-shopping-cart" style="margin-right: 10px;"></i>Orders
-</div>
-<div class="nav-item" onclick="showView('calendar')">
-<i class="fas fa-calendar" style="margin-right: 10px;"></i>Calendar
-</div>
-<div class="nav-item" onclick="showView('pipeline')">
-<i class="fas fa-chart-line" style="margin-right: 10px;"></i>Pipeline
-</div>
-<div class="nav-item" onclick="showView('analytics')">
-<i class="fas fa-chart-bar" style="margin-right: 10px;"></i>Analytics
-</div>
-<div class="nav-item" onclick="showView('marketing')">
-<i class="fas fa-bullhorn" style="margin-right: 10px;"></i>Marketing
-</div>
-<div class="nav-item" onclick="showView('referrals')">
-<i class="fas fa-gift" style="margin-right: 10px;"></i>Referral Program
-</div>
+    <div class="nav-item active" onclick="showView('dashboard', this)">
+        <i class="fas fa-home" style="margin-right: 10px;"></i>Dashboard
+    </div>
+    <div class="nav-item" onclick="showView('customers', this)">
+        <i class="fas fa-users" style="margin-right: 10px;"></i>Customers
+    </div>
+    <div class="nav-item" onclick="showView('orders', this)">
+        <i class="fas fa-shopping-cart" style="margin-right: 10px;"></i>Orders
+    </div>
+    <div class="nav-item" onclick="showView('calendar', this)">
+        <i class="fas fa-calendar" style="margin-right: 10px;"></i>Calendar
+    </div>
+    <div class="nav-item" onclick="showView('pipeline', this)">
+        <i class="fas fa-chart-line" style="margin-right: 10px;"></i>Pipeline
+    </div>
+    <div class="nav-item" onclick="showView('analytics', this)">
+        <i class="fas fa-chart-bar" style="margin-right: 10px;"></i>Analytics
+    </div>
+    <div class="nav-item" onclick="showView('marketing', this)">
+        <i class="fas fa-bullhorn" style="margin-right: 10px;"></i>Marketing
+    </div>
+    <div class="nav-item" onclick="showView('referrals', this)">
+        <i class="fas fa-gift" style="margin-right: 10px;"></i>Referral Program
+    </div>
 </nav>
 
 <div style="padding: 20px; border-top: 1px solid rgba(255,255,255,0.2);">
@@ -4231,29 +4231,40 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // --- NAVIGATION ---
-function showView(viewId) {
+// CRITICAL FIX: Now accepts the clicked navigation element (navElement)
+function showView(viewId, navElement) { 
+    // 1. Hide all main views
     document.querySelectorAll('.view').forEach(el => el.style.display = 'none');
-    document.getElementById(viewId + 'View').style.display = 'block';
     
+    // 2. Show the requested view
+    const view = document.getElementById(viewId + 'View');
+    if (view) {
+        view.style.display = 'block';
+    }
+    
+    // 3. Remove 'active' class from all nav items
     document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-    event.currentTarget.classList.add('active'); // Works if clicked, fails if called programmatically without event
     
-    if (viewId === 'customers') renderCustomersTable();
-    if (viewId === 'orders') renderOrdersTable();
-    if (viewId === 'pipeline') renderPipeline();
-    if (viewId === 'referrals') renderReferrals();
-}
+    // 4. Add 'active' class to the clicked nav item (passed as argument)
+    if (navElement) {
+        navElement.classList.add('active');
+    }
 
-function switchTab(e, tabId) {
-    e.preventDefault();
-    const modal = e.target.closest('.modal-content');
-    modal.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-    modal.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
-    
-    document.getElementById(tabId).classList.add('active');
-    e.target.classList.add('active');
+    // 5. Run view-specific updates (CRITICAL for content loading)
+    if (viewId === 'customers') {
+        updateCustomersView();
+    } else if (viewId === 'orders') {
+        updateOrdersView();
+    } else if (viewId === 'calendar') {
+        renderCalendar();
+    } else if (viewId === 'pipeline') {
+        updatePipelineView();
+    } else if (viewId === 'referrals') {
+        updateReferralsView();
+    } else if (viewId === 'dashboard') {
+        updateDashboard();
+    }
 }
-
 // --- DATA PERSISTENCE ---
 function saveData() {
     localStorage.setItem('acoustiskin_crm_data', JSON.stringify(state));
