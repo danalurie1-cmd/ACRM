@@ -4607,29 +4607,72 @@ function openOrderModal() {
     document.getElementById('orderModal').style.display = 'block';
 }
 
-function saveOrder(e) {
-    e.preventDefault();
+// ========== ORDER FUNCTIONS - FIXED VERSION ==========
+// Save Order
+function saveOrder(event) {
+    event.preventDefault();
+    const orderIdValue = document.getElementById('orderId').value;
+    const customerId = document.getElementById('orderCustomer').value;
+    const quantity = parseFloat(document.getElementById('orderQuantity').value) || 0;
+    const price = parseFloat(document.getElementById('orderPrice').value) || 0;
+    const discount = parseFloat(document.getElementById('orderDiscount').value) || 0;
+    const shippingCost = parseFloat(document.getElementById('orderShippingCost').value) || 0;
+    const orderTotalText = document.getElementById('orderTotal').textContent;
+    const total = parseFloat(orderTotalText.replace('$', '')) || 0; // Get calculated total
+
+    // --- FIX APPLIED HERE ---
+    // 1. Determine the Order ID: Use existing ID if present, otherwise assign the next available ID.
+    const orderId = orderIdValue ? parseInt(orderIdValue) : crmData.nextOrderId;
+
     const order = {
-        id: Date.now(),
-        customerId: parseInt(document.getElementById('orderCustomer').value),
+        id: orderId, // Use the determined ID
+        customerId: parseInt(customerId),
         product: document.getElementById('orderProduct').value,
-        amount: parseFloat(document.getElementById('orderAmount').value),
+        manufacturer: document.getElementById('orderManufacturer').value,
+        quantity: quantity,
+        price: price,
+        discount: discount,
+        shipping: {
+            cost: shippingCost,
+            company: document.getElementById('orderShippingCompany').value,
+            trackingNumber: document.getElementById('orderTrackingNumber').value,
+            street: document.getElementById('orderShippingStreet').value,
+            city: document.getElementById('orderShippingCity').value,
+            state: document.getElementById('orderShippingState').value,
+            zip: document.getElementById('orderShippingZip').value,
+        },
         date: document.getElementById('orderDate').value,
-        status: 'Completed'
+        status: document.getElementById('orderStatus').value,
+        notes: document.getElementById('orderNotes').value,
+        total: total,
+        isImported: false 
     };
-    state.orders.push(order);
-    
-    // Convert Prospect to Active if first order
-    const custIndex = state.customers.findIndex(c => c.id === order.customerId);
-    if (custIndex > -1 && state.customers[custIndex].status === 'Prospect') {
-        state.customers[custIndex].status = 'Active';
+
+    // 2. Check if the order ID exists in the data array
+    const index = crmData.orders.findIndex(o => o.id === orderId);
+
+    if (index !== -1) {
+        // Condition: Order FOUND in array -> EDIT existing order
+        crmData.orders[index] = order;
+        showNotification('Order updated successfully!');
+    } else {
+        // Condition: Order NOT FOUND in array -> ADD new order
+        crmData.orders.push(order);
+        crmData.nextOrderId++;
+        
+        // Convert Prospect to Active if this is their first order
+        updateCustomerStatus(customerId); 
+        
+        showNotification('New order added successfully!');
     }
 
-    saveData();
     closeModal('orderModal');
-    renderOrdersTable();
+    saveData();
+    updateDashboard();
+    updateOrdersView();
+    
+    return false; // Prevent form submission
 }
-
 function renderOrdersTable() {
     const tbody = document.getElementById('ordersTableBody');
     if (state.orders.length === 0) {
