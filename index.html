@@ -3995,6 +3995,874 @@ function showView(viewName, elementId) { // ADDED elementId
 
     // ... view-specific updates ...
 }
+<ul>
+        <li>• Active Customers (Purchased in last 30 days)</li>
+        <li>• Dormant Customers (No purchase in 90+ days)</li>
+        <li>• High Value VIPs (Spent > $500)</li>
+      </ul>
+      <div style="margin-top: 15px; display: flex; gap: 10px;">
+        <button class="btn-secondary" onclick="exportMarketingList('active')">Export Active</button>
+        <button class="btn-secondary" onclick="exportMarketingList('dormant')">Export Dormant</button>
+      </div>
+    </div>
 
+    <div class="card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="color: #2e5940; font-size: 18px; font-weight: 600;">
+          <i class="fas fa-ad"></i> Promotions
+        </h3>
+        <button class="btn-primary" onclick="alert('Promo builder coming in Phase 2')">
+          <i class="fas fa-plus"></i> New Promo
+        </button>
+      </div>
+      <div class="info-box">
+        <strong>Current Offer:</strong> "Referral Bonus" - Get $15 credit for every friend referred.
+      </div>
+      <div style="margin-top: 20px;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px;">
+          <span>Campaign Performance</span>
+          <span style="font-weight: 600;">68% Success</span>
+        </div>
+        <div style="background: #e8f5e9; height: 8px; border-radius: 4px; overflow: hidden;">
+          <div style="background: #43a047; width: 68%; height: 100%;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
+<div id="referralsView" class="view" style="display: none;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <div>
+      <h2 style="color: #2e5940; font-size: 32px; font-weight: 700; margin-bottom: 5px;">Referral Program</h2>
+      <p style="color: #666;">Manage rewards and affiliates</p>
+    </div>
+    <button class="btn-secondary" onclick="openReferralSettings()">
+      <i class="fas fa-cog"></i> Settings
+    </button>
+  </div>
+
+  <div class="grid-3">
+    <div class="card">
+      <div style="color: #999; font-size: 12px; font-weight: 600; text-transform: uppercase;">Total Referrals</div>
+      <div style="font-size: 32px; font-weight: 700; color: #2e5940;" id="totalReferrals">0</div>
+    </div>
+    <div class="card">
+      <div style="color: #999; font-size: 12px; font-weight: 600; text-transform: uppercase;">Credits Issued</div>
+      <div style="font-size: 32px; font-weight: 700; color: #2e5940;" id="totalCredits">$0.00</div>
+    </div>
+    <div class="card">
+      <div style="color: #999; font-size: 12px; font-weight: 600; text-transform: uppercase;">Top Referrer</div>
+      <div style="font-size: 18px; font-weight: 700; color: #2e5940; margin-top: 8px;" id="topReferrer">None</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 style="color: #2e5940; font-size: 18px; font-weight: 600; margin-bottom: 20px;">Referral History</h3>
+    <table class="table" id="referralTable">
+      <thead>
+        <tr>
+          <th>Referred By</th>
+          <th>New Customer</th>
+          <th>Date</th>
+          <th>Status</th>
+          <th>Reward</th>
+        </tr>
+      </thead>
+      <tbody id="referralTableBody">
+        <tr><td colspan="5" style="text-align: center; padding: 20px; color: #999;">No referrals tracked yet.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</main>
+
+<div id="customerModal" class="modal">
+  <div class="modal-content">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+      <h3 style="color: #2e5940; font-size: 24px; font-weight: 700;">
+        <i class="fas fa-user-circle"></i> <span id="modalTitle">Customer Details</span>
+      </h3>
+      <button onclick="closeModal('customerModal')" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #999;">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <div class="tab-navigation">
+      <button class="tab-button active" onclick="switchTab(event, 'tab-profile')">Profile</button>
+      <button class="tab-button" onclick="switchTab(event, 'tab-comms')">Communications</button>
+      <button class="tab-button" onclick="switchTab(event, 'tab-tasks')">Tasks</button>
+      <button class="tab-button" onclick="switchTab(event, 'tab-history')">Order History</button>
+    </div>
+
+    <div id="tab-profile" class="tab-content active">
+      <form id="customerForm" onsubmit="saveCustomer(event)">
+        <input type="hidden" id="customerId">
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Full Name *</label>
+            <input type="text" id="name" required placeholder="Jane Doe">
+          </div>
+          <div class="form-group">
+            <label>Email *</label>
+            <input type="email" id="email" required placeholder="jane@example.com">
+          </div>
+          <div class="form-group">
+            <label>Phone</label>
+            <input type="tel" id="phone" placeholder="(555) 123-4567">
+          </div>
+          <div class="form-group">
+            <label>Status</label>
+            <select id="status">
+              <option value="Prospect">Prospect</option>
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Address</label>
+          <textarea id="address" rows="2" placeholder="Shipping address..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Notes & Preferences</label>
+          <textarea id="notes" rows="3" placeholder="Skin type, allergies, preferences..."></textarea>
+        </div>
+
+        <div class="grid-2">
+           <div class="form-group">
+             <label>Referral Code (Auto-generated)</label>
+             <input type="text" id="referralCode" readonly style="background: #f1f8e9; color: #666;">
+           </div>
+           <div class="form-group">
+             <label>Referred By (Optional)</label>
+             <input type="text" id="referredBy" placeholder="Enter code of referrer">
+           </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+           <button type="button" class="btn-danger" id="deleteCustomerBtn" onclick="deleteCustomer()" style="display: none; margin-right: auto;">Delete</button>
+           <button type="button" class="btn-secondary" onclick="closeModal('customerModal')">Cancel</button>
+           <button type="submit" class="btn-primary">Save Customer</button>
+        </div>
+      </form>
+    </div>
+
+    <div id="tab-comms" class="tab-content">
+      <button class="btn-primary" style="margin-bottom: 15px;" onclick="openCommunicationModal(document.getElementById('customerId').value)">
+        <i class="fas fa-plus"></i> Log Communication
+      </button>
+      <div id="customerCommList" style="max-height: 400px; overflow-y: auto;">
+        <p style="color: #999; padding: 20px; text-align: center;">Save customer to log communications.</p>
+      </div>
+    </div>
+
+    <div id="tab-tasks" class="tab-content">
+      <button class="btn-primary" style="margin-bottom: 15px;" onclick="openTaskModal(document.getElementById('customerId').value)">
+        <i class="fas fa-plus"></i> Add Task
+      </button>
+      <div id="customerTaskList" style="max-height: 400px; overflow-y: auto;">
+        <p style="color: #999; padding: 20px; text-align: center;">Save customer to manage tasks.</p>
+      </div>
+    </div>
+
+    <div id="tab-history" class="tab-content">
+      <div id="customerOrderList">
+         <p style="color: #999; padding: 20px; text-align: center;">No orders found.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="orderModal" class="modal">
+  <div class="modal-content">
+    <h3 style="color: #2e5940; margin-bottom: 20px;">New Order</h3>
+    <form id="orderForm" onsubmit="saveOrder(event)">
+      <div class="form-group">
+        <label>Customer</label>
+        <select id="orderCustomer" required>
+          <option value="">Select Customer...</option>
+        </select>
+      </div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Product</label>
+          <input type="text" id="orderProduct" required placeholder="e.g. Lavender Salve">
+        </div>
+        <div class="form-group">
+          <label>Amount ($)</label>
+          <input type="number" id="orderAmount" step="0.01" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Date</label>
+        <input type="date" id="orderDate" required>
+      </div>
+      <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+        <button type="button" class="btn-secondary" onclick="closeModal('orderModal')">Cancel</button>
+        <button type="submit" class="btn-primary">Create Order</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="eventModal" class="modal">
+  <div class="modal-content" style="max-width: 500px;">
+    <h3 style="color: #2e5940; margin-bottom: 20px;">Schedule Event</h3>
+    <form id="eventForm" onsubmit="saveEvent(event)">
+      <div class="form-group">
+        <label>Event Title</label>
+        <input type="text" id="eventTitle" required>
+      </div>
+      <div class="form-group">
+        <label>Date</label>
+        <input type="date" id="eventDate" required>
+      </div>
+      <div class="form-group">
+        <label>Type</label>
+        <select id="eventType">
+          <option value="meeting">Meeting</option>
+          <option value="followup">Follow-up</option>
+          <option value="personal">Personal</option>
+        </select>
+      </div>
+      <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+        <button type="button" class="btn-secondary" onclick="closeModal('eventModal')">Cancel</button>
+        <button type="submit" class="btn-primary">Save Event</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+// --- CORE DATA MANAGEMENT & STATE ---
+let state = {
+    customers: [],
+    orders: [],
+    events: [],
+    communications: [], // Phase 1
+    tasks: [],          // Phase 1
+    referralSettings: { creditAmount: 15, bronze: [1,2], silver: [3,5], gold: [6,10], platinum: 11 }
+};
+
+// Initialize Application
+document.addEventListener('DOMContentLoaded', () => {
+    loadData();
+    updateDashboard();
+    renderCalendar();
+    checkBackupStatus();
+    
+    // Set default dates
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('orderDate').value = today;
+    document.getElementById('eventDate').value = today;
+    
+    // Setup Charts (Mocked for now as we need data)
+    initCharts();
+});
+
+// --- NAVIGATION ---
+function showView(viewId) {
+    document.querySelectorAll('.view').forEach(el => el.style.display = 'none');
+    document.getElementById(viewId + 'View').style.display = 'block';
+    
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    event.currentTarget.classList.add('active'); // Works if clicked, fails if called programmatically without event
+    
+    if (viewId === 'customers') renderCustomersTable();
+    if (viewId === 'orders') renderOrdersTable();
+    if (viewId === 'pipeline') renderPipeline();
+    if (viewId === 'referrals') renderReferrals();
+}
+
+function switchTab(e, tabId) {
+    e.preventDefault();
+    const modal = e.target.closest('.modal-content');
+    modal.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    modal.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+    
+    document.getElementById(tabId).classList.add('active');
+    e.target.classList.add('active');
+}
+
+// --- DATA PERSISTENCE ---
+function saveData() {
+    localStorage.setItem('acoustiskin_crm_data', JSON.stringify(state));
+    localStorage.setItem('acoustiskin_last_backup', new Date().toISOString());
+    updateDashboard();
+    showNotification('Data saved successfully');
+}
+
+function loadData() {
+    const data = localStorage.getItem('acoustiskin_crm_data');
+    if (data) {
+        state = JSON.parse(data);
+        // Ensure new arrays exist if loading old data format
+        if(!state.communications) state.communications = [];
+        if(!state.tasks) state.tasks = [];
+        if(!state.referralSettings) state.referralSettings = { creditAmount: 15, bronze: [1,2], silver: [3,5], gold: [6,10], platinum: 11 };
+    }
+    const lastBackup = localStorage.getItem('acoustiskin_last_backup');
+    if (lastBackup) {
+        document.getElementById('lastBackupTime').textContent = new Date(lastBackup).toLocaleString();
+    }
+}
+
+// --- DASHBOARD LOGIC ---
+function updateDashboard() {
+    // Stats
+    document.getElementById('totalCustomers').innerText = state.customers.length;
+    document.getElementById('activeCustomers').innerText = state.customers.filter(c => c.status === 'Active').length;
+    
+    const totalRev = state.orders.reduce((sum, order) => sum + parseFloat(order.amount), 0);
+    document.getElementById('totalRevenue').innerText = '$' + totalRev.toLocaleString(undefined, {minimumFractionDigits: 2});
+    document.getElementById('totalOrders').innerText = state.orders.length;
+    
+    const avg = state.orders.length ? totalRev / state.orders.length : 0;
+    document.getElementById('avgOrderValue').innerText = '$' + avg.toFixed(2);
+
+    // Current Month Logic
+    const now = new Date();
+    const currentMonthOrders = state.orders.filter(o => {
+        const d = new Date(o.date);
+        return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    });
+    const monthRev = currentMonthOrders.reduce((sum, o) => sum + parseFloat(o.amount), 0);
+    document.getElementById('monthRevenue').innerText = '$' + monthRev.toLocaleString();
+    document.getElementById('monthOrders').innerText = currentMonthOrders.length;
+
+    // Recent Customers
+    const recentList = document.getElementById('recentCustomers');
+    if (state.customers.length === 0) {
+        recentList.innerHTML = '<p style="color:#999; text-align:center; padding:20px;">No customers yet</p>';
+    } else {
+        recentList.innerHTML = state.customers.slice(-5).reverse().map(c => `
+            <div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #f1f8e9;">
+                <div>
+                    <div style="font-weight:600; color:#2e5940;">${c.name}</div>
+                    <div style="font-size:12px; color:#666;">${c.email}</div>
+                </div>
+                <span class="status-badge status-${c.status.toLowerCase()}">${c.status}</span>
+            </div>
+        `).join('');
+    }
+
+    // Today's Tasks
+    updateTodaysTasks();
+}
+
+function updateTodaysTasks() {
+    const today = new Date().toISOString().split('T')[0];
+    const tasks = state.tasks.filter(t => t.dueDate === today && t.status !== 'Completed');
+    const container = document.getElementById('todaysTasks');
+    
+    if (tasks.length === 0) {
+        container.innerHTML = '<p style="color:#999; text-align:center; padding:20px;">No tasks for today</p>';
+    } else {
+        container.innerHTML = tasks.map(t => `
+            <div class="task-item priority-${t.priority.toLowerCase()}">
+                <div style="font-weight:600;">${t.title}</div>
+                <div style="font-size:12px;">${t.priority} Priority</div>
+            </div>
+        `).join('');
+    }
+}
+
+// --- CUSTOMER MANAGEMENT ---
+function openCustomerModal(id = null) {
+    const modal = document.getElementById('customerModal');
+    const form = document.getElementById('customerForm');
+    
+    // Reset tabs
+    modal.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    modal.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-profile').classList.add('active');
+    modal.querySelector('.tab-button').classList.add('active');
+
+    if (id) {
+        const customer = state.customers.find(c => c.id === parseInt(id));
+        document.getElementById('modalTitle').innerText = 'Edit Customer';
+        document.getElementById('customerId').value = customer.id;
+        document.getElementById('name').value = customer.name;
+        document.getElementById('email').value = customer.email;
+        document.getElementById('phone').value = customer.phone || '';
+        document.getElementById('status').value = customer.status;
+        document.getElementById('address').value = customer.address || '';
+        document.getElementById('notes').value = customer.notes || '';
+        document.getElementById('referralCode').value = customer.referralCode || generateReferralCode(customer.name);
+        document.getElementById('referredBy').value = customer.referredBy || '';
+        document.getElementById('deleteCustomerBtn').style.display = 'block';
+        
+        renderCustomerHistory(customer.id);
+        renderCustomerComms(customer.id);
+        renderCustomerTasks(customer.id);
+    } else {
+        document.getElementById('modalTitle').innerText = 'New Customer';
+        form.reset();
+        document.getElementById('customerId').value = '';
+        document.getElementById('referralCode').value = 'Will be generated';
+        document.getElementById('deleteCustomerBtn').style.display = 'none';
+        
+        // Clear lists for new customer
+        document.getElementById('customerOrderList').innerHTML = '<p style="padding:20px;">Save customer first.</p>';
+        document.getElementById('customerCommList').innerHTML = '<p style="padding:20px;">Save customer first.</p>';
+        document.getElementById('customerTaskList').innerHTML = '<p style="padding:20px;">Save customer first.</p>';
+    }
+    modal.style.display = 'block';
+}
+
+function saveCustomer(e) {
+    e.preventDefault();
+    const id = document.getElementById('customerId').value;
+    const name = document.getElementById('name').value;
+    
+    const customer = {
+        id: id ? parseInt(id) : Date.now(),
+        name: name,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value,
+        status: document.getElementById('status').value,
+        address: document.getElementById('address').value,
+        notes: document.getElementById('notes').value,
+        referralCode: id ? document.getElementById('referralCode').value : generateReferralCode(name),
+        referredBy: document.getElementById('referredBy').value,
+        joinedDate: id ? (state.customers.find(c => c.id == id).joinedDate) : new Date().toISOString()
+    };
+
+    if (id) {
+        const index = state.customers.findIndex(c => c.id === parseInt(id));
+        state.customers[index] = customer;
+    } else {
+        state.customers.push(customer);
+        // Check for referral credit
+        if (customer.referredBy) checkReferralCredit(customer.referredBy);
+    }
+
+    saveData();
+    closeModal('customerModal');
+    renderCustomersTable();
+}
+
+function renderCustomersTable() {
+    const filterText = document.getElementById('customerSearch').value.toLowerCase();
+    const filterStatus = document.getElementById('customerStatusFilter').value;
+    
+    const filtered = state.customers.filter(c => {
+        const matchesText = c.name.toLowerCase().includes(filterText) || c.email.toLowerCase().includes(filterText);
+        const matchesStatus = filterStatus ? c.status === filterStatus : true;
+        return matchesText && matchesStatus;
+    });
+
+    const tbody = document.getElementById('customersTableBody');
+    if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px;">No customers found.</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = filtered.map(c => {
+        // Calculate AI Score (Mock logic: Activity based)
+        const orders = state.orders.filter(o => o.customerId === c.id).length;
+        let scoreClass = 'score-low';
+        if (orders > 5) scoreClass = 'score-high';
+        else if (orders > 0) scoreClass = 'score-medium';
+        
+        // Count Referrals
+        const referralCount = state.customers.filter(ref => ref.referredBy === c.referralCode).length;
+
+        return `
+        <tr onclick="openCustomerModal('${c.id}')" style="cursor:pointer;">
+            <td>
+                <div style="font-weight:600; color:#2e5940;">${c.name}</div>
+                <div style="font-size:12px; color:#999;">Joined: ${new Date(c.joinedDate).toLocaleDateString()}</div>
+            </td>
+            <td>
+                <div>${c.email}</div>
+                <div style="font-size:12px;">${c.phone}</div>
+            </td>
+            <td><span class="status-badge status-${c.status.toLowerCase()}">${c.status}</span></td>
+            <td><span class="score-badge ${scoreClass}">${orders > 5 ? 'High Value' : (orders > 0 ? 'Regular' : 'New')}</span></td>
+            <td>${referralCount}</td>
+            <td>
+                <button class="btn-secondary" style="padding:4px 8px;">View</button>
+            </td>
+        </tr>
+    `}).join('');
+}
+
+// --- COMMUNICATIONS & TASKS (PHASE 1) ---
+function openCommunicationModal(customerId) {
+    if(!customerId) return alert("Please select or save a customer first.");
+    document.getElementById('commForm').reset();
+    document.getElementById('commId').value = '';
+    
+    // Populate customer select
+    const select = document.getElementById('commCustomer');
+    select.innerHTML = '<option value="">Select Customer...</option>';
+    state.customers.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.id;
+        opt.text = c.name;
+        if(c.id == customerId) opt.selected = true;
+        select.appendChild(opt);
+    });
+    document.getElementById('commCustomerId').value = customerId; // Hidden field
+    
+    document.getElementById('communicationModal').style.display = 'block';
+}
+
+function saveCommunication(e) {
+    e.preventDefault();
+    const comm = {
+        id: Date.now(),
+        customerId: parseInt(document.getElementById('commCustomerId').value),
+        type: document.getElementById('commType').value,
+        date: document.getElementById('commDateTime').value,
+        subject: document.getElementById('commSubject').value,
+        notes: document.getElementById('commNotes').value,
+        outcome: document.getElementById('commOutcome').value
+    };
+    
+    state.communications.push(comm);
+    saveData();
+    closeModal('communicationModal');
+    
+    // Refresh list if we are in the customer modal
+    if(document.getElementById('customerModal').style.display === 'block') {
+        renderCustomerComms(comm.customerId);
+    }
+}
+
+function renderCustomerComms(customerId) {
+    const comms = state.communications.filter(c => c.customerId === parseInt(customerId)).sort((a,b) => new Date(b.date) - new Date(a.date));
+    const container = document.getElementById('customerCommList');
+    
+    if(comms.length === 0) {
+        container.innerHTML = '<p style="color:#999; padding:20px; text-align:center;">No communications logged.</p>';
+        return;
+    }
+    
+    container.innerHTML = comms.map(c => `
+        <div class="comm-item">
+            <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                <strong><i class="fas fa-${getCommIcon(c.type)}"></i> ${c.type}</strong>
+                <span style="font-size:12px; color:#666;">${new Date(c.date).toLocaleString()}</span>
+            </div>
+            <div style="font-weight:600; font-size:13px; margin-bottom:5px;">${c.subject}</div>
+            <div style="font-size:13px; color:#444;">${c.notes}</div>
+            ${c.outcome ? `<div style="font-size:11px; margin-top:5px; color:#2e5940;">Outcome: ${c.outcome}</div>` : ''}
+        </div>
+    `).join('');
+}
+
+function getCommIcon(type) {
+    const map = { 'Email': 'envelope', 'Phone Call': 'phone', 'Meeting': 'handshake', 'SMS': 'comment-alt', 'Video Call': 'video' };
+    return map[type] || 'circle';
+}
+
+function openTaskModal(customerId) {
+    if(!customerId) return alert("Please select or save a customer first.");
+    document.getElementById('taskForm').reset();
+    document.getElementById('taskId').value = '';
+    
+    const select = document.getElementById('taskCustomer');
+    select.innerHTML = '<option value="">Select Customer...</option>';
+    state.customers.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.id;
+        opt.text = c.name;
+        if(c.id == customerId) opt.selected = true;
+        select.appendChild(opt);
+    });
+    document.getElementById('taskCustomerId').value = customerId;
+    
+    document.getElementById('taskModal').style.display = 'block';
+}
+
+function saveTask(e) {
+    e.preventDefault();
+    const task = {
+        id: Date.now(),
+        customerId: parseInt(document.getElementById('taskCustomerId').value),
+        title: document.getElementById('taskTitle').value,
+        priority: document.getElementById('taskPriority').value,
+        status: document.getElementById('taskStatus').value,
+        dueDate: document.getElementById('taskDueDate').value,
+        description: document.getElementById('taskDescription').value
+    };
+    
+    state.tasks.push(task);
+    saveData();
+    closeModal('taskModal');
+    
+    if(document.getElementById('customerModal').style.display === 'block') {
+        renderCustomerTasks(task.customerId);
+    }
+    updateTodaysTasks();
+}
+
+function renderCustomerTasks(customerId) {
+    const tasks = state.tasks.filter(t => t.customerId === parseInt(customerId)).sort((a,b) => new Date(a.dueDate) - new Date(b.dueDate));
+    const container = document.getElementById('customerTaskList');
+    
+    if(tasks.length === 0) {
+        container.innerHTML = '<p style="color:#999; padding:20px; text-align:center;">No tasks found.</p>';
+        return;
+    }
+    
+    container.innerHTML = tasks.map(t => `
+        <div class="task-item priority-${t.priority.toLowerCase()} ${t.status === 'Completed' ? 'completed' : ''}">
+            <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                <strong>${t.title}</strong>
+                <span class="status-badge status-${t.status === 'In Progress' ? 'prospect' : (t.status === 'Completed' ? 'active' : 'inactive')}">${t.status}</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:12px; color:#666;">
+                <span>Due: ${t.dueDate}</span>
+                <span>${t.priority} Priority</span>
+            </div>
+            ${t.description ? `<div style="font-size:12px; margin-top:5px;">${t.description}</div>` : ''}
+        </div>
+    `).join('');
+}
+
+// --- ORDERS ---
+function openOrderModal() {
+    const select = document.getElementById('orderCustomer');
+    select.innerHTML = '<option value="">Select Customer...</option>';
+    state.customers.forEach(c => {
+        const option = document.createElement('option');
+        option.value = c.id;
+        option.text = c.name;
+        select.appendChild(option);
+    });
+    document.getElementById('orderModal').style.display = 'block';
+}
+
+function saveOrder(e) {
+    e.preventDefault();
+    const order = {
+        id: Date.now(),
+        customerId: parseInt(document.getElementById('orderCustomer').value),
+        product: document.getElementById('orderProduct').value,
+        amount: parseFloat(document.getElementById('orderAmount').value),
+        date: document.getElementById('orderDate').value,
+        status: 'Completed'
+    };
+    state.orders.push(order);
+    
+    // Convert Prospect to Active if first order
+    const custIndex = state.customers.findIndex(c => c.id === order.customerId);
+    if (custIndex > -1 && state.customers[custIndex].status === 'Prospect') {
+        state.customers[custIndex].status = 'Active';
+    }
+
+    saveData();
+    closeModal('orderModal');
+    renderOrdersTable();
+}
+
+function renderOrdersTable() {
+    const tbody = document.getElementById('ordersTableBody');
+    if (state.orders.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:40px; color:#999;">No orders yet.</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = state.orders.map(o => {
+        const customer = state.customers.find(c => c.id === o.customerId) || { name: 'Unknown' };
+        return `
+        <tr>
+            <td>#${o.id.toString().slice(-6)}</td>
+            <td>${customer.name}</td>
+            <td>${o.product}</td>
+            <td>${o.date}</td>
+            <td>$${o.amount.toFixed(2)}</td>
+            <td><span class="status-badge status-active">Completed</span></td>
+            <td><button class="btn-secondary" style="padding:4px 8px;">View</button></td>
+        </tr>
+    `}).join('');
+}
+
+function renderCustomerHistory(id) {
+    const orders = state.orders.filter(o => o.customerId === id);
+    const container = document.getElementById('customerOrderList');
+    if (orders.length === 0) {
+        container.innerHTML = '<p style="color:#999; padding:20px; text-align:center;">No orders found.</p>';
+    } else {
+        container.innerHTML = orders.map(o => `
+            <div style="padding:10px; border-bottom:1px solid #eee; display:flex; justify-content:space-between;">
+                <div>
+                    <div style="font-weight:600;">${o.product}</div>
+                    <div style="font-size:12px; color:#999;">${o.date}</div>
+                </div>
+                <div style="font-weight:600; color:#2e5940;">$${o.amount.toFixed(2)}</div>
+            </div>
+        `).join('');
+    }
+}
+
+// --- REFERRAL LOGIC ---
+function generateReferralCode(name) {
+    return name.substring(0,3).toUpperCase() + Math.floor(Math.random() * 10000);
+}
+
+function openReferralSettings() {
+    document.getElementById('settingCreditAmount').value = state.referralSettings.creditAmount;
+    document.getElementById('referralSettingsModal').style.display = 'block';
+}
+
+function saveReferralSettings() {
+    state.referralSettings.creditAmount = parseFloat(document.getElementById('settingCreditAmount').value);
+    // Add logic to save tiers if needed
+    saveData();
+    closeModal('referralSettingsModal');
+}
+
+function checkReferralCredit(referrerCode) {
+    const referrer = state.customers.find(c => c.referralCode === referrerCode);
+    if (referrer) {
+        showNotification(`Referral applied! ${referrer.name} receives credit.`);
+        // Logic to add credit to referrer would go here
+    }
+}
+
+function renderReferrals() {
+    const tbody = document.getElementById('referralTableBody');
+    let totalRef = 0;
+    
+    // Build referral rows by finding customers who have a 'referredBy' value
+    const referralRows = state.customers.filter(c => c.referredBy).map(c => {
+        const referrer = state.customers.find(ref => ref.referralCode === c.referredBy);
+        if(!referrer) return '';
+        totalRef++;
+        return `
+            <tr>
+                <td>${referrer.name}</td>
+                <td>${c.name}</td>
+                <td>${new Date(c.joinedDate).toLocaleDateString()}</td>
+                <td><span class="status-badge status-active">Approved</span></td>
+                <td>$${state.referralSettings.creditAmount}</td>
+            </tr>
+        `;
+    }).join('');
+    
+    document.getElementById('totalReferrals').innerText = totalRef;
+    document.getElementById('totalCredits').innerText = '$' + (totalRef * state.referralSettings.creditAmount).toFixed(2);
+    
+    tbody.innerHTML = referralRows || '<tr><td colspan="5" style="text-align:center; padding:20px;">No referrals yet.</td></tr>';
+}
+
+// --- UTILS ---
+function closeModal(id) {
+    document.getElementById(id).style.display = 'none';
+}
+
+function showNotification(msg) {
+    const n = document.getElementById('notification');
+    document.getElementById('notificationText').innerText = msg;
+    n.style.display = 'block';
+    setTimeout(() => n.style.display = 'none', 3000);
+}
+
+function checkBackupStatus() {
+    const lastBackup = localStorage.getItem('acoustiskin_last_backup');
+    if (!lastBackup) return;
+    
+    const days = (new Date() - new Date(lastBackup)) / (1000 * 60 * 60 * 24);
+    if (days > 7) {
+        document.getElementById('backupReminderModal').style.display = 'block';
+    }
+}
+
+function exportData() {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state));
+    const downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", "acoustiskin_backup_" + new Date().toISOString().split('T')[0] + ".json");
+    document.body.appendChild(downloadAnchorNode);
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+    
+    localStorage.setItem('acoustiskin_last_backup', new Date().toISOString());
+    document.getElementById('lastBackupTime').textContent = new Date().toLocaleString();
+}
+
+function showImportOptions() { document.getElementById('importFile').click(); }
+
+function importData(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const importedState = JSON.parse(e.target.result);
+            if(state.customers.length > 0) {
+                // If data exists, ask to merge or replace
+                window.tempImport = importedState;
+                document.getElementById('conflictModal').style.display = 'block';
+            } else {
+                state = importedState;
+                saveData();
+                location.reload();
+            }
+        } catch (err) {
+            alert('Invalid backup file');
+        }
+    };
+    reader.readAsText(file);
+}
+
+function resolveConflict(action) {
+    if(action === 'replace') {
+        state = window.tempImport;
+    } else {
+        // Simple merge: Concat arrays and dedupe by ID
+        const mergedCustomers = [...state.customers, ...window.tempImport.customers];
+        state.customers = Array.from(new Map(mergedCustomers.map(item => [item.id, item])).values());
+        
+        // Merge Orders
+        state.orders = [...state.orders, ...window.tempImport.orders];
+    }
+    saveData();
+    location.reload();
+}
+
+// --- CHARTS (Placeholder) ---
+function initCharts() {
+    // Basic Chart.js implementation would go here
+    // Currently mocked for visual layout in CSS
+}
+
+// --- CALENDAR ---
+function renderCalendar() {
+    const grid = document.getElementById('calendarGrid');
+    grid.innerHTML = '';
+    const date = new Date();
+    const month = date.toLocaleString('default', { month: 'long' });
+    document.getElementById('currentMonth').innerText = `${month} ${date.getFullYear()}`;
+    
+    // Mock Calendar Days
+    for(let i=1; i<=31; i++) {
+        const day = document.createElement('div');
+        day.className = 'calendar-day';
+        if(i === date.getDate()) day.classList.add('today');
+        
+        let content = `<div style="font-weight:600; margin-bottom:5px;">${i}</div>`;
+        
+        // Find events/tasks for this day (mock logic)
+        const dayEvents = state.events ? state.events.filter(e => new Date(e.date).getDate() === i) : [];
+        dayEvents.forEach(e => {
+            content += `<div class="event-item">${e.title}</div>`;
+        });
+
+        day.innerHTML = content;
+        grid.appendChild(day);
+    }
+}
+function openEventModal() { document.getElementById('eventModal').style.display = 'block'; }
+</script>
+</body>
+</html>
   
