@@ -3090,58 +3090,25 @@ document.getElementById('orderShipping').textContent = `$${shippingCost.toFixed(
 document.getElementById('orderTotal').textContent = `$${total.toFixed(2)}`;
 }
 
-// Save Order
-function saveOrder(event) {
-event.preventDefault();
+// Function: saveOrder(event)
 
-const orderId = document.getElementById('orderId').value;
-const customerId = document.getElementById('orderCustomer').value;
-const quantity = parseFloat(document.getElementById('orderQuantity').value);
-const price = parseFloat(document.getElementById('orderPrice').value);
-const discount = parseFloat(document.getElementById('orderDiscount').value) || 0;
-const shippingCost = parseFloat(document.getElementById('orderShippingCost').value) || 0;
-const state = document.getElementById('orderShippingState').value;
+// ... (code for creating the 'order' object)
 
-const subtotal = (quantity * price) - discount;
-const taxRate = state ? (stateTaxRates[state] || 0) : 0;
-const tax = subtotal * (taxRate / 100);
-const total = subtotal + tax + shippingCost;
-
-const order = {
-id: orderId || Date.now().toString(),
-customerId: customerId,
-customerName: crmData.customers.find(c => c.id === customerId)?.name || '',
-product: document.getElementById('orderProduct').value,
-manufacturer: document.getElementById('orderManufacturer').value,
-quantity: quantity,
-price: price,
-discount: discount,
-shippingAddress: {
-street: document.getElementById('orderShippingStreet').value,
-city: document.getElementById('orderShippingCity').value,
-state: document.getElementById('orderShippingState').value,
-zip: document.getElementById('orderShippingZip').value
-},
-shippingState: state,
-shippingCost: shippingCost,
-shippingCompany: document.getElementById('orderShippingCompany').value,
-trackingNumber: document.getElementById('orderTrackingNumber').value,
-date: document.getElementById('orderDate').value,
-status: document.getElementById('orderStatus').value,
-notes: document.getElementById('orderNotes').value,
-subtotal: subtotal,
-tax: tax,
-total: total,
-createdAt: orderId ? crmData.orders.find(o => o.id === orderId).createdAt : new Date().toISOString()
-};
-
-if (orderId) {
+// Find the index of the order in the array
 const index = crmData.orders.findIndex(o => o.id === orderId);
-crmData.orders[index] = order;
-} else {
-crmData.orders.push(order);
-}
 
+// **REPLACE THE ORIGINAL IF/ELSE BLOCK WITH THE FOLLOWING:**
+if (index !== -1) { 
+    // This is an existing order (index was found)
+    crmData.orders[index] = order;
+    showNotification('Order updated successfully!');
+} else { 
+    // This is a NEW order (index was not found)
+    crmData.orders.push(order);
+    crmData.nextOrderId++;
+    showNotification('New order added successfully!');
+}
+// ... (rest of the function, saveData(), closeModal(), etc.)
 saveData();
 updateDashboard();
 updateOrdersView();
