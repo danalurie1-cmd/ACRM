@@ -3125,13 +3125,13 @@ return false;
 
 // Delete Order
 function deleteOrder(orderId) {
-if (confirm('Are you sure you want to delete this order?')) {
-crmData.orders = crmData.orders.filter(o => o.id !== orderId);
-saveData();
-updateDashboard();
-updateOrdersView();
-showNotification('Order deleted successfully!');
-}
+    if (confirm('Are you sure you want to delete this order?')) {
+        crmData.orders = crmData.orders.filter(o => o.id !== orderId);
+        saveData();
+        updateDashboard();
+        updateOrdersView();
+        showNotification('Order deleted successfully!');
+    }
 }
 
 // Update Orders View
