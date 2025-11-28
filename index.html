@@ -2508,51 +2508,7 @@ document.getElementById('taskDueDate').value = today;
 document.getElementById('taskModal').style.display = 'block';
 }
 
-// Save Task
 function saveTask(event) {
-event.preventDefault();
-
-const taskId = document.getElementById('taskId').value;
-const customerId = document.getElementById('taskCustomerId').value;
-const title = document.getElementById('taskTitle').value;
-const priority = document.getElementById('taskPriority').value;
-const status = document.getElementById('taskStatus').value;
-const dueDate = document.getElementById('taskDueDate').value;
-const description = document.getElementById('taskDescription').value;
-
-const task = {
-id: taskId || Date.now().toString(),
-customerId: customerId,
-title: title,
-priority: priority,
-status: status,
-dueDate: dueDate,
-description: description,
-createdAt: taskId ? crmData.tasks.find(t => t.id === taskId).createdAt : new Date().toISOString()
-};
-
-if (taskId) {
-const index = crmData.tasks.findIndex(t => t.id === taskId);
-crmData.tasks[index] = task;
-} else {
-crmData.tasks.push(task);
-}
-
-saveData();
-closeModal('taskModal');
-showNotification('Task saved successfully!');
-
-// Refresh customer tasks if modal is open
-if (document.getElementById('customerModal').style.display === 'block') {
-loadCustomerTasks(customerId);
-}
-
-// Refresh dashboard
-updateDashboard();
-
-return false;
-}
-
 // Load Customer Tasks
 function loadCustomerTasks(customerId) {
 const container = document.getElementById('customerTasks');
