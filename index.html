@@ -2367,10 +2367,25 @@
 
     // PHASE 1: Tab Switching
     function switchCustomerTab(tabName) {
+      // Remove active class from all tabs
       document.querySelectorAll('.customer-tab').forEach(t => t.classList.remove('active'));
+      
+      // Remove active class from all tab contents
       document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-      event.target.classList.add('active');
-      document.getElementById(tabName + 'Tab').classList.add('active');
+      
+      // Add active class to clicked tab by finding it via onclick attribute
+      const tabs = document.querySelectorAll('.customer-tab');
+      tabs.forEach(tab => {
+        if (tab.getAttribute('onclick') && tab.getAttribute('onclick').includes(tabName)) {
+          tab.classList.add('active');
+        }
+      });
+      
+      // Show the corresponding tab content
+      const targetTab = document.getElementById(tabName + 'Tab');
+      if (targetTab) {
+        targetTab.classList.add('active');
+      }
     }
 
     // PHASE 1: Communication Functions
