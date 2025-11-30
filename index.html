@@ -318,6 +318,64 @@
       color: #43a047;
       transform: rotate(90deg);
     }
+    /* Phase 1 Tabs Styling */
+    .customer-tabs {
+      display: flex;
+      gap: 10px;
+      margin: 25px 0 15px 0;
+      border-bottom: 2px solid #e8f5e9;
+    }
+    .customer-tab {
+      padding: 12px 20px;
+      background: white;
+      border: 2px solid #e8f5e9;
+      border-bottom: none;
+      border-radius: 8px 8px 0 0;
+      cursor: pointer;
+      font-weight: 600;
+      color: #666;
+      transition: all 0.3s;
+    }
+    .customer-tab.active {
+      background: #e8f5e9;
+      color: #2e5940;
+      border-color: #66bb6a;
+    }
+    .customer-tab:hover {
+      background: #f1f8e9;
+    }
+    .tab-content {
+      display: none;
+      padding: 20px 0;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .timeline-item {
+      padding: 15px;
+      background: #f1f8e9;
+      border-left: 4px solid #66bb6a;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+    .task-item {
+      padding: 15px;
+      background: white;
+      border: 2px solid #e8f5e9;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+    .task-item.overdue {
+      border-color: #e53935;
+      background: #ffebee;
+    }
+    .purchase-item {
+      padding: 15px;
+      background: white;
+      border: 2px solid #e8f5e9;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
   </style>
 </head>
 <body>
@@ -454,6 +512,120 @@
           <button type="button" class="btn-secondary" onclick="closeModal('referralSettingsModal')">Cancel</button>
           <button type="submit" class="btn-primary">
             <i class="fas fa-save"></i> Save Settings
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Communication Modal (Phase 1) -->
+  <div id="communicationModal" class="modal">
+    <div class="modal-content" style="max-width: 700px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+        <h3 style="color: #2e5940; font-size: 24px; font-weight: 700;">
+          <i class="fas fa-comments"></i> <span id="communicationModalTitle">Add Communication</span>
+        </h3>
+        <button onclick="closeModal('communicationModal')" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #999;">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <form id="communicationForm" onsubmit="saveCommunication(event)">
+        <input type="hidden" id="communicationId">
+        <input type="hidden" id="communicationCustomerId">
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Type *</label>
+            <select id="communicationType" required>
+              <option value="email">Email</option>
+              <option value="phone">Phone Call</option>
+              <option value="meeting">In-Person Meeting</option>
+              <option value="sms">SMS/Text</option>
+              <option value="social">Social Media</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Date *</label>
+            <input type="date" id="communicationDate" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Subject *</label>
+          <input type="text" id="communicationSubject" required placeholder="Brief description">
+        </div>
+
+        <div class="form-group">
+          <label>Notes</label>
+          <textarea id="communicationNotes" rows="4" placeholder="Details of the communication..."></textarea>
+        </div>
+
+        <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+          <button type="button" class="btn-secondary" onclick="closeModal('communicationModal')">Cancel</button>
+          <button type="submit" class="btn-primary">
+            <i class="fas fa-save"></i> Save
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Task Modal (Phase 1) -->
+  <div id="taskModal" class="modal">
+    <div class="modal-content" style="max-width: 700px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+        <h3 style="color: #2e5940; font-size: 24px; font-weight: 700;">
+          <i class="fas fa-tasks"></i> <span id="taskModalTitle">Add Task</span>
+        </h3>
+        <button onclick="closeModal('taskModal')" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #999;">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <form id="taskForm" onsubmit="saveTask(event)">
+        <input type="hidden" id="taskId">
+        <input type="hidden" id="taskCustomerId">
+
+        <div class="form-group">
+          <label>Task Title *</label>
+          <input type="text" id="taskTitle" required placeholder="e.g., Follow up on quote">
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Due Date *</label>
+            <input type="date" id="taskDueDate" required>
+          </div>
+          <div class="form-group">
+            <label>Priority *</label>
+            <select id="taskPriority" required>
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Status *</label>
+          <select id="taskStatus" required>
+            <option value="pending">Pending</option>
+            <option value="in-progress">In Progress</option>
+            <option value="completed">Completed</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="taskDescription" rows="4" placeholder="Task details..."></textarea>
+        </div>
+
+        <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+          <button type="button" class="btn-secondary" onclick="closeModal('taskModal')">Cancel</button>
+          <button type="submit" class="btn-primary">
+            <i class="fas fa-save"></i> Save Task
           </button>
         </div>
       </form>
@@ -858,7 +1030,7 @@
       </div>
     </div>
   </main>
-  <!-- Customer Modal -->
+  <!-- Customer Modal WITH PHASE 1 TABS -->
   <div id="customerModal" class="modal">
     <div class="modal-content">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
@@ -899,12 +1071,16 @@
             <input type="email" id="customerEmail">
           </div>
           <div class="form-group">
-            <label>Phone</label>
-            <input type="tel" id="customerPhone">
+            <label>Home Number</label>
+            <input type="tel" id="customerHomePhone">
           </div>
         </div>
 
         <div class="grid-3">
+          <div class="form-group">
+            <label>Mobile Number</label>
+            <input type="tel" id="customerMobilePhone">
+          </div>
           <div class="form-group">
             <label>Status *</label>
             <select id="customerStatus" required>
@@ -917,18 +1093,19 @@
             <label>Industry</label>
             <input type="text" id="customerIndustry" placeholder="e.g., Healthcare, Tech">
           </div>
-          <div class="form-group">
-            <label>Age Range</label>
-            <select id="customerAgeRange">
-              <option value="">Select...</option>
-              <option value="18-24">18-24</option>
-              <option value="25-34">25-34</option>
-              <option value="35-44">35-44</option>
-              <option value="45-54">45-54</option>
-              <option value="55-64">55-64</option>
-              <option value="65+">65+</option>
-            </select>
-          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Age Range</label>
+          <select id="customerAgeRange">
+            <option value="">Select...</option>
+            <option value="18-24">18-24</option>
+            <option value="25-34">25-34</option>
+            <option value="35-44">35-44</option>
+            <option value="45-54">45-54</option>
+            <option value="55-64">55-64</option>
+            <option value="65+">65+</option>
+          </select>
         </div>
 
         <!-- Billing Address -->
@@ -1344,6 +1521,53 @@
           <textarea id="customerNotes" rows="4" placeholder="Any additional information..."></textarea>
         </div>
 
+        <!-- PHASE 1 TABS - Only visible when editing existing customer -->
+        <div id="phase1Section" style="display: none;">
+          <div class="section-header">
+            <i class="fas fa-history"></i> Customer History
+          </div>
+
+          <div class="customer-tabs">
+            <div class="customer-tab active" onclick="switchCustomerTab('communications')">
+              <i class="fas fa-comments"></i> Communications
+            </div>
+            <div class="customer-tab" onclick="switchCustomerTab('tasks')">
+              <i class="fas fa-tasks"></i> Tasks
+            </div>
+            <div class="customer-tab" onclick="switchCustomerTab('purchases')">
+              <i class="fas fa-shopping-cart"></i> Purchase History
+            </div>
+          </div>
+
+          <!-- Communications Tab -->
+          <div id="communicationsTab" class="tab-content active">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+              <p style="color: #666; font-size: 14px;">Track all communications with this customer</p>
+              <button type="button" class="btn-primary" onclick="openCommunicationModal()">
+                <i class="fas fa-plus"></i> Add Communication
+              </button>
+            </div>
+            <div id="communicationsList"></div>
+          </div>
+
+          <!-- Tasks Tab -->
+          <div id="tasksTab" class="tab-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+              <p style="color: #666; font-size: 14px;">Manage follow-up tasks and reminders</p>
+              <button type="button" class="btn-primary" onclick="openTaskModal()">
+                <i class="fas fa-plus"></i> Add Task
+              </button>
+            </div>
+            <div id="tasksList"></div>
+          </div>
+
+          <!-- Purchases Tab -->
+          <div id="purchasesTab" class="tab-content">
+            <p style="color: #666; font-size: 14px; margin-bottom: 15px;">Complete purchase history for this customer</p>
+            <div id="purchasesList"></div>
+          </div>
+        </div>
+
         <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 30px;">
           <button type="button" class="btn-secondary" onclick="closeModal('customerModal')">Cancel</button>
           <button type="submit" class="btn-primary">
@@ -1353,10 +1577,9 @@
       </form>
     </div>
   </div>
-
-  <!-- Order Modal -->
+  <!-- Order Modal WITH FIXED SHIPPING ADDRESS -->
   <div id="orderModal" class="modal">
-    <div class="modal-content" style="max-width: 800px;">
+    <div class="modal-content" style="max-width: 900px;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
         <h3 style="color: #2e5940; font-size: 24px; font-weight: 700;">
           <i class="fas fa-shopping-cart"></i> <span id="orderModalTitle">New Order</span>
@@ -1372,7 +1595,7 @@
         <div class="grid-2">
           <div class="form-group">
             <label>Customer *</label>
-            <select id="orderCustomer" required onchange="updateShipAddress()">
+            <select id="orderCustomer" required onchange="updateOrderAddresses()">
               <option value="">Select Customer...</option>
             </select>
           </div>
@@ -1438,36 +1661,40 @@
           </div>
           <div class="form-group">
             <label>Shipping ($)</label>
-            <input type="number" id="orderShipping" min="0" step="0.01" value="0" oninput="calculateOrderTotal()">
+            <input type="number" id="orderShippingCost" min="0" step="0.01" value="0" oninput="calculateOrderTotal()">
           </div>
         </div>
 
         <div class="section-header">
-          <i class="fas fa-truck"></i> Shipping & Tax
+          <i class="fas fa-map-marker-alt"></i> Bill To Address (from customer record)
+        </div>
+        <div id="orderBillToDisplay" style="padding: 15px; background: #f1f8e9; border-radius: 8px; color: #2e5940; font-size: 14px; margin-bottom: 20px;">
+          Select a customer to view billing address
         </div>
 
-        <div class="grid-2">
-          <div class="form-group">
-            <label>Shipping Company</label>
-            <select id="orderShipper">
-              <option value="">Select...</option>
-              <option value="USPS">USPS</option>
-              <option value="FedEx">FedEx</option>
-              <option value="UPS">UPS</option>
-              <option value="DHL">DHL</option>
-              <option value="Amazon">Amazon Logistics</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Tracking Number</label>
-            <input type="text" id="orderTracking" placeholder="Optional">
+        <div class="section-header">
+          <i class="fas fa-truck"></i> Ship To Address
+        </div>
+
+        <div class="form-group">
+          <div class="checkbox-item" style="margin-bottom: 15px;">
+            <input type="checkbox" id="orderSameAsBilling" onchange="copyOrderBillingToShipping()">
+            <label for="orderSameAsBilling" style="margin: 0; font-weight: normal;">Same as billing address</label>
           </div>
         </div>
 
-        <div class="grid-2">
+        <div class="form-group">
+          <label>Street Address *</label>
+          <input type="text" id="orderShippingStreet" required placeholder="123 Main St">
+        </div>
+        <div class="grid-3">
           <div class="form-group">
-            <label>State (for tax calculation) *</label>
-            <select id="orderState" required onchange="calculateOrderTotal()">
+            <label>City *</label>
+            <input type="text" id="orderShippingCity" required>
+          </div>
+          <div class="form-group">
+            <label>State *</label>
+            <select id="orderShippingState" required onchange="calculateOrderTotal()">
               <option value="">Select...</option>
               <option value="AL">Alabama</option>
               <option value="AK">Alaska</option>
@@ -1522,19 +1749,41 @@
             </select>
           </div>
           <div class="form-group">
-            <label>Status *</label>
-            <select id="orderStatus" required>
-              <option value="Pending">Pending</option>
-              <option value="Processing">Processing</option>
-              <option value="Shipped">Shipped</option>
-              <option value="Delivered">Delivered</option>
+            <label>ZIP Code *</label>
+            <input type="text" id="orderShippingZip" required placeholder="12345">
+          </div>
+        </div>
+
+        <div class="section-header">
+          <i class="fas fa-shipping-fast"></i> Shipping Details
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Shipping Company</label>
+            <select id="orderShipper">
+              <option value="">Select...</option>
+              <option value="USPS">USPS</option>
+              <option value="FedEx">FedEx</option>
+              <option value="UPS">UPS</option>
+              <option value="DHL">DHL</option>
+              <option value="Amazon">Amazon Logistics</option>
             </select>
+          </div>
+          <div class="form-group">
+            <label>Tracking Number</label>
+            <input type="text" id="orderTracking" placeholder="Optional">
           </div>
         </div>
 
         <div class="form-group">
-          <label>Ship-to Address</label>
-          <textarea id="orderShipAddress" rows="2" placeholder="Auto-filled from customer data"></textarea>
+          <label>Status *</label>
+          <select id="orderStatus" required>
+            <option value="Pending">Pending</option>
+            <option value="Processing">Processing</option>
+            <option value="Shipped">Shipped</option>
+            <option value="Delivered">Delivered</option>
+          </select>
         </div>
 
         <div class="info-box">
@@ -1675,46 +1924,32 @@
 
     // US Holidays
     const holidays = {
-      '2024-01-01': "New Year's Day",
-      '2024-01-15': "Martin Luther King Jr. Day",
-      '2024-02-19': "Presidents' Day",
-      '2024-05-27': "Memorial Day",
-      '2024-06-19': "Juneteenth",
-      '2024-07-04': "Independence Day",
-      '2024-09-02': "Labor Day",
-      '2024-10-14': "Columbus Day",
-      '2024-11-11': "Veterans Day",
-      '2024-11-28': "Thanksgiving",
-      '2024-12-25': "Christmas",
-      '2025-01-01': "New Year's Day",
-      '2025-01-20': "Martin Luther King Jr. Day",
-      '2025-02-17': "Presidents' Day",
-      '2025-05-26': "Memorial Day",
-      '2025-06-19': "Juneteenth",
-      '2025-07-04': "Independence Day",
-      '2025-09-01': "Labor Day",
-      '2025-10-13': "Columbus Day",
-      '2025-11-11': "Veterans Day",
-      '2025-11-27': "Thanksgiving",
-      '2025-12-25': "Christmas",
-      '2026-01-01': "New Year's Day",
-      '2026-01-19': "Martin Luther King Jr. Day",
-      '2026-02-16': "Presidents' Day",
-      '2026-05-25': "Memorial Day",
-      '2026-06-19': "Juneteenth",
-      '2026-07-04': "Independence Day",
-      '2026-09-07': "Labor Day",
-      '2026-10-12': "Columbus Day",
-      '2026-11-11': "Veterans Day",
-      '2026-11-26': "Thanksgiving",
+      '2024-01-01': "New Year's Day", '2024-01-15': "Martin Luther King Jr. Day",
+      '2024-02-19': "Presidents' Day", '2024-05-27': "Memorial Day",
+      '2024-06-19': "Juneteenth", '2024-07-04': "Independence Day",
+      '2024-09-02': "Labor Day", '2024-10-14': "Columbus Day",
+      '2024-11-11': "Veterans Day", '2024-11-28': "Thanksgiving",
+      '2024-12-25': "Christmas", '2025-01-01': "New Year's Day",
+      '2025-01-20': "Martin Luther King Jr. Day", '2025-02-17': "Presidents' Day",
+      '2025-05-26': "Memorial Day", '2025-06-19': "Juneteenth",
+      '2025-07-04': "Independence Day", '2025-09-01': "Labor Day",
+      '2025-10-13': "Columbus Day", '2025-11-11': "Veterans Day",
+      '2025-11-27': "Thanksgiving", '2025-12-25': "Christmas",
+      '2026-01-01': "New Year's Day", '2026-01-19': "Martin Luther King Jr. Day",
+      '2026-02-16': "Presidents' Day", '2026-05-25': "Memorial Day",
+      '2026-06-19': "Juneteenth", '2026-07-04': "Independence Day",
+      '2026-09-07': "Labor Day", '2026-10-12': "Columbus Day",
+      '2026-11-11': "Veterans Day", '2026-11-26': "Thanksgiving",
       '2026-12-25': "Christmas"
     };
 
-    // Data Structure
+    // Data Structure WITH PHASE 1
     let crmData = {
       customers: [],
       orders: [],
-      events: []
+      events: [],
+      communications: [],
+      tasks: []
     };
 
     // Referral Settings
@@ -1731,6 +1966,9 @@
     let currentMonth = new Date().getMonth();
     let currentYear = new Date().getFullYear();
     let currentEventId = null;
+    let currentCustomerId = null;
+    let currentCommunicationId = null;
+    let currentTaskId = null;
     let pendingImportData = null;
 
     // Initialize
@@ -1744,24 +1982,19 @@
       setDefaultOrderDate();
       checkBackupReminder();
       updateReferralDisplays();
-      
-      // Set up drag and drop for import
       setupDragDrop();
     });
 
     // Drag and Drop Setup
     function setupDragDrop() {
       const body = document.body;
-      
       body.addEventListener('dragover', function(e) {
         e.preventDefault();
         e.stopPropagation();
       });
-      
       body.addEventListener('drop', function(e) {
         e.preventDefault();
         e.stopPropagation();
-        
         const files = e.dataTransfer.files;
         if (files.length > 0 && files[0].name.endsWith('.json')) {
           const reader = new FileReader();
@@ -1786,7 +2019,14 @@
     function loadData() {
       const saved = localStorage.getItem('acoustiskinCRM_AI');
       if (saved) {
-        crmData = JSON.parse(saved);
+        const loadedData = JSON.parse(saved);
+        crmData = {
+          customers: loadedData.customers || [],
+          orders: loadedData.orders || [],
+          events: loadedData.events || [],
+          communications: loadedData.communications || [],
+          tasks: loadedData.tasks || []
+        };
       }
       updateLastBackupIndicator();
     }
@@ -1801,7 +2041,6 @@
 
     function saveReferralSettings(event) {
       event.preventDefault();
-      
       referralSettings = {
         creditAmount: parseInt(document.getElementById('settingsCreditAmount').value),
         tiers: {
@@ -1822,17 +2061,13 @@
           }
         }
       };
-      
       localStorage.setItem('acoustiskinReferralSettings', JSON.stringify(referralSettings));
-      
-      // Recalculate all customer referral credits
       crmData.customers.forEach(c => {
         if (c.referralsMade > 0) {
           c.referralCredits = c.referralsMade * referralSettings.creditAmount;
         }
       });
       saveData();
-      
       closeModal('referralSettingsModal');
       updateReferralDisplays();
       updateReferralsView();
@@ -1848,17 +2083,13 @@
       document.getElementById('settingsGoldMin').value = referralSettings.tiers.gold.min;
       document.getElementById('settingsGoldMax').value = referralSettings.tiers.gold.max;
       document.getElementById('settingsPlatinumMin').value = referralSettings.tiers.platinum.min;
-      
       document.getElementById('referralSettingsModal').style.display = 'block';
     }
 
     function updateReferralDisplays() {
-      // Update credit amount displays
       const creditAmount = referralSettings.creditAmount;
       document.getElementById('displayCreditAmount').textContent = '$' + creditAmount;
       document.getElementById('displayCreditLarge').textContent = '$' + creditAmount;
-      
-      // Update tier text
       document.getElementById('bronzeTierText').textContent = 
         referralSettings.tiers.bronze.min + '-' + referralSettings.tiers.bronze.max + ' Referrals';
       document.getElementById('silverTierText').textContent = 
@@ -1881,12 +2112,10 @@
     function updateLastBackupIndicator() {
       const lastBackup = localStorage.getItem('lastBackupTime');
       const indicator = document.getElementById('lastBackupTime');
-      
       if (lastBackup) {
         const date = new Date(parseInt(lastBackup));
         const now = new Date();
         const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
-        
         if (diffDays === 0) {
           indicator.textContent = 'Today';
         } else if (diffDays === 1) {
@@ -1903,10 +2132,7 @@
       const lastBackup = localStorage.getItem('lastBackupTime');
       const lastReminder = localStorage.getItem('lastBackupReminder');
       const now = Date.now();
-      
-      // Check if it's been more than 3 days since last backup
       if (!lastBackup || (now - parseInt(lastBackup)) > (3 * 24 * 60 * 60 * 1000)) {
-        // Check if we haven't shown reminder in last 24 hours
         if (!lastReminder || (now - parseInt(lastReminder)) > (24 * 60 * 60 * 1000)) {
           document.getElementById('backupReminderModal').style.display = 'block';
           localStorage.setItem('lastBackupReminder', now.toString());
@@ -1929,9 +2155,8 @@
         crmData: crmData,
         referralSettings: referralSettings,
         exportDate: new Date().toISOString(),
-        version: '2.0'
+        version: '3.0'
       };
-      
       const dataStr = JSON.stringify(exportPackage, null, 2);
       const blob = new Blob([dataStr], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
@@ -1939,7 +2164,6 @@
       link.href = url;
       link.download = `acoustiskin-crm-backup-${new Date().toISOString().split('T')[0]}.json`;
       link.click();
-      
       localStorage.setItem('lastBackupTime', Date.now().toString());
       updateLastBackupIndicator();
       showNotification('Backup downloaded successfully!');
@@ -1948,11 +2172,8 @@
     function emailBackup() {
       const subject = encodeURIComponent('AcoustiSkin CRM Backup - ' + new Date().toLocaleDateString());
       const body = encodeURIComponent('Please save the backup file that will download automatically.\n\nTo restore: Go to CRM > Import Data > Select the backup file\n\nBackup Date: ' + new Date().toLocaleString());
-      
       window.location.href = `mailto:?subject=${subject}&body=${body}`;
       showNotification('Opening email client. The backup will download automatically.');
-      
-      // Also trigger download
       setTimeout(() => exportData(), 500);
     }
 
@@ -1963,7 +2184,6 @@
     function importData(event) {
       const file = event.target.files[0];
       if (!file) return;
-      
       const reader = new FileReader();
       reader.onload = function(e) {
         try {
@@ -1974,25 +2194,17 @@
         }
       };
       reader.readAsText(file);
-      
-      // Reset file input
       event.target.value = '';
     }
 
     function handleImportData(data) {
-      // Handle both old format and new format
       let importCrmData = data.crmData || data;
       let importSettings = data.referralSettings || referralSettings;
-      
       pendingImportData = { crmData: importCrmData, settings: importSettings };
-      
-      // Check for conflicts
       const hasCustomers = crmData.customers.length > 0;
       const hasOrders = crmData.orders.length > 0;
       const hasEvents = crmData.events.length > 0;
-      
       if (hasCustomers || hasOrders || hasEvents) {
-        // Show conflict resolution modal
         const conflictInfo = document.getElementById('conflictInfo');
         conflictInfo.innerHTML = `
           <strong>Current Data:</strong><br>
@@ -2006,7 +2218,6 @@
         `;
         document.getElementById('conflictModal').style.display = 'block';
       } else {
-        // No conflict, import directly
         resolveConflict('replace');
       }
     }
@@ -2016,7 +2227,6 @@
         crmData = pendingImportData.crmData;
         referralSettings = pendingImportData.settings;
       } else if (action === 'merge') {
-        // Merge data
         if (pendingImportData.crmData.customers) {
           crmData.customers = [...crmData.customers, ...pendingImportData.crmData.customers];
         }
@@ -2026,18 +2236,21 @@
         if (pendingImportData.crmData.events) {
           crmData.events = [...crmData.events, ...pendingImportData.crmData.events];
         }
+        if (pendingImportData.crmData.communications) {
+          crmData.communications = [...(crmData.communications || []), ...(pendingImportData.crmData.communications || [])];
+        }
+        if (pendingImportData.crmData.tasks) {
+          crmData.tasks = [...(crmData.tasks || []), ...(pendingImportData.crmData.tasks || [])];
+        }
       }
-      
       saveData();
       localStorage.setItem('acoustiskinReferralSettings', JSON.stringify(referralSettings));
-      
       updateDashboard();
       updateCustomersView();
       updateOrdersView();
       renderCalendar();
       populateCustomerDropdowns();
       updateReferralDisplays();
-      
       closeModal('conflictModal');
       showNotification(`Data imported successfully (${action} mode)`);
       pendingImportData = null;
@@ -2047,21 +2260,13 @@
     function showView(viewName) {
       document.querySelectorAll('.view').forEach(v => v.style.display = 'none');
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-      
       const viewMap = {
-        'dashboard': 'dashboardView',
-        'customers': 'customersView',
-        'orders': 'ordersView',
-        'calendar': 'calendarView',
-        'pipeline': 'pipelineView',
-        'analytics': 'analyticsView',
-        'marketing': 'marketingView',
-        'referrals': 'referralsView'
+        'dashboard': 'dashboardView', 'customers': 'customersView', 'orders': 'ordersView',
+        'calendar': 'calendarView', 'pipeline': 'pipelineView', 'analytics': 'analyticsView',
+        'marketing': 'marketingView', 'referrals': 'referralsView'
       };
-      
       document.getElementById(viewMap[viewName]).style.display = 'block';
       event.target.closest('.nav-item').classList.add('active');
-      
       if (viewName === 'customers') updateCustomersView();
       if (viewName === 'orders') updateOrdersView();
       if (viewName === 'calendar') renderCalendar();
@@ -2077,9 +2282,15 @@
       if (modalId === 'customerModal') {
         document.getElementById('customerForm').reset();
         document.getElementById('sameAsBilling').checked = false;
+        document.getElementById('phase1Section').style.display = 'none';
       }
-      if (modalId === 'orderModal') document.getElementById('orderForm').reset();
+      if (modalId === 'orderModal') {
+        document.getElementById('orderForm').reset();
+        document.getElementById('orderSameAsBilling').checked = false;
+      }
       if (modalId === 'eventModal') document.getElementById('eventForm').reset();
+      if (modalId === 'communicationModal') document.getElementById('communicationForm').reset();
+      if (modalId === 'taskModal') document.getElementById('taskForm').reset();
     }
 
     function showNotification(message, type = 'success') {
@@ -2087,7 +2298,6 @@
       const text = document.getElementById('notificationText');
       text.textContent = message;
       notification.style.display = 'block';
-      
       setTimeout(() => {
         notification.style.display = 'none';
       }, 3000);
@@ -2101,59 +2311,290 @@
     }
 
     function updateDashboard() {
-      // Update stats
       document.getElementById('totalCustomers').textContent = crmData.customers.length;
       document.getElementById('totalOrders').textContent = crmData.orders.length;
-      
       const totalRevenue = crmData.orders.reduce((sum, order) => sum + (order.total || 0), 0);
       document.getElementById('totalRevenue').textContent = '$' + totalRevenue.toFixed(2);
-      
       const today = new Date().toISOString().split('T')[0];
       const todayEvents = crmData.events.filter(e => e.date === today);
-      document.getElementById('eventsToday').textContent = todayEvents.length;
-      
-      // Recent customers
+      const todayTasks = (crmData.tasks || []).filter(t => t.dueDate === today && t.status !== 'completed');
+      document.getElementById('eventsToday').textContent = todayEvents.length + todayTasks.length;
       const recentCustomers = [...crmData.customers].reverse().slice(0, 5);
       const recentHtml = recentCustomers.map(c => `
         <div style="padding: 12px; border-bottom: 1px solid #e8f5e9; display: flex; justify-content: space-between; align-items: center;">
           <div>
             <div style="font-weight: 600; color: #2e5940;">${c.name}</div>
-            <div style="font-size: 12px; color: #666;">${c.email || c.phone || 'No contact'}</div>
+            <div style="font-size: 12px; color: #666;">${c.email || c.homePhone || c.mobilePhone || 'No contact'}</div>
           </div>
           <span class="status-badge status-${c.status.toLowerCase()}">${c.status}</span>
         </div>
       `).join('');
       document.getElementById('recentCustomers').innerHTML = recentHtml || '<p style="color: #999; text-align: center; padding: 20px;">No customers yet</p>';
-      
-      // Today's tasks
-      const tasksHtml = todayEvents.map(e => `
-        <div style="padding: 12px; border-bottom: 1px solid #e8f5e9;">
-          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
-            <i class="fas fa-${getEventIcon(e.type)}" style="color: #66bb6a;"></i>
-            <span style="font-weight: 600; color: #2e5940;">${e.title}</span>
-          </div>
-          <div style="font-size: 12px; color: #666;">${e.time || 'No time set'}</div>
-        </div>
-      `).join('');
+      const allTodayTasks = [...todayEvents.map(e => ({type: 'event', data: e})), ...todayTasks.map(t => ({type: 'task', data: t}))];
+      const tasksHtml = allTodayTasks.map(item => {
+        if (item.type === 'event') {
+          return `
+            <div style="padding: 12px; border-bottom: 1px solid #e8f5e9;">
+              <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                <i class="fas fa-${getEventIcon(item.data.type)}" style="color: #66bb6a;"></i>
+                <span style="font-weight: 600; color: #2e5940;">${item.data.title}</span>
+              </div>
+              <div style="font-size: 12px; color: #666;">${item.data.time || 'No time set'}</div>
+            </div>
+          `;
+        } else {
+          return `
+            <div style="padding: 12px; border-bottom: 1px solid #e8f5e9;">
+              <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                <i class="fas fa-tasks" style="color: #ffa726;"></i>
+                <span style="font-weight: 600; color: #2e5940;">${item.data.title}</span>
+              </div>
+              <div style="font-size: 12px; color: #666;">Priority: ${item.data.priority}</div>
+            </div>
+          `;
+        }
+      }).join('');
       document.getElementById('todaysTasks').innerHTML = tasksHtml || '<p style="color: #999; text-align: center; padding: 20px;">No tasks for today</p>';
     }
 
     function getEventIcon(type) {
       const icons = {
-        'meeting': 'users',
-        'call': 'phone',
-        'task': 'tasks',
-        'appointment': 'calendar-check',
-        'todo': 'check-circle',
-        'deadline': 'flag'
+        'meeting': 'users', 'call': 'phone', 'task': 'tasks',
+        'appointment': 'calendar-check', 'todo': 'check-circle', 'deadline': 'flag'
       };
       return icons[type] || 'calendar';
+    }
+
+    // PHASE 1: Tab Switching
+    function switchCustomerTab(tabName) {
+      document.querySelectorAll('.customer-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      event.target.classList.add('active');
+      document.getElementById(tabName + 'Tab').classList.add('active');
+    }
+
+    // PHASE 1: Communication Functions
+    function openCommunicationModal(communicationId = null) {
+      document.getElementById('communicationModal').style.display = 'block';
+      document.getElementById('communicationForm').reset();
+      document.getElementById('communicationCustomerId').value = currentCustomerId;
+      document.getElementById('communicationDate').value = new Date().toISOString().split('T')[0];
+      if (communicationId) {
+        const comm = crmData.communications.find(c => c.id === communicationId);
+        if (comm) {
+          document.getElementById('communicationModalTitle').textContent = 'Edit Communication';
+          document.getElementById('communicationId').value = comm.id;
+          document.getElementById('communicationType').value = comm.type;
+          document.getElementById('communicationDate').value = comm.date;
+          document.getElementById('communicationSubject').value = comm.subject;
+          document.getElementById('communicationNotes').value = comm.notes || '';
+        }
+      } else {
+        document.getElementById('communicationModalTitle').textContent = 'Add Communication';
+        document.getElementById('communicationId').value = '';
+      }
+    }
+
+    function saveCommunication(event) {
+      event.preventDefault();
+      const communicationId = document.getElementById('communicationId').value;
+      const commData = {
+        id: communicationId || 'COMM' + Date.now(),
+        customerId: document.getElementById('communicationCustomerId').value,
+        type: document.getElementById('communicationType').value,
+        date: document.getElementById('communicationDate').value,
+        subject: document.getElementById('communicationSubject').value,
+        notes: document.getElementById('communicationNotes').value,
+        createdAt: communicationId ? 
+          crmData.communications.find(c => c.id === communicationId)?.createdAt : 
+          new Date().toISOString()
+      };
+      if (communicationId) {
+        const index = crmData.communications.findIndex(c => c.id === communicationId);
+        crmData.communications[index] = commData;
+      } else {
+        crmData.communications.push(commData);
+      }
+      saveData();
+      closeModal('communicationModal');
+      loadCustomerCommunications(currentCustomerId);
+      showNotification('Communication saved successfully!');
+    }
+
+    function loadCustomerCommunications(customerId) {
+      const communications = crmData.communications.filter(c => c.customerId === customerId);
+      const sorted = communications.sort((a, b) => new Date(b.date) - new Date(a.date));
+      const html = sorted.map(c => `
+        <div class="timeline-item">
+          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+            <div>
+              <div style="display: inline-block; padding: 4px 12px; background: #66bb6a; color: white; border-radius: 12px; font-size: 11px; font-weight: 600; margin-bottom: 8px;">
+                ${c.type.toUpperCase()}
+              </div>
+              <div style="font-weight: 600; color: #2e5940; font-size: 16px;">${c.subject}</div>
+              <div style="font-size: 13px; color: #666; margin-top: 5px;">
+                <i class="fas fa-calendar"></i> ${new Date(c.date).toLocaleDateString()}
+              </div>
+            </div>
+            <div style="display: flex; gap: 5px;">
+              <button class="btn-secondary" style="padding: 6px 12px;" onclick="openCommunicationModal('${c.id}')">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn-danger" style="padding: 6px 12px;" onclick="deleteCommunication('${c.id}')">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+          ${c.notes ? `<div style="color: #666; font-size: 14px; margin-top: 10px;">${c.notes}</div>` : ''}
+        </div>
+      `).join('');
+      document.getElementById('communicationsList').innerHTML = html || 
+        '<p style="color: #999; text-align: center; padding: 20px;">No communications yet. Click "Add Communication" to track your interactions.</p>';
+    }
+
+    function deleteCommunication(id) {
+      if (confirm('Are you sure you want to delete this communication?')) {
+        crmData.communications = crmData.communications.filter(c => c.id !== id);
+        saveData();
+        loadCustomerCommunications(currentCustomerId);
+        showNotification('Communication deleted');
+      }
+    }
+
+    // PHASE 1: Task Functions
+    function openTaskModal(taskId = null) {
+      document.getElementById('taskModal').style.display = 'block';
+      document.getElementById('taskForm').reset();
+      document.getElementById('taskCustomerId').value = currentCustomerId;
+      document.getElementById('taskDueDate').value = new Date().toISOString().split('T')[0];
+      if (taskId) {
+        const task = crmData.tasks.find(t => t.id === taskId);
+        if (task) {
+          document.getElementById('taskModalTitle').textContent = 'Edit Task';
+          document.getElementById('taskId').value = task.id;
+          document.getElementById('taskTitle').value = task.title;
+          document.getElementById('taskDueDate').value = task.dueDate;
+          document.getElementById('taskPriority').value = task.priority;
+          document.getElementById('taskStatus').value = task.status;
+          document.getElementById('taskDescription').value = task.description || '';
+        }
+      } else {
+        document.getElementById('taskModalTitle').textContent = 'Add Task';
+        document.getElementById('taskId').value = '';
+      }
+    }
+
+    function saveTask(event) {
+      event.preventDefault();
+      const taskId = document.getElementById('taskId').value;
+      const taskData = {
+        id: taskId || 'TASK' + Date.now(),
+        customerId: document.getElementById('taskCustomerId').value,
+        title: document.getElementById('taskTitle').value,
+        dueDate: document.getElementById('taskDueDate').value,
+        priority: document.getElementById('taskPriority').value,
+        status: document.getElementById('taskStatus').value,
+        description: document.getElementById('taskDescription').value,
+        createdAt: taskId ? 
+          crmData.tasks.find(t => t.id === taskId)?.createdAt : 
+          new Date().toISOString()
+      };
+      if (taskId) {
+        const index = crmData.tasks.findIndex(t => t.id === taskId);
+        crmData.tasks[index] = taskData;
+      } else {
+        crmData.tasks.push(taskData);
+      }
+      saveData();
+      closeModal('taskModal');
+      loadCustomerTasks(currentCustomerId);
+      updateDashboard();
+      showNotification('Task saved successfully!');
+    }
+
+    function loadCustomerTasks(customerId) {
+      const tasks = crmData.tasks.filter(t => t.customerId === customerId);
+      const sorted = tasks.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+      const today = new Date().toISOString().split('T')[0];
+      const html = sorted.map(t => {
+        const isOverdue = t.dueDate < today && t.status !== 'completed';
+        const priorityColor = t.priority === 'high' ? '#e53935' : t.priority === 'medium' ? '#ffa726' : '#66bb6a';
+        return `
+          <div class="task-item ${isOverdue ? 'overdue' : ''}">
+            <div style="display: flex; justify-content: space-between; align-items: start;">
+              <div style="flex: 1;">
+                <div style="font-weight: 600; color: #2e5940; font-size: 16px; margin-bottom: 8px;">${t.title}</div>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 8px;">
+                  <span style="padding: 4px 12px; background: ${priorityColor}; color: white; border-radius: 12px; font-size: 11px; font-weight: 600;">
+                    ${t.priority.toUpperCase()}
+                  </span>
+                  <span style="padding: 4px 12px; background: #e8f5e9; color: #2e5940; border-radius: 12px; font-size: 11px; font-weight: 600;">
+                    ${t.status.replace('-', ' ').toUpperCase()}
+                  </span>
+                  <span style="font-size: 13px; color: #666;">
+                    <i class="fas fa-calendar"></i> Due: ${new Date(t.dueDate).toLocaleDateString()}
+                    ${isOverdue ? ' <strong style="color: #e53935;">OVERDUE</strong>' : ''}
+                  </span>
+                </div>
+                ${t.description ? `<div style="color: #666; font-size: 14px;">${t.description}</div>` : ''}
+              </div>
+              <div style="display: flex; gap: 5px;">
+                <button class="btn-secondary" style="padding: 6px 12px;" onclick="openTaskModal('${t.id}')">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn-danger" style="padding: 6px 12px;" onclick="deleteTask('${t.id}')">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      document.getElementById('tasksList').innerHTML = html || 
+        '<p style="color: #999; text-align: center; padding: 20px;">No tasks yet. Click "Add Task" to create follow-up reminders.</p>';
+    }
+
+    function deleteTask(id) {
+      if (confirm('Are you sure you want to delete this task?')) {
+        crmData.tasks = crmData.tasks.filter(t => t.id !== id);
+        saveData();
+        loadCustomerTasks(currentCustomerId);
+        updateDashboard();
+        showNotification('Task deleted');
+      }
+    }
+
+    // PHASE 1: Purchase History
+    function loadCustomerPurchases(customerId) {
+      const purchases = crmData.orders.filter(o => o.customerId === customerId);
+      const sorted = purchases.sort((a, b) => new Date(b.date) - new Date(a.date));
+      const html = sorted.map(o => `
+        <div class="purchase-item">
+          <div style="display: flex; justify-content: space-between; align-items: start;">
+            <div>
+              <div style="font-weight: 600; color: #2e5940; font-size: 16px; margin-bottom: 8px;">${o.product}</div>
+              <div style="display: flex; gap: 15px; font-size: 13px; color: #666;">
+                <span><i class="fas fa-calendar"></i> ${new Date(o.date).toLocaleDateString()}</span>
+                <span><i class="fas fa-box"></i> ${o.quantity} x $${o.price.toFixed(2)}</span>
+                <span><i class="fas fa-dollar-sign"></i> Total: <strong>$${o.total.toFixed(2)}</strong></span>
+              </div>
+              ${o.tracking ? `
+                <div style="margin-top: 8px; font-size: 13px; color: #666;">
+                  <i class="fas fa-truck"></i> Tracking: ${o.tracking}
+                </div>
+              ` : ''}
+            </div>
+            <span class="status-badge status-${o.status.toLowerCase()}">${o.status}</span>
+          </div>
+        </div>
+      `).join('');
+      document.getElementById('purchasesList').innerHTML = html || 
+        '<p style="color: #999; text-align: center; padding: 20px;">No purchases yet. Orders placed by this customer will appear here.</p>';
     }
 
     // Copy Billing to Shipping Function
     function copySameAsBilling() {
       const checked = document.getElementById('sameAsBilling').checked;
-      
       if (checked) {
         document.getElementById('customerShippingStreet').value = document.getElementById('customerBillingStreet').value;
         document.getElementById('customerShippingCity').value = document.getElementById('customerBillingCity').value;
@@ -2167,36 +2608,42 @@
       document.getElementById('customerModal').style.display = 'block';
       document.getElementById('customerForm').reset();
       document.getElementById('sameAsBilling').checked = false;
+      document.getElementById('phase1Section').style.display = 'none';
+      
+      ['facebook', 'instagram', 'twitter', 'tiktok', 'youtube', 'linkedin'].forEach(platform => {
+        const checkbox = document.getElementById('social_' + platform);
+        if (checkbox) checkbox.checked = false;
+      });
+      ['noise', 'performance', 'durability', 'custom', 'gift'].forEach(interest => {
+        const checkbox = document.getElementById('interest_' + interest);
+        if (checkbox) checkbox.checked = false;
+      });
       
       if (customerId) {
         const customer = crmData.customers.find(c => c.id === customerId);
         if (customer) {
+          currentCustomerId = customerId;
           document.getElementById('customerModalTitle').textContent = 'Edit Customer';
           document.getElementById('customerId').value = customer.id;
           document.getElementById('customerName').value = customer.name;
           document.getElementById('customerContact').value = customer.contact;
           document.getElementById('customerEmail').value = customer.email || '';
-          document.getElementById('customerPhone').value = customer.phone || '';
+          document.getElementById('customerHomePhone').value = customer.homePhone || '';
+          document.getElementById('customerMobilePhone').value = customer.mobilePhone || '';
           document.getElementById('customerStatus').value = customer.status;
           document.getElementById('customerIndustry').value = customer.industry || '';
           document.getElementById('customerAgeRange').value = customer.ageRange || '';
-          
-          // Billing address
           document.getElementById('customerBillingStreet').value = customer.billingStreet || '';
           document.getElementById('customerBillingCity').value = customer.billingCity || '';
           document.getElementById('customerBillingState').value = customer.billingState || '';
           document.getElementById('customerBillingZip').value = customer.billingZip || '';
-          
-          // Shipping address
           document.getElementById('customerShippingStreet').value = customer.shippingStreet || '';
           document.getElementById('customerShippingCity').value = customer.shippingCity || '';
           document.getElementById('customerShippingState').value = customer.shippingState || '';
           document.getElementById('customerShippingZip').value = customer.shippingZip || '';
-          
           document.getElementById('customerLeadSource').value = customer.leadSource || '';
           document.getElementById('customerReferrer').value = customer.referrer || '';
           
-          // Social platforms
           if (customer.socialPlatforms) {
             customer.socialPlatforms.forEach(platform => {
               const checkbox = document.getElementById('social_' + platform.toLowerCase().replace('/', '').replace(' ', ''));
@@ -2210,7 +2657,6 @@
           document.getElementById('customerPlayFrequency').value = customer.playFrequency || '';
           document.getElementById('customerPaddleBrand').value = customer.paddleBrand || '';
           
-          // Product interests
           if (customer.productInterests) {
             customer.productInterests.forEach(interest => {
               const checkbox = document.getElementById('interest_' + interest.toLowerCase().split(' ')[0]);
@@ -2226,8 +2672,14 @@
           document.getElementById('customerDiscountInterest').value = customer.discountInterest || '';
           document.getElementById('customerPotentialReferrals').value = customer.potentialReferrals || '';
           document.getElementById('customerNotes').value = customer.notes || '';
+          
+          document.getElementById('phase1Section').style.display = 'block';
+          loadCustomerCommunications(customerId);
+          loadCustomerTasks(customerId);
+          loadCustomerPurchases(customerId);
         }
       } else {
+        currentCustomerId = null;
         document.getElementById('customerModalTitle').textContent = 'Add New Customer';
         document.getElementById('customerId').value = '';
       }
@@ -2235,10 +2687,7 @@
 
     function saveCustomer(event) {
       event.preventDefault();
-      
       const customerId = document.getElementById('customerId').value;
-      
-      // Get social platforms
       const socialPlatforms = [];
       ['facebook', 'instagram', 'twitter', 'tiktok', 'youtube', 'linkedin'].forEach(platform => {
         const checkbox = document.getElementById('social_' + platform);
@@ -2246,8 +2695,6 @@
           socialPlatforms.push(checkbox.value);
         }
       });
-      
-      // Get product interests
       const productInterests = [];
       ['noise', 'performance', 'durability', 'custom', 'gift'].forEach(interest => {
         const checkbox = document.getElementById('interest_' + interest);
@@ -2261,7 +2708,8 @@
         name: document.getElementById('customerName').value,
         contact: document.getElementById('customerContact').value,
         email: document.getElementById('customerEmail').value,
-        phone: document.getElementById('customerPhone').value,
+        homePhone: document.getElementById('customerHomePhone').value,
+        mobilePhone: document.getElementById('customerMobilePhone').value,
         status: document.getElementById('customerStatus').value,
         industry: document.getElementById('customerIndustry').value,
         ageRange: document.getElementById('customerAgeRange').value,
@@ -2293,14 +2741,11 @@
         createdAt: customerId ? crmData.customers.find(c => c.id === customerId)?.createdAt : new Date().toISOString()
       };
       
-      // Generate referral code if new customer
       if (!customerId) {
         customerData.referralCode = generateReferralCode(customerData.name);
         customerData.referralsMade = 0;
         customerData.referredCustomers = [];
         customerData.referralCredits = 0;
-        
-        // Handle referrer tracking for new customers
         if (customerData.referrer) {
           const referrerCustomer = crmData.customers.find(c => 
             c.name.toLowerCase() === customerData.referrer.toLowerCase()
@@ -2320,7 +2765,6 @@
         customerData.referralCredits = existingCustomer.referralCredits || 0;
       }
       
-      // Calculate AI score
       customerData.aiScore = calculateAIScore(customerData);
       
       if (customerId) {
@@ -2346,35 +2790,22 @@
 
     function calculateAIScore(customer) {
       let score = 0;
-      
-      // Contact completeness (20 points)
       if (customer.email) score += 10;
-      if (customer.phone) score += 10;
-      
-      // Social engagement (15 points)
+      if (customer.homePhone || customer.mobilePhone) score += 10;
       score += customer.socialPlatforms.length * 2;
       if (customer.socialEngagement === 'Very High') score += 5;
       else if (customer.socialEngagement === 'High') score += 3;
-      
-      // Pickleball involvement (20 points)
       if (customer.skillLevel) score += 5;
       if (customer.playFrequency === 'Daily') score += 10;
       else if (customer.playFrequency === 'Several times/week') score += 7;
       else if (customer.playFrequency === 'Weekly') score += 5;
       if (customer.paddleBrand) score += 5;
-      
-      // Product interest (15 points)
       score += customer.productInterests.length * 3;
-      
-      // Marketing receptiveness (15 points)
       if (customer.emailOptIn) score += 7;
       if (customer.smsOptIn) score += 8;
-      
-      // Referral potential (15 points)
       if (customer.referralInterest === 'Very Interested') score += 10;
       else if (customer.referralInterest === 'Somewhat Interested') score += 5;
       if (customer.potentialReferrals) score += Math.min(5, parseInt(customer.potentialReferrals));
-      
       return Math.min(100, score);
     }
 
@@ -2383,7 +2814,7 @@
       const html = crmData.customers.map(c => `
         <tr>
           <td><strong>${c.name}</strong></td>
-          <td>${c.email || c.phone || '-'}</td>
+          <td>${c.email || c.homePhone || c.mobilePhone || '-'}</td>
           <td><span class="status-badge status-${c.status.toLowerCase()}">${c.status}</span></td>
           <td><span class="score-badge score-${c.aiScore >= 70 ? 'high' : c.aiScore >= 40 ? 'medium' : 'low'}">${c.aiScore || 0}/100</span></td>
           <td>${c.leadSource || '-'}</td>
@@ -2405,7 +2836,6 @@
     function filterCustomers() {
       const search = document.getElementById('customerSearch').value.toLowerCase();
       const rows = document.getElementById('customersTable').querySelectorAll('tr');
-      
       rows.forEach(row => {
         const text = row.textContent.toLowerCase();
         row.style.display = text.includes(search) ? '' : 'none';
@@ -2415,6 +2845,8 @@
     function deleteCustomer(id) {
       if (confirm('Are you sure you want to delete this customer?')) {
         crmData.customers = crmData.customers.filter(c => c.id !== id);
+        crmData.communications = crmData.communications.filter(c => c.customerId !== id);
+        crmData.tasks = crmData.tasks.filter(t => t.customerId !== id);
         saveData();
         updateDashboard();
         updateCustomersView();
@@ -2422,10 +2854,12 @@
         showNotification('Customer deleted');
       }
     }
-    // Order Functions
+
+    // Order Functions WITH FIXED SHIPPING
     function openOrderModal(orderId = null) {
       document.getElementById('orderModal').style.display = 'block';
       document.getElementById('orderForm').reset();
+      document.getElementById('orderSameAsBilling').checked = false;
       populateCustomerDropdowns();
       setDefaultOrderDate();
       
@@ -2440,13 +2874,16 @@
           document.getElementById('orderManufacturer').value = order.manufacturer || '';
           document.getElementById('orderQuantity').value = order.quantity;
           document.getElementById('orderPrice').value = order.price;
-          document.getElementById('orderShipping').value = order.shipping || 0;
+          document.getElementById('orderShippingCost').value = order.shippingCost || 0;
           document.getElementById('orderShipper').value = order.shipper || '';
           document.getElementById('orderTracking').value = order.tracking || '';
-          document.getElementById('orderState').value = order.state;
+          document.getElementById('orderShippingStreet').value = order.shippingStreet || '';
+          document.getElementById('orderShippingCity').value = order.shippingCity || '';
+          document.getElementById('orderShippingState').value = order.shippingState || '';
+          document.getElementById('orderShippingZip').value = order.shippingZip || '';
           document.getElementById('orderStatus').value = order.status;
-          document.getElementById('orderShipAddress').value = order.shipAddress || '';
           document.getElementById('orderNotes').value = order.notes || '';
+          updateOrderAddresses();
           calculateOrderTotal();
         }
       } else {
@@ -2463,11 +2900,9 @@
     function populateCustomerDropdowns() {
       const orderSelect = document.getElementById('orderCustomer');
       const eventSelect = document.getElementById('eventCustomer');
-      
       const options = crmData.customers.map(c => 
         `<option value="${c.id}">${c.name}</option>`
       ).join('');
-      
       if (orderSelect) {
         orderSelect.innerHTML = '<option value="">Select Customer...</option>' + options;
       }
@@ -2476,29 +2911,44 @@
       }
     }
 
-    function updateShipAddress() {
+    function updateOrderAddresses() {
       const customerId = document.getElementById('orderCustomer').value;
       const customer = crmData.customers.find(c => c.id === customerId);
       
       if (customer) {
-        // Build full shipping address from separate fields
-        let address = '';
-        if (customer.shippingStreet) {
-          address += customer.shippingStreet + '\n';
-          address += (customer.shippingCity || '') + ', ' + (customer.shippingState || '') + ' ' + (customer.shippingZip || '');
-        } else if (customer.billingStreet) {
-          // Fallback to billing if no shipping
-          address += customer.billingStreet + '\n';
-          address += (customer.billingCity || '') + ', ' + (customer.billingState || '') + ' ' + (customer.billingZip || '');
+        let billToText = '';
+        if (customer.billingStreet) {
+          billToText = `${customer.billingStreet}<br>${customer.billingCity}, ${customer.billingState} ${customer.billingZip}`;
+        } else {
+          billToText = 'No billing address on file';
         }
-        document.getElementById('orderShipAddress').value = address.trim();
+        document.getElementById('orderBillToDisplay').innerHTML = billToText;
         
-        // Set state for tax calculation
-        if (customer.shippingState) {
-          document.getElementById('orderState').value = customer.shippingState;
-        } else if (customer.billingState) {
-          document.getElementById('orderState').value = customer.billingState;
+        if (customer.shippingStreet) {
+          document.getElementById('orderShippingStreet').value = customer.shippingStreet;
+          document.getElementById('orderShippingCity').value = customer.shippingCity;
+          document.getElementById('orderShippingState').value = customer.shippingState;
+          document.getElementById('orderShippingZip').value = customer.shippingZip;
+        } else if (customer.billingStreet) {
+          document.getElementById('orderShippingStreet').value = customer.billingStreet;
+          document.getElementById('orderShippingCity').value = customer.billingCity;
+          document.getElementById('orderShippingState').value = customer.billingState;
+          document.getElementById('orderShippingZip').value = customer.billingZip;
         }
+        calculateOrderTotal();
+      }
+    }
+
+    function copyOrderBillingToShipping() {
+      const checked = document.getElementById('orderSameAsBilling').checked;
+      const customerId = document.getElementById('orderCustomer').value;
+      const customer = crmData.customers.find(c => c.id === customerId);
+      
+      if (checked && customer && customer.billingStreet) {
+        document.getElementById('orderShippingStreet').value = customer.billingStreet;
+        document.getElementById('orderShippingCity').value = customer.billingCity;
+        document.getElementById('orderShippingState').value = customer.billingState;
+        document.getElementById('orderShippingZip').value = customer.billingZip;
         calculateOrderTotal();
       }
     }
@@ -2506,14 +2956,12 @@
     function calculateOrderTotal() {
       const quantity = parseFloat(document.getElementById('orderQuantity').value) || 0;
       const price = parseFloat(document.getElementById('orderPrice').value) || 0;
-      const shipping = parseFloat(document.getElementById('orderShipping').value) || 0;
-      const state = document.getElementById('orderState').value;
-      
+      const shipping = parseFloat(document.getElementById('orderShippingCost').value) || 0;
+      const state = document.getElementById('orderShippingState').value;
       const subtotal = (quantity * price) + shipping;
       const taxRate = stateTaxRates[state] || 0;
       const tax = subtotal * (taxRate / 100);
       const total = subtotal + tax;
-      
       document.getElementById('orderSubtotalDisplay').textContent = '$' + subtotal.toFixed(2);
       document.getElementById('orderTaxDisplay').textContent = '$' + tax.toFixed(2);
       document.getElementById('orderTotalDisplay').textContent = '$' + total.toFixed(2);
@@ -2521,13 +2969,11 @@
 
     function saveOrder(event) {
       event.preventDefault();
-      
       const orderId = document.getElementById('orderId').value;
       const quantity = parseFloat(document.getElementById('orderQuantity').value);
       const price = parseFloat(document.getElementById('orderPrice').value);
-      const shipping = parseFloat(document.getElementById('orderShipping').value) || 0;
-      const state = document.getElementById('orderState').value;
-      
+      const shipping = parseFloat(document.getElementById('orderShippingCost').value) || 0;
+      const state = document.getElementById('orderShippingState').value;
       const subtotal = (quantity * price) + shipping;
       const taxRate = stateTaxRates[state] || 0;
       const tax = subtotal * (taxRate / 100);
@@ -2541,15 +2987,17 @@
         manufacturer: document.getElementById('orderManufacturer').value,
         quantity: quantity,
         price: price,
-        shipping: shipping,
+        shippingCost: shipping,
         shipper: document.getElementById('orderShipper').value,
-        state: state,
+        shippingStreet: document.getElementById('orderShippingStreet').value,
+        shippingCity: document.getElementById('orderShippingCity').value,
+        shippingState: state,
+        shippingZip: document.getElementById('orderShippingZip').value,
         subtotal: subtotal,
         tax: tax,
         total: total,
         status: document.getElementById('orderStatus').value,
         tracking: document.getElementById('orderTracking').value,
-        shipAddress: document.getElementById('orderShipAddress').value,
         notes: document.getElementById('orderNotes').value
       };
       
@@ -2608,7 +3056,6 @@
       document.getElementById('eventModal').style.display = 'block';
       document.getElementById('eventForm').reset();
       populateCustomerDropdowns();
-      
       if (eventId) {
         const event = crmData.events.find(e => e.id === eventId);
         if (event) {
@@ -2634,7 +3081,6 @@
 
     function saveEvent(event) {
       event.preventDefault();
-      
       const eventId = document.getElementById('eventId').value;
       const eventData = {
         id: eventId || 'EVT' + Date.now(),
@@ -2645,14 +3091,12 @@
         customerId: document.getElementById('eventCustomer').value,
         description: document.getElementById('eventDescription').value
       };
-      
       if (eventId) {
         const index = crmData.events.findIndex(e => e.id === eventId);
         crmData.events[index] = eventData;
       } else {
         crmData.events.push(eventData);
       }
-      
       saveData();
       closeModal('eventModal');
       updateDashboard();
@@ -2663,9 +3107,7 @@
     function showEventDetails(eventId) {
       const event = crmData.events.find(e => e.id === eventId);
       if (!event) return;
-      
       const customer = event.customerId ? crmData.customers.find(c => c.id === event.customerId) : null;
-      
       const content = `
         <div style="background: #f1f8e9; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
           <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
@@ -2676,7 +3118,6 @@
             </div>
           </div>
         </div>
-        
         <div style="margin-bottom: 15px;">
           <div style="color: #666; font-size: 12px; margin-bottom: 5px;">DATE & TIME</div>
           <div style="color: #2e5940; font-weight: 600;">
@@ -2684,14 +3125,12 @@
             ${event.time ? ' at ' + event.time : ''}
           </div>
         </div>
-        
         ${customer ? `
           <div style="margin-bottom: 15px;">
             <div style="color: #666; font-size: 12px; margin-bottom: 5px;">RELATED CUSTOMER</div>
             <div style="color: #2e5940; font-weight: 600;">${customer.name}</div>
           </div>
         ` : ''}
-        
         ${event.description ? `
           <div style="margin-bottom: 15px;">
             <div style="color: #666; font-size: 12px; margin-bottom: 5px;">DESCRIPTION</div>
@@ -2699,7 +3138,6 @@
           </div>
         ` : ''}
       `;
-      
       document.getElementById('eventDetailsContent').innerHTML = content;
       currentEventId = eventId;
       document.getElementById('eventDetailsModal').style.display = 'block';
@@ -2726,54 +3164,40 @@
       const firstDay = new Date(currentYear, currentMonth, 1);
       const lastDay = new Date(currentYear, currentMonth + 1, 0);
       const prevLastDay = new Date(currentYear, currentMonth, 0);
-      
       const firstDayIndex = firstDay.getDay();
       const lastDayIndex = lastDay.getDay();
       const nextDays = 7 - lastDayIndex - 1;
-      
       const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
       document.getElementById('calendarTitle').textContent = `${monthNames[currentMonth]} ${currentYear}`;
-      
       let days = '';
-      
-      // Previous month days
       for (let x = firstDayIndex; x > 0; x--) {
         days += `<div class="calendar-day" style="opacity: 0.3;">
           <div style="font-weight: 600; margin-bottom: 8px;">${prevLastDay.getDate() - x + 1}</div>
         </div>`;
       }
-      
-      // Current month days
       const today = new Date();
       for (let i = 1; i <= lastDay.getDate(); i++) {
         const date = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
         const isToday = today.getDate() === i && today.getMonth() === currentMonth && today.getFullYear() === currentYear;
-        
         const dayEvents = crmData.events.filter(e => e.date === date);
         const holiday = holidays[date];
-        
         let eventsHtml = '';
         dayEvents.forEach(e => {
           eventsHtml += `<div class="event-item" onclick="showEventDetails('${e.id}')">${e.title}</div>`;
         });
-        
         if (holiday) {
           eventsHtml += `<div class="holiday-item">${holiday}</div>`;
         }
-        
         days += `<div class="calendar-day ${isToday ? 'today' : ''}" onclick="openEventModal(null, '${date}')">
           <div style="font-weight: 600; margin-bottom: 8px;">${i}</div>
           ${eventsHtml}
         </div>`;
       }
-      
-      // Next month days
       for (let j = 1; j <= nextDays; j++) {
         days += `<div class="calendar-day" style="opacity: 0.3;">
           <div style="font-weight: 600; margin-bottom: 8px;">${j}</div>
         </div>`;
       }
-      
       document.getElementById('calendarDays').innerHTML = days;
     }
 
@@ -2794,12 +3218,7 @@
       const prospects = crmData.customers.filter(c => c.status === 'Prospect');
       const active = crmData.customers.filter(c => c.status === 'Active');
       const inactive = crmData.customers.filter(c => c.status === 'Inactive');
-      
-      const prospectsList = document.getElementById('prospectsList');
-      const activeList = document.getElementById('activeList');
-      const inactiveList = document.getElementById('inactiveList');
-      
-      prospectsList.innerHTML = prospects.map(c => `
+      document.getElementById('prospectsList').innerHTML = prospects.map(c => `
         <div style="padding: 12px; background: #f1f8e9; border-radius: 8px; margin-bottom: 10px; cursor: pointer;" onclick="openCustomerModal('${c.id}')">
           <div style="font-weight: 600; color: #2e5940; margin-bottom: 5px;">${c.name}</div>
           <div style="font-size: 12px; color: #666;">${c.leadSource || 'Unknown source'}</div>
@@ -2808,18 +3227,16 @@
           </div>
         </div>
       `).join('') || '<p style="color: #999; text-align: center; padding: 20px;">No prospects</p>';
-      
-      activeList.innerHTML = active.map(c => `
+      document.getElementById('activeList').innerHTML = active.map(c => `
         <div style="padding: 12px; background: #f1f8e9; border-radius: 8px; margin-bottom: 10px; cursor: pointer;" onclick="openCustomerModal('${c.id}')">
           <div style="font-weight: 600; color: #2e5940; margin-bottom: 5px;">${c.name}</div>
-          <div style="font-size: 12px; color: #666;">${c.email || c.phone || 'No contact'}</div>
+          <div style="font-size: 12px; color: #666;">${c.email || c.homePhone || c.mobilePhone || 'No contact'}</div>
           <div style="margin-top: 5px;">
             <span class="score-badge score-${c.aiScore >= 70 ? 'high' : c.aiScore >= 40 ? 'medium' : 'low'}">${c.aiScore || 0}/100</span>
           </div>
         </div>
       `).join('') || '<p style="color: #999; text-align: center; padding: 20px;">No active customers</p>';
-      
-      inactiveList.innerHTML = inactive.map(c => `
+      document.getElementById('inactiveList').innerHTML = inactive.map(c => `
         <div style="padding: 12px; background: #f1f8e9; border-radius: 8px; margin-bottom: 10px; cursor: pointer;" onclick="openCustomerModal('${c.id}')">
           <div style="font-weight: 600; color: #2e5940; margin-bottom: 5px;">${c.name}</div>
           <div style="font-size: 12px; color: #666;">Last contact: ${new Date(c.createdAt).toLocaleDateString()}</div>
@@ -2838,17 +3255,14 @@
     function renderLeadSourceChart() {
       const ctx = document.getElementById('leadSourceChart');
       if (!ctx) return;
-      
       const sources = {};
       crmData.customers.forEach(c => {
         const source = c.leadSource || 'Unknown';
         sources[source] = (sources[source] || 0) + 1;
       });
-      
       if (window.leadSourceChartInstance) {
         window.leadSourceChartInstance.destroy();
       }
-      
       window.leadSourceChartInstance = new Chart(ctx, {
         type: 'pie',
         data: {
@@ -2872,7 +3286,6 @@
     function renderSocialChart() {
       const ctx = document.getElementById('socialChart');
       if (!ctx) return;
-      
       const platforms = { Facebook: 0, Instagram: 0, 'Twitter/X': 0, TikTok: 0, YouTube: 0, LinkedIn: 0 };
       crmData.customers.forEach(c => {
         if (c.socialPlatforms) {
@@ -2881,11 +3294,9 @@
           });
         }
       });
-      
       if (window.socialChartInstance) {
         window.socialChartInstance.destroy();
       }
-      
       window.socialChartInstance = new Chart(ctx, {
         type: 'bar',
         data: {
@@ -2913,20 +3324,16 @@
     function renderRevenueChart() {
       const ctx = document.getElementById('revenueChart');
       if (!ctx) return;
-      
       const monthlyRevenue = {};
       crmData.orders.forEach(o => {
-        const month = o.date.substring(0, 7); // YYYY-MM
+        const month = o.date.substring(0, 7);
         monthlyRevenue[month] = (monthlyRevenue[month] || 0) + o.total;
       });
-      
       const sortedMonths = Object.keys(monthlyRevenue).sort();
       const revenues = sortedMonths.map(m => monthlyRevenue[m]);
-      
       if (window.revenueChartInstance) {
         window.revenueChartInstance.destroy();
       }
-      
       window.revenueChartInstance = new Chart(ctx, {
         type: 'line',
         data: {
@@ -2961,8 +3368,6 @@
 
     function generateAIInsights() {
       const insights = [];
-      
-      // High-value customers
       const highScoreCustomers = crmData.customers.filter(c => c.aiScore >= 70);
       if (highScoreCustomers.length > 0) {
         insights.push({
@@ -2972,8 +3377,6 @@
           text: `You have ${highScoreCustomers.length} high-value customers with AI scores above 70. Focus on maintaining these relationships.`
         });
       }
-      
-      // Social media opportunity
       const highSocialEngagement = crmData.customers.filter(c => c.socialEngagement === 'Very High' || c.socialEngagement === 'High');
       if (highSocialEngagement.length > 0) {
         insights.push({
@@ -2983,8 +3386,6 @@
           text: `${highSocialEngagement.length} customers are highly active on social media. Consider launching a social media campaign.`
         });
       }
-      
-      // Referral potential
       const referralInterested = crmData.customers.filter(c => c.referralInterest === 'Very Interested');
       if (referralInterested.length > 0) {
         insights.push({
@@ -2994,8 +3395,6 @@
           text: `${referralInterested.length} customers are very interested in your referral program. Reach out to activate them.`
         });
       }
-      
-      // Revenue trend
       if (crmData.orders.length >= 2) {
         const recentOrders = crmData.orders.slice(-5);
         const avgRecent = recentOrders.reduce((sum, o) => sum + o.total, 0) / recentOrders.length;
@@ -3006,7 +3405,6 @@
           text: `Your average order value in recent transactions is $${avgRecent.toFixed(2)}.`
         });
       }
-      
       const html = insights.map(i => `
         <div style="padding: 20px; background: #f1f8e9; border-radius: 8px; border-left: 4px solid ${i.color}; margin-bottom: 15px;">
           <div style="display: flex; align-items: center; gap: 15px;">
@@ -3020,17 +3418,14 @@
           </div>
         </div>
       `).join('');
-      
       document.getElementById('aiInsights').innerHTML = html || '<p style="color: #999; text-align: center; padding: 20px;">Not enough data for insights yet.</p>';
     }
+
     // Marketing View
     function updateMarketingView() {
-      // Smart Recommendations
       const recommendations = [];
-      
       const emailOptIns = crmData.customers.filter(c => c.emailOptIn).length;
       const smsOptIns = crmData.customers.filter(c => c.smsOptIn).length;
-      
       if (emailOptIns > 0) {
         recommendations.push({
           icon: 'envelope',
@@ -3040,7 +3435,6 @@
           onclick: 'createEmailList()'
         });
       }
-      
       if (smsOptIns > 0) {
         recommendations.push({
           icon: 'sms',
@@ -3050,7 +3444,6 @@
           onclick: 'createSMSList()'
         });
       }
-      
       const socialActive = crmData.customers.filter(c => c.socialPlatforms && c.socialPlatforms.length > 0);
       if (socialActive.length > 0) {
         recommendations.push({
@@ -3061,7 +3454,6 @@
           onclick: 'viewSocialContacts()'
         });
       }
-      
       const html = recommendations.map(r => `
         <div style="padding: 20px; background: white; border-radius: 8px; border: 2px solid #e8f5e9; margin-bottom: 15px;">
           <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -3078,25 +3470,20 @@
           </div>
         </div>
       `).join('');
-      
       document.getElementById('marketingRecommendations').innerHTML = html || '<p style="color: #999; text-align: center; padding: 20px;">No recommendations yet. Add more customer data.</p>';
-      
-      // High-value customers
       const highValue = crmData.customers.filter(c => c.aiScore >= 70).slice(0, 5);
       const highValueHtml = highValue.map(c => `
         <div style="padding: 15px; background: #f1f8e9; border-radius: 8px; margin-bottom: 10px; cursor: pointer;" onclick="openCustomerModal('${c.id}')">
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <div>
               <div style="font-weight: 600; color: #2e5940;">${c.name}</div>
-              <div style="font-size: 12px; color: #666; margin-top: 3px;">${c.email || c.phone || 'No contact'}</div>
+              <div style="font-size: 12px; color: #666; margin-top: 3px;">${c.email || c.homePhone || c.mobilePhone || 'No contact'}</div>
             </div>
             <span class="score-badge score-high">${c.aiScore}/100</span>
           </div>
         </div>
       `).join('');
       document.getElementById('highValueCustomers').innerHTML = highValueHtml || '<p style="color: #999; text-align: center; padding: 20px;">No high-value customers yet.</p>';
-      
-      // Referral opportunities
       const referralOpps = crmData.customers.filter(c => c.referralInterest === 'Very Interested' || c.referralInterest === 'Somewhat Interested').slice(0, 5);
       const referralHtml = referralOpps.map(c => `
         <div style="padding: 15px; background: #f1f8e9; border-radius: 8px; margin-bottom: 10px; cursor: pointer;" onclick="openCustomerModal('${c.id}')">
@@ -3112,7 +3499,6 @@
     function createEmailList() {
       const emailCustomers = crmData.customers.filter(c => c.emailOptIn && c.email);
       const emails = emailCustomers.map(c => c.email).join(', ');
-      
       const modal = document.createElement('div');
       modal.className = 'modal';
       modal.style.display = 'block';
@@ -3126,16 +3512,13 @@
               <i class="fas fa-times"></i>
             </button>
           </div>
-          
           <div class="info-box">
             <strong>${emailCustomers.length} customers</strong> have opted in for email marketing.
           </div>
-          
           <div style="margin: 20px 0;">
             <label style="display: block; margin-bottom: 10px; color: #2e5940; font-weight: 600;">Email Addresses:</label>
             <textarea readonly style="width: 100%; height: 150px; padding: 10px; border: 2px solid #c8e6c9; border-radius: 6px; font-family: monospace; font-size: 12px;">${emails}</textarea>
           </div>
-          
           <div style="display: flex; gap: 10px; justify-content: flex-end;">
             <button class="btn-secondary" onclick="navigator.clipboard.writeText('${emails.replace(/'/g, "\\'")}').then(() => showNotification('Email list copied to clipboard!'))">
               <i class="fas fa-copy"></i> Copy to Clipboard
@@ -3150,9 +3533,8 @@
     }
 
     function createSMSList() {
-      const smsCustomers = crmData.customers.filter(c => c.smsOptIn && c.phone);
-      const phones = smsCustomers.map(c => c.phone).join(', ');
-      
+      const smsCustomers = crmData.customers.filter(c => c.smsOptIn && (c.mobilePhone || c.homePhone));
+      const phones = smsCustomers.map(c => c.mobilePhone || c.homePhone).join(', ');
       const modal = document.createElement('div');
       modal.className = 'modal';
       modal.style.display = 'block';
@@ -3166,16 +3548,13 @@
               <i class="fas fa-times"></i>
             </button>
           </div>
-          
           <div class="info-box">
             <strong>${smsCustomers.length} customers</strong> have opted in for SMS marketing.
           </div>
-          
           <div style="margin: 20px 0;">
             <label style="display: block; margin-bottom: 10px; color: #2e5940; font-weight: 600;">Phone Numbers:</label>
             <textarea readonly style="width: 100%; height: 150px; padding: 10px; border: 2px solid #c8e6c9; border-radius: 6px; font-family: monospace; font-size: 12px;">${phones}</textarea>
           </div>
-          
           <div style="display: flex; gap: 10px; justify-content: flex-end;">
             <button class="btn-secondary" onclick="navigator.clipboard.writeText('${phones.replace(/'/g, "\\'")}').then(() => showNotification('Phone list copied to clipboard!'))">
               <i class="fas fa-copy"></i> Copy to Clipboard
@@ -3191,7 +3570,6 @@
 
     function viewSocialContacts() {
       const socialCustomers = crmData.customers.filter(c => c.socialPlatforms && c.socialPlatforms.length > 0);
-      
       const modal = document.createElement('div');
       modal.className = 'modal';
       modal.style.display = 'block';
@@ -3205,11 +3583,9 @@
               <i class="fas fa-times"></i>
             </button>
           </div>
-          
           <div class="info-box">
             <strong>${socialCustomers.length} customers</strong> are active on social media.
           </div>
-          
           <div style="margin: 20px 0; max-height: 400px; overflow-y: auto;">
             ${socialCustomers.map(c => `
               <div style="padding: 15px; background: #f1f8e9; border-radius: 8px; margin-bottom: 10px;">
@@ -3230,7 +3606,6 @@
               </div>
             `).join('')}
           </div>
-          
           <div style="text-align: right;">
             <button class="btn-primary" onclick="this.closest('.modal').remove()">
               <i class="fas fa-check"></i> Done
@@ -3247,11 +3622,9 @@
         .filter(c => c.referralsMade > 0)
         .sort((a, b) => b.referralsMade - a.referralsMade)
         .slice(0, 10);
-      
       const html = topReferrers.map((c, index) => {
         const tier = getReferralTier(c.referralsMade);
         const tierColor = tier === 'Platinum' ? '#e5e4e2' : tier === 'Gold' ? '#ffd700' : tier === 'Silver' ? '#c0c0c0' : '#cd7f32';
-        
         return `
           <div style="padding: 20px; background: white; border-radius: 8px; border: 2px solid #e8f5e9; margin-bottom: 15px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -3290,14 +3663,12 @@
           </div>
         `;
       }).join('');
-      
       document.getElementById('referralLeaderboard').innerHTML = html || '<p style="color: #999; text-align: center; padding: 40px;">No referrals yet. Encourage your customers to refer friends!</p>';
     }
 
     function showReferralDetails(customerId) {
       const customer = crmData.customers.find(c => c.id === customerId);
       if (!customer) return;
-      
       const modal = document.createElement('div');
       modal.className = 'modal';
       modal.style.display = 'block';
@@ -3311,7 +3682,6 @@
               <i class="fas fa-times"></i>
             </button>
           </div>
-          
           <div style="text-align: center; margin-bottom: 30px;">
             <div style="font-size: 20px; font-weight: 600; color: #2e5940; margin-bottom: 15px;">${customer.name}</div>
             <div style="background: #f1f8e9; padding: 15px; border-radius: 8px; display: inline-block;">
@@ -3319,9 +3689,7 @@
               <div style="font-size: 28px; font-weight: 700; color: #43a047; letter-spacing: 2px;">${customer.referralCode}</div>
             </div>
           </div>
-          
           <div id="qrcode-${customerId}" style="text-align: center; margin: 30px 0;"></div>
-          
           <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; margin: 20px 0;">
             <div style="text-align: center;">
               <div style="font-size: 14px; color: #666; margin-bottom: 10px;">Share on Social Media</div>
@@ -3347,16 +3715,12 @@
               </div>
             </div>
           </div>
-          
           <div style="text-align: center;">
             <button class="btn-primary" onclick="this.closest('.modal').remove()">Close</button>
           </div>
         </div>
       `;
-      
       document.body.appendChild(modal);
-      
-      // Generate QR Code
       setTimeout(() => {
         new QRCode(document.getElementById(`qrcode-${customerId}`), {
           text: `AcoustiSkin Referral Code: ${customer.referralCode}\nUse this code for $${referralSettings.creditAmount} off your first order!`,
