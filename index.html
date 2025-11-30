@@ -2377,6 +2377,13 @@
     function openCommunicationModal(communicationId = null) {
       document.getElementById('communicationModal').style.display = 'block';
       document.getElementById('communicationForm').reset();
+      
+      // Scroll modal content to top
+      const modalContent = document.querySelector('#communicationModal .modal-content');
+      if (modalContent) {
+        modalContent.scrollTop = 0;
+      }
+      
       document.getElementById('communicationCustomerId').value = currentCustomerId;
       document.getElementById('communicationDate').value = new Date().toISOString().split('T')[0];
       if (communicationId) {
@@ -2465,6 +2472,13 @@
     function openTaskModal(taskId = null) {
       document.getElementById('taskModal').style.display = 'block';
       document.getElementById('taskForm').reset();
+      
+      // Scroll modal content to top
+      const modalContent = document.querySelector('#taskModal .modal-content');
+      if (modalContent) {
+        modalContent.scrollTop = 0;
+      }
+      
       document.getElementById('taskCustomerId').value = currentCustomerId;
       document.getElementById('taskDueDate').value = new Date().toISOString().split('T')[0];
       if (taskId) {
@@ -2607,6 +2621,12 @@
     function openCustomerModal(customerId = null) {
       document.getElementById('customerModal').style.display = 'block';
       document.getElementById('customerForm').reset();
+      
+      // Scroll modal content to top
+      const modalContent = document.querySelector('#customerModal .modal-content');
+      if (modalContent) {
+        modalContent.scrollTop = 0;
+      }
       document.getElementById('sameAsBilling').checked = false;
       document.getElementById('phase1Section').style.display = 'none';
       
@@ -2860,6 +2880,13 @@
       document.getElementById('orderModal').style.display = 'block';
       document.getElementById('orderForm').reset();
       document.getElementById('orderSameAsBilling').checked = false;
+      
+      // Scroll modal content to top
+      const modalContent = document.querySelector('#orderModal .modal-content');
+      if (modalContent) {
+        modalContent.scrollTop = 0;
+      }
+      
       populateCustomerDropdowns();
       setDefaultOrderDate();
       
@@ -3055,6 +3082,13 @@
     function openEventModal(eventId = null, date = null) {
       document.getElementById('eventModal').style.display = 'block';
       document.getElementById('eventForm').reset();
+      
+      // Scroll modal content to top
+      const modalContent = document.querySelector('#eventModal .modal-content');
+      if (modalContent) {
+        modalContent.scrollTop = 0;
+      }
+      
       populateCustomerDropdowns();
       if (eventId) {
         const event = crmData.events.find(e => e.id === eventId);
