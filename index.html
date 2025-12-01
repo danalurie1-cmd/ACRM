@@ -2163,6 +2163,7 @@
     let currentCommunicationId = null;
     let currentTaskId = null;
     let pendingImportData = null;
+    let importPlatform = null;
 
     // Initialize
     document.addEventListener('DOMContentLoaded', function() {
@@ -2578,16 +2579,30 @@
 
     // PHASE 1: Tab Switching
     function switchCustomerTab(tabName) {
+      // Ensure we have a valid tabName
+      if (!tabName) {
+        console.error('switchCustomerTab called without tabName');
+        return;
+      }
+      
       // Remove active class from all tabs
-      document.querySelectorAll('.customer-tab').forEach(t => t.classList.remove('active'));
+      const allTabs = document.querySelectorAll('.customer-tab');
+      allTabs.forEach(t => {
+        t.classList.remove('active');
+      });
       
       // Remove active class from all tab contents
-      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      const allContents = document.querySelectorAll('.tab-content');
+      allContents.forEach(t => {
+        t.classList.remove('active');
+      });
       
       // Add active class to clicked tab using data attribute
       const activeTab = document.querySelector(`.customer-tab[data-tab="${tabName}"]`);
       if (activeTab) {
         activeTab.classList.add('active');
+      } else {
+        console.error(`Tab with data-tab="${tabName}" not found`);
       }
       
       // Show the corresponding tab content
@@ -2598,6 +2613,8 @@
         setTimeout(() => {
           targetTab.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }, 100);
+      } else {
+        console.error(`Tab content with id="${tabName}Tab" not found`);
       }
     }
 
@@ -2921,15 +2938,44 @@
           document.getElementById('customerPotentialReferrals').value = customer.potentialReferrals || '';
           document.getElementById('customerNotes').value = customer.notes || '';
           
-          document.getElementById('phase1Section').style.display = 'block';
+          // Show phase1Section
+          const phase1 = document.getElementById('phase1Section');
+          phase1.style.display = 'block';
+          
           loadCustomerCommunications(customerId);
           loadCustomerTasks(customerId);
           loadCustomerPurchases(customerId);
           
-          // Initialize the communications tab as active
+          // Initialize tabs after a brief delay to ensure DOM is fully ready
+          // This ensures onclick handlers are properly attached and interactive
           setTimeout(() => {
-            switchCustomerTab('communications');
-          }, 50);
+            // Reset all tab states first
+            document.querySelectorAll('.customer-tab').forEach(tab => {
+              tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-content').forEach(content => {
+              content.classList.remove('active');
+            });
+            
+            // Activate communications tab and content
+            const communicationsTab = document.querySelector('.customer-tab[data-tab="communications"]');
+            const communicationsContent = document.getElementById('communicationsTab');
+            
+            if (communicationsTab) {
+              communicationsTab.classList.add('active');
+              // Force the tab to be interactive by triggering a reflow
+              communicationsTab.offsetHeight;
+            }
+            if (communicationsContent) {
+              communicationsContent.classList.add('active');
+            }
+            
+            // Ensure all tabs have proper cursor and are clickable
+            document.querySelectorAll('.customer-tab').forEach(tab => {
+              tab.style.cursor = 'pointer';
+              tab.style.pointerEvents = 'auto';
+            });
+          }, 100);
         }
       } else {
         currentCustomerId = null;
@@ -4576,8 +4622,6 @@
     }
     
     // Import Data Functions
-    let pendingImportData = null;
-    let importPlatform = null;
     
     function selectImportPlatform(platform) {
       importPlatform = platform;
