@@ -324,6 +324,8 @@
       gap: 10px;
       margin: 25px 0 15px 0;
       border-bottom: 2px solid #e8f5e9;
+      position: relative;
+      z-index: 10;
     }
     .customer-tab {
       padding: 12px 20px;
@@ -335,6 +337,10 @@
       font-weight: 600;
       color: #666;
       transition: all 0.3s;
+      position: relative;
+      z-index: 10;
+      pointer-events: auto;
+      user-select: none;
     }
     .customer-tab.active {
       background: #e8f5e9;
@@ -2946,8 +2952,7 @@
           loadCustomerTasks(customerId);
           loadCustomerPurchases(customerId);
           
-          // Initialize tabs after a brief delay to ensure DOM is fully ready
-          // This ensures onclick handlers are properly attached and interactive
+          // Initialize tabs with multiple approaches to ensure they work
           setTimeout(() => {
             // Reset all tab states first
             document.querySelectorAll('.customer-tab').forEach(tab => {
@@ -2963,19 +2968,38 @@
             
             if (communicationsTab) {
               communicationsTab.classList.add('active');
-              // Force the tab to be interactive by triggering a reflow
               communicationsTab.offsetHeight;
             }
             if (communicationsContent) {
               communicationsContent.classList.add('active');
             }
             
-            // Ensure all tabs have proper cursor and are clickable
+            // CRITICAL FIX: Add event listeners to all tabs as backup to onclick
             document.querySelectorAll('.customer-tab').forEach(tab => {
+              // Ensure tab is clickable
               tab.style.cursor = 'pointer';
               tab.style.pointerEvents = 'auto';
+              tab.style.position = 'relative';
+              tab.style.zIndex = '10';
+              
+              // Remove any existing click listeners to avoid duplicates
+              const newTab = tab.cloneNode(true);
+              tab.parentNode.replaceChild(newTab, tab);
+              
+              // Add fresh click listener
+              newTab.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                const tabName = this.getAttribute('data-tab');
+                console.log('Tab clicked via addEventListener:', tabName);
+                if (tabName) {
+                  switchCustomerTab(tabName);
+                }
+              });
             });
-          }, 100);
+            
+            console.log('Customer tabs initialized and event listeners attached');
+          }, 150);
         }
       } else {
         currentCustomerId = null;
