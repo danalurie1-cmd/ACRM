@@ -112,7 +112,11 @@
       orders: [
         { id: 101, customerId: 1, customerName: 'Reed Kimmel', product: 'Performance Cover', quantity: 1, price: 69.99, orderDate: new Date('2025-10-15'), status: 'Delivered', notes: '', totalValue: 69.99, referralCode: null },
       ],
-      communications: [],
+      communications: [ // NEW: Placeholder Communications
+        { id: 1, customerId: 1, customerName: 'Reed Kimmel', type: 'Email', date: new Date('2025-11-20'), summary: 'Sent Q4 product catalog.', direction: 'Outbound', channel: 'Email', rating: 'Neutral', isFollowUp: false },
+        { id: 2, customerId: 2, customerName: 'Anna Lee', type: 'Phone Call', date: new Date('2025-11-25'), summary: 'Discussed beginner paddle options.', direction: 'Inbound', channel: 'Phone', rating: 'Positive', isFollowUp: false },
+        { id: 3, customerId: 1, customerName: 'Reed Kimmel', type: 'SMS', date: new Date('2025-11-28'), summary: 'Scheduled follow-up for next week.', direction: 'Outbound', channel: 'SMS', rating: 'Neutral', isFollowUp: true },
+      ],
       tasks: [],
       events: [ // PLACEHOLDER EVENTS/REQUESTS FOR CALENDAR
         { id: 1, title: 'Q4 Review Meeting', date: new Date('2025-12-05'), type: 'Internal', notes: 'Discuss Q4 revenue goals.' },
@@ -147,6 +151,7 @@
     let nextCustomerId = 3;
     let nextOrderId = 102;
     let nextEventId = 6;
+    let nextCommId = 4; // NEW: Next ID for Communications
     let currentCalendarDate = new Date(); // New state variable for calendar month
 
     // ======================================================================
@@ -176,6 +181,7 @@
         parsed.orders.forEach(o => o.orderDate = new Date(o.orderDate));
         parsed.customers.forEach(c => c.createdAt = new Date(c.createdAt));
         parsed.events.forEach(e => e.date = new Date(e.date)); // Load events
+        parsed.communications.forEach(c => c.date = new Date(c.date)); // Load communications
         crmData = parsed;
         
         // Recalculate IDs for new entries
@@ -187,6 +193,9 @@
         }
         if (crmData.events.length > 0) {
             nextEventId = Math.max(...crmData.events.map(e => e.id)) + 1;
+        }
+        if (crmData.communications.length > 0) {
+            nextCommId = Math.max(...crmData.communications.map(c => c.id)) + 1;
         }
       }
     }
@@ -269,7 +278,7 @@
           renderCalendarView(contentArea); // UPDATED
           break;
         case 'communications':
-          renderPlaceholderView(contentArea, 'Communications', 'Log and view all customer interactions (emails, calls, SMS).', 'fas fa-envelope');
+          renderCommunicationsView(contentArea); // UPDATED: Now functional
           break;
         case 'tasks':
           renderPlaceholderView(contentArea, 'Tasks', 'Manage your to-do items and follow-ups.', 'fas fa-list-check');
@@ -496,7 +505,7 @@
     }
     
     // ======================================================================
-    // 7. CALENDAR VIEW (NEW IMPLEMENTATION)
+    // 7. CALENDAR VIEW
     // ======================================================================
 
     function renderCalendarView(container) {
@@ -647,9 +656,249 @@
         alert('Event deleted successfully.');
       }
     }
+
+    // ======================================================================
+    // 8. COMMUNICATIONS VIEW (NEW IMPLEMENTATION)
+    // ======================================================================
+
+    function renderCommunicationsView(container) {
+        const commRows = crmData.communications.sort((a, b) => b.date - a.date).map(c => `
+            <tr class="hover:bg-gray-50 transition duration-150">
+                <td class="p-4 whitespace-nowrap text-sm font-medium text-gray-900">${c.customerName}</td>
+                <td class="p-4 whitespace-nowrap text-sm text-gray-500">${c.date.toLocaleDateString()}</td>
+                <td class="p-4 whitespace-nowrap text-sm font-semibold">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                        ${c.type === 'Email' ? 'bg-blue-100 text-blue-800' : c.type === 'Phone Call' ? 'bg-green-100 text-green-800' : c.type === 'SMS' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800'}">
+                        ${c.type}
+                    </span>
+                </td>
+                <td class="p-4 whitespace-nowrap text-sm text-gray-500">${c.direction}</td>
+                <td class="p-4 text-sm text-gray-500 max-w-xs truncate" title="${c.summary}">${c.summary}</td>
+                <td class="p-4 whitespace-nowrap text-sm font-semibold">
+                    <i class="fas ${c.rating === 'Positive' ? 'fa-face-smile text-green-500' : c.rating === 'Negative' ? 'fa-face-frown text-red-500' : 'fa-face-meh text-gray-500'}"></i>
+                </td>
+                <td class="p-4 whitespace-nowrap text-sm font-medium">
+                    <button onclick="viewCommunicationDetails(${c.id})" class="text-indigo-600 hover:text-indigo-900 mr-4"><i class="fas fa-eye"></i> View</button>
+                    <button onclick="deleteCommunication(${c.id})" class="text-red-600 hover:text-red-900"><i class="fas fa-trash"></i> Delete</button>
+                </td>
+            </tr>
+        `).join('');
+
+        container.innerHTML = `
+            <div class="p-6 bg-white rounded-xl shadow-lg">
+                <h2 class="text-2xl font-bold mb-4 text-gray-800">Customer Communications Log</h2>
+                <div class="flex justify-between items-center mb-6">
+                    <button onclick="renderNewCommunicationModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-sm hover:bg-blue-700 transition flex items-center"><i class="fas fa-comment-dots mr-2"></i> Log New Communication</button>
+                    <div class="relative">
+                        <input type="text" placeholder="Search communications..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" onkeyup="filterCommunications(this.value)">
+                        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+                                <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                                <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Direction</th>
+                                <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Summary</th>
+                                <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rating</th>
+                                <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="communicationTableBody" class="bg-white divide-y divide-gray-200">
+                            ${commRows}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+    }
+    
+    // Helper functions for Communications
+    function viewCommunicationDetails(id) {
+        const comm = crmData.communications.find(c => c.id === id);
+        if (!comm) return;
+
+        const commDate = comm.date instanceof Date ? comm.date : new Date(comm.date);
+        
+        const detailHTML = `
+            <div class="p-8">
+                <div class="flex justify-between items-center border-b pb-4 mb-6">
+                    <h3 class="text-2xl font-bold text-gray-800 flex items-center"><i class="fas fa-comment-dots mr-2"></i> Communication Log #${comm.id}</h3>
+                    <button type="button" onclick="hideModal()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
+                </div>
+                <div class="grid grid-cols-2 gap-x-12 gap-y-4 text-gray-700">
+                    <div><span class="font-medium text-gray-900">Customer:</span> ${comm.customerName}</div>
+                    <div><span class="font-medium text-gray-900">Date:</span> ${commDate.toLocaleDateString()}</div>
+                    <div><span class="font-medium text-gray-900">Type:</span> ${comm.type}</div>
+                    <div><span class="font-medium text-gray-900">Direction:</span> ${comm.direction}</div>
+                    <div><span class="font-medium text-gray-900">Rating:</span> ${comm.rating}</div>
+                    <div><span class="font-medium text-gray-900">Follow-up Needed:</span> ${comm.isFollowUp ? '<span class="text-red-500">Yes</span>' : 'No'}</div>
+                </div>
+                <div class="mt-4 col-span-2">
+                    <span class="font-medium text-gray-900 block mb-2">Summary:</span> 
+                    <p class="p-3 bg-gray-50 rounded-lg">${comm.summary || 'No summary provided.'}</p>
+                </div>
+                <div class="flex justify-end space-x-4 pt-6 border-t mt-8">
+                    <button type="button" onclick="hideModal(); deleteCommunication(${comm.id})" class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"><i class="fas fa-trash mr-2"></i> Delete Log</button>
+                </div>
+            </div>
+        `;
+        showModal(detailHTML);
+    }
+
+    function deleteCommunication(id) {
+        if (confirm('Are you sure you want to delete this communication log?')) { 
+            crmData.communications = crmData.communications.filter(c => c.id !== id); 
+            saveData();
+            renderView('communications');
+            alert('Communication log deleted successfully.');
+        }
+    }
+
+    function filterCommunications(searchTerm) {
+        const lowerCaseSearch = searchTerm.toLowerCase();
+        const filteredComms = crmData.communications.filter(c => 
+            c.customerName.toLowerCase().includes(lowerCaseSearch) ||
+            c.type.toLowerCase().includes(lowerCaseSearch) ||
+            c.summary.toLowerCase().includes(lowerCaseSearch)
+        ).sort((a, b) => b.date - a.date);
+
+        const commRows = filteredComms.map(c => `
+            <tr class="hover:bg-gray-50 transition duration-150">
+                <td class="p-4 whitespace-nowrap text-sm font-medium text-gray-900">${c.customerName}</td>
+                <td class="p-4 whitespace-nowrap text-sm text-gray-500">${c.date.toLocaleDateString()}</td>
+                <td class="p-4 whitespace-nowrap text-sm font-semibold">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                        ${c.type === 'Email' ? 'bg-blue-100 text-blue-800' : c.type === 'Phone Call' ? 'bg-green-100 text-green-800' : c.type === 'SMS' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800'}">
+                        ${c.type}
+                    </span>
+                </td>
+                <td class="p-4 whitespace-nowrap text-sm text-gray-500">${c.direction}</td>
+                <td class="p-4 text-sm text-gray-500 max-w-xs truncate" title="${c.summary}">${c.summary}</td>
+                <td class="p-4 whitespace-nowrap text-sm font-semibold">
+                    <i class="fas ${c.rating === 'Positive' ? 'fa-face-smile text-green-500' : c.rating === 'Negative' ? 'fa-face-frown text-red-500' : 'fa-face-meh text-gray-500'}"></i>
+                </td>
+                <td class="p-4 whitespace-nowrap text-sm font-medium">
+                    <button onclick="viewCommunicationDetails(${c.id})" class="text-indigo-600 hover:text-indigo-900 mr-4"><i class="fas fa-eye"></i> View</button>
+                    <button onclick="deleteCommunication(${c.id})" class="text-red-600 hover:text-red-900"><i class="fas fa-trash"></i> Delete</button>
+                </td>
+            </tr>
+        `).join('');
+
+        document.getElementById('communicationTableBody').innerHTML = commRows;
+    }
+
+
+    // ======================================================================
+    // 9. NEW COMMUNICATION MODAL 
+    // ======================================================================
+
+    function renderNewCommunicationModal() {
+        const customerOptions = crmData.customers.map(c => 
+            `<option value="${c.id}">${c.name} (${c.email})</option>`
+        ).join('');
+
+        const modalHTML = `
+            <form onsubmit="handleNewCommunicationSubmission(event)" class="p-8 space-y-8">
+                <div class="flex justify-between items-center border-b pb-4">
+                    <h3 class="text-2xl font-bold text-gray-800"><i class="fas fa-comment-dots mr-2"></i> Log New Communication</h3>
+                    <button type="button" onclick="hideModal()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="commCustomerId" class="block text-sm font-medium text-gray-700">Customer *</label>
+                        <select id="commCustomerId" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg" required>
+                            <option value="">Select Customer...</option>
+                            ${customerOptions}
+                        </select>
+                    </div>
+                    <div>
+                        <label for="commDate" class="block text-sm font-medium text-gray-700">Date *</label>
+                        <input type="date" id="commDate" value="${new Date().toISOString().substring(0, 10)}" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg" required>
+                    </div>
+                    <div>
+                        <label for="commType" class="block text-sm font-medium text-gray-700">Type *</label>
+                        <select id="commType" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg" required>
+                            <option value="Email">Email</option>
+                            <option value="Phone Call">Phone Call</option>
+                            <option value="SMS">SMS/Text</option>
+                            <option value="In-Person">In-Person</option>
+                            <option value="Social Media">Social Media</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="commDirection" class="block text-sm font-medium text-gray-700">Direction *</label>
+                        <select id="commDirection" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg" required>
+                            <option value="Outbound">Outbound (You contacted them)</option>
+                            <option value="Inbound">Inbound (They contacted you)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="commRating" class="block text-sm font-medium text-gray-700">Sentiment Rating *</label>
+                        <select id="commRating" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg" required>
+                            <option value="Neutral">Neutral</option>
+                            <option value="Positive">Positive</option>
+                            <option value="Negative">Negative</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <input type="checkbox" id="isFollowUp" class="form-checkbox h-4 w-4 text-red-600 border-gray-300 rounded focus:ring-red-500">
+                        <label for="isFollowUp" class="text-sm font-medium text-gray-700">Flag for Follow-up?</label>
+                    </div>
+                </div>
+
+                <div class="md:col-span-2">
+                    <label for="commSummary" class="block text-sm font-medium text-gray-700">Summary / Notes *</label>
+                    <textarea id="commSummary" rows="4" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg" required placeholder="Briefly summarize the conversation, key takeaways, and next steps."></textarea>
+                </div>
+
+                <div class="flex justify-end space-x-4 pt-6 border-t">
+                    <button type="button" onclick="hideModal()" class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition">Cancel</button>
+                    <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition"><i class="fas fa-save mr-2"></i> Log Communication</button>
+                </div>
+            </form>
+        `;
+        showModal(modalHTML);
+    }
+
+    function handleNewCommunicationSubmission(event) {
+        event.preventDefault();
+        const form = event.target;
+
+        const customerId = parseInt(form.commCustomerId.value);
+        const customer = crmData.customers.find(c => c.id === customerId);
+
+        if (!customer) {
+            alert('Please select a valid customer.');
+            return;
+        }
+
+        const newComm = {
+            id: nextCommId++,
+            customerId: customerId,
+            customerName: customer.name,
+            type: form.commType.value,
+            date: new Date(form.commDate.value),
+            direction: form.commDirection.value,
+            rating: form.commRating.value,
+            summary: form.commSummary.value,
+            isFollowUp: form.isFollowUp.checked,
+        };
+
+        crmData.communications.push(newComm);
+        
+        saveData();
+        hideModal();
+        renderView('communications');
+        alert('Communication successfully logged!');
+    }
     
     // ======================================================================
-    // 8. NEW CUSTOMER MODAL (All 38+ Fields) - (No change in this section)
+    // 10. NEW CUSTOMER MODAL (All 38+ Fields) - (No change in this section)
     // ======================================================================
 
     function renderNewCustomerModal(customer = {}) {
@@ -1040,7 +1289,7 @@
     }
 
     // ======================================================================
-    // 9. NEW ORDER MODAL (Referral Code Implemented) - (No change in this section)
+    // 11. NEW ORDER MODAL (Referral Code Implemented) - (No change in this section)
     // ======================================================================
 
     function renderNewOrderModal() {
@@ -1176,7 +1425,7 @@
     }
     
     // ======================================================================
-    // 10. REFERRAL PROGRAM VIEW - (No change in this section)
+    // 12. REFERRAL PROGRAM VIEW - (No change in this section)
     // ======================================================================
 
     function renderReferralProgramView(container) {
@@ -1262,7 +1511,7 @@
     }
 
     // ======================================================================
-    // 11. UTILITY AND PLACEHOLDER FUNCTIONS (INCLUDING NEW CALENDAR HELPERS)
+    // 13. UTILITY AND PLACEHOLDER FUNCTIONS (INCLUDING NEW CALENDAR HELPERS)
     // ======================================================================
 
     function changeMonth(delta) {
@@ -1375,6 +1624,8 @@
                     // Logic to handle merge or replace goes here (Simplified for demo)
                     crmData.customers = [...crmData.customers, ...importedData.customers];
                     crmData.orders = [...crmData.orders, ...importedData.orders];
+                    crmData.communications = [...crmData.communications, ...importedData.communications]; // Include communications
+                    crmData.events = [...crmData.events, ...importedData.events]; // Include events
                     saveData();
                     updateDashboard();
                     renderView('customers');
@@ -1460,8 +1711,8 @@
                 <div class="mt-8 border-t pt-4">
                     <h4 class="text-lg font-semibold mb-3">Customer History <i class="fas fa-history ml-2"></i></h4>
                     <div class="flex space-x-4">
-                        <button class="px-4 py-2 bg-gray-200 rounded-lg text-gray-700 hover:bg-gray-300"><i class="fas fa-envelope-open-text mr-2"></i> Communications</button>
-                        <button class="px-4 py-2 bg-gray-200 rounded-lg text-gray-700 hover:bg-gray-300"><i class="fas fa-check-circle mr-2"></i> Tasks</button>
+                        <button onclick="renderView('communications'); hideModal();" class="px-4 py-2 bg-gray-200 rounded-lg text-gray-700 hover:bg-gray-300"><i class="fas fa-envelope-open-text mr-2"></i> Communications (${crmData.communications.filter(c => c.customerId === id).length})</button>
+                        <button class="px-4 py-2 bg-gray-200 rounded-lg text-gray-700 hover:bg-gray-300"><i class="fas fa-check-circle mr-2"></i> Tasks (Placeholder)</button>
                         <button onclick="renderView('orders'); hideModal();" class="px-4 py-2 bg-gray-200 rounded-lg text-gray-700 hover:bg-gray-300"><i class="fas fa-receipt mr-2"></i> Purchases (${crmData.orders.filter(o => o.customerId === id).length})</button>
                     </div>
                 </div>
