@@ -238,7 +238,8 @@
           renderCustomersView(contentArea);
           break;
         case 'orders':
-          renderPlaceholderView(contentArea, 'Orders List', 'Manage all customer purchases and fulfillment status here.', 'fas fa-box-open');
+          // UPDATED TO CALL THE NEW IMPLEMENTATION
+          renderOrdersView(contentArea);
           break;
         case 'calendar':
           renderPlaceholderView(contentArea, 'Calendar', 'Schedule, view, and manage all events and customer meetings.', 'fas fa-calendar-check');
@@ -406,7 +407,72 @@
     }
 
     // ======================================================================
-    // 6. NEW CUSTOMER MODAL (All 38+ Fields)
+    // 6. ORDERS VIEW (NEW IMPLEMENTATION)
+    // ======================================================================
+
+    function renderOrdersView(container) {
+      // Ensure date objects are correctly formatted for display
+      const ordersWithFormattedDates = crmData.orders.map(o => ({
+        ...o,
+        orderDate: o.orderDate instanceof Date ? o.orderDate : new Date(o.orderDate)
+      }));
+
+      const orderRows = ordersWithFormattedDates.map(o => `
+        <tr class="hover:bg-gray-50 transition duration-150">
+          <td class="p-4 whitespace-nowrap text-sm font-medium text-gray-900">${o.id}</td>
+          <td class="p-4 whitespace-nowrap text-sm text-gray-500">${o.customerName}</td>
+          <td class="p-4 whitespace-nowrap text-sm text-gray-500">${o.product}</td>
+          <td class="p-4 whitespace-nowrap text-sm text-gray-500">$${o.totalValue.toFixed(2)}</td>
+          <td class="p-4 whitespace-nowrap text-sm text-gray-500">${o.orderDate.toLocaleDateString()}</td>
+          <td class="p-4 whitespace-nowrap text-sm">
+            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+              ${o.status === 'Delivered' ? 'bg-green-100 text-green-800' : o.status === 'Shipped' ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800'}">
+              ${o.status}
+            </span>
+          </td>
+          <td class="p-4 whitespace-nowrap text-sm text-gray-500">${o.referralCode || 'N/A'}</td>
+          <td class="p-4 whitespace-nowrap text-sm font-medium">
+            <button onclick="viewOrderDetails(${o.id})" class="text-indigo-600 hover:text-indigo-900 mr-4"><i class="fas fa-eye"></i> View</button>
+            <button onclick="deleteOrder(${o.id})" class="text-red-600 hover:text-red-900"><i class="fas fa-trash"></i> Delete</button>
+          </td>
+        </tr>
+      `).join('');
+
+      container.innerHTML = `
+        <div class="p-6 bg-white rounded-xl shadow-lg">
+          <h2 class="text-2xl font-bold mb-4 text-gray-800">Orders List</h2>
+          <div class="flex justify-between items-center mb-6">
+            <button onclick="renderNewOrderModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-sm hover:bg-blue-700 transition flex items-center"><i class="fas fa-plus-square mr-2"></i> Add Order</button>
+            <div class="relative">
+              <input type="text" placeholder="Search orders..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" onkeyup="filterOrders(this.value)">
+              <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            </div>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
+                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Value</th>
+                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ref. Code</th>
+                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="orderTableBody" class="bg-white divide-y divide-gray-200">
+                ${orderRows}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    // ======================================================================
+    // 7. NEW CUSTOMER MODAL (All 38+ Fields)
     // ======================================================================
 
     function renderNewCustomerModal(customer = {}) {
@@ -797,7 +863,7 @@
     }
 
     // ======================================================================
-    // 7. NEW ORDER MODAL (Referral Code Implemented)
+    // 8. NEW ORDER MODAL (Referral Code Implemented)
     // ======================================================================
 
     function renderNewOrderModal() {
@@ -931,11 +997,11 @@
       updateDashboard();
 
       hideModal();
-      renderView('orders'); // Navigate to the Orders view (placeholder)
+      renderView('orders'); // Navigate to the Orders view
     }
     
     // ======================================================================
-    // 8. REFERRAL PROGRAM VIEW
+    // 9. REFERRAL PROGRAM VIEW
     // ======================================================================
 
     function renderReferralProgramView(container) {
@@ -1022,7 +1088,7 @@
 
 
     // ======================================================================
-    // 9. PLACEHOLDER / UTILITY FUNCTIONS
+    // 10. PLACEHOLDER / UTILITY FUNCTIONS
     // ======================================================================
 
     function downloadBackup() {
@@ -1143,7 +1209,7 @@
                     <div class="flex space-x-4">
                         <button class="px-4 py-2 bg-gray-200 rounded-lg text-gray-700 hover:bg-gray-300"><i class="fas fa-envelope-open-text mr-2"></i> Communications</button>
                         <button class="px-4 py-2 bg-gray-200 rounded-lg text-gray-700 hover:bg-gray-300"><i class="fas fa-check-circle mr-2"></i> Tasks</button>
-                        <button class="px-4 py-2 bg-gray-200 rounded-lg text-gray-700 hover:bg-gray-300"><i class="fas fa-receipt mr-2"></i> Purchases (${crmData.orders.filter(o => o.customerId === id).length})</button>
+                        <button onclick="renderView('orders'); hideModal();" class="px-4 py-2 bg-gray-200 rounded-lg text-gray-700 hover:bg-gray-300"><i class="fas fa-receipt mr-2"></i> Purchases (${crmData.orders.filter(o => o.customerId === id).length})</button>
                     </div>
                 </div>
 
@@ -1164,6 +1230,95 @@
         </div>
       `;
       showModal(modalHTML);
+    }
+    
+    // UTILITY FUNCTIONS FOR ORDERS (New)
+    function viewOrderDetails(id) {
+        const order = crmData.orders.find(o => o.id === id);
+        if (!order) return;
+
+        // Ensure orderDate is a Date object for correct formatting
+        const orderDate = order.orderDate instanceof Date ? order.orderDate : new Date(order.orderDate);
+
+        const detailHTML = `
+            <div class="p-8">
+                <div class="flex justify-between items-center border-b pb-4 mb-6">
+                    <h3 class="text-2xl font-bold text-gray-800 flex items-center"><i class="fas fa-receipt mr-2"></i> Order #${order.id} Details</h3>
+                    <button type="button" onclick="hideModal()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
+                </div>
+                <div class="grid grid-cols-2 gap-x-12 gap-y-4 text-gray-700">
+                    <div><span class="font-medium text-gray-900">Customer:</span> ${order.customerName}</div>
+                    <div><span class="font-medium text-gray-900">Order Date:</span> ${orderDate.toLocaleDateString()}</div>
+                    <div><span class="font-medium text-gray-900">Product:</span> ${order.product} (x${order.quantity})</div>
+                    <div><span class="font-medium text-gray-900">Unit Price:</span> $${order.price.toFixed(2)}</div>
+                    <div><span class="font-medium text-gray-900">Total Value:</span> <span class="text-green-600 font-bold">$${order.totalValue.toFixed(2)}</span></div>
+                    <div><span class="font-medium text-gray-900">Status:</span> ${order.status}</div>
+                    <div class="col-span-2"><span class="font-medium text-gray-900">Referral Code Used:</span> ${order.referralCode || 'None'}</div>
+                    <div class="col-span-2"><span class="font-medium text-gray-900">Notes:</span> ${order.notes || 'N/A'}</div>
+                </div>
+                <div class="flex justify-end space-x-4 pt-6 border-t mt-8">
+                    <button type="button" onclick="hideModal(); editOrder(${order.id})" class="px-6 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition"><i class="fas fa-edit mr-2"></i> Edit Order (Placeholder)</button>
+                    <button type="button" onclick="hideModal(); deleteOrder(${order.id})" class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"><i class="fas fa-trash mr-2"></i> Delete Order</button>
+                </div>
+            </div>
+        `;
+        showModal(detailHTML);
+    }
+    
+    function deleteOrder(id) { 
+      if (confirm('Are you sure you want to delete this order? This action cannot be undone.')) { 
+        crmData.orders = crmData.orders.filter(o => o.id !== id); 
+        saveData();
+        updateDashboard();
+        renderView('orders');
+        alert('Order deleted successfully.');
+      }
+    }
+
+    function filterOrders(searchTerm) {
+      const lowerCaseSearch = searchTerm.toLowerCase();
+      const orderTableBody = document.getElementById('orderTableBody');
+      
+      if (!orderTableBody) {
+        // If the order view is not currently rendered, do nothing
+        return;
+      }
+      
+      const filteredOrders = crmData.orders.filter(o => {
+          const orderDate = o.orderDate instanceof Date ? o.orderDate.toLocaleDateString() : new Date(o.orderDate).toLocaleDateString();
+          return o.customerName.toLowerCase().includes(lowerCaseSearch) ||
+              o.product.toLowerCase().includes(lowerCaseSearch) ||
+              String(o.id).includes(lowerCaseSearch) ||
+              (o.referralCode && o.referralCode.toLowerCase().includes(lowerCaseSearch)) ||
+              orderDate.includes(lowerCaseSearch);
+      });
+
+      const orderRows = filteredOrders.map(o => `
+        <tr class="hover:bg-gray-50 transition duration-150">
+          <td class="p-4 whitespace-nowrap text-sm font-medium text-gray-900">${o.id}</td>
+          <td class="p-4 whitespace-nowrap text-sm text-gray-500">${o.customerName}</td>
+          <td class="p-4 whitespace-nowrap text-sm text-gray-500">${o.product}</td>
+          <td class="p-4 whitespace-nowrap text-sm text-gray-500">$${o.totalValue.toFixed(2)}</td>
+          <td class="p-4 whitespace-nowrap text-sm text-gray-500">${o.orderDate.toLocaleDateString()}</td>
+          <td class="p-4 whitespace-nowrap text-sm">
+            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+              ${o.status === 'Delivered' ? 'bg-green-100 text-green-800' : o.status === 'Shipped' ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800'}">
+              ${o.status}
+            </span>
+          </td>
+          <td class="p-4 whitespace-nowrap text-sm text-gray-500">${o.referralCode || 'N/A'}</td>
+          <td class="p-4 whitespace-nowrap text-sm font-medium">
+            <button onclick="viewOrderDetails(${o.id})" class="text-indigo-600 hover:text-indigo-900 mr-4"><i class="fas fa-eye"></i> View</button>
+            <button onclick="deleteOrder(${o.id})" class="text-red-600 hover:text-red-900"><i class="fas fa-trash"></i> Delete</button>
+          </td>
+        </tr>
+      `).join('');
+
+      orderTableBody.innerHTML = orderRows;
+    }
+    
+    function editOrder(id) {
+        alert('Order editing functionality is currently a placeholder. Please delete and re-add for changes.');
     }
   </script>
 
