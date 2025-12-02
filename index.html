@@ -100,33 +100,34 @@
     // 1. DATA STORE (Using localStorage for persistence)
     // ======================================================================
     let crmData = {
-      customers: [
-        { id: 1, name: 'Reed Kimmel', email: 'reed@gmail.com', mobileNumber: '555-0100', status: 'Active', aiScore: 81, leadSource: 'Google', referralsMade: 0, potentialReferrals: 2, industry: 'Tech', ageRange: '30-40', skillLevel: 'Intermediate', playFrequency: 'Weekly', currentPaddleBrand: 'CRBN', socialEngagementLevel: 'High', notes: 'Very engaged in local tournaments.', createdAt: new Date('2025-10-01') },
-        { id: 2, name: 'Anna Lee', email: 'anna@example.com', mobileNumber: '555-0101', status: 'Prospect', aiScore: 65, leadSource: 'Referral', referralsMade: 0, potentialReferrals: 0, industry: 'Healthcare', ageRange: '40-50', skillLevel: 'Beginner', playFrequency: 'Monthly', currentPaddleBrand: 'Bantam', socialEngagementLevel: 'Low', notes: 'Met at trade show.', createdAt: new Date('2025-11-01') },
-      ],
-      orders: [
-        { id: 101, customerId: 1, customerName: 'Reed Kimmel', product: 'Performance Cover', quantity: 1, price: 69.99, orderDate: new Date('2025-10-15'), status: 'Delivered', notes: '', totalValue: 69.99, referralCode: null },
-      ],
-      communications: [],
-      tasks: [],
-      events: [],
-      referralSettings: {
-        creditAmount: 25,
-        minOrderValue: 100,
-        tiers: [
-          { name: 'Bronze', referrals: '1-2', icon: 'fas fa-medal text-yellow-800' },
-          { name: 'Silver', referrals: '3-5', icon: 'fas fa-medal text-gray-400' },
-          { name: 'Gold', referrals: '6-10', icon: 'fas fa-medal text-yellow-500' },
-          { name: 'Platinum', referrals: '11+', icon: 'fas fa-star text-blue-400' },
-        ]
-      },
-      dashboardMetrics: {
-        totalCustomers: 2,
-        totalOrders: 1,
-        totalRevenue: 69.99,
-        eventsToday: 0
-      }
-    };
+  customers: [
+    { id: 1, name: 'Reed Kimmel', email: 'reed@gmail.com', mobileNumber: '555-0100', status: 'Active', aiScore: 81, leadSource: 'Google', referralsMade: 0, potentialReferrals: 2, industry: 'Tech', ageRange: '30-40', skillLevel: 'Intermediate', playFrequency: 'Weekly', currentPaddleBrand: 'CRBN', socialEngagementLevel: 'High', notes: 'Very engaged in local tournaments.', createdAt: new Date('2025-10-01') },
+    // MODIFIED: Status is now 'Active', AI Score is 75 (High Value)
+    { id: 2, name: 'Anna Lee', email: 'anna@example.com', mobileNumber: '555-0101', status: 'Active', aiScore: 75, leadSource: 'Referral', referralsMade: 0, potentialReferrals: 0, industry: 'Healthcare', ageRange: '40-50', skillLevel: 'Beginner', playFrequency: 'Monthly', currentPaddleBrand: 'Bantam', socialEngagementLevel: 'Low', notes: 'Met at trade show.', createdAt: new Date('2025-11-01') },
+  ],
+  orders: [
+    { id: 101, customerId: 1, customerName: 'Reed Kimmel', product: 'Performance Cover', quantity: 1, price: 69.99, orderDate: new Date('2025-10-15'), status: 'Delivered', notes: '', totalValue: 69.99, referralCode: null },
+  ],
+  communications: [],
+  tasks: [],
+  events: [],
+  referralSettings: {
+    creditAmount: 25,
+    minOrderValue: 100,
+    tiers: [
+      { name: 'Bronze', referrals: '1-2', icon: 'fas fa-medal text-yellow-800' },
+      { name: 'Silver', referrals: '3-5', icon: 'fas fa-medal text-gray-400' },
+      { name: 'Gold', referrals: '6-10', icon: 'fas fa-medal text-yellow-500' },
+      { name: 'Platinum', referrals: '11+', icon: 'fas fa-star text-blue-400' },
+    ]
+  },
+  dashboardMetrics: {
+    totalCustomers: 2,
+    totalOrders: 1,
+    totalRevenue: 69.99,
+    eventsToday: 0
+  }
+};
 
     let nextCustomerId = 3;
     let nextOrderId = 102;
