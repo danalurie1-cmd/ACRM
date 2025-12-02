@@ -3,26 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AcoustiSkin CRM - AI-Powered Enterprise + Payments</title>
+  <title>AcoustiSkin CRM - AI-Powered Enterprise Edition</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
-  <!-- STRIPE -->
-  <script src="https://js.stripe.com/v3/"></script>
-  <!-- PAYPAL -->
-  <script src="https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_CLIENT_ID&currency=USD"></script>
-
   <style>
-    /* === YOUR EXISTING STYLES + MOBILE IMPROVEMENTS === */
-    ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-track { background: #f1f1f1; }
-    ::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: #555; }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { 
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
       background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
       min-height: 100vh;
     }
@@ -30,264 +19,1234 @@
       width: 260px; 
       background: linear-gradient(180deg, #4a7c59 0%, #2e5940 100%);
       box-shadow: 4px 0 20px rgba(0,0,0,0.15);
-      transition: transform 0.3s ease-in-out;
       position: fixed;
       height: 100vh;
+      overflow-y: auto;
       z-index: 40;
+      transition: transform 0.3s ease;
     }
     @media (max-width: 768px) {
       .sidebar { transform: translateX(-100%); }
       .sidebar.open { transform: translateX(0); }
     }
-    .main-content { margin-left: 260px; padding: 30px; }
+    .main-content { 
+      margin-left: 260px; 
+      min-height: 100vh; 
+      padding: 20px;
+    }
     @media (max-width: 768px) { .main-content { margin-left: 0; } }
-    .card { background: white; border-radius: 16px; padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 24px; }
-    .btn-primary { background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%); color: white; padding: 12px 24px; border-radius: 12px; font-weight: 600; border: none; cursor: pointer; transition: all 0.3s; }
-    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(67,160,71,0.4); }
-    .btn-paypal { background: #003087; }
-    .btn-stripe { background: #635bff; }
-    .nav-item { padding: 14px 20px; color: white; border-radius: 10px; margin: 6px 12px; transition: all 0.3s; }
+    .card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 20px; }
+    .btn-primary { background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%); color: white; padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; transition: all 0.3s; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(67, 160, 71, 0.4); }
+    .btn-secondary { background: white; color: #43a047; border: 2px solid #43a047; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 500; transition: all 0.3s; }
+    .btn-secondary:hover { background: #43a047; color: white; }
+    .btn-danger { background: white; color: #e53935; border: 2px solid #e53935; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 500; }
+    .btn-danger:hover { background: #e53935; color: white; }
+    .nav-item { padding: 14px 20px; color: white; cursor: pointer; border-radius: 8px; margin: 6px 12px; transition: all 0.3s; display: flex; align-items: center; }
     .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.2); }
-    .status-paid { background: #c8e6c9; color: #2e7d32; }
-    .status-pending { background: #fff3e0; color: #ef6c00; }
-    .status-failed { background: #ffcdd2; color: #c62828; }
-    .notification { position: fixed; top: 20px; right: 20px; background: white; padding: 16px 24px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border-left: 5px solid #66bb6a; z-index: 9999; animation: slideIn 0.4s; }
-    @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    .nav-item.active { background: rgba(255,255,255,0.3); font-weight: 600; }
+    .nav-item i { margin-right: 12px; width: 20px; }
+    .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); overflow-y: auto; }
+    .modal-content { background: white; margin: 30px auto; padding: 30px; border-radius: 16px; max-width: 1100px; max-height: 90vh; overflow-y: auto; }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; margin-bottom: 5px; color: #2e5940; font-weight: 600; font-size: 14px; }
+    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 2px solid #c8e6c9; border-radius: 6px; font-size: 14px; }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #66bb6a; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
+    .section-header { color: #2e5940; margin: 25px 0 15px 0; border-bottom: 2px solid #e8f5e9; padding-bottom: 10px; font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+    .ai-badge { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; gap: 5px; }
+    .score-high { background: #c8e6c9; color: #2e7d32; }
+    .score-medium { background: #fff9c4; color: #f57f17; }
+    .score-low { background: #ffcdd2; color: #c62828; }
+    .notification { position: fixed; top: 20px; right: 20px; background: white; padding: 16px 24px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-left: 4px solid #66bb6a; display: none; z-index: 2000; animation: slideIn 0.3s; max-width: 400px; }
+    @keyframes slideIn { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    .table { width: 100%; border-collapse: collapse; }
+    .table th { background: #e8f5e9; padding: 12px; text-align: left; font-weight: 600; color: #2e5940; }
+    .table td { padding: 12px; border-bottom: 1px solid #e8f5e9; }
+    .table tr:hover { background: #f1f8e9; }
+    .tab { display: none; }
+    .tab.active { display: block; }
+    .tab-buttons { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+    .tab-button { padding: 10px 20px; background: #e8f5e9; color: #2e5940; border-radius: 8px; cursor: pointer; font-weight: 600; }
+    .tab-button.active { background: #66bb6a; color: white; }
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: #e8f5e9; }
+    .calendar-day { background: white; padding: 10px; text-align: center; min-height: 80px; cursor: pointer; transition: background 0.3s; }
+    .calendar-day:hover { background: #f1f8e9; }
+    .event-item { background: #66bb6a; color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; margin-top: 4px; }
   </style>
 </head>
 <body class="flex">
 
-  <!-- Mobile Menu Button -->
   <button id="menu-btn" class="md:hidden fixed top-4 left-4 z-50 p-3 bg-green-700 text-white rounded-full shadow-lg">
     <i class="fas fa-bars text-xl"></i>
   </button>
 
-  <!-- Sidebar -->
   <aside id="sidebar" class="sidebar">
-    <div class="p-6">
-      <h1 class="text-white text-2xl font-bold flex items-center"><i class="fas fa-leaf mr-3"></i> AcoustiSkin</h1>
-      <div class="text-green-200 text-xs mt-1">AI-Powered + Payments Live</div>
+    <div class="p-6 border-b border-green-800">
+      <h1 class="text-white text-2xl font-bold flex items-center">
+        <i class="fas fa-leaf mr-3"></i> AcoustiSkin CRM
+      </h1>
+      <div class="text-green-200 text-xs mt-2">
+        <span class="ai-badge"><i class="fas fa-brain"></i> AI-Powered</span>
+      </div>
     </div>
-    <nav class="px-4">
-      <div class="nav-item active" onclick="showView('dashboard')"><i class="fas fa-home mr-3"></i> Dashboard</div>
-      <div class="nav-item" onclick="showView('customers')"><i class="fas fa-users mr-3"></i> Customers</div>
-      <div class="nav-item" onclick="showView('orders')"><i class="fas fa-shopping-cart mr-3"></i> Orders & Payments</div>
-      <div class="nav-item" onclick="showView('referrals')"><i class="fas fa-gift mr-3"></i> Referrals</div>
+    <nav class="p-4">
+      <div class="nav-item active" onclick="showView('dashboard')"><i class="fas fa-home"></i> Dashboard</div>
+      <div class="nav-item" onclick="showView('customers')"><i class="fas fa-users"></i> Customers</div>
+      <div class="nav-item" onclick="showView('orders')"><i class="fas fa-shopping-cart"></i> Orders</div>
+      <div class="nav-item" onclick="showView('calendar')"><i class="fas fa-calendar"></i> Calendar</div>
+      <div class="nav-item" onclick="showView('communications')"><i class="fas fa-comments"></i> Communications</div>
+      <div class="nav-item" onclick="showView('tasks')"><i class="fas fa-tasks"></i> Tasks</div>
+      <div class="nav-item" onclick="showView('pipeline')"><i class="fas fa-chart-line"></i> Pipeline</div>
+      <div class="nav-item" onclick="showView('marketing')"><i class="fas fa-bullhorn"></i> Marketing</div>
+      <div class="nav-item" onclick="showView('referrals')"><i class="fas fa-gift"></i> Referrals</div>
     </nav>
-    <div class="p-6 border-t border-green-800 mt-auto">
-      <div class="text-xs text-green-200">Payments Active</div>
-      <div class="text-xs text-green-300">Stripe + PayPal</div>
-    </div>
   </aside>
 
-  <!-- Main Content -->
-  <main class="main-content flex-1">
-
-    <!-- Dashboard -->
-    <div id="dashboardView" class="view">
-      <h2 class="text-4xl font-bold text-gray-800 mb-8">Dashboard</h2>
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div class="card text-center">
-          <div class="text-4xl font-bold text-green-600" id="totalRevenue">$0</div>
-          <div class="text-gray-600 mt-2">Total Revenue</div>
-        </div>
-        <div class="card text-center">
-          <div class="text-4xl font-bold text-blue-600" id="totalOrders">0</div>
-          <div class="text-gray-600 mt-2">Orders</div>
-        </div>
-        <div class="card text-center">
-          <div class="text-4xl font-bold text-purple-600" id="paidOrders">0</div>
-          <div class="text-gray-600 mt-2">Paid</div>
-        </div>
-        <div class="card text-center">
-          <div class="text-4xl font-bold text-orange-600" id="pendingOrders">0</div>
-          <div class="text-gray-600 mt-2">Pending Payment</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Orders View with Payment Buttons -->
-    <div id="ordersView" class="view hidden">
-      <div class="flex justify-between items-center mb-8">
-        <h2 class="text-4xl font-bold text-gray-800">Orders & Payments</h2>
-        <button class="btn-primary" onclick="openOrderModal()">New Order</button>
-      </div>
-      <div class="card">
-        <table class="table w-full">
-          <thead>
-            <tr>
-              <th>Order</th>
-              <th>Customer</th>
-              <th>Date</th>
-              <th>Total</th>
-              <th>Status</th>
-              <th>Payment</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="ordersTable"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- Other views (customers, referrals, etc.) remain the same -->
-    <!-- ... (keeping your existing views) ... -->
-
+  <main class="main-content">
+    <div id="view-container"></div>
   </main>
 
-  <!-- Notification -->
-  <div id="notification" class="notification hidden">
-    <i class="fas fa-check-circle text-green-600 mr-2"></i>
+  <div id="notification" class="notification">
+    <i class="fas fa-check-circle" style="color: #66bb6a; margin-right: 8px;"></i>
     <span id="notificationText"></span>
   </div>
 
-  <!-- Stripe & PayPal will inject their elements dynamically -->
+  <!-- Customer Modal -->
+  <div id="customerModal" class="modal">
+    <div class="modal-content">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-2xl font-bold text-gray-800" id="customerModalTitle">Add Customer</h3>
+        <button onclick="closeModal('customerModal')" class="text-gray-500 hover:text-gray-700"><i class="fas fa-times text-2xl"></i></button>
+      </div>
+      <form id="customerForm" onsubmit="saveCustomer(event)">
+        <input type="hidden" id="customerId">
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Name *</label>
+            <input type="text" id="customerName" required>
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="customerEmail">
+          </div>
+          <div class="form-group">
+            <label>Phone</label>
+            <input type="tel" id="customerPhone">
+          </div>
+          <div class="form-group">
+            <label>City</label>
+            <input type="text" id="customerCity">
+          </div>
+          <div class="form-group">
+            <label>State</label>
+            <input type="text" id="customerState">
+          </div>
+          <div class="form-group">
+            <label>Zip</label>
+            <input type="text" id="customerZip">
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Lead Source</label>
+            <select id="customerLeadSource">
+              <option>Website</option>
+              <option>Referral</option>
+              <option>Social Media</option>
+              <option>Event</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Customer Type</label>
+            <select id="customerType">
+              <option>Individual</option>
+              <option>Business</option>
+              <option>Club</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid-3">
+          <div class="form-group">
+            <label>AI Score (0-100)</label>
+            <input type="number" id="customerAiScore" min="0" max="100" value="50">
+          </div>
+          <div class="form-group">
+            <label>Social Engagement</label>
+            <select id="customerSocialEngagement">
+              <option>Low</option>
+              <option>Medium</option>
+              <option>High</option>
+              <option>Very High</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Referral Interest</label>
+            <select id="customerReferralInterest">
+              <option>Not Interested</option>
+              <option>Somewhat Interested</option>
+              <option>Very Interested</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Notes</label>
+          <textarea id="customerNotes" rows="3" placeholder="Initial notes..."></textarea>
+        </div>
+        <div class="flex justify-end gap-4 mt-8">
+          <button type="button" class="btn-secondary" onclick="closeModal('customerModal')">Cancel</button>
+          <button type="submit" class="btn-primary">Save Customer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Order Modal -->
+  <div id="orderModal" class="modal">
+    <div class="modal-content">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-2xl font-bold text-gray-800" id="orderModalTitle">New Order</h3>
+        <button onclick="closeModal('orderModal')" class="text-gray-500 hover:text-gray-700"><i class="fas fa-times text-2xl"></i></button>
+      </div>
+      <form id="orderForm" onsubmit="saveOrder(event)">
+        <input type="hidden" id="orderId">
+        <input type="hidden" id="orderCustomerId">
+        <div class="form-group">
+          <label>Customer *</label>
+          <input type="text" id="orderCustomerSearch" placeholder="Search by name..." onkeyup="filterOrderCustomers()" required>
+          <div id="orderCustomerList" style="display: none; position: absolute; background: white; border: 1px solid #ccc; width: 100%; max-height: 200px; overflow-y: auto; z-index: 10;"></div>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Product</label>
+            <select id="orderProduct">
+              <option>AcoustiSkin Pro ($39.99)</option>
+              <option>AcoustiSkin Classic ($29.99)</option>
+              <option>Custom Cover ($59.99)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Quantity</label>
+            <input type="number" id="orderQuantity" value="1" min="1">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Total</label>
+          <input type="text" id="orderTotal" readonly value="$39.99">
+        </div>
+        <div class="form-group">
+          <label>Shipping Method</label>
+          <select id="orderShipping">
+            <option>Standard (5-7 days)</option>
+            <option>Express (1-2 days)</option>
+            <option>Local Pickup</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Payment Status</label>
+          <select id="orderPaymentStatus">
+            <option>Pending</option>
+            <option>Paid</option>
+            <option>Refunded</option>
+          </select>
+        </div>
+        <div class="flex justify-end gap-4 mt-8">
+          <button type="button" class="btn-secondary" onclick="closeModal('orderModal')">Cancel</button>
+          <button type="submit" class="btn-primary">Save Order</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Task Modal -->
+  <div id="taskModal" class="modal">
+    <div class="modal-content">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-2xl font-bold text-gray-800">Add Task</h3>
+        <button onclick="closeModal('taskModal')" class="text-gray-500 hover:text-gray-700"><i class="fas fa-times text-2xl"></i></button>
+      </div>
+      <form id="taskForm" onsubmit="saveTask(event)">
+        <input type="hidden" id="taskId">
+        <input type="hidden" id="taskCustomerId">
+        <div class="form-group">
+          <label>Customer</label>
+          <input type="text" id="taskCustomerSearch" placeholder="Search by name..." onkeyup="filterTaskCustomers()">
+          <div id="taskCustomerList" style="display: none; position: absolute; background: white; border: 1px solid #ccc; width: 100%; max-height: 200px; overflow-y: auto; z-index: 10;"></div>
+        </div>
+        <div class="form-group">
+          <label>Title *</label>
+          <input type="text" id="taskTitle" required>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Due Date *</label>
+            <input type="date" id="taskDueDate" required>
+          </div>
+          <div class="form-group">
+            <label>Priority</label>
+            <select id="taskPriority">
+              <option>Low</option>
+              <option>Medium</option>
+              <option>High</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Notes</label>
+          <textarea id="taskNotes" rows="3"></textarea>
+        </div>
+        <div class="flex justify-end gap-4 mt-8">
+          <button type="button" class="btn-secondary" onclick="closeModal('taskModal')">Cancel</button>
+          <button type="submit" class="btn-primary">Save Task</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Communication Modal -->
+  <div id="communicationModal" class="modal">
+    <div class="modal-content">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-2xl font-bold text-gray-800">Add Communication</h3>
+        <button onclick="closeModal('communicationModal')" class="text-gray-500 hover:text-gray-700"><i class="fas fa-times text-2xl"></i></button>
+      </div>
+      <form id="communicationForm" onsubmit="saveCommunication(event)">
+        <input type="hidden" id="communicationId">
+        <input type="hidden" id="communicationCustomerId">
+        <div class="form-group">
+          <label>Customer *</label>
+          <input type="text" id="commCustomerSearch" placeholder="Search by name..." onkeyup="filterCommCustomers()" required>
+          <div id="commCustomerList" style="display: none; position: absolute; background: white; border: 1px solid #ccc; width: 100%; max-height: 200px; overflow-y: auto; z-index: 10;"></div>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Type</label>
+            <select id="commType">
+              <option>Email</option>
+              <option>Phone Call</option>
+              <option>Meeting</option>
+              <option>SMS</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Date</label>
+            <input type="date" id="commDate">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Notes *</label>
+          <textarea id="commNotes" rows="4" required></textarea>
+        </div>
+        <div class="flex justify-end gap-4 mt-8">
+          <button type="button" class="btn-secondary" onclick="closeModal('communicationModal')">Cancel</button>
+          <button type="submit" class="btn-primary">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Referral Settings Modal -->
+  <div id="referralSettingsModal" class="modal">
+    <div class="modal-content">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-2xl font-bold text-gray-800">Referral Settings</h3>
+        <button onclick="closeModal('referralSettingsModal')" class="text-gray-500 hover:text-gray-700"><i class="fas fa-times text-2xl"></i></button>
+      </div>
+      <form id="referralSettingsForm" onsubmit="saveReferralSettings(event)">
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Credit Amount ($)</label>
+            <input type="number" id="creditAmount" value="15" min="0">
+          </div>
+          <div class="form-group">
+            <label>Bronze Min/Max</label>
+            <input type="text" id="bronzeRange" value="1-2" placeholder="1-2">
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Silver Min/Max</label>
+            <input type="text" id="silverRange" value="3-5" placeholder="3-5">
+          </div>
+          <div class="form-group">
+            <label>Gold Min/Max</label>
+            <input type="text" id="goldRange" value="6-10" placeholder="6-10">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Platinum Min</label>
+          <input type="number" id="platinumMin" value="11" min="1">
+        </div>
+        <div class="flex justify-end gap-4 mt-8">
+          <button type="button" class="btn-secondary" onclick="closeModal('referralSettingsModal')">Cancel</button>
+          <button type="submit" class="btn-primary">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Backup Reminder Modal -->
+  <div id="backupReminderModal" class="modal">
+    <div class="modal-content" style="max-width: 500px;">
+      <div style="text-align: center;">
+        <i class="fas fa-shield-alt text-6xl text-amber-500 mb-4"></i>
+        <h3 class="text-2xl font-bold text-gray-800 mb-2">Backup Time!</h3>
+        <p class="text-gray-600 mb-6">Protect your data — download now?</p>
+        <div class="flex justify-center gap-4">
+          <button class="btn-secondary" onclick="snoozeBackup()">Later</button>
+          <button class="btn-primary" onclick="quickBackup()">Backup Now</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Import Conflict Modal -->
+  <div id="conflictModal" class="modal">
+    <div class="modal-content" style="max-width: 600px;">
+      <h3 class="text-2xl font-bold text-gray-800 mb-4">Import Conflict</h3>
+      <p class="text-gray-600 mb-6">Data conflicts detected. How to handle?</p>
+      <div class="flex justify-center gap-4">
+        <button class="btn-secondary" onclick="resolveConflict('merge')">Merge</button>
+        <button class="btn-primary" onclick="resolveConflict('replace')">Replace</button>
+      </div>
+    </div>
+  </div>
 
 <script>
-// ==================== CONFIGURATION ====================
-// REPLACE THESE WITH YOUR REAL KEYS
-const STRIPE_PUBLISHABLE_KEY = "pk_test_51..."; // ← Your Stripe test key
-const PAYPAL_CLIENT_ID = "YOUR_PAYPAL_CLIENT_ID"; // ← Your PayPal client ID
-
-const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
-
-// ==================== DATA & STATE ====================
+// ==================== CORE DATA & STATE ====================
 let crmData = {
+  customers: JSON.parse(localStorage.getItem('acoustiskin_customers') || '[]'),
   orders: JSON.parse(localStorage.getItem('acoustiskin_orders') || '[]'),
-  customers: JSON.parse(localStorage.getItem('acoustiskin_customers') || '[]')
+  tasks: JSON.parse(localStorage.getItem('acoustiskin_tasks') || '[]'),
+  communications: JSON.parse(localStorage.getItem('acoustiskin_communications') || '[]'),
+  events: JSON.parse(localStorage.getItem('acoustiskin_events') || '[]')
 };
 
-// ==================== PAYMENT FUNCTIONS ====================
-async function payWithStripe(orderId) {
-  const order = crmData.orders.find(o => o.id === orderId);
-  if (!order || order.paymentStatus === 'paid') return;
+let referralSettings = JSON.parse(localStorage.getItem('acoustiskin_referral_settings') || JSON.stringify({
+  creditAmount: 15,
+  bronzeMin: 1, bronzeMax: 2,
+  silverMin: 3, silverMax: 5,
+  goldMin: 6, goldMax: 10,
+  platinumMin: 11
+}));
 
-  const response = await fetch('https://api.stripe.com/v1/payment_intents', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${STRIPE_PUBLISHABLE_KEY.replace('pk_', 'sk_')}`, // In production use backend!
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: new URLSearchParams({
-      amount: Math.round(order.total * 100),
-      currency: 'usd',
-      description: `AcoustiSkin Order ${order.id}`,
-      metadata: { order_id: order.id }
-    })
-  });
-  const { client_secret } = await response.json();
-
-  const { error } = await stripe.redirectToCheckout({
-    sessionId: client_secret // Actually you'd create a Checkout Session server-side
-  });
-
-  if (!error) {
-    order.paymentStatus = 'paid';
-    order.paidAt = new Date().toISOString();
-    saveData();
-    showNotification('Payment successful!');
-    updateOrdersView();
-  }
-}
-
-function payWithPayPal(orderId) {
-  const order = crmData.orders.find(o => o.id === orderId);
-  if (!order || order.paymentStatus === 'paid') return;
-
-  paypal.Buttons({
-    createOrder: (data, actions) => {
-      return actions.order.create({
-        purchase_units: [{ amount: { value: order.total.toFixed(2) } }]
-      });
-    },
-    onApprove: (data, actions) => {
-      return actions.order.capture().then(details => {
-        order.paymentStatus = 'paid';
-        order.paymentMethod = 'paypal';
-        order.paidAt = new Date().toISOString();
-        saveData();
-        showNotification(`Payment completed by ${details.payer.name.given_name}!`);
-        updateOrdersView();
-      });
-    }
-  }).render(`#paypal-button-${orderId}`);
-}
-
-// ==================== ORDER MANAGEMENT ====================
-function updateOrdersView() {
-  const tbody = document.getElementById('ordersTable');
-  const html = crmData.orders.map(o => {
-    const customer = crmData.customers.find(c => c.id === o.customerId) || { name: 'Unknown' };
-    const isPaid = o.paymentStatus === 'paid';
-    return `
-      <tr>
-        <td><strong>${o.id}</strong></td>
-        <td>${customer.name}</td>
-        <td>${new Date(o.date).toLocaleDateString()}</td>
-        <td><strong>$${o.total.toFixed(2)}</strong></td>
-        <td><span class="status-badge status-${isPaid ? 'paid' : 'pending'}">${isPaid ? 'Paid' : 'Pending'}</span></td>
-        <td>
-          ${!isPaid ? `
-            <button class="btn-primary btn-stripe text-sm mr-2" onclick="payWithStripe('${o.id}')">
-              <i class="fab fa-stripe"></i> Card
-            </button>
-            <div id="paypal-button-${o.id}" class="inline-block"></div>
-          ` : `<i class="fas fa-check text-green-600"></i> Paid`}
-        </td>
-        <td>
-          <button class="text-blue-600" onclick="openOrderModal('${o.id}')"><i class="fas fa-edit"></i></button>
-        </td>
-      </tr>
-    `;
-  }).join('');
-  tbody.innerHTML = html || '<tr><td colspan="7" class="text-center py-12 text-gray-500">No orders yet</td></tr>';
-
-  // Re-initialize PayPal buttons after DOM update
-  crmData.orders.filter(o => o.paymentStatus !== 'paid').forEach(o => {
-    if (document.getElementById(`paypal-button-${o.id}`)) {
-      payWithPayPal(o.id);
-    }
-  });
-}
-
-// ==================== CORE FUNCTIONS ====================
-function showView(view) {
-  document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
-  document.getElementById(view + 'View').classList.remove('hidden');
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.querySelector(`.nav-item[onclick="showView('${view}')"]`).classList.add('active');
-}
-
-function showNotification(msg) {
+// ==================== UTILITY FUNCTIONS ====================
+function showNotification(text) {
   const n = document.getElementById('notification');
-  document.getElementById('notificationText').textContent = msg;
-  n.classList.remove('hidden');
-  setTimeout(() => n.classList.add('hidden'), 4000);
+  document.getElementById('notificationText').textContent = text;
+  n.style.display = 'block';
+  setTimeout(() => n.style.display = 'none', 4000);
+}
+
+function closeModal(id) {
+  document.getElementById(id).style.display = 'none';
+}
+
+function openModal(id) {
+  document.getElementById(id).style.display = 'block';
 }
 
 function saveData() {
-  localStorage.setItem('acoustiskin_orders', JSON.stringify(crmData.orders));
   localStorage.setItem('acoustiskin_customers', JSON.stringify(crmData.customers));
-  updateDashboard();
+  localStorage.setItem('acoustiskin_orders', JSON.stringify(crmData.orders));
+  localStorage.setItem('acoustiskin_tasks', JSON.stringify(crmData.tasks));
+  localStorage.setItem('acoustiskin_communications', JSON.stringify(crmData.communications));
+  localStorage.setItem('acoustiskin_events', JSON.stringify(crmData.events));
+  localStorage.setItem('acoustiskin_referral_settings', JSON.stringify(referralSettings));
 }
 
-// ==================== INITIALIZATION ====================
+// Mobile menu
 document.getElementById('menu-btn').addEventListener('click', () => {
   document.getElementById('sidebar').classList.toggle('open');
 });
 
-function updateDashboard() {
-  const revenue = crmData.orders.filter(o => o.paymentStatus === 'paid').reduce((sum, o) => sum + o.total, 0);
-  document.getElementById('totalRevenue').textContent = '$' + revenue.toFixed(2);
-  document.getElementById('totalOrders').textContent = crmData.orders.length;
-  document.getElementById('paidOrders').textContent = crmData.orders.filter(o => o.paymentStatus === 'paid').length;
-  document.getElementById('pendingOrders').textContent = crmData.orders.filter(o => o.paymentStatus !== 'paid').length;
+// ==================== VIEW SWITCHING ====================
+function showView(viewName) {
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.classList.remove('active');
+    if (item.getAttribute('onclick')?.includes(viewName)) item.classList.add('active');
+  });
+  document.getElementById('sidebar').classList.remove('open');
+  const container = document.getElementById('view-container');
+  container.innerHTML = '<div class="text-center py-20 text-gray-500"><i class="fas fa-spinner fa-spin text-4xl mb-4"></i> Loading...</div>';
+  setTimeout(() => {
+    switch (viewName) {
+      case 'dashboard': renderDashboard(); break;
+      case 'customers': renderCustomersView(); break;
+      case 'orders': renderOrdersView(); break;
+      case 'calendar': renderCalendarView(); break;
+      case 'communications': renderCommunicationsView(); break;
+      case 'tasks': renderTasksView(); break;
+      case 'pipeline': renderPipelineView(); break;
+      case 'marketing': renderMarketingView(); break;
+      case 'referrals': renderReferralsView(); break;
+    }
+  }, 200);
 }
 
-// Start
-showView('dashboard');
-updateOrdersView();
-updateDashboard();
+// ==================== DASHBOARD ====================
+function renderDashboard() {
+  const totalRevenue = crmData.orders.reduce((sum, o) => sum + o.total, 0);
+  const highValueCustomers = crmData.customers.filter(c => (c.aiScore || 0) >= 70).length;
+  document.getElementById('view-container').innerHTML = `
+    <div class="card">
+      <h2 class="text-3xl font-bold text-gray-800 mb-6 flex justify-between">
+        Dashboard <span class="ai-badge"><i class="fas fa-brain"></i> AI Insights</span>
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white p-6 rounded-xl shadow text-center">
+          <i class="fas fa-users text-3xl text-blue-500 mb-2"></i>
+          <div class="text-3xl font-bold text-gray-800">${crmData.customers.length}</div>
+          <div class="text-gray-600">Customers</div>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow text-center">
+          <i class="fas fa-shopping-cart text-3xl text-green-500 mb-2"></i>
+          <div class="text-3xl font-bold text-gray-800">${crmData.orders.length}</div>
+          <div class="text-gray-600">Orders</div>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow text-center">
+          <i class="fas fa-dollar-sign text-3xl text-purple-500 mb-2"></i>
+          <div class="text-3xl font-bold text-gray-800">$${totalRevenue.toFixed(2)}</div>
+          <div class="text-gray-600">Revenue</div>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow text-center">
+          <i class="fas fa-tasks text-3xl text-orange-500 mb-2"></i>
+          <div class="text-3xl font-bold text-gray-800">${crmData.tasks.filter(t => t.status === 'pending').length}</div>
+          <div class="text-gray-600">Pending Tasks</div>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="card">
+          <h3 class="text-xl font-bold mb-4">Revenue Chart</h3>
+          <canvas id="revenueChart" height="200"></canvas>
+        </div>
+        <div class="card">
+          <h3 class="text-xl font-bold mb-4">High-Value Customers</h3>
+          <div id="highValueList">
+            ${crmData.customers.filter(c => (c.aiScore || 0) >= 70).slice(0, 5).map(c => `
+              <div class="flex justify-between items-center p-3 border-b">
+                <span>${c.name || c.email}</span>
+                <span class="score-badge score-high">${c.aiScore}/100</span>
+              </div>
+            `).join('') || '<p class="text-gray-500 text-center py-4">No high-value customers yet</p>'}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  renderRevenueChart();
+}
+
+function renderRevenueChart() {
+  const ctx = document.getElementById('revenueChart');
+  if (!ctx) return;
+  const months = {};
+  crmData.orders.forEach(o => {
+    const month = new Date(o.date).toLocaleDateString('en-US', { month: 'short' });
+    months[month] = (months[month] || 0) + o.total;
+  });
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: Object.keys(months),
+      datasets: [{
+        label: 'Revenue',
+        data: Object.values(months),
+        backgroundColor: '#66bb6a'
+      }]
+    },
+    options: { responsive: true, scales: { y: { beginAtZero: true } } }
+  });
+}
+
+// ==================== CUSTOMERS ====================
+function renderCustomersView() {
+  document.getElementById('view-container').innerHTML = `
+    <div class="card">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-3xl font-bold text-gray-800">Customers (${crmData.customers.length})</h2>
+        <button class="btn-primary" onclick="openCustomerModal()"><i class="fas fa-plus mr-2"></i> Add Customer</button>
+      </div>
+      <div class="mb-4">
+        <input type="text" id="customerSearch" placeholder="Search by name, email, city..." onkeyup="searchCustomers()" class="w-full p-3 border rounded-lg">
+      </div>
+      <div class="overflow-x-auto">
+        <table class="table w-full">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>City, State</th>
+              <th>AI Score</th>
+              <th>Referral Interest</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="customersTable">
+            ${crmData.customers.map(c => `
+              <tr>
+                <td><strong>${c.name}</strong></td>
+                <td>${c.email}</td>
+                <td>${c.city}, ${c.state}</td>
+                <td><span class="score-badge ${c.aiScore >= 70 ? 'score-high' : c.aiScore >= 40 ? 'score-medium' : 'score-low'}">${c.aiScore}/100</span></td>
+                <td>${c.referralInterest}</td>
+                <td>
+                  <button class="btn-secondary text-sm mr-2" onclick="openCustomerModal('${c.id}')"><i class="fas fa-edit"></i> Edit</button>
+                  <button class="btn-danger text-sm" onclick="deleteCustomer('${c.id}')"><i class="fas fa-trash"></i> Delete</button>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+function searchCustomers() {
+  const query = document.getElementById('customerSearch').value.toLowerCase();
+  const rows = document.querySelectorAll('#customersTable tr');
+  rows.forEach(row => {
+    row.style.display = row.textContent.toLowerCase().includes(query) ? '' : 'none';
+  });
+}
+
+function openCustomerModal(id = null) {
+  const title = document.getElementById('customerModalTitle');
+  const form = document.getElementById('customerForm');
+  title.textContent = id ? 'Edit Customer' : 'Add Customer';
+  document.getElementById('customerId').value = id || '';
+  if (id) {
+    const c = crmData.customers.find(c => c.id === id);
+    if (c) {
+      document.getElementById('customerName').value = c.name || '';
+      document.getElementById('customerEmail').value = c.email || '';
+      document.getElementById('customerPhone').value = c.phone || '';
+      document.getElementById('customerCity').value = c.city || '';
+      document.getElementById('customerState').value = c.state || '';
+      document.getElementById('customerZip').value = c.zip || '';
+      document.getElementById('customerLeadSource').value = c.leadSource || 'Website';
+      document.getElementById('customerType').value = c.type || 'Individual';
+      document.getElementById('customerAiScore').value = c.aiScore || 50;
+      document.getElementById('customerSocialEngagement').value = c.socialEngagement || 'Medium';
+      document.getElementById('customerReferralInterest').value = c.referralInterest || 'Somewhat Interested';
+      document.getElementById('customerNotes').value = c.notes || '';
+    }
+  } else {
+    form.reset();
+    document.getElementById('customerAiScore').value = 50;
+  }
+  openModal('customerModal');
+}
+
+function saveCustomer(e) {
+  e.preventDefault();
+  const id = document.getElementById('customerId').value || Date.now().toString();
+  const customer = {
+    id,
+    name: document.getElementById('customerName').value,
+    email: document.getElementById('customerEmail').value,
+    phone: document.getElementById('customerPhone').value,
+    city: document.getElementById('customerCity').value,
+    state: document.getElementById('customerState').value,
+    zip: document.getElementById('customerZip').value,
+    leadSource: document.getElementById('customerLeadSource').value,
+    type: document.getElementById('customerType').value,
+    aiScore: parseInt(document.getElementById('customerAiScore').value),
+    socialEngagement: document.getElementById('customerSocialEngagement').value,
+    referralInterest: document.getElementById('customerReferralInterest').value,
+    notes: document.getElementById('customerNotes').value,
+    createdAt: new Date().toISOString()
+  };
+  const index = crmData.customers.findIndex(c => c.id === id);
+  if (index > -1) {
+    crmData.customers[index] = customer;
+  } else {
+    crmData.customers.push(customer);
+  }
+  saveData();
+  closeModal('customerModal');
+  showNotification('Customer saved!');
+  renderCustomersView();
+}
+
+function deleteCustomer(id) {
+  if (confirm('Delete this customer and all associated data?')) {
+    crmData.customers = crmData.customers.filter(c => c.id !== id);
+    crmData.orders = crmData.orders.filter(o => o.customerId !== id);
+    crmData.tasks = crmData.tasks.filter(t => t.customerId !== id);
+    saveData();
+    showNotification('Customer deleted');
+    renderCustomersView();
+  }
+}
+
+// ==================== ORDERS ====================
+function renderOrdersView() {
+  document.getElementById('view-container').innerHTML = `
+    <div class="card">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-3xl font-bold text-gray-800">Orders (${crmData.orders.length})</h2>
+        <button class="btn-primary" onclick="openOrderModal()"><i class="fas fa-plus mr-2"></i> New Order</button>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="table w-full">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Customer</th>
+              <th>Product</th>
+              <th>Quantity</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${crmData.orders.map(o => {
+              const c = crmData.customers.find(c => c.id === o.customerId);
+              return `
+                <tr>
+                  <td>${o.id}</td>
+                  <td>${c ? c.name : 'Unknown'}</td>
+                  <td>${o.product}</td>
+                  <td>${o.quantity}</td>
+                  <td>$${o.total.toFixed(2)}</td>
+                  <td><span class="px-2 py-1 rounded-full text-xs bg-${o.paymentStatus === 'paid' ? 'green' : 'yellow'}-200 text-${o.paymentStatus === 'paid' ? 'green' : 'yellow'}-800">${o.paymentStatus || 'Pending'}</span></td>
+                  <td>
+                    <button class="btn-secondary text-sm mr-2" onclick="openOrderModal('${o.id}')"><i class="fas fa-edit"></i></button>
+                    <button class="btn-danger text-sm" onclick="deleteOrder('${o.id}')"><i class="fas fa-trash"></i></button>
+                  </td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+function filterOrderCustomers() {
+  const query = document.getElementById('orderCustomerSearch').value.toLowerCase();
+  const list = document.getElementById('orderCustomerList');
+  if (query.length < 2) {
+    list.style.display = 'none';
+    return;
+  }
+  const filtered = crmData.customers.filter(c => c.name.toLowerCase().includes(query) || c.email.toLowerCase().includes(query));
+  list.innerHTML = filtered.map(c => `<div class="p-2 hover:bg-gray-100 cursor-pointer" onclick="selectOrderCustomer('${c.id}', '${c.name}')">${c.name} (${c.email})</div>`).join('');
+  list.style.display = filtered.length ? 'block' : 'none';
+}
+
+function selectOrderCustomer(id, name) {
+  document.getElementById('orderCustomerId').value = id;
+  document.getElementById('orderCustomerSearch').value = name;
+  document.getElementById('orderCustomerList').style.display = 'none';
+}
+
+function openOrderModal(id = null) {
+  const title = document.getElementById('orderModalTitle');
+  title.textContent = id ? 'Edit Order' : 'New Order';
+  document.getElementById('orderId').value = id || '';
+  if (id) {
+    const o = crmData.orders.find(o => o.id === id);
+    if (o) {
+      const c = crmData.customers.find(c => c.id === o.customerId);
+      document.getElementById('orderCustomerSearch').value = c ? c.name : '';
+      document.getElementById('orderCustomerId').value = o.customerId;
+      document.getElementById('orderProduct').value = o.product;
+      document.getElementById('orderQuantity').value = o.quantity;
+      document.getElementById('orderTotal').value = '$' + o.total.toFixed(2);
+      document.getElementById('orderShipping').value = o.shipping || 'Standard';
+      document.getElementById('orderPaymentStatus').value = o.paymentStatus || 'Pending';
+    }
+  } else {
+    document.getElementById('orderForm').reset();
+    document.getElementById('orderQuantity').value = 1;
+    document.getElementById('orderTotal').value = '$39.99';
+  }
+  openModal('orderModal');
+}
+
+function saveOrder(e) {
+  e.preventDefault();
+  const id = document.getElementById('orderId').value || Date.now().toString();
+  const total = parseFloat(document.getElementById('orderTotal').value.replace('$', '')) || 39.99;
+  const order = {
+    id,
+    customerId: document.getElementById('orderCustomerId').value,
+    product: document.getElementById('orderProduct').value,
+    quantity: parseInt(document.getElementById('orderQuantity').value),
+    total,
+    shipping: document.getElementById('orderShipping').value,
+    paymentStatus: document.getElementById('orderPaymentStatus').value,
+    date: new Date().toISOString()
+  };
+  const index = crmData.orders.findIndex(o => o.id === id);
+  if (index > -1) {
+    crmData.orders[index] = order;
+  } else {
+    crmData.orders.push(order);
+  }
+  saveData();
+  closeModal('orderModal');
+  showNotification('Order saved!');
+  renderOrdersView();
+}
+
+function deleteOrder(id) {
+  if (confirm('Delete this order?')) {
+    crmData.orders = crmData.orders.filter(o => o.id !== id);
+    saveData();
+    showNotification('Order deleted');
+    renderOrdersView();
+  }
+}
+
+// ==================== CALENDAR ====================
+function renderCalendarView() {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth();
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  let calendar = '';
+  for (let i = 0; i < firstDay; i++) calendar += '<div class="calendar-day"></div>';
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    const events = crmData.events.filter(e => e.date === dateStr);
+    const isToday = day === today.getDate() && month === today.getMonth() && year === today.getFullYear();
+    calendar += `
+      <div class="calendar-day ${isToday ? 'bg-yellow-100 border-yellow-500' : ''}">
+        <div class="font-bold">${day}</div>
+        ${events.map(e => `<div class="event-item">${e.title.substring(0, 20)}</div>`).join('')}
+      </div>
+    `;
+  }
+  document.getElementById('view-container').innerHTML = `
+    <div class="card">
+      <h2 class="text-3xl font-bold text-gray-800 mb-6">Calendar</h2>
+      <div class="calendar-grid">${calendar}</div>
+      <button class="btn-primary mt-6" onclick="addEvent()">+ Add Event</button>
+    </div>
+  `;
+}
+
+function addEvent() {
+  const date = prompt('Event date (YYYY-MM-DD):');
+  const title = prompt('Event title:');
+  if (date && title) {
+    crmData.events.push({ date, title, createdAt: new Date().toISOString() });
+    saveData();
+    showNotification('Event added');
+    renderCalendarView();
+  }
+}
+
+// ==================== COMMUNICATIONS ====================
+function renderCommunicationsView() {
+  document.getElementById('view-container').innerHTML = `
+    <div class="card">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-3xl font-bold text-gray-800">Communications (${crmData.communications.length})</h2>
+        <button class="btn-primary" onclick="openCommunicationModal()"><i class="fas fa-plus mr-2"></i> Log Communication</button>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="table w-full">
+          <thead>
+            <tr>
+              <th>Customer</th>
+              <th>Type</th>
+              <th>Date</th>
+              <th>Notes</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${crmData.communications.map(comm => {
+              const c = crmData.customers.find(c => c.id === comm.customerId);
+              return `
+                <tr>
+                  <td>${c ? c.name : 'Unknown'}</td>
+                  <td>${comm.type}</td>
+                  <td>${new Date(comm.date).toLocaleDateString()}</td>
+                  <td>${comm.notes.substring(0, 50)}...</td>
+                  <td><button class="btn-secondary text-sm" onclick="openCommunicationModal('${comm.id}')"><i class="fas fa-edit"></i></button></td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+function filterCommCustomers() {
+  // Similar to filterOrderCustomers
+  const query = document.getElementById('commCustomerSearch').value.toLowerCase();
+  const list = document.getElementById('commCustomerList');
+  if (query.length < 2) return list.style.display = 'none';
+  const filtered = crmData.customers.filter(c => c.name.toLowerCase().includes(query));
+  list.innerHTML = filtered.map(c => `<div class="p-2 hover:bg-gray-100 cursor-pointer" onclick="selectCommCustomer('${c.id}', '${c.name}')">${c.name}</div>`).join('');
+  list.style.display = filtered.length ? 'block' : 'none';
+}
+
+function selectCommCustomer(id, name) {
+  document.getElementById('communicationCustomerId').value = id;
+  document.getElementById('commCustomerSearch').value = name;
+  document.getElementById('commCustomerList').style.display = 'none';
+}
+
+function openCommunicationModal(id = null) {
+  document.getElementById('communicationId').value = id || '';
+  if (id) {
+    const comm = crmData.communications.find(comm => comm.id === id);
+    if (comm) {
+      const c = crmData.customers.find(c => c.id === comm.customerId);
+      document.getElementById('commCustomerSearch').value = c ? c.name : '';
+      document.getElementById('communicationCustomerId').value = comm.customerId;
+      document.getElementById('commType').value = comm.type;
+      document.getElementById('commDate').value = comm.date;
+      document.getElementById('commNotes').value = comm.notes;
+    }
+  } else {
+    document.getElementById('communicationForm').reset();
+  }
+  openModal('communicationModal');
+}
+
+function saveCommunication(e) {
+  e.preventDefault();
+  const id = document.getElementById('communicationId').value || Date.now().toString();
+  const communication = {
+    id,
+    customerId: document.getElementById('communicationCustomerId').value,
+    type: document.getElementById('commType').value,
+    date: document.getElementById('commDate').value || new Date().toISOString().slice(0, 10),
+    notes: document.getElementById('commNotes').value,
+    createdAt: new Date().toISOString()
+  };
+  const index = crmData.communications.findIndex(comm => comm.id === id);
+  if (index > -1) {
+    crmData.communications[index] = communication;
+  } else {
+    crmData.communications.push(communication);
+  }
+  saveData();
+  closeModal('communicationModal');
+  showNotification('Communication logged!');
+  renderCommunicationsView();
+}
+
+// ==================== TASKS ====================
+function renderTasksView() {
+  document.getElementById('view-container').innerHTML = `
+    <div class="card">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-3xl font-bold text-gray-800">Tasks (${crmData.tasks.length})</h2>
+        <button class="btn-primary" onclick="openTaskModal()"><i class="fas fa-plus mr-2"></i> New Task</button>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="table w-full">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Customer</th>
+              <th>Due Date</th>
+              <th>Priority</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${crmData.tasks.map(t => {
+              const c = crmData.customers.find(c => c.id === t.customerId);
+              return `
+                <tr class="${t.status === 'overdue' ? 'bg-red-50' : ''}">
+                  <td>${t.title}</td>
+                  <td>${c ? c.name : 'No Customer'}</td>
+                  <td>${new Date(t.dueDate).toLocaleDateString()}</td>
+                  <td><span class="px-2 py-1 rounded-full text-xs bg-${t.priority === 'high' ? 'red' : t.priority === 'medium' ? 'yellow' : 'green'}-200 text-${t.priority === 'high' ? 'red' : t.priority === 'medium' ? 'yellow' : 'green'}-800">${t.priority}</span></td>
+                  <td>${t.status || 'Pending'}</td>
+                  <td>
+                    <button class="btn-secondary text-sm mr-2" onclick="openTaskModal('${t.id}')"><i class="fas fa-edit"></i></button>
+                    <button class="btn-danger text-sm" onclick="deleteTask('${t.id}')"><i class="fas fa-trash"></i></button>
+                  </td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+function filterTaskCustomers() {
+  // Similar to filterOrderCustomers
+  const query = document.getElementById('taskCustomerSearch').value.toLowerCase();
+  const list = document.getElementById('taskCustomerList');
+  if (query.length < 2) return list.style.display = 'none';
+  const filtered = crmData.customers.filter(c => c.name.toLowerCase().includes(query));
+  list.innerHTML = filtered.map(c => `<div class="p-2 hover:bg-gray-100 cursor-pointer" onclick="selectTaskCustomer('${c.id}', '${c.name}')">${c.name}</div>`).join('');
+  list.style.display = filtered.length ? 'block' : 'none';
+}
+
+function selectTaskCustomer(id, name) {
+  document.getElementById('taskCustomerId').value = id;
+  document.getElementById('taskCustomerSearch').value = name;
+  document.getElementById('taskCustomerList').style.display = 'none';
+}
+
+function openTaskModal(id = null) {
+  const form = document.getElementById('taskForm');
+  document.getElementById('taskId').value = id || '';
+  if (id) {
+    const t = crmData.tasks.find(t => t.id === id);
+    if (t) {
+      const c = crmData.customers.find(c => c.id === t.customerId);
+      document.getElementById('taskCustomerSearch').value = c ? c.name : '';
+      document.getElementById('taskCustomerId').value = t.customerId;
+      document.getElementById('taskTitle').value = t.title;
+      document.getElementById('taskDueDate').value = t.dueDate;
+      document.getElementById('taskPriority').value = t.priority || 'medium';
+      document.getElementById('taskNotes').value = t.notes || '';
+    }
+  } else {
+    form.reset();
+  }
+  openModal('taskModal');
+}
+
+function saveTask(e) {
+  e.preventDefault();
+  const id = document.getElementById('taskId').value || Date.now().toString();
+  const task = {
+    id,
+    customerId: document.getElementById('taskCustomerId').value,
+    title: document.getElementById('taskTitle').value,
+    dueDate: document.getElementById('taskDueDate').value,
+    priority: document.getElementById('taskPriority').value,
+    notes: document.getElementById('taskNotes').value,
+    status: 'pending',
+    createdAt: new Date().toISOString()
+  };
+  const index = crmData.tasks.findIndex(t => t.id === id);
+  if (index > -1) {
+    crmData.tasks[index] = task;
+  } else {
+    crmData.tasks.push(task);
+  }
+  saveData();
+  closeModal('taskModal');
+  showNotification('Task saved!');
+  renderTasksView();
+}
+
+function deleteTask(id) {
+  if (confirm('Delete this task?')) {
+    crmData.tasks = crmData.tasks.filter(t => t.id !== id);
+    saveData();
+    showNotification('Task deleted');
+    renderTasksView();
+  }
+}
+
+// ==================== PIPELINE ====================
+function renderPipelineView() {
+  const stages = {
+    leads: crmData.customers.filter(c => !c.orders).length,
+    contacted: crmData.communications.length,
+    quoted: crmData.orders.filter(o => o.paymentStatus === 'pending').length,
+    closed: crmData.orders.filter(o => o.paymentStatus === 'paid').length
+  };
+  document.getElementById('view-container').innerHTML = `
+    <div class="card">
+      <h2 class="text-3xl font-bold text-gray-800 mb-6">Sales Pipeline</h2>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="bg-blue-50 p-6 rounded-xl text-center">
+          <h3 class="text-xl font-bold text-blue-800">Leads</h3>
+          <div class="text-4xl font-bold text-blue-600">${stages.leads}</div>
+        </div>
+        <div class="bg-yellow-50 p-6 rounded-xl text-center">
+          <h3 class="text-xl font-bold text-yellow-800">Contacted</h3>
+          <div class="text-4xl font-bold text-yellow-600">${stages.contacted}</div>
+        </div>
+        <div class="bg-purple-50 p-6 rounded-xl text-center">
+          <h3 class="text-xl font-bold text-purple-800">Quoted</h3>
+          <div class="text-4xl font-bold text-purple-600">${stages.quoted}</div>
+        </div>
+        <div class="bg-green-50 p-6 rounded-xl text-center">
+          <h3 class="text-xl font-bold text-green-800">Closed</h3>
+          <div class="text-4xl font-bold text-green-600">${stages.closed}</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ==================== MARKETING ====================
+function renderMarketingView() {
+  const emailOptIn = crmData.customers.filter(c => c.emailOptIn).length;
+  const smsOptIn = crmData.customers.filter(c => c.smsOptIn).length;
+  const socialActive = crmData.customers.filter(c => c.socialEngagement === 'High' || c.socialEngagement === 'Very High').length;
+  document.getElementById('view-container').innerHTML = `
+    <div class="card">
+      <h2 class="text-3xl font-bold text-gray-800 mb-6">Marketing Dashboard</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white p-6 rounded-xl shadow text-center">
+          <i class="fas fa-envelope text-4xl text-red-500 mb-4"></i>
+          <div class="text-3xl font-bold text-gray-800">${emailOptIn}</div>
+          <div class="text-gray-600">Email Opt-Ins</div>
+          <button class="btn-primary mt-4" onclick="createEmailList()">Create Campaign</button>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow text-center">
+          <i class="fas fa-comment-dots text-4xl text-blue-500 mb-4"></i>
+          <div class="text-3xl font-bold text-gray-800">${smsOptIn}</div>
+          <div class="text-gray-600">SMS Opt-Ins</div>
+          <button class="btn-primary mt-4" onclick="createSMSList()">Create Campaign</button>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow text-center">
+          <i class="fas fa-share-alt text-4xl text-purple-500 mb-4"></i>
+          <div class="text-3xl font-bold text-gray-800">${socialActive}</div>
+          <div class="text-gray-600">Social Active</div>
+          <button class="btn-primary mt-4" onclick="viewSocialContacts()">View Contacts</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function createEmailList() {
+  const emails = crmData.customers.filter(c => c.emailOptIn).map(c => c.email).join(', ');
+  navigator.clipboard.writeText(emails).then(() => showNotification('Email list copied!'));
+}
+
+function createSMSList() {
+  const phones = crmData.customers.filter(c => c.smsOptIn).map(c => c.phone).join(', ');
+  navigator.clipboard.writeText(phones).then(() => showNotification('SMS list copied!'));
+}
+
+function viewSocialContacts() {
+  const social = crmData.customers.filter(c => c.socialEngagement === 'High' || c.socialEngagement === 'Very High');
+  const html = social.map(c => `
+    <div class="p-4 border-b">
+      <strong>${c.name}</strong> - ${c.socialEngagement}
+    </div>
+  `).join('');
+  document.getElementById('view-container').innerHTML += `<div class="card mt-6"><h3 class="text-xl font-bold mb-4">Social Contacts</h3>${html}</div>`;
+}
+
+// ==================== REFERRALS ====================
+function renderReferralsView() {
+  document.getElementById('view-container').innerHTML = `
+    <div class="card">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-3xl font-bold text-gray-800">Referrals</h2>
+        <button class="btn-primary" onclick="openModal('referralSettingsModal')"><i class="fas fa-cog mr-2"></i> Settings</button>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <h3 class="text-xl font-bold mb-4">Leaderboard</h3>
+          <div id="referralLeaderboard">
+            ${crmData.customers.filter(c => c.referralsMade > 0).slice(0, 5).map(c => `
+              <div class="p-4 border rounded-lg mb-4">
+                <div class="flex justify-between">
+                  <span>${c.name}</span>
+                  <span class="font-bold">${c.referralsMade} referrals</span>
+                </div>
+                <button class="btn-secondary mt-2" onclick="showReferralDetails('${c.id}')"><i class="fas fa-qrcode mr-1"></i> QR Code</button>
+              </div>
+            `).join('') || '<p class="text-gray-500">No referrals yet</p>'}
+          </div>
+        </div>
+        <div>
+          <h3 class="text-xl font-bold mb-4">Your Code</h3>
+          <div class="text-center p-6 bg-gray-50 rounded-lg">
+            <div class="text-4xl font-bold text-green-600 mb-4" id="yourReferralCode">ACST001</div>
+            <div id="yourQR" class="mx-auto mb-4"></div>
+            <button class="btn-primary" onclick="shareReferralCode()">Share</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  new QRCode(document.getElementById('yourQR'), { text: 'https://acoustiskin.com/ref=ACST001', width: 150, height: 150 });
+}
+
+function showReferralDetails(id) {
+  const c = crmData.customers.find(c => c.id === id);
+  if (!c) return;
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+  modal.style.display = 'block';
+  modal.innerHTML = `
+    <div class="modal-content max-w-sm mx-auto">
+      <div class="text-center">
+        <h3 class="text-2xl font-bold mb-4">${c.name}'s Code</h3>
+        <div class="text-3xl font-bold text-green-600 mb-4">${c.referralCode || 'Generate'}</div>
+        <div id="qr-${id}" class="mx-auto mb-6"></div>
+        <div class="flex justify-center gap-4">
+          <button class="btn-secondary" onclick="shareToEmail('${c.referralCode}')"><i class="fas fa-envelope"></i> Email</button>
+          <button class="btn-secondary" onclick="shareToSMS('${c.referralCode}')"><i class="fas fa-sms"></i> SMS</button>
+        </div>
+        <button class="btn-primary mt-4 w-full" onclick="this.closest('.modal').remove()">Close</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  new QRCode(document.getElementById(`qr-${id}`), { text: `https://acoustiskin.com/ref=${c.referralCode}`, width: 200, height: 200 });
+}
+
+function shareToEmail(code) {
+  window.location.href = `mailto:?subject=AcoustiSkin Referral&body=Use code ${code} for $15 off!`;
+}
+
+function shareToSMS(code) {
+  window.location.href = `sms:?body=Use code ${code} for $15 off AcoustiSkin!`;
+}
+
+function saveReferralSettings(e) {
+  e.preventDefault();
+  referralSettings.creditAmount = parseInt(document.getElementById('creditAmount').value);
+  // Parse ranges and save
+  saveData();
+  closeModal('referralSettingsModal');
+  showNotification('Settings saved!');
+}
+
+// ==================== BACKUP ====================
+function quickBackup() {
+  const data = { ...crmData, referralSettings };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `acoustiskin-crm-backup-${new Date().toISOString().slice(0, 10)}.json`;
+  a.click();
+  localStorage.setItem('lastBackup', Date.now().toString());
+  closeModal('backupReminderModal');
+  showNotification('Backup downloaded!');
+}
+
+function snoozeBackup() {
+  localStorage.setItem('lastBackup', Date.now().toString());
+  closeModal('backupReminderModal');
+}
+
+// Check for backup reminder
+if (!localStorage.getItem('lastBackup') || Date.now() - parseInt(localStorage.getItem('lastBackup')) > 7 * 24 * 60 * 60 * 1000) {
+  setTimeout(() => openModal('backupReminderModal'), 5000);
+}
+
+// ==================== INIT ====================
+document.addEventListener('DOMContentLoaded', () => {
+  showView('dashboard');
+});
 </script>
 </body>
 </html>
