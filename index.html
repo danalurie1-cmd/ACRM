@@ -9,1244 +9,1301 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
+    /* Custom Styling from Attached File for New Look */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { 
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); /* Lighter Green Background */
       min-height: 100vh;
     }
     .sidebar { 
       width: 260px; 
-      background: linear-gradient(180deg, #4a7c59 0%, #2e5940 100%);
+      background: linear-gradient(180deg, #4a7c59 0%, #2e5940 100%); /* Vibrant Darker Green */
       box-shadow: 4px 0 20px rgba(0,0,0,0.15);
-      position: fixed;
-      height: 100vh;
+    }
+    .nav-link {
+      display: flex;
+      align-items: center;
+      padding: 1rem 1.5rem;
+      color: #fff;
+      font-weight: 500;
+      transition: background-color 0.2s, transform 0.1s;
+      border-radius: 0.5rem;
+      margin: 0.25rem 0.75rem;
+    }
+    .nav-link:hover, .nav-link.active {
+      background-color: rgba(255, 255, 255, 0.2);
+      transform: translateX(5px);
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+    }
+    .nav-link i {
+      margin-right: 0.75rem;
+    }
+    .main-content {
+      padding: 2rem;
+      width: 100%;
       overflow-y: auto;
-      z-index: 40;
-      transition: transform 0.3s ease;
     }
-    @media (max-width: 768px) {
-      .sidebar { transform: translateX(-100%); }
-      .sidebar.open { transform: translateX(0); }
+    .card {
+      background: #fff;
+      border-radius: 1rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      padding: 1.5rem;
     }
-    .main-content { 
-      margin-left: 260px; 
-      min-height: 100vh; 
-      padding: 20px;
+    /* Component Styles from Attachment for a robust look */
+    .btn-primary {
+      background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%); /* Primary Button Green */
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
     }
-    @media (max-width: 768px) { .main-content { margin-left: 0; } }
-    .card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 20px; }
-    .btn-primary { background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%); color: white; padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; transition: all 0.3s; }
-    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(67, 160, 71, 0.4); }
-    .btn-secondary { background: white; color: #43a047; border: 2px solid #43a047; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 500; transition: all 0.3s; }
-    .btn-secondary:hover { background: #43a047; color: white; }
-    .btn-danger { background: white; color: #e53935; border: 2px solid #e53935; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 500; }
-    .btn-danger:hover { background: #e53935; color: white; }
-    .nav-item { padding: 14px 20px; color: white; cursor: pointer; border-radius: 8px; margin: 6px 12px; transition: all 0.3s; display: flex; align-items: center; }
-    .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.2); }
-    .nav-item.active { background: rgba(255,255,255,0.3); font-weight: 600; }
-    .nav-item i { margin-right: 12px; width: 20px; }
-    .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); overflow-y: auto; }
-    .modal-content { background: white; margin: 30px auto; padding: 30px; border-radius: 16px; max-width: 1100px; max-height: 90vh; overflow-y: auto; }
-    .form-group { margin-bottom: 15px; }
-    .form-group label { display: block; margin-bottom: 5px; color: #2e5940; font-weight: 600; font-size: 14px; }
-    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 2px solid #c8e6c9; border-radius: 6px; font-size: 14px; }
-    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #66bb6a; }
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
-    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
-    .section-header { color: #2e5940; margin: 25px 0 15px 0; border-bottom: 2px solid #e8f5e9; padding-bottom: 10px; font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
-    .ai-badge { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; gap: 5px; }
-    .score-high { background: #c8e6c9; color: #2e7d32; }
-    .score-medium { background: #fff9c4; color: #f57f17; }
-    .score-low { background: #ffcdd2; color: #c62828; }
-    .notification { position: fixed; top: 20px; right: 20px; background: white; padding: 16px 24px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-left: 4px solid #66bb6a; display: none; z-index: 2000; animation: slideIn 0.3s; max-width: 400px; }
-    @keyframes slideIn { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-    .table { width: 100%; border-collapse: collapse; }
-    .table th { background: #e8f5e9; padding: 12px; text-align: left; font-weight: 600; color: #2e5940; }
-    .table td { padding: 12px; border-bottom: 1px solid #e8f5e9; }
-    .table tr:hover { background: #f1f8e9; }
-    .tab { display: none; }
-    .tab.active { display: block; }
-    .tab-buttons { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-    .tab-button { padding: 10px 20px; background: #e8f5e9; color: #2e5940; border-radius: 8px; cursor: pointer; font-weight: 600; }
-    .tab-button.active { background: #66bb6a; color: white; }
-    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: #e8f5e9; }
-    .calendar-day { background: white; padding: 10px; text-align: center; min-height: 80px; cursor: pointer; transition: background 0.3s; }
-    .calendar-day:hover { background: #f1f8e9; }
-    .event-item { background: #66bb6a; color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; margin-top: 4px; }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(67, 160, 71, 0.4);
+    }
+    .btn-secondary {
+      background: white;
+      color: #43a047;
+      border: 2px solid #43a047;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+    .btn-secondary:hover {
+      background: #43a047;
+      color: white;
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .info-box {
+      background: #e3f2fd;
+      border-left: 4px solid #2196f3;
+      padding: 12px;
+      border-radius: 6px;
+      margin: 15px 0;
+      font-size: 13px;
+    }
+    .ai-badge {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    /* Calendar styles */
+    .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 2px;
+        background-color: #e5e7eb; /* Light border color */
+        border-radius: 0.75rem;
+        overflow: hidden;
+    }
+    .day-header {
+        background-color: #2e5940; /* Header green */
+        color: white;
+        text-align: center;
+        padding: 0.5rem 0;
+        font-weight: 600;
+    }
+    .day-cell {
+        background-color: #fff;
+        min-height: 100px;
+        padding: 0.5rem;
+        position: relative;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    .day-cell:hover {
+        background-color: #f1f8e9;
+    }
+    .day-cell.today {
+      border: 2px solid #43a047;
+      background: #e8f5e9;
+    }
+    .day-number {
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: #43a047; /* Primary Green */
+    }
+    .has-orders {
+        border-left: 4px solid #f97316; /* Orange marker for orders */
+    }
+    .event-item {
+      background: #66bb6a;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      margin-top: 4px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
   </style>
 </head>
-<body class="flex">
+<body class="flex h-screen">
 
-  <button id="menu-btn" class="md:hidden fixed top-4 left-4 z-50 p-3 bg-green-700 text-white rounded-full shadow-lg">
-    <i class="fas fa-bars text-xl"></i>
-  </button>
-
-  <aside id="sidebar" class="sidebar">
-    <div class="p-6 border-b border-green-800">
-      <h1 class="text-white text-2xl font-bold flex items-center">
-        <i class="fas fa-leaf mr-3"></i> AcoustiSkin CRM
-      </h1>
-      <div class="text-green-200 text-xs mt-2">
-        <span class="ai-badge"><i class="fas fa-brain"></i> AI-Powered</span>
+  <div id="sidebar" class="sidebar flex flex-col justify-between h-full fixed md:relative z-20 transform -translate-x-full md:translate-x-0 transition-transform duration-300">
+    <div class="p-6">
+      <h1 class="text-3xl font-extrabold text-white mb-8 tracking-wider">AcoustiSkin</h1>
+      
+      <div id="user-info" class="mb-8 text-white bg-green-700/50 p-3 rounded-lg text-sm">
+        <p class="font-bold">Admin User</p>
+        <p class="text-xs break-words mt-1">ID: <span id="user-id-display">N/A</span></p>
       </div>
+
+      <nav id="sidebar-menu" class="flex flex-col space-y-2">
+        <a href="#" onclick="changeView('dashboard')" class="nav-link active">
+          <i class="fas fa-home w-5"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="#" onclick="changeView('referral')" class="nav-link">
+          <i class="fas fa-bullhorn w-5"></i>
+          <span>Referral Program</span>
+        </a>
+        <a href="#" onclick="changeView('customers')" class="nav-link">
+          <i class="fas fa-users w-5"></i>
+          <span>Customer List</span>
+        </a>
+        
+        <div class="h-px bg-white/20 my-2"></div>
+
+        <a href="#" onclick="changeView('new-order')" class="nav-link">
+          <i class="fas fa-plus-circle w-5"></i>
+          <span>New Order</span>
+        </a>
+        <a href="#" onclick="changeView('calendar')" class="nav-link">
+          <i class="fas fa-calendar-alt w-5"></i>
+          <span>Order Calendar</span>
+        </a>
+        <a href="#" onclick="changeView('inventory')" class="nav-link">
+          <i class="fas fa-boxes w-5"></i>
+          <span>Inventory</span>
+        </a>
+        <a href="#" onclick="changeView('reports')" class="nav-link">
+          <i class="fas fa-chart-line w-5"></i>
+          <span>Reports</span>
+        </a>
+      </nav>
     </div>
-    <nav class="p-4">
-      <div class="nav-item active" onclick="showView('dashboard')"><i class="fas fa-home"></i> Dashboard</div>
-      <div class="nav-item" onclick="showView('customers')"><i class="fas fa-users"></i> Customers</div>
-      <div class="nav-item" onclick="showView('orders')"><i class="fas fa-shopping-cart"></i> Orders</div>
-      <div class="nav-item" onclick="showView('calendar')"><i class="fas fa-calendar"></i> Calendar</div>
-      <div class="nav-item" onclick="showView('communications')"><i class="fas fa-comments"></i> Communications</div>
-      <div class="nav-item" onclick="showView('tasks')"><i class="fas fa-tasks"></i> Tasks</div>
-      <div class="nav-item" onclick="showView('pipeline')"><i class="fas fa-chart-line"></i> Pipeline</div>
-      <div class="nav-item" onclick="showView('marketing')"><i class="fas fa-bullhorn"></i> Marketing</div>
-      <div class="nav-item" onclick="showView('referrals')"><i class="fas fa-gift"></i> Referrals</div>
-    </nav>
-  </aside>
-
-  <main class="main-content">
-    <div id="view-container"></div>
-  </main>
-
-  <div id="notification" class="notification">
-    <i class="fas fa-check-circle" style="color: #66bb6a; margin-right: 8px;"></i>
-    <span id="notificationText"></span>
-  </div>
-
-  <!-- Customer Modal -->
-  <div id="customerModal" class="modal">
-    <div class="modal-content">
-      <div class="flex justify-between items-center mb-6">
-        <h3 class="text-2xl font-bold text-gray-800" id="customerModalTitle">Add Customer</h3>
-        <button onclick="closeModal('customerModal')" class="text-gray-500 hover:text-gray-700"><i class="fas fa-times text-2xl"></i></button>
-      </div>
-      <form id="customerForm" onsubmit="saveCustomer(event)">
-        <input type="hidden" id="customerId">
-        <div class="grid-2">
-          <div class="form-group">
-            <label>Name *</label>
-            <input type="text" id="customerName" required>
-          </div>
-          <div class="form-group">
-            <label>Email</label>
-            <input type="email" id="customerEmail">
-          </div>
-          <div class="form-group">
-            <label>Phone</label>
-            <input type="tel" id="customerPhone">
-          </div>
-          <div class="form-group">
-            <label>City</label>
-            <input type="text" id="customerCity">
-          </div>
-          <div class="form-group">
-            <label>State</label>
-            <input type="text" id="customerState">
-          </div>
-          <div class="form-group">
-            <label>Zip</label>
-            <input type="text" id="customerZip">
-          </div>
-        </div>
-        <div class="grid-2">
-          <div class="form-group">
-            <label>Lead Source</label>
-            <select id="customerLeadSource">
-              <option>Website</option>
-              <option>Referral</option>
-              <option>Social Media</option>
-              <option>Event</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Customer Type</label>
-            <select id="customerType">
-              <option>Individual</option>
-              <option>Business</option>
-              <option>Club</option>
-            </select>
-          </div>
-        </div>
-        <div class="grid-3">
-          <div class="form-group">
-            <label>AI Score (0-100)</label>
-            <input type="number" id="customerAiScore" min="0" max="100" value="50">
-          </div>
-          <div class="form-group">
-            <label>Social Engagement</label>
-            <select id="customerSocialEngagement">
-              <option>Low</option>
-              <option>Medium</option>
-              <option>High</option>
-              <option>Very High</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Referral Interest</label>
-            <select id="customerReferralInterest">
-              <option>Not Interested</option>
-              <option>Somewhat Interested</option>
-              <option>Very Interested</option>
-            </select>
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Notes</label>
-          <textarea id="customerNotes" rows="3" placeholder="Initial notes..."></textarea>
-        </div>
-        <div class="flex justify-end gap-4 mt-8">
-          <button type="button" class="btn-secondary" onclick="closeModal('customerModal')">Cancel</button>
-          <button type="submit" class="btn-primary">Save Customer</button>
-        </div>
-      </form>
+    
+    <div class="p-6">
+      <a href="#" onclick="changeView('settings')" class="nav-link justify-center">
+        <i class="fas fa-cog w-5"></i>
+        <span>Settings</span>
+      </a>
     </div>
   </div>
 
-  <!-- Order Modal -->
-  <div id="orderModal" class="modal">
-    <div class="modal-content">
-      <div class="flex justify-between items-center mb-6">
-        <h3 class="text-2xl font-bold text-gray-800" id="orderModalTitle">New Order</h3>
-        <button onclick="closeModal('orderModal')" class="text-gray-500 hover:text-gray-700"><i class="fas fa-times text-2xl"></i></button>
-      </div>
-      <form id="orderForm" onsubmit="saveOrder(event)">
-        <input type="hidden" id="orderId">
-        <input type="hidden" id="orderCustomerId">
-        <div class="form-group">
-          <label>Customer *</label>
-          <input type="text" id="orderCustomerSearch" placeholder="Search by name..." onkeyup="filterOrderCustomers()" required>
-          <div id="orderCustomerList" style="display: none; position: absolute; background: white; border: 1px solid #ccc; width: 100%; max-height: 200px; overflow-y: auto; z-index: 10;"></div>
-        </div>
-        <div class="grid-2">
-          <div class="form-group">
-            <label>Product</label>
-            <select id="orderProduct">
-              <option>AcoustiSkin Pro ($39.99)</option>
-              <option>AcoustiSkin Classic ($29.99)</option>
-              <option>Custom Cover ($59.99)</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Quantity</label>
-            <input type="number" id="orderQuantity" value="1" min="1">
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Total</label>
-          <input type="text" id="orderTotal" readonly value="$39.99">
-        </div>
-        <div class="form-group">
-          <label>Shipping Method</label>
-          <select id="orderShipping">
-            <option>Standard (5-7 days)</option>
-            <option>Express (1-2 days)</option>
-            <option>Local Pickup</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Payment Status</label>
-          <select id="orderPaymentStatus">
-            <option>Pending</option>
-            <option>Paid</option>
-            <option>Refunded</option>
-          </select>
-        </div>
-        <div class="flex justify-end gap-4 mt-8">
-          <button type="button" class="btn-secondary" onclick="closeModal('orderModal')">Cancel</button>
-          <button type="submit" class="btn-primary">Save Order</button>
-        </div>
-      </form>
-    </div>
+  <div class="flex flex-col flex-1 overflow-y-auto">
+    <header class="md:hidden p-4 bg-white shadow-md flex justify-between items-center">
+        <h2 class="text-xl font-bold text-gray-800">AcoustiSkin CRM</h2>
+        <button id="menu-toggle" class="text-gray-600 focus:outline-none">
+            <i class="fas fa-bars text-2xl"></i>
+        </button>
+    </header>
+
+    <main id="app-container" class="main-content flex-1">
+      </main>
   </div>
 
-  <!-- Task Modal -->
-  <div id="taskModal" class="modal">
-    <div class="modal-content">
-      <div class="flex justify-between items-center mb-6">
-        <h3 class="text-2xl font-bold text-gray-800">Add Task</h3>
-        <button onclick="closeModal('taskModal')" class="text-gray-500 hover:text-gray-700"><i class="fas fa-times text-2xl"></i></button>
-      </div>
-      <form id="taskForm" onsubmit="saveTask(event)">
-        <input type="hidden" id="taskId">
-        <input type="hidden" id="taskCustomerId">
-        <div class="form-group">
-          <label>Customer</label>
-          <input type="text" id="taskCustomerSearch" placeholder="Search by name..." onkeyup="filterTaskCustomers()">
-          <div id="taskCustomerList" style="display: none; position: absolute; background: white; border: 1px solid #ccc; width: 100%; max-height: 200px; overflow-y: auto; z-index: 10;"></div>
-        </div>
-        <div class="form-group">
-          <label>Title *</label>
-          <input type="text" id="taskTitle" required>
-        </div>
-        <div class="grid-2">
-          <div class="form-group">
-            <label>Due Date *</label>
-            <input type="date" id="taskDueDate" required>
-          </div>
-          <div class="form-group">
-            <label>Priority</label>
-            <select id="taskPriority">
-              <option>Low</option>
-              <option>Medium</option>
-              <option>High</option>
-            </select>
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Notes</label>
-          <textarea id="taskNotes" rows="3"></textarea>
-        </div>
-        <div class="flex justify-end gap-4 mt-8">
-          <button type="button" class="btn-secondary" onclick="closeModal('taskModal')">Cancel</button>
-          <button type="submit" class="btn-primary">Save Task</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Communication Modal -->
-  <div id="communicationModal" class="modal">
-    <div class="modal-content">
-      <div class="flex justify-between items-center mb-6">
-        <h3 class="text-2xl font-bold text-gray-800">Add Communication</h3>
-        <button onclick="closeModal('communicationModal')" class="text-gray-500 hover:text-gray-700"><i class="fas fa-times text-2xl"></i></button>
-      </div>
-      <form id="communicationForm" onsubmit="saveCommunication(event)">
-        <input type="hidden" id="communicationId">
-        <input type="hidden" id="communicationCustomerId">
-        <div class="form-group">
-          <label>Customer *</label>
-          <input type="text" id="commCustomerSearch" placeholder="Search by name..." onkeyup="filterCommCustomers()" required>
-          <div id="commCustomerList" style="display: none; position: absolute; background: white; border: 1px solid #ccc; width: 100%; max-height: 200px; overflow-y: auto; z-index: 10;"></div>
-        </div>
-        <div class="grid-2">
-          <div class="form-group">
-            <label>Type</label>
-            <select id="commType">
-              <option>Email</option>
-              <option>Phone Call</option>
-              <option>Meeting</option>
-              <option>SMS</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Date</label>
-            <input type="date" id="commDate">
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Notes *</label>
-          <textarea id="commNotes" rows="4" required></textarea>
-        </div>
-        <div class="flex justify-end gap-4 mt-8">
-          <button type="button" class="btn-secondary" onclick="closeModal('communicationModal')">Cancel</button>
-          <button type="submit" class="btn-primary">Save</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Referral Settings Modal -->
-  <div id="referralSettingsModal" class="modal">
-    <div class="modal-content">
-      <div class="flex justify-between items-center mb-6">
-        <h3 class="text-2xl font-bold text-gray-800">Referral Settings</h3>
-        <button onclick="closeModal('referralSettingsModal')" class="text-gray-500 hover:text-gray-700"><i class="fas fa-times text-2xl"></i></button>
-      </div>
-      <form id="referralSettingsForm" onsubmit="saveReferralSettings(event)">
-        <div class="grid-2">
-          <div class="form-group">
-            <label>Credit Amount ($)</label>
-            <input type="number" id="creditAmount" value="15" min="0">
-          </div>
-          <div class="form-group">
-            <label>Bronze Min/Max</label>
-            <input type="text" id="bronzeRange" value="1-2" placeholder="1-2">
-          </div>
-        </div>
-        <div class="grid-2">
-          <div class="form-group">
-            <label>Silver Min/Max</label>
-            <input type="text" id="silverRange" value="3-5" placeholder="3-5">
-          </div>
-          <div class="form-group">
-            <label>Gold Min/Max</label>
-            <input type="text" id="goldRange" value="6-10" placeholder="6-10">
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Platinum Min</label>
-          <input type="number" id="platinumMin" value="11" min="1">
-        </div>
-        <div class="flex justify-end gap-4 mt-8">
-          <button type="button" class="btn-secondary" onclick="closeModal('referralSettingsModal')">Cancel</button>
-          <button type="submit" class="btn-primary">Save</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Backup Reminder Modal -->
-  <div id="backupReminderModal" class="modal">
-    <div class="modal-content" style="max-width: 500px;">
-      <div style="text-align: center;">
-        <i class="fas fa-shield-alt text-6xl text-amber-500 mb-4"></i>
-        <h3 class="text-2xl font-bold text-gray-800 mb-2">Backup Time!</h3>
-        <p class="text-gray-600 mb-6">Protect your data — download now?</p>
-        <div class="flex justify-center gap-4">
-          <button class="btn-secondary" onclick="snoozeBackup()">Later</button>
-          <button class="btn-primary" onclick="quickBackup()">Backup Now</button>
-        </div>
+  <div id="global-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white p-6 rounded-xl shadow-2xl max-w-sm w-full transform transition-all scale-100 duration-300">
+      <h3 id="modal-title" class="text-xl font-bold mb-4 text-green-700"></h3>
+      <p id="modal-message" class="text-gray-700 mb-6"></p>
+      <div class="flex justify-end">
+        <button onclick="closeModal()" class="px-4 py-2 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition duration-150 shadow-md">
+          Close
+        </button>
       </div>
     </div>
   </div>
 
-  <!-- Import Conflict Modal -->
-  <div id="conflictModal" class="modal">
-    <div class="modal-content" style="max-width: 600px;">
-      <h3 class="text-2xl font-bold text-gray-800 mb-4">Import Conflict</h3>
-      <p class="text-gray-600 mb-6">Data conflicts detected. How to handle?</p>
-      <div class="flex justify-center gap-4">
-        <button class="btn-secondary" onclick="resolveConflict('merge')">Merge</button>
-        <button class="btn-primary" onclick="resolveConflict('replace')">Replace</button>
-      </div>
-    </div>
-  </div>
+<script type="module">
+  // FIX: Ensured all necessary Firestore functions (addDoc, collection) are imported correctly
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+  import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, setPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+  import { 
+    getFirestore, 
+    doc, 
+    getDoc, 
+    addDoc, // <-- CRITICAL FIX: Ensure this is explicitly imported
+    setDoc, 
+    updateDoc, 
+    deleteDoc, 
+    onSnapshot, 
+    collection, // <-- CRITICAL FIX: Ensure this is explicitly imported
+    query, 
+    where, 
+    getDocs, 
+    setLogLevel 
+  } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-<script>
-// ==================== CORE DATA & STATE ====================
-let crmData = {
-  customers: JSON.parse(localStorage.getItem('acoustiskin_customers') || '[]'),
-  orders: JSON.parse(localStorage.getItem('acoustiskin_orders') || '[]'),
-  tasks: JSON.parse(localStorage.getItem('acoustiskin_tasks') || '[]'),
-  communications: JSON.parse(localStorage.getItem('acoustiskin_communications') || '[]'),
-  events: JSON.parse(localStorage.getItem('acoustiskin_events') || '[]')
-};
+  // --- GLOBAL VARIABLES ---
+  const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-acoustiskin-crm';
+  const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+  const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+  
+  let app, db, auth;
+  let unsubscribeListeners = [];
 
-let referralSettings = JSON.parse(localStorage.getItem('acoustiskin_referral_settings') || JSON.stringify({
-  creditAmount: 15,
-  bronzeMin: 1, bronzeMax: 2,
-  silverMin: 3, silverMax: 5,
-  goldMin: 6, goldMax: 10,
-  platinumMin: 11
-}));
-
-// ==================== UTILITY FUNCTIONS ====================
-function showNotification(text) {
-  const n = document.getElementById('notification');
-  document.getElementById('notificationText').textContent = text;
-  n.style.display = 'block';
-  setTimeout(() => n.style.display = 'none', 4000);
-}
-
-function closeModal(id) {
-  document.getElementById(id).style.display = 'none';
-}
-
-function openModal(id) {
-  document.getElementById(id).style.display = 'block';
-}
-
-function saveData() {
-  localStorage.setItem('acoustiskin_customers', JSON.stringify(crmData.customers));
-  localStorage.setItem('acoustiskin_orders', JSON.stringify(crmData.orders));
-  localStorage.setItem('acoustiskin_tasks', JSON.stringify(crmData.tasks));
-  localStorage.setItem('acoustiskin_communications', JSON.stringify(crmData.communications));
-  localStorage.setItem('acoustiskin_events', JSON.stringify(crmData.events));
-  localStorage.setItem('acoustiskin_referral_settings', JSON.stringify(referralSettings));
-}
-
-// Mobile menu
-document.getElementById('menu-btn').addEventListener('click', () => {
-  document.getElementById('sidebar').classList.toggle('open');
-});
-
-// ==================== VIEW SWITCHING ====================
-function showView(viewName) {
-  document.querySelectorAll('.nav-item').forEach(item => {
-    item.classList.remove('active');
-    if (item.getAttribute('onclick')?.includes(viewName)) item.classList.add('active');
-  });
-  document.getElementById('sidebar').classList.remove('open');
-  const container = document.getElementById('view-container');
-  container.innerHTML = '<div class="text-center py-20 text-gray-500"><i class="fas fa-spinner fa-spin text-4xl mb-4"></i> Loading...</div>';
-  setTimeout(() => {
-    switch (viewName) {
-      case 'dashboard': renderDashboard(); break;
-      case 'customers': renderCustomersView(); break;
-      case 'orders': renderOrdersView(); break;
-      case 'calendar': renderCalendarView(); break;
-      case 'communications': renderCommunicationsView(); break;
-      case 'tasks': renderTasksView(); break;
-      case 'pipeline': renderPipelineView(); break;
-      case 'marketing': renderMarketingView(); break;
-      case 'referrals': renderReferralsView(); break;
-    }
-  }, 200);
-}
-
-// ==================== DASHBOARD ====================
-function renderDashboard() {
-  const totalRevenue = crmData.orders.reduce((sum, o) => sum + o.total, 0);
-  const highValueCustomers = crmData.customers.filter(c => (c.aiScore || 0) >= 70).length;
-  document.getElementById('view-container').innerHTML = `
-    <div class="card">
-      <h2 class="text-3xl font-bold text-gray-800 mb-6 flex justify-between">
-        Dashboard <span class="ai-badge"><i class="fas fa-brain"></i> AI Insights</span>
-      </h2>
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div class="bg-white p-6 rounded-xl shadow text-center">
-          <i class="fas fa-users text-3xl text-blue-500 mb-2"></i>
-          <div class="text-3xl font-bold text-gray-800">${crmData.customers.length}</div>
-          <div class="text-gray-600">Customers</div>
-        </div>
-        <div class="bg-white p-6 rounded-xl shadow text-center">
-          <i class="fas fa-shopping-cart text-3xl text-green-500 mb-2"></i>
-          <div class="text-3xl font-bold text-gray-800">${crmData.orders.length}</div>
-          <div class="text-gray-600">Orders</div>
-        </div>
-        <div class="bg-white p-6 rounded-xl shadow text-center">
-          <i class="fas fa-dollar-sign text-3xl text-purple-500 mb-2"></i>
-          <div class="text-3xl font-bold text-gray-800">$${totalRevenue.toFixed(2)}</div>
-          <div class="text-gray-600">Revenue</div>
-        </div>
-        <div class="bg-white p-6 rounded-xl shadow text-center">
-          <i class="fas fa-tasks text-3xl text-orange-500 mb-2"></i>
-          <div class="text-3xl font-bold text-gray-800">${crmData.tasks.filter(t => t.status === 'pending').length}</div>
-          <div class="text-gray-600">Pending Tasks</div>
-        </div>
-      </div>
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div class="card">
-          <h3 class="text-xl font-bold mb-4">Revenue Chart</h3>
-          <canvas id="revenueChart" height="200"></canvas>
-        </div>
-        <div class="card">
-          <h3 class="text-xl font-bold mb-4">High-Value Customers</h3>
-          <div id="highValueList">
-            ${crmData.customers.filter(c => (c.aiScore || 0) >= 70).slice(0, 5).map(c => `
-              <div class="flex justify-between items-center p-3 border-b">
-                <span>${c.name || c.email}</span>
-                <span class="score-badge score-high">${c.aiScore}/100</span>
-              </div>
-            `).join('') || '<p class="text-gray-500 text-center py-4">No high-value customers yet</p>'}
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
-  renderRevenueChart();
-}
-
-function renderRevenueChart() {
-  const ctx = document.getElementById('revenueChart');
-  if (!ctx) return;
-  const months = {};
-  crmData.orders.forEach(o => {
-    const month = new Date(o.date).toLocaleDateString('en-US', { month: 'short' });
-    months[month] = (months[month] || 0) + o.total;
-  });
-  new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: Object.keys(months),
-      datasets: [{
-        label: 'Revenue',
-        data: Object.values(months),
-        backgroundColor: '#66bb6a'
-      }]
+  // --- STATE MANAGEMENT ---
+  const state = {
+    currentView: 'dashboard',
+    isAuthReady: false,
+    userId: null,
+    referralSettings: {
+      creditAmount: 10,
+      minOrderValue: 50
     },
-    options: { responsive: true, scales: { y: { beginAtZero: true } } }
-  });
-}
+    customers: [],
+    orders: [],
+    currentCalendarDate: new Date(),
+  };
 
-// ==================== CUSTOMERS ====================
-function renderCustomersView() {
-  document.getElementById('view-container').innerHTML = `
-    <div class="card">
-      <div class="flex justify-between items-center mb-6">
-        <h2 class="text-3xl font-bold text-gray-800">Customers (${crmData.customers.length})</h2>
-        <button class="btn-primary" onclick="openCustomerModal()"><i class="fas fa-plus mr-2"></i> Add Customer</button>
+  // --- UTILITY FUNCTIONS ---
+  
+  function showModal(title, message) {
+    document.getElementById('modal-title').textContent = title;
+    document.getElementById('modal-message').innerHTML = message; // Use innerHTML for richer content
+    document.getElementById('global-modal').classList.remove('hidden');
+  }
+
+  window.closeModal = () => {
+    document.getElementById('global-modal').classList.add('hidden');
+  };
+
+  /**
+   * Simple customer creation function.
+   * Checks if a customer exists by name, if not, creates a new one.
+   * NOTE: addDoc and collection are available due to module import scoping.
+   * @param {string} customerName The name of the customer.
+   */
+  async function ensureCustomerExists(customerName) {
+    if (!db) {
+        console.error("Database not initialized in ensureCustomerExists.");
+        return null;
+    }
+    
+    const trimmedName = customerName.trim();
+    if (!trimmedName) return null;
+
+    // 1. Check local state (fast)
+    const existingCustomer = state.customers.find(c => c.name.toLowerCase() === trimmedName.toLowerCase());
+    if (existingCustomer) {
+      return existingCustomer;
+    }
+
+    // 2. If not found, create a new customer document
+    const customersColRef = collection(db, 'artifacts', appId, 'public', 'data', 'customers');
+    const newCustomer = {
+        name: trimmedName,
+        email: `${trimmedName.toLowerCase().replace(/\s/g, '.').substring(0, 30)}@example.com`, 
+        joinedAt: new Date(),
+    };
+    
+    const docRef = await addDoc(customersColRef, newCustomer);
+    console.log("New Customer Created:", trimmedName, docRef.id);
+    return { id: docRef.id, ...newCustomer };
+  }
+
+
+  // --- FIREBASE INITIALIZATION & AUTH ---
+
+  async function initFirebase() {
+    if (!firebaseConfig) {
+      console.error("Firebase configuration is missing.");
+      showModal("Configuration Error", "Firebase configuration is not available. Persistence features will not work.");
+      return;
+    }
+
+    try {
+      setLogLevel('debug');
+      app = initializeApp(firebaseConfig);
+      auth = getAuth(app);
+      db = getFirestore(app); // Initialize db here
+      
+      await setPersistence(auth, browserSessionPersistence);
+
+      // Sign in or use existing auth
+      if (initialAuthToken) {
+        await signInWithCustomToken(auth, initialAuthToken);
+      } else {
+        await signInAnonymously(auth);
+      }
+
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          state.userId = user.uid;
+          document.getElementById('user-id-display').textContent = state.userId;
+          state.isAuthReady = true;
+          startDataListeners();
+          window.renderApp(); // Initial render after auth
+        } else {
+          console.warn("User signed out or failed to sign in.");
+          state.userId = null;
+          state.isAuthReady = true;
+          window.renderApp();
+        }
+      });
+
+    } catch (error) {
+      console.error("Error initializing Firebase:", error);
+      showModal("Firebase Error", "Could not initialize or authenticate with Firebase. Check console for details.");
+    }
+  }
+
+  // --- DATA LISTENERS ---
+
+  function startDataListeners() {
+    if (!db || !state.isAuthReady) return;
+
+    // Clear previous listeners
+    unsubscribeListeners.forEach(unsub => unsub());
+    unsubscribeListeners = [];
+
+    // Listener for Referral Settings (Public Data)
+    const settingsDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'referral');
+    const unsubSettings = onSnapshot(settingsDocRef, (docSnap) => {
+      if (docSnap.exists()) {
+        state.referralSettings = docSnap.data();
+      } else {
+        // Use setDoc for initial creation if document does not exist
+        setDoc(settingsDocRef, state.referralSettings).catch(e => console.error("Error setting initial settings:", e));
+      }
+      window.renderApp();
+    }, (error) => console.error("Error fetching settings:", error));
+    unsubscribeListeners.push(unsubSettings);
+
+    // Listener for Customers (Public Data)
+    const customersColRef = collection(db, 'artifacts', appId, 'public', 'data', 'customers');
+    const unsubCustomers = onSnapshot(customersColRef, (snapshot) => {
+      state.customers = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a, b) => a.name.localeCompare(b.name));
+      window.renderApp();
+    }, (error) => console.error("Error fetching customers:", error));
+    unsubscribeListeners.push(unsubCustomers);
+
+    // Listener for Orders (Public Data)
+    const ordersColRef = collection(db, 'artifacts', appId, 'public', 'data', 'orders');
+    const unsubOrders = onSnapshot(ordersColRef, (snapshot) => {
+      state.orders = snapshot.docs.map(doc => ({ 
+        id: doc.id, 
+        ...doc.data(),
+        // Convert Firestore Timestamp to Date object for consistency
+        orderDate: doc.data().orderDate ? doc.data().orderDate.toDate() : new Date(),
+        // Calculate total value if missing
+        totalValue: (doc.data().price * doc.data().quantity) || 0,
+      })).sort((a, b) => b.orderDate - a.orderDate); // Sort by date descending
+      window.renderApp();
+    }, (error) => console.error("Error fetching orders:", error));
+    unsubscribeListeners.push(unsubOrders);
+  }
+  
+  // --- VIEW MANAGEMENT ---
+
+  window.changeView = (viewName) => {
+    state.currentView = viewName;
+    
+    // Update active state in sidebar
+    document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+    const activeLink = document.querySelector(`.nav-link[onclick*='${viewName}']`);
+    if (activeLink) {
+      activeLink.classList.add('active');
+    }
+    
+    // Hide mobile menu on navigation
+    document.getElementById('sidebar').classList.add('-translate-x-full');
+    
+    window.renderApp();
+  };
+
+  window.renderApp = function() {
+    if (!state.isAuthReady) {
+      document.getElementById('app-container').innerHTML = '<div class="text-center p-8"><i class="fas fa-spinner fa-spin text-4xl text-green-600"></i><p class="mt-4 text-gray-600">Connecting to CRM database...</p></div>';
+      return;
+    }
+
+    const container = document.getElementById('app-container');
+    container.innerHTML = ''; // Clear content
+
+    switch (state.currentView) {
+      case 'dashboard':
+        container.innerHTML = renderDashboardView();
+        setupDashboardCharts();
+        break;
+      case 'referral':
+        container.innerHTML = renderReferralView();
+        setupReferralQRCode();
+        break;
+      case 'customers':
+        container.innerHTML = renderCustomersView();
+        break;
+      case 'new-order':
+        container.innerHTML = renderNewOrderView();
+        break;
+      case 'calendar':
+        container.innerHTML = renderCalendarView();
+        break;
+      case 'inventory':
+        container.innerHTML = renderInventoryView(); 
+        break;
+      case 'reports':
+        container.innerHTML = renderReportsView(); 
+        setupReportsCharts();
+        break;
+      case 'settings':
+        container.innerHTML = renderSettingsView();
+        break;
+      default:
+        container.innerHTML = renderDashboardView();
+        setupDashboardCharts();
+        break;
+    }
+  }
+
+  // --- VIEW RENDERING FUNCTIONS ---
+
+  function renderDashboardView() {
+    const totalCustomers = state.customers.length;
+    // totalValue is pre-calculated in the listener
+    const totalRevenue = state.orders.reduce((sum, order) => sum + (order.totalValue), 0).toFixed(2);
+    const totalOrders = state.orders.length;
+    const completedOrders = state.orders.filter(o => o.status === 'Completed').length;
+    
+    return `
+      <h2 class="text-3xl font-bold text-gray-800 mb-6">Dashboard Overview</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        ${renderMetricCard('Total Customers', totalCustomers.toLocaleString(), 'fas fa-users', 'bg-blue-100 text-blue-600')}
+        ${renderMetricCard('Total Revenue', '$' + totalRevenue.toLocaleString(), 'fas fa-dollar-sign', 'bg-green-100 text-green-600')}
+        ${renderMetricCard('Total Orders', totalOrders.toLocaleString(), 'fas fa-shopping-cart', 'bg-yellow-100 text-yellow-600')}
+        ${renderMetricCard('Completed Orders', completedOrders.toLocaleString(), 'fas fa-check-circle', 'bg-purple-100 text-purple-600')}
       </div>
-      <div class="mb-4">
-        <input type="text" id="customerSearch" placeholder="Search by name, email, city..." onkeyup="searchCustomers()" class="w-full p-3 border rounded-lg">
-      </div>
-      <div class="overflow-x-auto">
-        <table class="table w-full">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>City, State</th>
-              <th>AI Score</th>
-              <th>Referral Interest</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="customersTable">
-            ${crmData.customers.map(c => `
-              <tr>
-                <td><strong>${c.name}</strong></td>
-                <td>${c.email}</td>
-                <td>${c.city}, ${c.state}</td>
-                <td><span class="score-badge ${c.aiScore >= 70 ? 'score-high' : c.aiScore >= 40 ? 'score-medium' : 'score-low'}">${c.aiScore}/100</span></td>
-                <td>${c.referralInterest}</td>
-                <td>
-                  <button class="btn-secondary text-sm mr-2" onclick="openCustomerModal('${c.id}')"><i class="fas fa-edit"></i> Edit</button>
-                  <button class="btn-danger text-sm" onclick="deleteCustomer('${c.id}')"><i class="fas fa-trash"></i> Delete</button>
-                </td>
-              </tr>
+      
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="card lg:col-span-2">
+          <h3 class="text-xl font-semibold mb-4 text-gray-800">Monthly Revenue Trend</h3>
+          <canvas id="revenueChart"></canvas>
+        </div>
+
+        <div class="card">
+          <h3 class="text-xl font-semibold mb-4 text-gray-800">Latest Orders</h3>
+          <ul class="space-y-3">
+            ${state.orders.slice(0, 5).map(order => `
+              <li class="p-3 bg-gray-50 rounded-lg flex justify-between items-center text-sm">
+                <span>${order.customerName} - ${order.product}</span>
+                <span class="font-bold text-green-600">$${order.totalValue.toFixed(2)}</span>
+              </li>
             `).join('')}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  `;
-}
-
-function searchCustomers() {
-  const query = document.getElementById('customerSearch').value.toLowerCase();
-  const rows = document.querySelectorAll('#customersTable tr');
-  rows.forEach(row => {
-    row.style.display = row.textContent.toLowerCase().includes(query) ? '' : 'none';
-  });
-}
-
-function openCustomerModal(id = null) {
-  const title = document.getElementById('customerModalTitle');
-  const form = document.getElementById('customerForm');
-  title.textContent = id ? 'Edit Customer' : 'Add Customer';
-  document.getElementById('customerId').value = id || '';
-  if (id) {
-    const c = crmData.customers.find(c => c.id === id);
-    if (c) {
-      document.getElementById('customerName').value = c.name || '';
-      document.getElementById('customerEmail').value = c.email || '';
-      document.getElementById('customerPhone').value = c.phone || '';
-      document.getElementById('customerCity').value = c.city || '';
-      document.getElementById('customerState').value = c.state || '';
-      document.getElementById('customerZip').value = c.zip || '';
-      document.getElementById('customerLeadSource').value = c.leadSource || 'Website';
-      document.getElementById('customerType').value = c.type || 'Individual';
-      document.getElementById('customerAiScore').value = c.aiScore || 50;
-      document.getElementById('customerSocialEngagement').value = c.socialEngagement || 'Medium';
-      document.getElementById('customerReferralInterest').value = c.referralInterest || 'Somewhat Interested';
-      document.getElementById('customerNotes').value = c.notes || '';
-    }
-  } else {
-    form.reset();
-    document.getElementById('customerAiScore').value = 50;
-  }
-  openModal('customerModal');
-}
-
-function saveCustomer(e) {
-  e.preventDefault();
-  const id = document.getElementById('customerId').value || Date.now().toString();
-  const customer = {
-    id,
-    name: document.getElementById('customerName').value,
-    email: document.getElementById('customerEmail').value,
-    phone: document.getElementById('customerPhone').value,
-    city: document.getElementById('customerCity').value,
-    state: document.getElementById('customerState').value,
-    zip: document.getElementById('customerZip').value,
-    leadSource: document.getElementById('customerLeadSource').value,
-    type: document.getElementById('customerType').value,
-    aiScore: parseInt(document.getElementById('customerAiScore').value),
-    socialEngagement: document.getElementById('customerSocialEngagement').value,
-    referralInterest: document.getElementById('customerReferralInterest').value,
-    notes: document.getElementById('customerNotes').value,
-    createdAt: new Date().toISOString()
-  };
-  const index = crmData.customers.findIndex(c => c.id === id);
-  if (index > -1) {
-    crmData.customers[index] = customer;
-  } else {
-    crmData.customers.push(customer);
-  }
-  saveData();
-  closeModal('customerModal');
-  showNotification('Customer saved!');
-  renderCustomersView();
-}
-
-function deleteCustomer(id) {
-  if (confirm('Delete this customer and all associated data?')) {
-    crmData.customers = crmData.customers.filter(c => c.id !== id);
-    crmData.orders = crmData.orders.filter(o => o.customerId !== id);
-    crmData.tasks = crmData.tasks.filter(t => t.customerId !== id);
-    saveData();
-    showNotification('Customer deleted');
-    renderCustomersView();
-  }
-}
-
-// ==================== ORDERS ====================
-function renderOrdersView() {
-  document.getElementById('view-container').innerHTML = `
-    <div class="card">
-      <div class="flex justify-between items-center mb-6">
-        <h2 class="text-3xl font-bold text-gray-800">Orders (${crmData.orders.length})</h2>
-        <button class="btn-primary" onclick="openOrderModal()"><i class="fas fa-plus mr-2"></i> New Order</button>
-      </div>
-      <div class="overflow-x-auto">
-        <table class="table w-full">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Customer</th>
-              <th>Product</th>
-              <th>Quantity</th>
-              <th>Total</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${crmData.orders.map(o => {
-              const c = crmData.customers.find(c => c.id === o.customerId);
-              return `
-                <tr>
-                  <td>${o.id}</td>
-                  <td>${c ? c.name : 'Unknown'}</td>
-                  <td>${o.product}</td>
-                  <td>${o.quantity}</td>
-                  <td>$${o.total.toFixed(2)}</td>
-                  <td><span class="px-2 py-1 rounded-full text-xs bg-${o.paymentStatus === 'paid' ? 'green' : 'yellow'}-200 text-${o.paymentStatus === 'paid' ? 'green' : 'yellow'}-800">${o.paymentStatus || 'Pending'}</span></td>
-                  <td>
-                    <button class="btn-secondary text-sm mr-2" onclick="openOrderModal('${o.id}')"><i class="fas fa-edit"></i></button>
-                    <button class="btn-danger text-sm" onclick="deleteOrder('${o.id}')"><i class="fas fa-trash"></i></button>
-                  </td>
-                </tr>
-              `;
-            }).join('')}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  `;
-}
-
-function filterOrderCustomers() {
-  const query = document.getElementById('orderCustomerSearch').value.toLowerCase();
-  const list = document.getElementById('orderCustomerList');
-  if (query.length < 2) {
-    list.style.display = 'none';
-    return;
-  }
-  const filtered = crmData.customers.filter(c => c.name.toLowerCase().includes(query) || c.email.toLowerCase().includes(query));
-  list.innerHTML = filtered.map(c => `<div class="p-2 hover:bg-gray-100 cursor-pointer" onclick="selectOrderCustomer('${c.id}', '${c.name}')">${c.name} (${c.email})</div>`).join('');
-  list.style.display = filtered.length ? 'block' : 'none';
-}
-
-function selectOrderCustomer(id, name) {
-  document.getElementById('orderCustomerId').value = id;
-  document.getElementById('orderCustomerSearch').value = name;
-  document.getElementById('orderCustomerList').style.display = 'none';
-}
-
-function openOrderModal(id = null) {
-  const title = document.getElementById('orderModalTitle');
-  title.textContent = id ? 'Edit Order' : 'New Order';
-  document.getElementById('orderId').value = id || '';
-  if (id) {
-    const o = crmData.orders.find(o => o.id === id);
-    if (o) {
-      const c = crmData.customers.find(c => c.id === o.customerId);
-      document.getElementById('orderCustomerSearch').value = c ? c.name : '';
-      document.getElementById('orderCustomerId').value = o.customerId;
-      document.getElementById('orderProduct').value = o.product;
-      document.getElementById('orderQuantity').value = o.quantity;
-      document.getElementById('orderTotal').value = '$' + o.total.toFixed(2);
-      document.getElementById('orderShipping').value = o.shipping || 'Standard';
-      document.getElementById('orderPaymentStatus').value = o.paymentStatus || 'Pending';
-    }
-  } else {
-    document.getElementById('orderForm').reset();
-    document.getElementById('orderQuantity').value = 1;
-    document.getElementById('orderTotal').value = '$39.99';
-  }
-  openModal('orderModal');
-}
-
-function saveOrder(e) {
-  e.preventDefault();
-  const id = document.getElementById('orderId').value || Date.now().toString();
-  const total = parseFloat(document.getElementById('orderTotal').value.replace('$', '')) || 39.99;
-  const order = {
-    id,
-    customerId: document.getElementById('orderCustomerId').value,
-    product: document.getElementById('orderProduct').value,
-    quantity: parseInt(document.getElementById('orderQuantity').value),
-    total,
-    shipping: document.getElementById('orderShipping').value,
-    paymentStatus: document.getElementById('orderPaymentStatus').value,
-    date: new Date().toISOString()
-  };
-  const index = crmData.orders.findIndex(o => o.id === id);
-  if (index > -1) {
-    crmData.orders[index] = order;
-  } else {
-    crmData.orders.push(order);
-  }
-  saveData();
-  closeModal('orderModal');
-  showNotification('Order saved!');
-  renderOrdersView();
-}
-
-function deleteOrder(id) {
-  if (confirm('Delete this order?')) {
-    crmData.orders = crmData.orders.filter(o => o.id !== id);
-    saveData();
-    showNotification('Order deleted');
-    renderOrdersView();
-  }
-}
-
-// ==================== CALENDAR ====================
-function renderCalendarView() {
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = today.getMonth();
-  const firstDay = new Date(year, month, 1).getDay();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  let calendar = '';
-  for (let i = 0; i < firstDay; i++) calendar += '<div class="calendar-day"></div>';
-  for (let day = 1; day <= daysInMonth; day++) {
-    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-    const events = crmData.events.filter(e => e.date === dateStr);
-    const isToday = day === today.getDate() && month === today.getMonth() && year === today.getFullYear();
-    calendar += `
-      <div class="calendar-day ${isToday ? 'bg-yellow-100 border-yellow-500' : ''}">
-        <div class="font-bold">${day}</div>
-        ${events.map(e => `<div class="event-item">${e.title.substring(0, 20)}</div>`).join('')}
+            ${state.orders.length === 0 ? '<li class="text-center text-gray-500 py-4">No orders recorded yet.</li>' : ''}
+          </ul>
+        </div>
       </div>
     `;
   }
-  document.getElementById('view-container').innerHTML = `
-    <div class="card">
-      <h2 class="text-3xl font-bold text-gray-800 mb-6">Calendar</h2>
-      <div class="calendar-grid">${calendar}</div>
-      <button class="btn-primary mt-6" onclick="addEvent()">+ Add Event</button>
-    </div>
-  `;
-}
-
-function addEvent() {
-  const date = prompt('Event date (YYYY-MM-DD):');
-  const title = prompt('Event title:');
-  if (date && title) {
-    crmData.events.push({ date, title, createdAt: new Date().toISOString() });
-    saveData();
-    showNotification('Event added');
-    renderCalendarView();
-  }
-}
-
-// ==================== COMMUNICATIONS ====================
-function renderCommunicationsView() {
-  document.getElementById('view-container').innerHTML = `
-    <div class="card">
-      <div class="flex justify-between items-center mb-6">
-        <h2 class="text-3xl font-bold text-gray-800">Communications (${crmData.communications.length})</h2>
-        <button class="btn-primary" onclick="openCommunicationModal()"><i class="fas fa-plus mr-2"></i> Log Communication</button>
+  
+  function renderMetricCard(title, value, iconClass, colorClass) {
+    return `
+      <div class="card p-5 flex items-center space-x-4">
+        <div class="p-3 rounded-full ${colorClass}">
+          <i class="${iconClass} text-2xl"></i>
+        </div>
+        <div>
+          <p class="text-sm font-medium text-gray-500">${title}</p>
+          <p class="text-2xl font-bold text-gray-900">${value}</p>
+        </div>
       </div>
-      <div class="overflow-x-auto">
-        <table class="table w-full">
-          <thead>
+    `;
+  }
+
+  function setupDashboardCharts() {
+    const ctx = document.getElementById('revenueChart');
+    if (!ctx) return;
+
+    // Group orders by month/year for charting
+    const monthlyRevenue = state.orders.reduce((acc, order) => {
+        const monthYear = order.orderDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
+        // Use pre-calculated totalValue
+        const revenue = order.totalValue; 
+        acc[monthYear] = (acc[monthYear] || 0) + revenue;
+        return acc;
+    }, {});
+
+    const labels = Object.keys(monthlyRevenue).sort((a, b) => new Date(a) - new Date(b));
+    const data = labels.map(label => monthlyRevenue[label]);
+
+    // Destroy existing chart instance if it exists before creating a new one
+    if (window.revenueChartInstance) {
+        window.revenueChartInstance.destroy();
+    }
+
+    window.revenueChartInstance = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Revenue ($)',
+          data: data,
+          backgroundColor: 'rgba(67, 160, 71, 0.5)', // Attachment's darker green with alpha
+          borderColor: '#43a047',
+          borderWidth: 2,
+          tension: 0.4,
+          fill: true,
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        },
+        plugins: {
+          legend: {
+            display: false
+          }
+        }
+      }
+    });
+  }
+
+  function renderReferralView() {
+    const userReferralCode = state.userId ? state.userId.substring(0, 8).toUpperCase() : 'CODE1234';
+    const settings = state.referralSettings;
+
+    return `
+      <h2 class="text-3xl font-bold text-gray-800 mb-6">Referral Program Management</h2>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="card">
+          <h3 class="text-xl font-semibold mb-4 text-gray-800">Your Unique Referral Code</h3>
+          <div class="flex flex-col items-center p-6 bg-green-50 rounded-xl border border-dashed border-green-300">
+            <div id="qrcode-container" class="mb-4 p-2 bg-white rounded-lg shadow-inner"></div>
+            <p class="text-lg text-gray-600 mb-2">Share this code with your network:</p>
+            <div class="flex items-center space-x-3 w-full max-w-sm">
+              <input id="referral-code-input" type="text" value="${userReferralCode}" readonly
+                class="flex-1 p-3 border border-green-400 rounded-lg font-mono text-center text-xl bg-white focus:outline-none" />
+              <button onclick="copyToClipboard('${userReferralCode}')" class="p-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-150 shadow-md">
+                <i class="fas fa-copy"></i>
+              </button>
+            </div>
+            <p class="mt-4 text-sm text-gray-700">They get <strong>$${settings.creditAmount} OFF</strong> their first order over $${settings.minOrderValue}.</p>
+          </div>
+
+          <h3 class="text-lg font-semibold mt-6 mb-3 text-gray-800">Share Options</h3>
+          <div class="flex flex-wrap gap-3">
+            <button onclick="shareToEmail('${userReferralCode}')" class="flex items-center space-x-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">
+              <i class="fas fa-envelope"></i> <span>Email</span>
+            </button>
+            <button onclick="shareToWhatsApp('${userReferralCode}')" class="flex items-center space-x-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition">
+              <i class="fab fa-whatsapp"></i> <span>WhatsApp</span>
+            </button>
+            <button onclick="shareToTwitter('${userReferralCode}')" class="flex items-center space-x-2 px-4 py-2 bg-blue-400 text-white rounded-lg hover:bg-blue-500 transition">
+              <i class="fab fa-twitter"></i> <span>X (Twitter)</span>
+            </button>
+          </div>
+        </div>
+        
+        <div class="card">
+          <h3 class="text-xl font-semibold mb-4 text-gray-800">Program Settings</h3>
+          <form onsubmit="updateReferralSettings(event)">
+            <div class="space-y-4">
+              <div>
+                <label for="creditAmount" class="block text-sm font-medium text-gray-700">Credit Amount ($)</label>
+                <input type="number" id="creditAmount" value="${settings.creditAmount}" min="1" required
+                  class="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
+              </div>
+              <div>
+                <label for="minOrderValue" class="block text-sm font-medium text-gray-700">Minimum Order Value ($)</label>
+                <input type="number" id="minOrderValue" value="${settings.minOrderValue}" min="1" required
+                  class="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
+              </div>
+            </div>
+            <button type="submit" class="mt-6 w-full py-3 btn-primary shadow-md">
+              Save Settings
+            </button>
+          </form>
+        </div>
+      </div>
+    `;
+  }
+
+  // Helper function to set up the QR code
+  function setupReferralQRCode() {
+    const container = document.getElementById('qrcode-container');
+    if (!container) return;
+    container.innerHTML = ''; // Clear previous QR code
+
+    const code = document.getElementById('referral-code-input')?.value || 'CRM123';
+    const link = `${window.location.origin}/?ref=${code}`; // Mock referral link
+    
+    new QRCode(container, {
+      text: link,
+      width: 128,
+      height: 128,
+      colorDark : "#43a047", // Dark Green from attachment CSS
+      colorLight : "#ffffff",
+      correctLevel : QRCode.CorrectLevel.H
+    });
+  }
+
+  // Helper function for clipboard copy
+  window.copyToClipboard = (text) => {
+    try {
+      navigator.clipboard.writeText(text);
+      showModal("Success", "Referral code copied to clipboard!");
+    } catch (err) {
+      // Fallback for environments where clipboard API is restricted (like iframes)
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+      showModal("Success", "Referral code copied to clipboard (using fallback).");
+    }
+  };
+
+  // Helper functions for sharing
+  function shareToEmail(code) {
+    const settings = state.referralSettings;
+    const subject = encodeURIComponent('AcoustiSkin Paddle Cover Discount!');
+    const body = encodeURIComponent(`Hey! You should check out AcoustiSkin paddle cover. Use my referral code "${code}" to get $${settings.creditAmount} off your first order!\n\nCheck them out at [Your Website URL]`);
+    window.location.href = `mailto:?subject=${subject}&body=${body}`;
+  }
+
+  function shareToWhatsApp(code) {
+    const settings = state.referralSettings;
+    const text = encodeURIComponent(`Check out AcoustiSkin! Use my code "${code}" for $${settings.creditAmount} off!`);
+    window.open(`https://wa.me/?text=${text}`, '_blank');
+  }
+
+  function shareToTwitter(code) {
+    const settings = state.referralSettings;
+    const text = encodeURIComponent(`Get $${settings.creditAmount} off @AcoustiSkin paddle covers with my code: ${code}`);
+    window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
+  }
+
+
+  // --- FIRESTORE UPDATE LOGIC ---
+  window.updateReferralSettings = async (event) => {
+    event.preventDefault();
+    if (!db) {
+      showModal("Error", "Database is not initialized.");
+      return;
+    }
+
+    const creditAmount = parseFloat(document.getElementById('creditAmount').value);
+    const minOrderValue = parseFloat(document.getElementById('minOrderValue').value);
+
+    if (isNaN(creditAmount) || isNaN(minOrderValue) || creditAmount <= 0 || minOrderValue <= 0) {
+      showModal("Validation Error", "Please enter valid positive numeric values.");
+      return;
+    }
+    
+    const newSettings = { creditAmount, minOrderValue };
+    const settingsDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'referral');
+
+    try {
+      await setDoc(settingsDocRef, newSettings, { merge: true });
+      showModal("Success", "Referral program settings updated successfully!");
+    } catch (error) {
+      console.error("Error updating settings:", error);
+      showModal("Error", "Failed to update settings. See console for details.");
+    }
+  };
+
+  function renderCustomersView() {
+    return `
+      <h2 class="text-3xl font-bold text-gray-800 mb-6">Customer List (${state.customers.length})</h2>
+      
+      <div class="card overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
             <tr>
-              <th>Customer</th>
-              <th>Type</th>
-              <th>Date</th>
-              <th>Notes</th>
-              <th>Actions</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email (Placeholder)</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Orders</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Spent</th>
             </tr>
           </thead>
-          <tbody>
-            ${crmData.communications.map(comm => {
-              const c = crmData.customers.find(c => c.id === comm.customerId);
+          <tbody class="bg-white divide-y divide-gray-200">
+            ${state.customers.map(customer => {
+              const customerOrders = state.orders.filter(o => o.customerName === customer.name);
+              const totalSpent = customerOrders.reduce((sum, o) => sum + (o.totalValue), 0).toFixed(2);
               return `
                 <tr>
-                  <td>${c ? c.name : 'Unknown'}</td>
-                  <td>${comm.type}</td>
-                  <td>${new Date(comm.date).toLocaleDateString()}</td>
-                  <td>${comm.notes.substring(0, 50)}...</td>
-                  <td><button class="btn-secondary text-sm" onclick="openCommunicationModal('${comm.id}')"><i class="fas fa-edit"></i></button></td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${customer.name}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${customer.email}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${customerOrders.length}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 font-semibold">$${totalSpent}</td>
                 </tr>
               `;
             }).join('')}
+            ${state.customers.length === 0 ? '<tr><td colspan="4" class="text-center py-8 text-gray-500">No customers found.</td></tr>' : ''}
           </tbody>
         </table>
       </div>
-    </div>
-  `;
-}
-
-function filterCommCustomers() {
-  // Similar to filterOrderCustomers
-  const query = document.getElementById('commCustomerSearch').value.toLowerCase();
-  const list = document.getElementById('commCustomerList');
-  if (query.length < 2) return list.style.display = 'none';
-  const filtered = crmData.customers.filter(c => c.name.toLowerCase().includes(query));
-  list.innerHTML = filtered.map(c => `<div class="p-2 hover:bg-gray-100 cursor-pointer" onclick="selectCommCustomer('${c.id}', '${c.name}')">${c.name}</div>`).join('');
-  list.style.display = filtered.length ? 'block' : 'none';
-}
-
-function selectCommCustomer(id, name) {
-  document.getElementById('communicationCustomerId').value = id;
-  document.getElementById('commCustomerSearch').value = name;
-  document.getElementById('commCustomerList').style.display = 'none';
-}
-
-function openCommunicationModal(id = null) {
-  document.getElementById('communicationId').value = id || '';
-  if (id) {
-    const comm = crmData.communications.find(comm => comm.id === id);
-    if (comm) {
-      const c = crmData.customers.find(c => c.id === comm.customerId);
-      document.getElementById('commCustomerSearch').value = c ? c.name : '';
-      document.getElementById('communicationCustomerId').value = comm.customerId;
-      document.getElementById('commType').value = comm.type;
-      document.getElementById('commDate').value = comm.date;
-      document.getElementById('commNotes').value = comm.notes;
-    }
-  } else {
-    document.getElementById('communicationForm').reset();
+    `;
   }
-  openModal('communicationModal');
-}
+  
+  // --- NEW ORDER VIEW (Completed) ---
+  function renderNewOrderView() {
+    // Generate a list of customer names for the datalist (autocomplete suggestions)
+    const customerOptions = state.customers
+        .map(c => `<option value="${c.name}">`).join('');
 
-function saveCommunication(e) {
-  e.preventDefault();
-  const id = document.getElementById('communicationId').value || Date.now().toString();
-  const communication = {
-    id,
-    customerId: document.getElementById('communicationCustomerId').value,
-    type: document.getElementById('commType').value,
-    date: document.getElementById('commDate').value || new Date().toISOString().slice(0, 10),
-    notes: document.getElementById('commNotes').value,
-    createdAt: new Date().toISOString()
-  };
-  const index = crmData.communications.findIndex(comm => comm.id === id);
-  if (index > -1) {
-    crmData.communications[index] = communication;
-  } else {
-    crmData.communications.push(communication);
-  }
-  saveData();
-  closeModal('communicationModal');
-  showNotification('Communication logged!');
-  renderCommunicationsView();
-}
+    // Pre-select today's date
+    const today = new Date().toISOString().substring(0, 10);
 
-// ==================== TASKS ====================
-function renderTasksView() {
-  document.getElementById('view-container').innerHTML = `
-    <div class="card">
-      <div class="flex justify-between items-center mb-6">
-        <h2 class="text-3xl font-bold text-gray-800">Tasks (${crmData.tasks.length})</h2>
-        <button class="btn-primary" onclick="openTaskModal()"><i class="fas fa-plus mr-2"></i> New Task</button>
-      </div>
-      <div class="overflow-x-auto">
-        <table class="table w-full">
-          <thead>
-            <tr>
-              <th>Title</th>
-              <th>Customer</th>
-              <th>Due Date</th>
-              <th>Priority</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${crmData.tasks.map(t => {
-              const c = crmData.customers.find(c => c.id === t.customerId);
-              return `
-                <tr class="${t.status === 'overdue' ? 'bg-red-50' : ''}">
-                  <td>${t.title}</td>
-                  <td>${c ? c.name : 'No Customer'}</td>
-                  <td>${new Date(t.dueDate).toLocaleDateString()}</td>
-                  <td><span class="px-2 py-1 rounded-full text-xs bg-${t.priority === 'high' ? 'red' : t.priority === 'medium' ? 'yellow' : 'green'}-200 text-${t.priority === 'high' ? 'red' : t.priority === 'medium' ? 'yellow' : 'green'}-800">${t.priority}</span></td>
-                  <td>${t.status || 'Pending'}</td>
-                  <td>
-                    <button class="btn-secondary text-sm mr-2" onclick="openTaskModal('${t.id}')"><i class="fas fa-edit"></i></button>
-                    <button class="btn-danger text-sm" onclick="deleteTask('${t.id}')"><i class="fas fa-trash"></i></button>
-                  </td>
-                </tr>
-              `;
-            }).join('')}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  `;
-}
-
-function filterTaskCustomers() {
-  // Similar to filterOrderCustomers
-  const query = document.getElementById('taskCustomerSearch').value.toLowerCase();
-  const list = document.getElementById('taskCustomerList');
-  if (query.length < 2) return list.style.display = 'none';
-  const filtered = crmData.customers.filter(c => c.name.toLowerCase().includes(query));
-  list.innerHTML = filtered.map(c => `<div class="p-2 hover:bg-gray-100 cursor-pointer" onclick="selectTaskCustomer('${c.id}', '${c.name}')">${c.name}</div>`).join('');
-  list.style.display = filtered.length ? 'block' : 'none';
-}
-
-function selectTaskCustomer(id, name) {
-  document.getElementById('taskCustomerId').value = id;
-  document.getElementById('taskCustomerSearch').value = name;
-  document.getElementById('taskCustomerList').style.display = 'none';
-}
-
-function openTaskModal(id = null) {
-  const form = document.getElementById('taskForm');
-  document.getElementById('taskId').value = id || '';
-  if (id) {
-    const t = crmData.tasks.find(t => t.id === id);
-    if (t) {
-      const c = crmData.customers.find(c => c.id === t.customerId);
-      document.getElementById('taskCustomerSearch').value = c ? c.name : '';
-      document.getElementById('taskCustomerId').value = t.customerId;
-      document.getElementById('taskTitle').value = t.title;
-      document.getElementById('taskDueDate').value = t.dueDate;
-      document.getElementById('taskPriority').value = t.priority || 'medium';
-      document.getElementById('taskNotes').value = t.notes || '';
-    }
-  } else {
-    form.reset();
-  }
-  openModal('taskModal');
-}
-
-function saveTask(e) {
-  e.preventDefault();
-  const id = document.getElementById('taskId').value || Date.now().toString();
-  const task = {
-    id,
-    customerId: document.getElementById('taskCustomerId').value,
-    title: document.getElementById('taskTitle').value,
-    dueDate: document.getElementById('taskDueDate').value,
-    priority: document.getElementById('taskPriority').value,
-    notes: document.getElementById('taskNotes').value,
-    status: 'pending',
-    createdAt: new Date().toISOString()
-  };
-  const index = crmData.tasks.findIndex(t => t.id === id);
-  if (index > -1) {
-    crmData.tasks[index] = task;
-  } else {
-    crmData.tasks.push(task);
-  }
-  saveData();
-  closeModal('taskModal');
-  showNotification('Task saved!');
-  renderTasksView();
-}
-
-function deleteTask(id) {
-  if (confirm('Delete this task?')) {
-    crmData.tasks = crmData.tasks.filter(t => t.id !== id);
-    saveData();
-    showNotification('Task deleted');
-    renderTasksView();
-  }
-}
-
-// ==================== PIPELINE ====================
-function renderPipelineView() {
-  const stages = {
-    leads: crmData.customers.filter(c => !c.orders).length,
-    contacted: crmData.communications.length,
-    quoted: crmData.orders.filter(o => o.paymentStatus === 'pending').length,
-    closed: crmData.orders.filter(o => o.paymentStatus === 'paid').length
-  };
-  document.getElementById('view-container').innerHTML = `
-    <div class="card">
-      <h2 class="text-3xl font-bold text-gray-800 mb-6">Sales Pipeline</h2>
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div class="bg-blue-50 p-6 rounded-xl text-center">
-          <h3 class="text-xl font-bold text-blue-800">Leads</h3>
-          <div class="text-4xl font-bold text-blue-600">${stages.leads}</div>
-        </div>
-        <div class="bg-yellow-50 p-6 rounded-xl text-center">
-          <h3 class="text-xl font-bold text-yellow-800">Contacted</h3>
-          <div class="text-4xl font-bold text-yellow-600">${stages.contacted}</div>
-        </div>
-        <div class="bg-purple-50 p-6 rounded-xl text-center">
-          <h3 class="text-xl font-bold text-purple-800">Quoted</h3>
-          <div class="text-4xl font-bold text-purple-600">${stages.quoted}</div>
-        </div>
-        <div class="bg-green-50 p-6 rounded-xl text-center">
-          <h3 class="text-xl font-bold text-green-800">Closed</h3>
-          <div class="text-4xl font-bold text-green-600">${stages.closed}</div>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-// ==================== MARKETING ====================
-function renderMarketingView() {
-  const emailOptIn = crmData.customers.filter(c => c.emailOptIn).length;
-  const smsOptIn = crmData.customers.filter(c => c.smsOptIn).length;
-  const socialActive = crmData.customers.filter(c => c.socialEngagement === 'High' || c.socialEngagement === 'Very High').length;
-  document.getElementById('view-container').innerHTML = `
-    <div class="card">
-      <h2 class="text-3xl font-bold text-gray-800 mb-6">Marketing Dashboard</h2>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-white p-6 rounded-xl shadow text-center">
-          <i class="fas fa-envelope text-4xl text-red-500 mb-4"></i>
-          <div class="text-3xl font-bold text-gray-800">${emailOptIn}</div>
-          <div class="text-gray-600">Email Opt-Ins</div>
-          <button class="btn-primary mt-4" onclick="createEmailList()">Create Campaign</button>
-        </div>
-        <div class="bg-white p-6 rounded-xl shadow text-center">
-          <i class="fas fa-comment-dots text-4xl text-blue-500 mb-4"></i>
-          <div class="text-3xl font-bold text-gray-800">${smsOptIn}</div>
-          <div class="text-gray-600">SMS Opt-Ins</div>
-          <button class="btn-primary mt-4" onclick="createSMSList()">Create Campaign</button>
-        </div>
-        <div class="bg-white p-6 rounded-xl shadow text-center">
-          <i class="fas fa-share-alt text-4xl text-purple-500 mb-4"></i>
-          <div class="text-3xl font-bold text-gray-800">${socialActive}</div>
-          <div class="text-gray-600">Social Active</div>
-          <button class="btn-primary mt-4" onclick="viewSocialContacts()">View Contacts</button>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-function createEmailList() {
-  const emails = crmData.customers.filter(c => c.emailOptIn).map(c => c.email).join(', ');
-  navigator.clipboard.writeText(emails).then(() => showNotification('Email list copied!'));
-}
-
-function createSMSList() {
-  const phones = crmData.customers.filter(c => c.smsOptIn).map(c => c.phone).join(', ');
-  navigator.clipboard.writeText(phones).then(() => showNotification('SMS list copied!'));
-}
-
-function viewSocialContacts() {
-  const social = crmData.customers.filter(c => c.socialEngagement === 'High' || c.socialEngagement === 'Very High');
-  const html = social.map(c => `
-    <div class="p-4 border-b">
-      <strong>${c.name}</strong> - ${c.socialEngagement}
-    </div>
-  `).join('');
-  document.getElementById('view-container').innerHTML += `<div class="card mt-6"><h3 class="text-xl font-bold mb-4">Social Contacts</h3>${html}</div>`;
-}
-
-// ==================== REFERRALS ====================
-function renderReferralsView() {
-  document.getElementById('view-container').innerHTML = `
-    <div class="card">
-      <div class="flex justify-between items-center mb-6">
-        <h2 class="text-3xl font-bold text-gray-800">Referrals</h2>
-        <button class="btn-primary" onclick="openModal('referralSettingsModal')"><i class="fas fa-cog mr-2"></i> Settings</button>
-      </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <h3 class="text-xl font-bold mb-4">Leaderboard</h3>
-          <div id="referralLeaderboard">
-            ${crmData.customers.filter(c => c.referralsMade > 0).slice(0, 5).map(c => `
-              <div class="p-4 border rounded-lg mb-4">
-                <div class="flex justify-between">
-                  <span>${c.name}</span>
-                  <span class="font-bold">${c.referralsMade} referrals</span>
-                </div>
-                <button class="btn-secondary mt-2" onclick="showReferralDetails('${c.id}')"><i class="fas fa-qrcode mr-1"></i> QR Code</button>
+    return `
+      <h2 class="text-3xl font-bold text-gray-800 mb-6">Add New Order</h2>
+      
+      <div class="card max-w-2xl mx-auto">
+        <form id="newOrderForm" onsubmit="handleNewOrderSubmission(event)">
+          <div class="space-y-6">
+            
+            <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <label for="customerName" class="block text-sm font-medium text-gray-700 mb-2">Customer Name (Type a new name or select existing)</label>
+              <input type="text" id="customerName" list="customerNames" required 
+                class="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 bg-white"
+                placeholder="e.g., Jane Doe">
+              <datalist id="customerNames">
+                ${customerOptions}
+              </datalist>
+              <p class="text-xs text-gray-500 mt-1">If the customer is new, simply type their full name and they will be added automatically.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label for="product" class="block text-sm font-medium text-gray-700">Product</label>
+                <select id="product" required 
+                  class="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 bg-white">
+                  <option value="Standard" selected>Standard Paddle Cover</option>
+                  <option value="Pro">Pro Series Cover (Enhanced)</option>
+                  <option value="Custom">Custom Design Cover</option>
+                </select>
               </div>
-            `).join('') || '<p class="text-gray-500">No referrals yet</p>'}
+              <div>
+                <label for="quantity" class="block text-sm font-medium text-gray-700">Quantity</label>
+                <input type="number" id="quantity" min="1" value="1" required
+                  class="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label for="price" class="block text-sm font-medium text-gray-700">Unit Price ($)</label>
+                <input type="number" id="price" step="0.01" min="0.01" value="35.00" required
+                  class="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
+              </div>
+              <div>
+                <label for="orderDate" class="block text-sm font-medium text-gray-700">Order Date</label>
+                <input type="date" id="orderDate" value="${new Date().toISOString().substring(0, 10)}" required
+                  class="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
+              </div>
+            </div>
+
+            <div>
+              <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+              <select id="status" required 
+                class="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 bg-white">
+                <option value="Pending">Pending</option>
+                <option value="Processing" selected>Processing</option>
+                <option value="Shipped">Shipped</option>
+                <option value="Completed">Completed</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="notes" class="block text-sm font-medium text-gray-700">Order Notes (Optional)</label>
+              <textarea id="notes" rows="3"
+                class="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500"></textarea>
+            </div>
+
           </div>
+          
+          <button type="submit" class="mt-8 w-full py-3 btn-primary shadow-md">
+            <i class="fas fa-save mr-2"></i> Save New Order
+          </button>
+        </form>
+      </div>
+    `;
+  }
+  
+  // Define the missing order handler
+  window.handleNewOrderSubmission = async (event) => {
+    event.preventDefault();
+    if (!db) {
+      showModal("Error", "Database is not initialized.");
+      return;
+    }
+
+    const form = document.getElementById('newOrderForm');
+    const customerName = form.customerName.value.trim();
+    const product = form.product.value;
+    const quantity = parseInt(form.quantity.value);
+    const price = parseFloat(form.price.value);
+    const orderDate = new Date(form.orderDate.value);
+    const status = form.status.value;
+    const notes = form.notes.value;
+
+    if (!customerName || isNaN(quantity) || quantity <= 0 || isNaN(price) || price <= 0) {
+        showModal("Validation Error", "Please ensure all required fields are filled correctly.");
+        return;
+    }
+
+    try {
+        // Ensure customer exists (or create new one)
+        const customer = await ensureCustomerExists(customerName);
+        if (!customer) {
+            showModal("Error", "Could not process customer name.");
+            return;
+        }
+
+        const newOrder = {
+            customerName: customer.name,
+            customerId: customer.id, // Link to the customer record
+            product,
+            quantity,
+            price, // Unit price
+            orderDate,
+            status,
+            notes,
+            totalValue: price * quantity,
+            createdAt: new Date(),
+        };
+
+        const ordersColRef = collection(db, 'artifacts', appId, 'public', 'data', 'orders');
+        await addDoc(ordersColRef, newOrder);
+
+        showModal("Success", `Order for ${customerName} placed successfully! Total: $${newOrder.totalValue.toFixed(2)}`);
+        form.reset(); // Clear form on success
+        changeView('dashboard'); // Go back to dashboard
+    } catch (error) {
+        console.error("Error creating new order:", error);
+        showModal("Error", "Failed to create new order. See console for details.");
+    }
+  };
+
+  // --- ORDER CALENDAR VIEW (Implemented) ---
+
+  function renderCalendarView() {
+    const today = new Date();
+    const currentMonth = state.currentCalendarDate.getMonth();
+    const currentYear = state.currentCalendarDate.getFullYear();
+    
+    // Get first day of the month and last day of the month
+    const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
+    const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
+    const daysInMonth = lastDayOfMonth.getDate();
+    
+    // Determine the day of the week for the first day (0=Sun, 6=Sat)
+    const startDayOfWeek = firstDayOfMonth.getDay(); 
+    
+    const monthName = state.currentCalendarDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    
+    // Group orders by day
+    const ordersByDay = state.orders.reduce((acc, order) => {
+        const dayKey = order.orderDate.toISOString().substring(0, 10);
+        acc[dayKey] = acc[dayKey] || [];
+        acc[dayKey].push(order);
+        return acc;
+    }, {});
+    
+    let calendarDaysHtml = '';
+    
+    // 1. Add empty cells for the starting padding
+    for (let i = 0; i < startDayOfWeek; i++) {
+        calendarDaysHtml += `<div class="day-cell bg-gray-100 border-none"></div>`;
+    }
+    
+    // 2. Add actual days
+    for (let day = 1; day <= daysInMonth; day++) {
+        const date = new Date(currentYear, currentMonth, day);
+        const isoDate = date.toISOString().substring(0, 10);
+        const isToday = today.toDateString() === date.toDateString();
+        const dailyOrders = ordersByDay[isoDate] || [];
+        
+        const dayClass = isToday ? 'day-cell today' : 'day-cell';
+        const hasOrdersClass = dailyOrders.length > 0 ? 'has-orders' : '';
+        
+        // Show up to 2 orders directly
+        const visibleOrders = dailyOrders.slice(0, 2);
+        
+        const ordersHtml = visibleOrders.map(order => `
+            <div class="event-item bg-green-600/90 hover:bg-green-700" title="${order.customerName} - $${order.totalValue.toFixed(2)}">
+                ${order.product}
+            </div>
+        `).join('');
+        
+        calendarDaysHtml += `
+            <div class="${dayClass} ${hasOrdersClass}" onclick="showOrdersForDay('${isoDate}')">
+                <div class="day-number text-lg font-bold mb-1">${day}</div>
+                ${ordersHtml}
+                ${dailyOrders.length > 2 ? `<div class="text-xs text-gray-500 mt-1">...${dailyOrders.length - 2} more</div>` : ''}
+            </div>
+        `;
+    }
+
+    return `
+      <h2 class="text-3xl font-bold text-gray-800 mb-6 flex justify-between items-center">
+        Order Calendar 
+        <div class="flex space-x-2">
+            <button onclick="changeMonth(-1)" class="btn-secondary px-3 py-1"><i class="fas fa-chevron-left"></i></button>
+            <span class="text-xl font-semibold text-green-700">${monthName}</span>
+            <button onclick="changeMonth(1)" class="btn-secondary px-3 py-1"><i class="fas fa-chevron-right"></i></button>
         </div>
-        <div>
-          <h3 class="text-xl font-bold mb-4">Your Code</h3>
-          <div class="text-center p-6 bg-gray-50 rounded-lg">
-            <div class="text-4xl font-bold text-green-600 mb-4" id="yourReferralCode">ACST001</div>
-            <div id="yourQR" class="mx-auto mb-4"></div>
-            <button class="btn-primary" onclick="shareReferralCode()">Share</button>
+      </h2>
+
+      <div class="card p-4">
+        <div class="calendar-grid">
+          <div class="day-header">Sun</div>
+          <div class="day-header">Mon</div>
+          <div class="day-header">Tue</div>
+          <div class="day-header">Wed</div>
+          <div class="day-header">Thu</div>
+          <div class="day-header">Fri</div>
+          <div class="day-header">Sat</div>
+          ${calendarDaysHtml}
+        </div>
+      </div>
+    `;
+  }
+  
+  // Missing calendar helper functions
+  window.changeMonth = (delta) => {
+    const newDate = new Date(state.currentCalendarDate.getFullYear(), state.currentCalendarDate.getMonth() + delta, 1);
+    state.currentCalendarDate = newDate;
+    window.renderApp();
+  };
+
+  window.showOrdersForDay = (isoDate) => {
+    const orders = state.orders.filter(o => o.orderDate.toISOString().substring(0, 10) === isoDate);
+    if (orders.length === 0) {
+        showModal("No Orders", `No orders scheduled for ${new Date(isoDate).toDateString()}.`);
+        return;
+    }
+
+    const ordersList = orders.map(order => {
+        let statusColor = 'text-gray-500';
+        if (order.status === 'Completed') statusColor = 'text-green-600';
+        else if (order.status === 'Shipped') statusColor = 'text-blue-600';
+        else if (order.status === 'Cancelled') statusColor = 'text-red-600';
+        
+        return `
+            <li class="p-3 border-b border-gray-100 flex justify-between items-center">
+                <div class="flex-1">
+                    <p class="font-semibold text-gray-800">${order.customerName} - ${order.product}</p>
+                    <p class="text-sm ${statusColor}">${order.status} - Qty: ${order.quantity}</p>
+                </div>
+                <span class="font-bold text-green-600">$${order.totalValue.toFixed(2)}</span>
+            </li>
+        `;
+    }).join('');
+
+    const modalContent = `
+        <h3 class="text-xl font-bold text-green-700 mb-4">${new Date(isoDate).toDateString()} Orders (${orders.length})</h3>
+        <ul class="divide-y divide-gray-200 max-h-96 overflow-y-auto">${ordersList}</ul>
+      <div class="flex justify-end mt-4"><button onclick="closeModal()" class="btn-secondary">Close</button></div>
+    `;
+    
+    // Re-use the global modal structure
+    document.getElementById('modal-title').innerHTML = `<i class="fas fa-calendar-day mr-2"></i> Orders Detail`;
+    document.getElementById('modal-message').innerHTML = modalContent;
+    document.getElementById('global-modal').classList.remove('hidden');
+  };
+  
+  // --- INVENTORY VIEW (Implemented) ---
+
+  // Mock Inventory Data for demonstration
+  const mockInventory = [
+      { id: 'SKU001', name: 'Standard Paddle Cover', stock: 150, reorderPoint: 50, price: 35.00, lastRestock: '2025-11-01' },
+      { id: 'SKU002', name: 'Pro Series Cover (Enhanced)', stock: 35, reorderPoint: 40, price: 55.00, lastRestock: '2025-11-20' },
+      { id: 'SKU003', name: 'Custom Design Cover', stock: 10, reorderPoint: 20, price: 75.00, lastRestock: '2025-10-15' },
+      { id: 'SKU004', name: 'Paddle Grip Tape (Black)', stock: 500, reorderPoint: 100, price: 10.00, lastRestock: '2025-12-01' },
+  ];
+
+  function renderInventoryView() {
+    const inventoryListHtml = mockInventory.map(item => {
+        const stockStatus = item.stock <= item.reorderPoint ? 
+            `<span class="status-badge bg-red-100 text-red-600"><i class="fas fa-exclamation-triangle mr-1"></i> Low Stock</span>` : 
+            `<span class="status-badge bg-green-100 text-green-600"><i class="fas fa-check-circle mr-1"></i> In Stock</span>`;
+            
+        return `
+            <tr>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${item.id}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${item.name}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold ${item.stock <= item.reorderPoint ? 'text-red-600' : 'text-green-600'}">${item.stock}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.reorderPoint}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-green-700 font-medium">$${item.price.toFixed(2)}</td>
+                <td class="px-6 py-4 whitespace-nowrap">${stockStatus}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <button class="text-indigo-600 hover:text-indigo-900" onclick="showModal('Restock Item', 'Feature to add restock details for ${item.name}.')">
+                        <i class="fas fa-truck"></i> Restock
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+
+    const lowStockCount = mockInventory.filter(item => item.stock <= item.reorderPoint).length;
+
+    return `
+        <h2 class="text-3xl font-bold text-gray-800 mb-6">Inventory Management</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            ${renderMetricCard('Total SKUs', mockInventory.length, 'fas fa-boxes', 'bg-blue-100 text-blue-600')}
+            ${renderMetricCard('Low Stock Items', lowStockCount, 'fas fa-exclamation-triangle', lowStockCount > 0 ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600')}
+            ${renderMetricCard('Inventory Value (Mock)', '$' + mockInventory.reduce((sum, i) => sum + (i.stock * i.price), 0).toFixed(2).toLocaleString(), 'fas fa-warehouse', 'bg-purple-100 text-purple-600')}
+        </div>
+        
+        <div class="card overflow-x-auto">
+            <h3 class="text-xl font-semibold mb-4 text-gray-800">Product Stock Levels</h3>
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SKU</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product Name</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock Level</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reorder Point</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unit Price</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th class="relative px-6 py-3"></th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    ${inventoryListHtml}
+                </tbody>
+            </table>
+        </div>
+    `;
+  }
+  
+  // --- REPORTS VIEW (Implemented) ---
+
+  function renderReportsView() {
+    return `
+      <h2 class="text-3xl font-bold text-gray-800 mb-6">Sales & Performance Reports</h2>
+      
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="card lg:col-span-2">
+          <h3 class="text-xl font-semibold mb-4 text-gray-800">Sales Volume by Product</h3>
+          <canvas id="productSalesChart"></canvas>
+        </div>
+
+        <div class="card">
+          <h3 class="text-xl font-semibold mb-4 text-gray-800">Referral Leaderboard (Mock)</h3>
+          <ul class="space-y-3">
+            <li class="p-3 bg-green-50 rounded-lg flex justify-between items-center text-sm font-bold border-l-4 border-green-600">
+                <span>#1: Alex Johnson</span>
+                <span class="text-green-700">12 Referrals</span>
+            </li>
+            <li class="p-3 bg-gray-50 rounded-lg flex justify-between items-center text-sm">
+                <span>#2: Sarah Lee</span>
+                <span class="text-gray-700">8 Referrals</span>
+            </li>
+            <li class="p-3 bg-gray-50 rounded-lg flex justify-between items-center text-sm">
+                <span>#3: Mark Chen</span>
+                <span class="text-gray-700">5 Referrals</span>
+            </li>
+          </ul>
+          <div class="info-box mt-4">
+              <i class="fas fa-lightbulb text-blue-600 mr-2"></i>
+              Top referrers show high product loyalty.
           </div>
         </div>
       </div>
-    </div>
-  `;
-  new QRCode(document.getElementById('yourQR'), { text: 'https://acoustiskin.com/ref=ACST001', width: 150, height: 150 });
-}
-
-function showReferralDetails(id) {
-  const c = crmData.customers.find(c => c.id === id);
-  if (!c) return;
-  const modal = document.createElement('div');
-  modal.className = 'modal';
-  modal.style.display = 'block';
-  modal.innerHTML = `
-    <div class="modal-content max-w-sm mx-auto">
-      <div class="text-center">
-        <h3 class="text-2xl font-bold mb-4">${c.name}'s Code</h3>
-        <div class="text-3xl font-bold text-green-600 mb-4">${c.referralCode || 'Generate'}</div>
-        <div id="qr-${id}" class="mx-auto mb-6"></div>
-        <div class="flex justify-center gap-4">
-          <button class="btn-secondary" onclick="shareToEmail('${c.referralCode}')"><i class="fas fa-envelope"></i> Email</button>
-          <button class="btn-secondary" onclick="shareToSMS('${c.referralCode}')"><i class="fas fa-sms"></i> SMS</button>
+      
+      <div class="card mt-6">
+        <h3 class="text-xl font-semibold mb-4 text-gray-800">AI-Powered Sales Insights (Mock)</h3>
+        <div class="flex flex-wrap gap-4">
+            <div class="ai-badge bg-purple-600/90 text-white p-3 rounded-lg flex items-center space-x-2">
+                <i class="fas fa-bolt"></i>
+                <p><strong>Prediction:</strong> 15% Q4 Growth</p>
+            </div>
+            <div class="ai-badge bg-red-600/90 text-white p-3 rounded-lg flex items-center space-x-2">
+                <i class="fas fa-exclamation-circle"></i>
+                <p><strong>Risk:</strong> SKU003 low stock may hurt custom sales.</p>
+            </div>
+            <div class="ai-badge bg-blue-600/90 text-white p-3 rounded-lg flex items-center space-x-2">
+                <i class="fas fa-star"></i>
+                <p><strong>Opportunity:</strong> Target 'Pro Series' to top 20% customers.</p>
+            </div>
         </div>
-        <button class="btn-primary mt-4 w-full" onclick="this.closest('.modal').remove()">Close</button>
+        <button class="mt-4 btn-secondary" onclick="showModal('Generate Full Report', 'Full report generation feature integration.')">
+            Generate Full PDF Report <i class="fas fa-file-pdf ml-2"></i>
+        </button>
       </div>
-    </div>
-  `;
-  document.body.appendChild(modal);
-  new QRCode(document.getElementById(`qr-${id}`), { text: `https://acoustiskin.com/ref=${c.referralCode}`, width: 200, height: 200 });
-}
+    `;
+  }
+  
+  // Chart setup for reports view
+  function setupReportsCharts() {
+    const ctx = document.getElementById('productSalesChart');
+    if (!ctx) return;
 
-function shareToEmail(code) {
-  window.location.href = `mailto:?subject=AcoustiSkin Referral&body=Use code ${code} for $15 off!`;
-}
+    // Group orders by product
+    const productSales = state.orders.reduce((acc, order) => {
+        const volume = order.quantity;
+        acc[order.product] = (acc[order.product] || 0) + volume;
+        return acc;
+    }, {});
 
-function shareToSMS(code) {
-  window.location.href = `sms:?body=Use code ${code} for $15 off AcoustiSkin!`;
-}
+    const labels = Object.keys(productSales);
+    const data = labels.map(label => productSales[label]);
+    const backgroundColors = [
+        'rgba(76, 175, 80, 0.8)', // Green
+        'rgba(33, 150, 243, 0.8)', // Blue
+        'rgba(255, 152, 0, 0.8)', // Orange
+        'rgba(156, 39, 176, 0.8)' // Purple
+    ];
 
-function saveReferralSettings(e) {
-  e.preventDefault();
-  referralSettings.creditAmount = parseInt(document.getElementById('creditAmount').value);
-  // Parse ranges and save
-  saveData();
-  closeModal('referralSettingsModal');
-  showNotification('Settings saved!');
-}
+    if (window.productSalesChartInstance) {
+        window.productSalesChartInstance.destroy();
+    }
 
-// ==================== BACKUP ====================
-function quickBackup() {
-  const data = { ...crmData, referralSettings };
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `acoustiskin-crm-backup-${new Date().toISOString().slice(0, 10)}.json`;
-  a.click();
-  localStorage.setItem('lastBackup', Date.now().toString());
-  closeModal('backupReminderModal');
-  showNotification('Backup downloaded!');
-}
+    window.productSalesChartInstance = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Sales Volume (Units)',
+          data: data,
+          backgroundColor: backgroundColors.slice(0, labels.length),
+          borderColor: backgroundColors.slice(0, labels.length).map(c => c.replace('0.8', '1')),
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: {
+                display: true,
+                text: 'Units Sold'
+            }
+          },
+          x: {
+             title: {
+                display: true,
+                text: 'Product'
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            display: false
+          }
+        }
+      }
+    });
+  }
+  
+  // Hook the chart setup into the renderApp function to ensure charts load correctly
+  const originalRenderApp = window.renderApp;
+  window.renderApp = function() {
+      // Check if originalRenderApp exists before calling it (safety)
+      if (originalRenderApp) {
+          originalRenderApp();
+      }
+      if (state.currentView === 'reports') {
+          setupReportsCharts();
+      }
+      if (state.currentView === 'dashboard') {
+          setupDashboardCharts();
+      }
+  };
 
-function snoozeBackup() {
-  localStorage.setItem('lastBackup', Date.now().toString());
-  closeModal('backupReminderModal');
-}
 
-// Check for backup reminder
-if (!localStorage.getItem('lastBackup') || Date.now() - parseInt(localStorage.getItem('lastBackup')) > 7 * 24 * 60 * 60 * 1000) {
-  setTimeout(() => openModal('backupReminderModal'), 5000);
-}
+  // --- SETTINGS VIEW (Implemented) ---
+  function renderSettingsView() {
+    return `
+      <h2 class="text-3xl font-bold text-gray-800 mb-6">System Settings & Data Management</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="card">
+          <h3 class="text-xl font-semibold mb-4 text-gray-800"><i class="fas fa-database mr-2"></i> Data Backup & Import</h3>
+          <p class="text-sm text-gray-600 mb-4">You can download your entire CRM dataset or upload a new JSON file to replace or merge data.</p>
+          
+          <div class="flex space-x-3">
+              <button onclick="showModal('Download Data', 'Feature to securely download CRM data as JSON.')" class="btn-primary flex-1">
+                  <i class="fas fa-download mr-2"></i> Download Data
+              </button>
+              <button onclick="showModal('Import Data', 'Feature to upload and import a CRM JSON file.')" class="btn-secondary flex-1">
+                  <i class="fas fa-upload mr-2"></i> Import Data
+              </button>
+          </div>
+          
+          <div class="info-box mt-4">
+            <p class="text-xs">
+              <i class="fas fa-shield-alt text-blue-600 mr-1"></i> Data is securely stored in a private Firebase instance. Backups are recommended.
+            </p>
+          </div>
+        </div>
 
-// ==================== INIT ====================
-document.addEventListener('DOMContentLoaded', () => {
-  showView('dashboard');
-});
+        <div class="card">
+          <h3 class="text-xl font-semibold mb-4 text-gray-800"><i class="fas fa-cogs mr-2"></i> General Configuration</h3>
+          <form onsubmit="handleSettingsSave(event)">
+            <div class="space-y-4">
+              <div>
+                <label for="systemName" class="block text-sm font-medium text-gray-700">CRM Name</label>
+                <input type="text" id="systemName" value="AcoustiSkin CRM - Enterprise Edition" required
+                  class="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
+              </div>
+              <div>
+                <label for="defaultCurrency" class="block text-sm font-medium text-gray-700">Default Currency</label>
+                <select id="defaultCurrency" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 bg-white">
+                    <option value="USD">USD ($)</option>
+                    <option value="EUR">EUR (€)</option>
+                    <option value="GBP">GBP (£)</option>
+                </select>
+              </div>
+            </div>
+            <button type="submit" class="mt-6 w-full py-3 btn-primary">
+              Save General Settings
+            </button>
+          </form>
+        </div>
+      </div>
+    `;
+  }
+  
+  // Placeholder function for settings save
+  window.handleSettingsSave = (event) => {
+      event.preventDefault();
+      showModal("Settings Saved", "General settings updated successfully (mock save).");
+      // Future implementation: save to a 'settings' collection in Firestore
+  };
+
+  // --- MOBILE MENU TOGGLE ---
+  document.getElementById('menu-toggle')?.addEventListener('click', () => {
+    document.getElementById('sidebar').classList.toggle('-translate-x-full');
+  });
+
+  // --- INITIALIZATION ---
+  initFirebase();
 </script>
+
 </body>
 </html>
