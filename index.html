@@ -1,1815 +1,921 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AcoustiSkin "Pro-Connect" CRM - Enterprise Tier 3</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <style>
-    /* Custom styles for professional, clean look */
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { 
-      font-family: 'Inter', sans-serif;
-      background: #f4f7f9;
-      min-height: 100vh;
-    }
-    .sidebar { 
-      width: 280px; 
-      /* Deep Green/Black for Enterprise feel */
-      background: linear-gradient(180deg, #1e3a24 0%, #0c1a0f 100%); 
-      box-shadow: 4px 0 20px rgba(0,0,0,0.25);
-    }
-    .nav-item {
-      padding: 1rem 1.5rem;
-      color: #b0c4b1;
-      display: flex;
-      align-items: center;
-      transition: background 0.3s, color 0.3s;
-      cursor: pointer;
-    }
-    .nav-item:hover, .nav-item.active {
-      background: #2e5940;
-      color: #ffffff;
-      /* Neon Green accent */
-      border-left: 5px solid #a3e635; 
-    }
-    .nav-item i {
-      width: 25px;
-      margin-right: 12px;
-      text-align: center;
-    }
-    /* Calendar specific style */
-    .calendar-cell {
-      min-height: 100px; /* Ensure visibility */
-    }
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AcoustiSkin "Pro-Connect" CRM - Enterprise Tier 3</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    /* Custom styles for professional, clean look */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: 'Inter', sans-serif;
+      background: #f4f7f9;
+      min-height: 100vh;
+    }
+    .sidebar { 
+      width: 280px; 
+      /* Deep Green/Black for Enterprise feel */
+      background: linear-gradient(180deg, #1e3a24 0%, #0c1a0f 100%); 
+      box-shadow: 4px 0 20px rgba(0,0,0,0.25);
+    }
+    .nav-item {
+      padding: 1rem 1.5rem;
+      color: #b0c4b1;
+      display: flex;
+      align-items: center;
+      transition: background 0.3s, color 0.3s;
+      cursor: pointer;
+    }
+    .nav-item:hover, .nav-item.active {
+      background: #2e5940;
+      color: #ffffff;
+      /* Neon Green accent */
+      border-left: 5px solid #a3e635; 
+    }
+    .nav-item i {
+      width: 25px;
+      margin-right: 12px;
+      text-align: center;
+    }
+    /* Calendar specific style */
+    .calendar-cell {
+      min-height: 100px; /* Ensure visibility */
+    }
+  </style>
 </head>
 <body class="flex">
 
-  <div class="sidebar flex flex-col h-screen fixed">
-    <div class="p-6 text-2xl font-bold text-white tracking-widest border-b border-gray-700">
-      AcoustiSkin
-      <div class="text-xs text-gray-400 font-normal">AI-Powered Enterprise Edition</div>
-    </div>
-    <nav class="flex-grow pt-4" id="main-nav">
-      <div class="nav-item active" data-view="dashboard"><i class="fas fa-chart-line"></i> Dashboard</div>
-      <div class="nav-item" data-view="customers"><i class="fas fa-users"></i> Customers</div>
-      <div class="nav-item" data-view="orders"><i class="fas fa-shopping-cart"></i> Orders</div>
-      <div class="nav-item" data-view="calendar"><i class="fas fa-calendar-alt"></i> Calendar</div>
-      <div class="nav-item" data-view="communications"><i class="fas fa-comments"></i> Communications</div>
-      <div class="nav-item" data-view="tasks"><i class="fas fa-tasks"></i> Tasks</div>
-      <div class="nav-item" data-view="pipeline"><i class="fas fa-funnel-dollar"></i> Pipeline</div>
-      <div class="nav-item" data-view="analytics"><i class="fas fa-chart-area"></i> Analytics</div>
-      <div class="nav-item" data-view="marketing"><i class="fas fa-bullhorn"></i> Marketing</div>
-      <div class="nav-item" data-view="referralProgram"><i class="fas fa-share-alt"></i> Referral Program</div>
-    </nav>
+  <div class="sidebar flex flex-col h-screen fixed">
+    <div class="p-6 text-2xl font-bold text-white tracking-widest border-b border-gray-700">
+      AcoustiSkin
+      <div class="text-xs text-gray-400 font-normal">AI-Powered Enterprise Edition</div>
+    </div>
+    <nav class="flex-grow pt-4" id="main-nav">
+      <div class="nav-item active" data-view="dashboard"><i class="fas fa-chart-line"></i> Dashboard</div>
+      <div class="nav-item" data-view="customers"><i class="fas fa-users"></i> Customers</div>
+      <div class="nav-item" data-view="orders"><i class="fas fa-shopping-cart"></i> Orders</div>
+      <div class="nav-item" data-view="calendar"><i class="fas fa-calendar-alt"></i> Calendar</div>
+      <div class="nav-item" data-view="communications"><i class="fas fa-comments"></i> Communications</div>
+      <div class="nav-item" data-view="tasks"><i class="fas fa-tasks"></i> Tasks</div>
+      <div class="nav-item" data-view="pipeline"><i class="fas fa-funnel-dollar"></i> Pipeline</div>
+      <div class="nav-item" data-view="analytics"><i class="fas fa-chart-area"></i> Analytics</div>
+      <div class="nav-item" data-view="marketing"><i class="fas fa-bullhorn"></i> Marketing</div>
+      <div class="nav-item" data-view="referralProgram"><i class="fas fa-share-alt"></i> Referral Program</div>
+    </nav>
+    
+    <div class="p-4 border-t border-gray-700">
+      <div class="text-sm font-semibold text-gray-400 mb-2">Data Utilities</div>
+      <div class="text-xs text-gray-500 mb-2"><i class="fas fa-clock"></i> Last Backup: Yesterday</div>
+      <button onclick="emailBackup()" class="w-full text-left py-2 px-3 text-sm text-gray-200 hover:bg-gray-700 rounded-lg transition"><i class="fas fa-paper-plane"></i> Email Backup</button>
+      <button onclick="downloadBackup()" class="w-full text-left py-2 px-3 text-sm text-gray-200 hover:bg-gray-700 rounded-lg transition"><i class="fas fa-download"></i> Download Backup</button>
+      <button onclick="document.getElementById('importFileInput').click()" class="w-full text-left py-2 px-3 text-sm text-gray-200 hover:bg-gray-700 rounded-lg transition"><i class="fas fa-upload"></i> Import Data</button>
+      <input type="file" id="importFileInput" style="display: none;" onchange="importData(event)">
+    </div>
+  </div>
+
+  <div class="flex-1 ml-72 p-10"> 
+    
+    <header class="flex justify-between items-center pb-8 border-b border-gray-300 mb-8">
+      <h1 id="currentViewTitle" class="text-3xl font-extrabold text-gray-800">Dashboard</h1>
+      <div class="flex space-x-4">
+        <button onclick="renderNewCustomerModal()" class="bg-green-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-green-700 transition flex items-center"><i class="fas fa-user-plus mr-2"></i> New Customer</button>
+        <button onclick="renderNewOrderModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-700 transition flex items-center"><i class="fas fa-plus-square mr-2"></i> New Order</button>
+        <button onclick="renderScheduleEventModal()" class="bg-gray-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-gray-700 transition flex items-center"><i class="fas fa-calendar-plus mr-2"></i> Schedule Event</button>
+      </div>
+    </header>
+
+    <div id="contentArea">
+      </div>
+
+  </div>
+
+  <div id="modalContainer" class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden justify-center items-center z-50">
+    <div id="modalContent" class="bg-white rounded-xl shadow-2xl w-11/12 max-w-4xl max-h-[90vh] overflow-y-auto">
+      </div>
+  </div>
+
+
+  <script>
+    // ======================================================================
+    // 1. DATA STORE (Using localStorage for persistence)
+    // ======================================================================
+    let crmData = {
+      customers: [
+        { id: 1, name: 'Reed Kimmel', email: 'reed@gmail.com', mobileNumber: '555-0100', status: 'Active', aiScore: 81, leadSource: 'Google', referralsMade: 0, potentialReferrals: 2, industry: 'Tech', ageRange: '30-40', skillLevel: 'Intermediate', playFrequency: 'Weekly', currentPaddleBrand: 'CRBN', socialEngagementLevel: 'High', notes: 'Very engaged in local tournaments.', createdAt: new Date('2025-10-01') },
+        // UPDATED: Anna Lee is now 'Active' and AI Score is 75
+        { id: 2, name: 'Anna Lee', email: 'anna@example.com', mobileNumber: '555-0101', status: 'Active', aiScore: 75, leadSource: 'Referral', referralsMade: 0, potentialReferrals: 0, industry: 'Healthcare', ageRange: '40-50', skillLevel: 'Beginner', playFrequency: 'Monthly', currentPaddleBrand: 'Bantam', socialEngagementLevel: 'Low', notes: 'Met at trade show.', createdAt: new Date('2025-11-01') },
+      ],
+      orders: [
+        { id: 101, customerId: 1, customerName: 'Reed Kimmel', product: 'Performance Cover', quantity: 1, price: 69.99, orderDate: new Date('2025-10-15'), status: 'Delivered', notes: '', totalValue: 69.99, referralCode: null },
+      ],
+      communications: [ // NEW: Placeholder Communications
+        { id: 1, customerId: 1, customerName: 'Reed Kimmel', type: 'Email', date: new Date('2025-11-20'), summary: 'Sent Q4 product catalog.', direction: 'Outbound', channel: 'Email', rating: 'Neutral', isFollowUp: false },
+        { id: 2, customerId: 2, customerName: 'Anna Lee', type: 'Phone Call', date: new Date('2025-11-25'), summary: 'Discussed beginner paddle options.', direction: 'Inbound', channel: 'Phone', rating: 'Positive', isFollowUp: false },
+        { id: 3, customerId: 1, customerName: 'Reed Kimmel', type: 'SMS', date: new Date('2025-11-28'), summary: 'Scheduled follow-up for next week.', direction: 'Outbound', channel: 'SMS', rating: 'Neutral', isFollowUp: true },
+      ],
+      tasks: [],
+      events: [ // PLACEHOLDER EVENTS/REQUESTS FOR CALENDAR
+        { id: 1, title: 'Q4 Review Meeting', date: new Date('2025-12-05'), type: 'Internal', notes: 'Discuss Q4 revenue goals.' },
+        { id: 2, title: 'Customer Call: Reed Kimmel', date: new Date('2025-12-10'), type: 'Customer', customerId: 1, notes: 'Follow-up on product feedback.' },
+        { id: 3, title: 'Trade Show Prep', date: new Date('2025-12-19'), type: 'Internal', notes: 'Finalize booth materials.' },
+        { id: 4, title: 'Company Holiday Party', date: new Date('2025-12-24'), type: 'Internal', notes: 'Team building.' },
+        { id: 5, title: 'New Customer Prospect', date: new Date('2025-12-30'), type: 'Customer', customerId: 2, notes: 'Follow up with Anna Lee.' },
+      ],
+      holidays: { // US Federal Holidays (For Calendar View)
+        '1/1': 'New Year\'s Day', '1/20': 'MLK Jr. Day', '2/17': 'Presidents\' Day', '5/26': 'Memorial Day',
+        '6/19': 'Juneteenth', '7/4': 'Independence Day', '9/1': 'Labor Day', '10/13': 'Columbus Day',
+        '11/11': 'Veterans Day', '11/27': 'Thanksgiving Day', '12/25': 'Christmas Day'
+      },
+      referralSettings: {
+        creditAmount: 25,
+        minOrderValue: 100,
+        tiers: [
+          { name: 'Bronze', referrals: '1-2', icon: 'fas fa-medal text-yellow-800' },
+          { name: 'Silver', referrals: '3-5', icon: 'fas fa-medal text-gray-400' },
+          { name: 'Gold', referrals: '6-10', icon: 'fas fa-medal text-yellow-500' },
+          { name: 'Platinum', referrals: '11+', icon: 'fas fa-star text-blue-400' },
+        ]
+      },
+      dashboardMetrics: {
+        totalCustomers: 2,
+        totalOrders: 1,
+        totalRevenue: 69.99,
+        eventsToday: 0
+      }
+    };
+
+    let nextCustomerId = 3;
+    let nextOrderId = 102;
+    let nextEventId = 6;
+    let nextCommId = 4; // NEW: Next ID for Communications
+    let currentCalendarDate = new Date(); // New state variable for calendar month
+
+    // ======================================================================
+    // 2. CORE UTILITY FUNCTIONS
+    // ======================================================================
+
+    function showModal(contentHTML) {
+      document.getElementById('modalContent').innerHTML = contentHTML;
+      document.getElementById('modalContainer').classList.remove('hidden');
+      document.getElementById('modalContainer').classList.add('flex');
+    }
+
+    function hideModal() {
+      document.getElementById('modalContainer').classList.add('hidden');
+      document.getElementById('modalContainer').classList.remove('flex');
+    }
+
+    function saveData() {
+      localStorage.setItem('acoustiskinCRM_AI', JSON.stringify(crmData));
+    }
+
+    function loadData() {
+      const saved = localStorage.getItem('acoustiskinCRM_AI');
+      if (saved) {
+        // Simple conversion of date strings back to Date objects for demo
+        const parsed = JSON.parse(saved);
+        parsed.orders.forEach(o => o.orderDate = new Date(o.orderDate));
+        parsed.customers.forEach(c => c.createdAt = new Date(c.createdAt));
+        parsed.events.forEach(e => e.date = new Date(e.date)); // Load events
+        parsed.communications.forEach(c => c.date = new Date(c.date)); // Load communications
+        crmData = parsed;
+        
+        // Recalculate IDs for new entries
+        if (crmData.customers.length > 0) {
+            nextCustomerId = Math.max(...crmData.customers.map(c => c.id)) + 1;
+        }
+        if (crmData.orders.length > 0) {
+            nextOrderId = Math.max(...crmData.orders.map(o => o.id)) + 1;
+        }
+        if (crmData.events.length > 0) {
+            nextEventId = Math.max(...crmData.events.map(e => e.id)) + 1;
+        }
+        if (crmData.communications.length > 0) {
+            nextCommId = Math.max(...crmData.communications.map(c => c.id)) + 1;
+        }
+      }
+    }
+
+    function updateDashboard() {
+        crmData.dashboardMetrics.totalCustomers = crmData.customers.length;
+        crmData.dashboardMetrics.totalOrders = crmData.orders.length;
+        crmData.dashboardMetrics.totalRevenue = crmData.orders.reduce((sum, order) => sum + order.totalValue, 0);
+        
+        // Calculate events today
+        const todayString = new Date().toDateString();
+        crmData.dashboardMetrics.eventsToday = crmData.events.filter(e => e.date.toDateString() === todayString).length;
+
+        saveData();
+    }
+
+    function deleteCustomer(id) { 
+      if (confirm('Are you sure you want to delete this customer and ALL related data (orders, comms, tasks)? This action cannot be undone.')) { 
+        crmData.customers = crmData.customers.filter(c => c.id !== id); 
+        crmData.orders = crmData.orders.filter(o => o.customerId !== id); 
+        crmData.events = crmData.events.filter(e => e.customerId !== id); 
+        crmData.communications = crmData.communications.filter(c => c.customerId !== id); 
+        crmData.tasks = crmData.tasks.filter(t => t.customerId !== id);
+        
+        saveData();
+        updateDashboard();
+        renderView('customers');
+        alert('Customer and all related data deleted successfully.');
+      }
+    }
     
-    <div class="p-4 border-t border-gray-700">
-      <div class="text-sm font-semibold text-gray-400 mb-2">Data Utilities</div>
-      <div class="text-xs text-gray-500 mb-2"><i class="fas fa-clock"></i> Last Backup: Yesterday</div>
-      <button onclick="emailBackup()" class="w-full text-left py-2 px-3 text-sm text-gray-200 hover:bg-gray-700 rounded-lg transition"><i class="fas fa-paper-plane"></i> Email Backup</button>
-      <button onclick="downloadBackup()" class="w-full text-left py-2 px-3 text-sm text-gray-200 hover:bg-gray-700 rounded-lg transition"><i class="fas fa-download"></i> Download Backup</button>
-      <button onclick="document.getElementById('importFileInput').click()" class="w-full text-left py-2 px-3 text-sm text-gray-200 hover:bg-gray-700 rounded-lg transition"><i class="fas fa-upload"></i> Import Data</button>
-      <input type="file" id="importFileInput" style="display: none;" onchange="importData(event)">
-    </div>
-  </div>
-
-  <div class="flex-1 ml-72 p-10"> 
-    
-    <header class="flex justify-between items-center pb-8 border-b border-gray-300 mb-8">
-      <h1 id="currentViewTitle" class="text-3xl font-extrabold text-gray-800">Dashboard</h1>
-      <div class="flex space-x-4">
-        <button onclick="renderNewCustomerModal()" class="bg-green-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-green-700 transition flex items-center"><i class="fas fa-user-plus mr-2"></i> New Customer</button>
-        <button onclick="renderNewOrderModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-700 transition flex items-center"><i class="fas fa-plus-square mr-2"></i> New Order</button>
-        <button onclick="renderScheduleEventModal()" class="bg-gray-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-gray-700 transition flex items-center"><i class="fas fa-calendar-plus mr-2"></i> Schedule Event</button>
-      </div>
-    </header>
-
-    <div id="contentArea">
-      </div>
-
-  </div>
-
-  <div id="modalContainer" class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden justify-center items-center z-50">
-    <div id="modalContent" class="bg-white rounded-xl shadow-2xl w-11/12 max-w-4xl max-h-[90vh] overflow-y-auto">
-      </div>
-  </div>
-
-
-  <script>
-    // ======================================================================
-    // 1. DATA STORE (Using localStorage for persistence)
-    // ======================================================================
-    let crmData = {
-      customers: [
-        { id: 1, name: 'Reed Kimmel', email: 'reed@gmail.com', mobileNumber: '555-0100', status: 'Active', aiScore: 81, leadSource: 'Google', referralsMade: 0, potentialReferrals: 2, industry: 'Tech', ageRange: '30-40', skillLevel: 'Intermediate', playFrequency: 'Weekly', currentPaddleBrand: 'CRBN', socialEngagementLevel: 'High', notes: 'Very engaged in local tournaments.', createdAt: new Date('2025-10-01') },
-        // UPDATED: Anna Lee is now 'Active' and AI Score is 75
-        { id: 2, name: 'Anna Lee', email: 'anna@example.com', mobileNumber: '555-0101', status: 'Active', aiScore: 75, leadSource: 'Referral', referralsMade: 0, potentialReferrals: 0, industry: 'Healthcare', ageRange: '40-50', skillLevel: 'Beginner', playFrequency: 'Monthly', currentPaddleBrand: 'Bantam', socialEngagementLevel: 'Low', notes: 'Met at trade show.', createdAt: new Date('2025-11-01') },
-      ],
-      orders: [
-        { id: 101, customerId: 1, customerName: 'Reed Kimmel', product: 'Performance Cover', quantity: 1, price: 69.99, orderDate: new Date('2025-10-15'), status: 'Delivered', notes: '', totalValue: 69.99, referralCode: null },
-      ],
-      communications: [ // NEW: Placeholder Communications
-        { id: 1, customerId: 1, customerName: 'Reed Kimmel', type: 'Email', date: new Date('2025-11-20'), summary: 'Sent Q4 product catalog.', direction: 'Outbound', channel: 'Email', rating: 'Neutral', isFollowUp: false },
-        { id: 2, customerId: 2, customerName: 'Anna Lee', type: 'Phone Call', date: new Date('2025-11-25'), summary: 'Discussed beginner paddle options.', direction: 'Inbound', channel: 'Phone', rating: 'Positive', isFollowUp: false },
-        { id: 3, customerId: 1, customerName: 'Reed Kimmel', type: 'SMS', date: new Date('2025-11-28'), summary: 'Scheduled follow-up for next week.', direction: 'Outbound', channel: 'SMS', rating: 'Neutral', isFollowUp: true },
-      ],
-      tasks: [],
-      events: [ // PLACEHOLDER EVENTS/REQUESTS FOR CALENDAR
-        { id: 1, title: 'Q4 Review Meeting', date: new Date('2025-12-05'), type: 'Internal', notes: 'Discuss Q4 revenue goals.' },
-        { id: 2, title: 'Customer Call: Reed Kimmel', date: new Date('2025-12-10'), type: 'Customer', customerId: 1, notes: 'Follow-up on product feedback.' },
-        { id: 3, title: 'Trade Show Prep', date: new Date('2025-12-19'), type: 'Internal', notes: 'Finalize booth materials.' },
-        { id: 4, title: 'Company Holiday Party', date: new Date('2025-12-24'), type: 'Internal', notes: 'Team building.' },
-        { id: 5, title: 'New Customer Prospect', date: new Date('2025-12-30'), type: 'Customer', customerId: 2, notes: 'Follow up with Anna Lee.' },
-      ],
-      holidays: { // US Federal Holidays (For Calendar View)
-        '1/1': 'New Year\'s Day', '1/20': 'MLK Jr. Day', '2/17': 'Presidents\' Day', '5/26': 'Memorial Day',
-        '6/19': 'Juneteenth', '7/4': 'Independence Day', '9/1': 'Labor Day', '10/13': 'Columbus Day',
-        '11/11': 'Veterans Day', '11/27': 'Thanksgiving Day', '12/25': 'Christmas Day'
-      },
-      referralSettings: {
-        creditAmount: 25,
-        minOrderValue: 100,
-        tiers: [
-          { name: 'Bronze', referrals: '1-2', icon: 'fas fa-medal text-yellow-800' },
-          { name: 'Silver', referrals: '3-5', icon: 'fas fa-medal text-gray-400' },
-          { name: 'Gold', referrals: '6-10', icon: 'fas fa-medal text-yellow-500' },
-          { name: 'Platinum', referrals: '11+', icon: 'fas fa-star text-blue-400' },
-        ]
-      },
-      dashboardMetrics: {
-        totalCustomers: 2,
-        totalOrders: 1,
-        totalRevenue: 69.99,
-        eventsToday: 0
-      }
-    };
-
-    let nextCustomerId = 3;
-    let nextOrderId = 102;
-    let nextEventId = 6;
-    let nextCommId = 4; // NEW: Next ID for Communications
-    let currentCalendarDate = new Date(); // New state variable for calendar month
-
-    // ======================================================================
-    // 2. CORE UTILITY FUNCTIONS
-    // ======================================================================
-
-    function showModal(contentHTML) {
-      document.getElementById('modalContent').innerHTML = contentHTML;
-      document.getElementById('modalContainer').classList.remove('hidden');
-      document.getElementById('modalContainer').classList.add('flex');
-    }
-
-    function hideModal() {
-      document.getElementById('modalContainer').classList.add('hidden');
-      document.getElementById('modalContainer').classList.remove('flex');
-    }
-
-    function saveData() {
-      localStorage.setItem('acoustiskinCRM_AI', JSON.stringify(crmData));
-    }
-
-    function loadData() {
-      const saved = localStorage.getItem('acoustiskinCRM_AI');
-      if (saved) {
-        // Simple conversion of date strings back to Date objects for demo
-        const parsed = JSON.parse(saved);
-        parsed.orders.forEach(o => o.orderDate = new Date(o.orderDate));
-        parsed.customers.forEach(c => c.createdAt = new Date(c.createdAt));
-        parsed.events.forEach(e => e.date = new Date(e.date)); // Load events
-        parsed.communications.forEach(c => c.date = new Date(c.date)); // Load communications
-        crmData = parsed;
-        
-        // Recalculate IDs for new entries
-        if (crmData.customers.length > 0) {
-            nextCustomerId = Math.max(...crmData.customers.map(c => c.id)) + 1;
+    function deleteOrder(id) {
+        if (confirm('Are you sure you want to delete this order?')) {
+            crmData.orders = crmData.orders.filter(o => o.id !== id);
+            saveData();
+            updateDashboard();
+            renderView('orders');
+            alert('Order deleted successfully.');
         }
-        if (crmData.orders.length > 0) {
-            nextOrderId = Math.max(...crmData.orders.map(o => o.id)) + 1;
-        }
-        if (crmData.events.length > 0) {
-            nextEventId = Math.max(...crmData.events.map(e => e.id)) + 1;
-        }
-        if (crmData.communications.length > 0) {
-            nextCommId = Math.max(...crmData.communications.map(c => c.id)) + 1;
-        }
-      }
     }
 
-    function updateDashboard() {
-        crmData.dashboardMetrics.totalCustomers = crmData.customers.length;
-        crmData.dashboardMetrics.totalOrders = crmData.orders.length;
-        crmData.dashboardMetrics.totalRevenue = crmData.orders.reduce((sum, order) => sum + order.totalValue, 0);
-        
-        // Calculate events today
-        const todayString = new Date().toDateString();
-        crmData.dashboardMetrics.eventsToday = crmData.events.filter(e => e.date.toDateString() === todayString).length;
+    // ======================================================================
+    // 3. NAVIGATION & VIEW RENDERING (Fixed Sidebar Logic)
+    // ======================================================================
 
-        saveData();
-    }
+    document.addEventListener('DOMContentLoaded', () => {
+        // Load data and recalculate metrics before anything renders
+        loadData();
+        updateDashboard();
 
-    function deleteCustomer(id) { 
-      if (confirm('Are you sure you want to delete this customer and ALL related data (orders, comms, tasks)? This action cannot be undone.')) { 
-        crmData.customers = crmData.customers.filter(c => c.id !== id); 
-        crmData.orders = crmData.orders.filter(o => o.customerId !== id); 
-        crmData.events = crmData.events.filter(e => e.customerId !== id); 
-        crmData.communications = crmData.communications.filter(c => c.customerId !== id); 
-        crmData.tasks = crmData.tasks.filter(t => t.customerId !== id);
-        
-        saveData();
-        updateDashboard();
-        renderView('customers');
-        alert('Customer and all related data deleted successfully.');
-      }
-    }
+        // FIX: Attach event listeners to all navigation items
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                // 1. Remove 'active' class from all navigation items
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                
+                // 2. Add 'active' class to the clicked item
+                this.classList.add('active');
+                
+                // 3. Get the view name from the data attribute
+                const view = this.getAttribute('data-view');
+                
+                // 4. Update the header title
+                document.getElementById('currentViewTitle').textContent = this.textContent.trim();
+                
+                // 5. Render the corresponding view
+                renderView(view);
+            });
+        });
 
-    // ======================================================================
-    // 3. NAVIGATION & VIEW RENDERING (Fixed Sidebar Logic)
-    // ======================================================================
+        // Initial load: Render the dashboard view first
+        renderView('dashboard');
+    });
 
-    document.addEventListener('DOMContentLoaded', () => {
-        // Load data and recalculate metrics before anything renders
-        loadData();
-        updateDashboard();
+    function renderView(view) {
+      const contentArea = document.getElementById('contentArea');
+      contentArea.innerHTML = ''; 
 
-        // FIX: Attach event listeners to all navigation items
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', function() {
-                // 1. Remove 'active' class from all navigation items
-                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-                
-                // 2. Add 'active' class to the clicked item
-                this.classList.add('active');
-                
-                // 3. Get the view name from the data attribute
-                const view = this.getAttribute('data-view');
-                
-                // 4. Update the header title
-                document.getElementById('currentViewTitle').textContent = this.textContent.trim();
-                
-                // 5. Render the corresponding view
-                renderView(view);
-            });
-        });
+      switch (view) {
+        case 'dashboard':
+          renderDashboardView(contentArea);
+          break;
+        case 'customers':
+          renderCustomersView(contentArea);
+          break;
+        case 'orders':
+          renderOrdersView(contentArea);
+          break;
+        case 'calendar':
+          renderCalendarView(contentArea); // FIXED/UPDATED
+          break;
+        case 'communications':
+          renderCommunicationsView(contentArea); // NEW: Now functional
+          break;
+        case 'tasks':
+          renderPlaceholderView(contentArea, 'Tasks', 'Manage your to-do items and follow-ups.', 'fas fa-list-check');
+          break;
+        case 'pipeline':
+          renderPlaceholderView(contentArea, 'Sales Pipeline', 'Track leads from Prospect to Won/Lost stages.', 'fas fa-chart-bar');
+          break;
+        case 'analytics':
+          renderPlaceholderView(contentArea, 'Analytics', 'View detailed reports on sales performance, customer churn, and referral success.', 'fas fa-magnifying-glass-chart');
+          break;
+        case 'marketing':
+          renderPlaceholderView(contentArea, 'Marketing', 'Manage campaigns, automations, and social media engagement recommendations.', 'fas fa-hand-holding-dollar');
+          break;
+        case 'referralProgram':
+          renderReferralProgramView(contentArea);
+          break;
+        default:
+          contentArea.innerHTML = '<h2>View Not Found</h2>';
+      }
+    }
 
-        // Initial load: Render the dashboard view first
-        renderView('dashboard');
-    });
+    function renderPlaceholderView(container, title, description, iconClass) {
+      container.innerHTML = `
+        <div class="p-8 bg-white rounded-xl shadow-lg">
+          <h2 class="text-2xl font-semibold text-gray-800 flex items-center"><i class="${iconClass} mr-3 text-green-600"></i> ${title}</h2>
+          <p class="mt-2 text-gray-600">${description}</p>
+          <div class="mt-6 p-4 bg-gray-100 rounded text-gray-700">
+            <i class="fas fa-tools mr-2"></i> This module is under active development for the Enterprise Tier 3 launch.
+          </div>
+        </div>
+      `;
+    }
 
-    function renderView(view) {
-      const contentArea = document.getElementById('contentArea');
-      contentArea.innerHTML = ''; 
+    // ======================================================================
+    // 4. DASHBOARD VIEW
+    // ======================================================================
+    function renderDashboardView(container) {
+      const metrics = crmData.dashboardMetrics;
+      container.innerHTML = `
+        <div class="grid grid-cols-4 gap-6 mb-8">
+          ${renderMetricCard('Total Customers', metrics.totalCustomers, 'fas fa-users', 'bg-blue-100 text-blue-600')}
+          ${renderMetricCard('Total Orders', metrics.totalOrders, 'fas fa-shopping-cart', 'bg-yellow-100 text-yellow-600')}
+          ${renderMetricCard('Total Revenue', '$' + metrics.totalRevenue.toFixed(2), 'fas fa-dollar-sign', 'bg-green-100 text-green-600')}
+          ${renderMetricCard('Events Today', metrics.eventsToday, 'fas fa-calendar-day', 'bg-red-100 text-red-600')}
+        </div>
+        <div class="grid grid-cols-2 gap-6">
+          <div class="p-6 bg-white rounded-xl shadow-lg">
+            <h3 class="text-lg font-semibold mb-4 text-gray-800"><i class="fas fa-chart-pie mr-2"></i> AI Score Distribution</h3>
+            <canvas id="aiScoreChart"></canvas>
+          </div>
+          <div class="p-6 bg-white rounded-xl shadow-lg">
+            <h3 class="text-lg font-semibold mb-4 text-gray-800"><i class="fas fa-arrow-up-right-dots mr-2"></i> Monthly Revenue Trend</h3>
+            <canvas id="revenueChart"></canvas>
+          </div>
+        </div>
+      `;
+      // Placeholder chart data
+      const highValue = crmData.customers.filter(c => c.aiScore >= 75).length;
+      const mediumValue = crmData.customers.filter(c => c.aiScore >= 50 && c.aiScore < 75).length;
+      const lowValue = crmData.customers.filter(c => c.aiScore < 50).length;
 
-      switch (view) {
-        case 'dashboard':
-          renderDashboardView(contentArea);
-          break;
-        case 'customers':
-          renderCustomersView(contentArea);
-          break;
-        case 'orders':
-          renderOrdersView(contentArea);
-          break;
-        case 'calendar':
-          renderCalendarView(contentArea); // UPDATED
-          break;
-        case 'communications':
-          renderCommunicationsView(contentArea); // UPDATED: Now functional
-          break;
-        case 'tasks':
-          renderPlaceholderView(contentArea, 'Tasks', 'Manage your to-do items and follow-ups.', 'fas fa-list-check');
-          break;
-        case 'pipeline':
-          renderPlaceholderView(contentArea, 'Sales Pipeline', 'Track leads from Prospect to Won/Lost stages.', 'fas fa-chart-bar');
-          break;
-        case 'analytics':
-          renderPlaceholderView(contentArea, 'Analytics', 'View detailed reports on sales performance, customer churn, and referral success.', 'fas fa-magnifying-glass-chart');
-          break;
-        case 'marketing':
-          renderPlaceholderView(contentArea, 'Marketing', 'Manage campaigns, automations, and social media engagement recommendations.', 'fas fa-hand-holding-dollar');
-          break;
-        case 'referralProgram':
-          renderReferralProgramView(contentArea);
-          break;
-        default:
-          contentArea.innerHTML = '<h2>View Not Found</h2>';
-      }
-    }
+      new Chart(document.getElementById('aiScoreChart'), {
+        type: 'doughnut',
+        data: {
+          labels: ['High Value (75-100)', 'Medium Value (50-74)', 'Low Value (0-49)'],
+          datasets: [{
+            data: [highValue, mediumValue, lowValue],
+            backgroundColor: ['#10b981', '#f59e0b', '#ef4444'],
+            hoverOffset: 4
+          }]
+        }
+      });
+      new Chart(document.getElementById('revenueChart'), {
+        type: 'line',
+        data: {
+          labels: ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'],
+          datasets: [{
+            label: 'Revenue',
+            data: [crmData.dashboardMetrics.totalRevenue, 120, 180, 250, 300, 450],
+            borderColor: '#059669',
+            tension: 0.1
+          }]
+        }
+      });
+    }
 
-    function renderPlaceholderView(container, title, description, iconClass) {
-      container.innerHTML = `
-        <div class="p-8 bg-white rounded-xl shadow-lg">
-          <h2 class="text-2xl font-semibold text-gray-800 flex items-center"><i class="${iconClass} mr-3 text-green-600"></i> ${title}</h2>
-          <p class="mt-2 text-gray-600">${description}</p>
-          <div class="mt-6 p-4 bg-gray-100 rounded text-gray-700">
-            <i class="fas fa-tools mr-2"></i> This module is under active development for the Enterprise Tier 3 launch.
-          </div>
-        </div>
-      `;
-    }
-
-    // ======================================================================
-    // 4. DASHBOARD VIEW
-    // ======================================================================
-    function renderDashboardView(container) {
-      const metrics = crmData.dashboardMetrics;
-      container.innerHTML = `
-        <div class="grid grid-cols-4 gap-6 mb-8">
-          ${renderMetricCard('Total Customers', metrics.totalCustomers, 'fas fa-users', 'bg-blue-100 text-blue-600')}
-          ${renderMetricCard('Total Orders', metrics.totalOrders, 'fas fa-shopping-cart', 'bg-yellow-100 text-yellow-600')}
-          ${renderMetricCard('Total Revenue', '$' + metrics.totalRevenue.toFixed(2), 'fas fa-dollar-sign', 'bg-green-100 text-green-600')}
-          ${renderMetricCard('Events Today', metrics.eventsToday, 'fas fa-calendar-day', 'bg-red-100 text-red-600')}
-        </div>
-        <div class="grid grid-cols-2 gap-6">
-          <div class="p-6 bg-white rounded-xl shadow-lg">
-            <h3 class="text-lg font-semibold mb-4 text-gray-800"><i class="fas fa-chart-pie mr-2"></i> AI Score Distribution</h3>
-            <canvas id="aiScoreChart"></canvas>
-          </div>
-          <div class="p-6 bg-white rounded-xl shadow-lg">
-            <h3 class="text-lg font-semibold mb-4 text-gray-800"><i class="fas fa-arrow-up-right-dots mr-2"></i> Monthly Revenue Trend</h3>
-            <canvas id="revenueChart"></canvas>
-          </div>
-        </div>
-      `;
-      // Placeholder chart data
-      const highValue = crmData.customers.filter(c => c.aiScore >= 75).length;
-      const mediumValue = crmData.customers.filter(c => c.aiScore >= 50 && c.aiScore < 75).length;
-      const lowValue = crmData.customers.filter(c => c.aiScore < 50).length;
-
-      new Chart(document.getElementById('aiScoreChart'), {
-        type: 'doughnut',
-        data: {
-          labels: ['High Value (75-100)', 'Medium Value (50-74)', 'Low Value (0-49)'],
-          datasets: [{
-            data: [highValue, mediumValue, lowValue],
-            backgroundColor: ['#10b981', '#f59e0b', '#ef4444'],
-            hoverOffset: 4
-          }]
-        }
-      });
-      new Chart(document.getElementById('revenueChart'), {
-        type: 'line',
-        data: {
-          labels: ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'],
-          datasets: [{
-            label: 'Revenue',
-            data: [crmData.dashboardMetrics.totalRevenue, 120, 180, 250, 300, 450],
-            borderColor: '#059669',
-            tension: 0.1
-          }]
-        }
-      });
-    }
-
-    function renderMetricCard(title, value, iconClass, colorClass) {
-      return `
-        <div class="p-6 bg-white rounded-xl shadow-lg flex items-center justify-between">
-          <div>
-            <div class="text-sm font-medium text-gray-500">${title}</div>
-            <div class="text-3xl font-bold text-gray-900">${value}</div>
-          </div>
-          <div class="w-12 h-12 rounded-full flex items-center justify-center ${colorClass}">
-            <i class="${iconClass} text-xl"></i>
-          </div>
-        </div>
-      `;
-    }
+    function renderMetricCard(title, value, iconClass, colorClass) {
+      return `
+        <div class="p-6 bg-white rounded-xl shadow-lg flex items-center justify-between">
+          <div>
+            <div class="text-sm font-medium text-gray-500">${title}</div>
+            <div class="text-3xl font-bold text-gray-900">${value}</div>
+          </div>
+          <div class="w-12 h-12 rounded-full flex items-center justify-center ${colorClass}">
+            <i class="${iconClass} text-xl"></i>
+          </div>
+        </div>
+      `;
+    }
 
 
-    // ======================================================================
-    // 5. CUSTOMERS VIEW
-    // ======================================================================
-
-    function renderCustomersView(container) {
-      const customerRows = crmData.customers.map(c => `
-        <tr class="hover:bg-gray-50 transition duration-150">
-          <td class="p-4 whitespace-nowrap text-sm font-medium text-gray-900">${c.name}</td>
-          <td class="p-4 whitespace-nowrap text-sm text-gray-500">${c.email}</td>
-          <td class="p-4 whitespace-nowrap text-sm">
-            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${c.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">
-              ${c.status}
-            </span>
-          </td>
-          <td class="p-4 whitespace-nowrap text-sm text-gray-500">${c.aiScore}/100</td>
-          <td class="p-4 whitespace-nowrap text-sm text-gray-500">${c.leadSource}</td>
-          <td class="p-4 whitespace-nowrap text-sm text-gray-500">${c.referralsMade}</td>
-          <td class="p-4 whitespace-nowrap text-sm text-gray-500">${c.potentialReferrals}</td>
-          <td class="p-4 whitespace-nowrap text-sm font-medium">
-            <button onclick="renderCustomerDetailModal(${c.id})" class="text-indigo-600 hover:text-indigo-900 mr-4"><i class="fas fa-eye"></i> View</button>
-            <button onclick="editCustomer(${c.id})" class="text-yellow-600 hover:text-yellow-900 mr-4"><i class="fas fa-edit"></i> Edit</button>
-            <button onclick="deleteCustomer(${c.id})" class="text-red-600 hover:text-red-900"><i class="fas fa-trash"></i> Delete</button>
-          </td>
-        </tr>
-      `).join('');
-
-      container.innerHTML = `
-        <div class="p-6 bg-white rounded-xl shadow-lg">
-          <h2 class="text-2xl font-bold mb-4 text-gray-800">Customers</h2>
-          <div class="flex justify-between items-center mb-6">
-            <button onclick="renderNewCustomerModal()" class="bg-green-600 text-white px-4 py-2 rounded-lg shadow-sm hover:bg-green-700 transition flex items-center"><i class="fas fa-user-plus mr-2"></i> Add Customer</button>
-            <div class="relative">
-              <input type="text" placeholder="Search customers..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" onkeyup="filterCustomers(this.value)">
-              <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-            </div>
-          </div>
-          <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-              <thead class="bg-gray-50">
-                <tr>
-                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
-                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">AI Score</th>
-                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lead Source</th>
-                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Referrals Made</th>
-                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Potential Referrals</th>
-                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+    // ======================================================================
+    // 5. CUSTOMERS VIEW (STUBS/MOCK FUNCTIONS)
+    // ======================================================================
+    
+    function renderNewCustomerModal() { showModal(`<h3>New Customer Modal (Stub)</h3><p>Form to add new customer goes here.</p><button onclick="hideModal()">Close</button>`); }
+    function renderCustomerDetailModal(id) { showModal(`<h3>Customer Detail for ID ${id} (Stub)</h3><p>Detailed view of customer's profile, orders, and comms.</p><button onclick="hideModal()">Close</button>`); }
+    function editCustomer(id) { showModal(`<h3>Edit Customer ID ${id} (Stub)</h3><p>Form to edit customer details.</p><button onclick="hideModal()">Close</button>`); }
+    function filterCustomers(searchTerm) { 
+        const filteredCustomers = crmData.customers.filter(c => c.name.toLowerCase().includes(searchTerm.toLowerCase()));
+        // Re-render only the table body for demonstration (full re-render for real app)
+        const tableBody = document.getElementById('customerTableBody');
+        if (tableBody) {
+             tableBody.innerHTML = filteredCustomers.map(c => `
+                <tr class="hover:bg-gray-50 transition duration-150">
+                    <td class="p-4 whitespace-nowrap text-sm font-medium text-gray-900">${c.name}</td>
+                    <td class="p-4 whitespace-nowrap text-sm text-gray-500">${c.email}</td>
+                    <td class="p-4 whitespace-nowrap text-sm">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${c.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">
+                            ${c.status}
+                        </span>
+                    </td>
+                    <td class="p-4 whitespace-nowrap text-sm text-gray-500">${c.aiScore}/100</td>
+                    <td class="p-4 whitespace-nowrap text-sm text-gray-500">${c.leadSource}</td>
+                    <td class="p-4 whitespace-nowrap text-sm text-gray-500">${c.referralsMade}</td>
+                    <td class="p-4 whitespace-nowrap text-sm text-gray-500">${c.potentialReferrals}</td>
+                    <td class="p-4 whitespace-nowrap text-sm font-medium">
+                        <button onclick="renderCustomerDetailModal(${c.id})" class="text-indigo-600 hover:text-indigo-900 mr-4"><i class="fas fa-eye"></i> View</button>
+                        <button onclick="editCustomer(${c.id})" class="text-yellow-600 hover:text-yellow-900 mr-4"><i class="fas fa-edit"></i> Edit</button>
+                        <button onclick="deleteCustomer(${c.id})" class="text-red-600 hover:text-red-900"><i class="fas fa-trash"></i> Delete</button>
+                    </td>
                 </tr>
-              </thead>
-              <tbody id="customerTableBody" class="bg-white divide-y divide-gray-200">
-                ${customerRows}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      `;
-    }
-
-    // ======================================================================
-    // 6. ORDERS VIEW
-    // ======================================================================
-
-    function renderOrdersView(container) {
-      // Ensure date objects are correctly formatted for display
-      const ordersWithFormattedDates = crmData.orders.map(o => ({
-        ...o,
-        orderDate: o.orderDate instanceof Date ? o.orderDate : new Date(o.orderDate)
-      }));
-
-      const orderRows = ordersWithFormattedDates.map(o => `
-        <tr class="hover:bg-gray-50 transition duration-150">
-          <td class="p-4 whitespace-nowrap text-sm font-medium text-gray-900">${o.id}</td>
-          <td class="p-4 whitespace-nowrap text-sm text-gray-500">${o.customerName}</td>
-          <td class="p-4 whitespace-nowrap text-sm text-gray-500">${o.product}</td>
-          <td class="p-4 whitespace-nowrap text-sm text-gray-500">$${o.totalValue.toFixed(2)}</td>
-          <td class="p-4 whitespace-nowrap text-sm text-gray-500">${o.orderDate.toLocaleDateString()}</td>
-          <td class="p-4 whitespace-nowrap text-sm">
-            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-              ${o.status === 'Delivered' ? 'bg-green-100 text-green-800' : o.status === 'Shipped' ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800'}">
-              ${o.status}
-            </span>
-          </td>
-          <td class="p-4 whitespace-nowrap text-sm text-gray-500">${o.referralCode || 'N/A'}</td>
-          <td class="p-4 whitespace-nowrap text-sm font-medium">
-            <button onclick="viewOrderDetails(${o.id})" class="text-indigo-600 hover:text-indigo-900 mr-4"><i class="fas fa-eye"></i> View</button>
-            <button onclick="deleteOrder(${o.id})" class="text-red-600 hover:text-red-900"><i class="fas fa-trash"></i> Delete</button>
-          </td>
-        </tr>
-      `).join('');
-
-      container.innerHTML = `
-        <div class="p-6 bg-white rounded-xl shadow-lg">
-          <h2 class="text-2xl font-bold mb-4 text-gray-800">Orders List</h2>
-          <div class="flex justify-between items-center mb-6">
-            <button onclick="renderNewOrderModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-sm hover:bg-blue-700 transition flex items-center"><i class="fas fa-plus-square mr-2"></i> Add Order</button>
-            <div class="relative">
-              <input type="text" placeholder="Search orders..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" onkeyup="filterOrders(this.value)">
-              <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-            </div>
-          </div>
-          <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-              <thead class="bg-gray-50">
-                <tr>
-                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
-                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
-                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
-                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Value</th>
-                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ref. Code</th>
-                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                </tr>
-              </thead>
-              <tbody id="orderTableBody" class="bg-white divide-y divide-gray-200">
-                ${orderRows}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      `;
-    }
-    
-    // ======================================================================
-    // 7. CALENDAR VIEW
-    // ======================================================================
-
-    function renderCalendarView(container) {
-      // Use the global state for the current month being viewed (initial is today's date)
-      const targetDate = currentCalendarDate;
-      container.innerHTML = `
-        <div class="p-6 bg-white rounded-xl shadow-lg h-full">
-            <h2 class="text-2xl font-bold mb-4 text-gray-800">Sales & Team Calendar</h2>
-            ${generateCalendarHTML(targetDate)}
-        </div>
-      `;
-    }
-
-    // Helper to generate the core calendar structure
-    function generateCalendarHTML(date) {
-        const year = date.getFullYear();
-        const month = date.getMonth();
-        const firstDay = new Date(year, month, 1);
-        const lastDay = new Date(year, month + 1, 0);
-        const today = new Date();
-
-        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-        const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
-        let calendarHTML = `
-            <div class="flex justify-between items-center mb-4">
-                <button onclick="changeMonth(-1)" class="text-xl font-bold text-gray-600 hover:text-green-600"><i class="fas fa-arrow-left"></i></button>
-                <h3 class="text-xl font-bold text-gray-800">${monthNames[month]} ${year}</h3>
-                <button onclick="changeMonth(1)" class="text-xl font-bold text-gray-600 hover:text-green-600"><i class="fas fa-arrow-right"></i></button>
-            </div>
-            <div class="grid grid-cols-7 text-center font-semibold text-gray-600 border-b pb-2">
-                ${dayNames.map(day => `<div class="p-2">${day}</div>`).join('')}
-            </div>
-            <div class="grid grid-cols-7 gap-px border border-gray-200 rounded-lg overflow-hidden min-h-[600px]">
-        `;
-
-        let currentDay = new Date(firstDay);
-        currentDay.setDate(currentDay.getDate() - currentDay.getDay()); // Start on the first Sunday
-
-        // Generate cells for up to 6 weeks
-        for (let i = 0; i < 42; i++) {
-            const dayOfMonth = currentDay.getDate();
-            const isCurrentMonth = currentDay.getMonth() === month;
-            const isToday = currentDay.toDateString() === today.toDateString();
-            const holidayKey = `${currentDay.getMonth() + 1}/${dayOfMonth}`;
-            const holidayName = crmData.holidays[holidayKey];
-            
-            // Filter events for this specific date, ensuring comparison is made with Date objects
-            const events = crmData.events.filter(e => e.date.toDateString() === currentDay.toDateString());
-
-            // Determine cell styling
-            let cellClasses = `calendar-cell p-2 border-r border-b relative group transition duration-100 `;
-            if (isCurrentMonth) {
-                cellClasses += 'bg-white hover:bg-gray-100';
-            } else {
-                cellClasses += 'bg-gray-50 text-gray-400';
-            }
-            if (isToday) {
-                cellClasses += ' ring-2 ring-green-500 z-10';
-            }
-            
-            // Adjust border for the last column and row
-            if ((i + 1) % 7 === 0) cellClasses = cellClasses.replace('border-r', '');
-            if (i >= 35) cellClasses = cellClasses.replace('border-b', '');
-
-
-            // Generate content
-            let contentHTML = `
-                <div class="text-right text-sm font-bold ${isToday ? 'text-green-700' : 'text-gray-900'}">${dayOfMonth}</div>
-                <div class="space-y-1 mt-1 text-left">
-            `;
-
-            if (holidayName) {
-                contentHTML += `<div class="text-xs font-medium text-red-700 bg-red-100 px-1 rounded-sm truncate" title="${holidayName}"><i class="fas fa-star mr-1"></i> ${holidayName}</div>`;
-            }
-
-            events.forEach(event => {
-                const customer = crmData.customers.find(c => c.id === event.customerId);
-                const title = customer ? `${event.title} (${customer.name})` : event.title;
-                contentHTML += `<div class="text-xs font-medium text-blue-800 bg-blue-100 px-1 rounded-sm truncate cursor-pointer hover:bg-blue-200" title="${title}" onclick="showEventDetails(${event.id})"><i class="fas fa-circle-dot mr-1 text-blue-500 text-[6px]"></i> ${event.type}</div>`;
-            });
-            
-            // Button to add a new event on this day
-            contentHTML += `
-                </div>
-                <button onclick="renderScheduleEventModal('${currentDay.toISOString().substring(0, 10)}')" title="Schedule Event" class="absolute top-0 left-0 m-1 opacity-0 group-hover:opacity-100 text-green-600 hover:text-green-800 transition duration-150 p-1 bg-white rounded-full shadow-md z-20">
-                    <i class="fas fa-plus text-xs"></i>
-                </button>
-            `;
-
-            calendarHTML += `<div class="${cellClasses}">${contentHTML}</div>`;
-            
-            currentDay.setDate(currentDay.getDate() + 1);
-            if (i >= 35 && currentDay.getDay() === 0 && currentDay > lastDay) {
-                break; // Stop after filling the month and completing the last week
-            }
+            `).join('');
         }
-        
-        calendarHTML += '</div>'; // Close grid
-        return calendarHTML;
     }
 
-    function changeMonth(delta) {
-        // Move the global state date forward or backward by 'delta' months
-        currentCalendarDate.setMonth(currentCalendarDate.getMonth() + delta);
-        renderView('calendar'); // Re-render the calendar view with the new month
+
+    function renderCustomersView(container) {
+      const customerRows = crmData.customers.map(c => `
+        <tr class="hover:bg-gray-50 transition duration-150">
+          <td class="p-4 whitespace-nowrap text-sm font-medium text-gray-900">${c.name}</td>
+          <td class="p-4 whitespace-nowrap text-sm text-gray-500">${c.email}</td>
+          <td class="p-4 whitespace-nowrap text-sm">
+            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${c.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">
+              ${c.status}
+            </span>
+          </td>
+          <td class="p-4 whitespace-nowrap text-sm text-gray-500">${c.aiScore}/100</td>
+          <td class="p-4 whitespace-nowrap text-sm text-gray-500">${c.leadSource}</td>
+          <td class="p-4 whitespace-nowrap text-sm text-gray-500">${c.referralsMade}</td>
+          <td class="p-4 whitespace-nowrap text-sm text-gray-500">${c.potentialReferrals}</td>
+          <td class="p-4 whitespace-nowrap text-sm font-medium">
+            <button onclick="renderCustomerDetailModal(${c.id})" class="text-indigo-600 hover:text-indigo-900 mr-4"><i class="fas fa-eye"></i> View</button>
+            <button onclick="editCustomer(${c.id})" class="text-yellow-600 hover:text-yellow-900 mr-4"><i class="fas fa-edit"></i> Edit</button>
+            <button onclick="deleteCustomer(${c.id})" class="text-red-600 hover:text-red-900"><i class="fas fa-trash"></i> Delete</button>
+          </td>
+        </tr>
+      `).join('');
+
+      container.innerHTML = `
+        <div class="p-6 bg-white rounded-xl shadow-lg">
+          <h2 class="text-2xl font-bold mb-4 text-gray-800">Customers</h2>
+          <div class="flex justify-between items-center mb-6">
+            <button onclick="renderNewCustomerModal()" class="bg-green-600 text-white px-4 py-2 rounded-lg shadow-sm hover:bg-green-700 transition flex items-center"><i class="fas fa-user-plus mr-2"></i> Add Customer</button>
+            <div class="relative">
+              <input type="text" placeholder="Search customers..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" onkeyup="filterCustomers(this.value)">
+              <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            </div>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
+                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">AI Score</th>
+                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lead Source</th>
+                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Referrals Made</th>
+                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Potential Referrals</th>
+                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="customerTableBody" class="bg-white divide-y divide-gray-200">
+                ${customerRows}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    // ======================================================================
+    // 6. ORDERS VIEW (STUBS/MOCK FUNCTIONS)
+    // ======================================================================
+    function renderNewOrderModal() { showModal(`<h3>New Order Modal (Stub)</h3><p>Form to add a new order goes here.</p><button onclick="hideModal()">Close</button>`); }
+    function viewOrderDetails(id) { showModal(`<h3>Order Details for ID ${id} (Stub)</h3><p>Detailed view of product, shipping, etc.</p><button onclick="hideModal()">Close</button>`); }
+    function filterOrders(searchTerm) {
+        const filteredOrders = crmData.orders.filter(o => o.customerName.toLowerCase().includes(searchTerm.toLowerCase()) || o.product.toLowerCase().includes(searchTerm.toLowerCase()) || o.id.toString().includes(searchTerm));
+        // Re-render only the table body for demonstration (full re-render for real app)
+        const tableBody = document.getElementById('orderTableBody');
+        if (tableBody) {
+             tableBody.innerHTML = filteredOrders.map(o => `
+                <tr class="hover:bg-gray-50 transition duration-150">
+                    <td class="p-4 whitespace-nowrap text-sm font-medium text-gray-900">${o.id}</td>
+                    <td class="p-4 whitespace-nowrap text-sm text-gray-500">${o.customerName}</td>
+                    <td class="p-4 whitespace-nowrap text-sm text-gray-500">${o.product}</td>
+                    <td class="p-4 whitespace-nowrap text-sm text-gray-500">$${o.totalValue.toFixed(2)}</td>
+                    <td class="p-4 whitespace-nowrap text-sm text-gray-500">${o.orderDate.toLocaleDateString()}</td>
+                    <td class="p-4 whitespace-nowrap text-sm">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                            ${o.status === 'Delivered' ? 'bg-green-100 text-green-800' : o.status === 'Shipped' ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800'}">
+                            ${o.status}
+                        </span>
+                    </td>
+                    <td class="p-4 whitespace-nowrap text-sm text-gray-500">${o.referralCode || 'N/A'}</td>
+                    <td class="p-4 whitespace-nowrap text-sm font-medium">
+                        <button onclick="viewOrderDetails(${o.id})" class="text-indigo-600 hover:text-indigo-900 mr-4"><i class="fas fa-eye"></i> View</button>
+                        <button onclick="deleteOrder(${o.id})" class="text-red-600 hover:text-red-900"><i class="fas fa-trash"></i> Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
     }
+
+
+    function renderOrdersView(container) {
+      // Ensure date objects are correctly formatted for display
+      const ordersWithFormattedDates = crmData.orders.map(o => ({
+        ...o,
+        orderDate: o.orderDate instanceof Date ? o.orderDate : new Date(o.orderDate)
+      }));
+
+      const orderRows = ordersWithFormattedDates.map(o => `
+        <tr class="hover:bg-gray-50 transition duration-150">
+          <td class="p-4 whitespace-nowrap text-sm font-medium text-gray-900">${o.id}</td>
+          <td class="p-4 whitespace-nowrap text-sm text-gray-500">${o.customerName}</td>
+          <td class="p-4 whitespace-nowrap text-sm text-gray-500">${o.product}</td>
+          <td class="p-4 whitespace-nowrap text-sm text-gray-500">$${o.totalValue.toFixed(2)}</td>
+          <td class="p-4 whitespace-nowrap text-sm text-gray-500">${o.orderDate.toLocaleDateString()}</td>
+          <td class="p-4 whitespace-nowrap text-sm">
+            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+              ${o.status === 'Delivered' ? 'bg-green-100 text-green-800' : o.status === 'Shipped' ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800'}">
+              ${o.status}
+            </span>
+          </td>
+          <td class="p-4 whitespace-nowrap text-sm text-gray-500">${o.referralCode || 'N/A'}</td>
+          <td class="p-4 whitespace-nowrap text-sm font-medium">
+            <button onclick="viewOrderDetails(${o.id})" class="text-indigo-600 hover:text-indigo-900 mr-4"><i class="fas fa-eye"></i> View</button>
+            <button onclick="deleteOrder(${o.id})" class="text-red-600 hover:text-red-900"><i class="fas fa-trash"></i> Delete</button>
+          </td>
+        </tr>
+      `).join('');
+
+      container.innerHTML = `
+        <div class="p-6 bg-white rounded-xl shadow-lg">
+          <h2 class="text-2xl font-bold mb-4 text-gray-800">Orders List</h2>
+          <div class="flex justify-between items-center mb-6">
+            <button onclick="renderNewOrderModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-sm hover:bg-blue-700 transition flex items-center"><i class="fas fa-plus-square mr-2"></i> Add Order</button>
+            <div class="relative">
+              <input type="text" placeholder="Search orders..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" onkeyup="filterOrders(this.value)">
+              <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            </div>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
+                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Value</th>
+                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ref. Code</th>
+                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="orderTableBody" class="bg-white divide-y divide-gray-200">
+                ${orderRows}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+    
+    // ======================================================================
+    // 7. CALENDAR VIEW (FIXED AND ENHANCED)
+    // ======================================================================
 
     function showEventDetails(id) {
         const event = crmData.events.find(e => e.id === id);
         if (!event) return;
+        const customer = crmData.customers.find(c => c.id === event.customerId);
+        const customerInfo = customer ? `<p class="mt-2 text-sm text-gray-600">Customer: <span class="font-semibold">${customer.name}</span> (${customer.email})</p>` : '';
 
-        // Ensure date object for formatting
-        const eventDate = event.date instanceof Date ? event.date : new Date(event.date);
-        const customer = event.customerId ? crmData.customers.find(c => c.id === event.customerId) : null;
-        const customerLink = customer ? `<a href="#" onclick="hideModal(); renderView('customers');" class="text-indigo-600 hover:text-indigo-800">${customer.name}</a>` : 'N/A';
-        const titleText = customer ? `${event.title} (for ${customer.name})` : event.title;
-
-        const detailHTML = `
-            <div class="p-8">
-                <div class="flex justify-between items-center border-b pb-4 mb-6">
-                    <h3 class="text-2xl font-bold text-gray-800 flex items-center"><i class="fas fa-circle-dot mr-2"></i> Event Details: ${titleText}</h3>
-                    <button type="button" onclick="hideModal()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
-                </div>
-                <div class="grid grid-cols-2 gap-x-12 gap-y-4 text-gray-700">
-                    <div><span class="font-medium text-gray-900">Date:</span> ${eventDate.toLocaleDateString()}</div>
-                    <div><span class="font-medium text-gray-900">Type:</span> ${event.type}</div>
-                    <div><span class="font-medium text-gray-900">Associated Customer:</span> ${customerLink}</div>
-                </div>
-                <div class="mt-4 col-span-2">
-                    <span class="font-medium text-gray-900 block mb-2">Notes/Description:</span> 
-                    <p class="p-3 bg-gray-50 rounded-lg">${event.notes || 'No description provided.'}</p>
-                </div>
-                <div class="flex justify-end space-x-4 pt-6 border-t mt-8">
-                    <button type="button" onclick="hideModal(); deleteEvent(${event.id})" class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"><i class="fas fa-trash mr-2"></i> Delete Event</button>
+        showModal(`
+            <div class="p-6">
+                <h3 class="text-2xl font-bold text-gray-800">${event.title}</h3>
+                <button onclick="hideModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700"><i class="fas fa-times"></i></button>
+                <div class="mt-4 space-y-2">
+                    <p class="text-md text-gray-700"><i class="fas fa-calendar-day mr-2 text-green-600"></i> Date: <span class="font-semibold">${event.date.toLocaleDateString()}</span></p>
+                    <p class="text-md text-gray-700"><i class="fas fa-tag mr-2 text-blue-600"></i> Type: <span class="font-semibold">${event.type}</span></p>
+                    ${customerInfo}
+                    <p class="text-md text-gray-700"><i class="fas fa-sticky-note mr-2 text-yellow-600"></i> Notes: ${event.notes || 'No details provided.'}</p>
                 </div>
             </div>
-        `;
-        showModal(detailHTML);
-    }
-    
-    function deleteEvent(id) {
-      if (confirm('Are you sure you want to delete this event?')) { 
-        crmData.events = crmData.events.filter(e => e.id !== id); 
-        saveData();
-        updateDashboard();
-        renderView('calendar');
-        alert('Event deleted successfully.');
-      }
+        `);
     }
 
-    // ======================================================================
-    // 8. COMMUNICATIONS VIEW (NEW IMPLEMENTATION)
-    // ======================================================================
-
-    function renderCommunicationsView(container) {
-        const commRows = crmData.communications.sort((a, b) => b.date - a.date).map(c => `
-            <tr class="hover:bg-gray-50 transition duration-150">
-                <td class="p-4 whitespace-nowrap text-sm font-medium text-gray-900">${c.customerName}</td>
-                <td class="p-4 whitespace-nowrap text-sm text-gray-500">${c.date.toLocaleDateString()}</td>
-                <td class="p-4 whitespace-nowrap text-sm font-semibold">
-                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                        ${c.type === 'Email' ? 'bg-blue-100 text-blue-800' : c.type === 'Phone Call' ? 'bg-green-100 text-green-800' : c.type === 'SMS' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800'}">
-                        ${c.type}
-                    </span>
-                </td>
-                <td class="p-4 whitespace-nowrap text-sm text-gray-500">${c.direction}</td>
-                <td class="p-4 text-sm text-gray-500 max-w-xs truncate" title="${c.summary}">${c.summary}</td>
-                <td class="p-4 whitespace-nowrap text-sm font-semibold">
-                    <i class="fas ${c.rating === 'Positive' ? 'fa-face-smile text-green-500' : c.rating === 'Negative' ? 'fa-face-frown text-red-500' : 'fa-face-meh text-gray-500'}"></i>
-                </td>
-                <td class="p-4 whitespace-nowrap text-sm font-medium">
-                    <button onclick="viewCommunicationDetails(${c.id})" class="text-indigo-600 hover:text-indigo-900 mr-4"><i class="fas fa-eye"></i> View</button>
-                    <button onclick="deleteCommunication(${c.id})" class="text-red-600 hover:text-red-900"><i class="fas fa-trash"></i> Delete</button>
-                </td>
-            </tr>
-        `).join('');
-
-        container.innerHTML = `
-            <div class="p-6 bg-white rounded-xl shadow-lg">
-                <h2 class="text-2xl font-bold mb-4 text-gray-800">Customer Communications Log</h2>
-                <div class="flex justify-between items-center mb-6">
-                    <button onclick="renderNewCommunicationModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-sm hover:bg-blue-700 transition flex items-center"><i class="fas fa-comment-dots mr-2"></i> Log New Communication</button>
-                    <div class="relative">
-                        <input type="text" placeholder="Search communications..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" onkeyup="filterCommunications(this.value)">
-                        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                    </div>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
-                                <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                                <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                                <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Direction</th>
-                                <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Summary</th>
-                                <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rating</th>
-                                <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="communicationTableBody" class="bg-white divide-y divide-gray-200">
-                            ${commRows}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        `;
-    }
-    
-    // Helper functions for Communications
-    function viewCommunicationDetails(id) {
-        const comm = crmData.communications.find(c => c.id === id);
-        if (!comm) return;
-
-        const commDate = comm.date instanceof Date ? comm.date : new Date(comm.date);
-        
-        const detailHTML = `
-            <div class="p-8">
-                <div class="flex justify-between items-center border-b pb-4 mb-6">
-                    <h3 class="text-2xl font-bold text-gray-800 flex items-center"><i class="fas fa-comment-dots mr-2"></i> Communication Log #${comm.id}</h3>
-                    <button type="button" onclick="hideModal()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
-                </div>
-                <div class="grid grid-cols-2 gap-x-12 gap-y-4 text-gray-700">
-                    <div><span class="font-medium text-gray-900">Customer:</span> ${comm.customerName}</div>
-                    <div><span class="font-medium text-gray-900">Date:</span> ${commDate.toLocaleDateString()}</div>
-                    <div><span class="font-medium text-gray-900">Type:</span> ${comm.type}</div>
-                    <div><span class="font-medium text-gray-900">Direction:</span> ${comm.direction}</div>
-                    <div><span class="font-medium text-gray-900">Rating:</span> ${comm.rating}</div>
-                    <div><span class="font-medium text-gray-900">Follow-up Needed:</span> ${comm.isFollowUp ? '<span class="text-red-500">Yes</span>' : 'No'}</div>
-                </div>
-                <div class="mt-4 col-span-2">
-                    <span class="font-medium text-gray-900 block mb-2">Summary:</span> 
-                    <p class="p-3 bg-gray-50 rounded-lg">${comm.summary || 'No summary provided.'}</p>
-                </div>
-                <div class="flex justify-end space-x-4 pt-6 border-t mt-8">
-                    <button type="button" onclick="hideModal(); deleteCommunication(${comm.id})" class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"><i class="fas fa-trash mr-2"></i> Delete Log</button>
-                </div>
-            </div>
-        `;
-        showModal(detailHTML);
-    }
-
-    function deleteCommunication(id) {
-        if (confirm('Are you sure you want to delete this communication log?')) { 
-            crmData.communications = crmData.communications.filter(c => c.id !== id); 
-            saveData();
-            renderView('communications');
-            alert('Communication log deleted successfully.');
-        }
-    }
-
-    function filterCommunications(searchTerm) {
-        const lowerCaseSearch = searchTerm.toLowerCase();
-        const filteredComms = crmData.communications.filter(c => 
-            c.customerName.toLowerCase().includes(lowerCaseSearch) ||
-            c.type.toLowerCase().includes(lowerCaseSearch) ||
-            c.summary.toLowerCase().includes(lowerCaseSearch)
-        ).sort((a, b) => b.date - a.date);
-
-        const commRows = filteredComms.map(c => `
-            <tr class="hover:bg-gray-50 transition duration-150">
-                <td class="p-4 whitespace-nowrap text-sm font-medium text-gray-900">${c.customerName}</td>
-                <td class="p-4 whitespace-nowrap text-sm text-gray-500">${c.date.toLocaleDateString()}</td>
-                <td class="p-4 whitespace-nowrap text-sm font-semibold">
-                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                        ${c.type === 'Email' ? 'bg-blue-100 text-blue-800' : c.type === 'Phone Call' ? 'bg-green-100 text-green-800' : c.type === 'SMS' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800'}">
-                        ${c.type}
-                    </span>
-                </td>
-                <td class="p-4 whitespace-nowrap text-sm text-gray-500">${c.direction}</td>
-                <td class="p-4 text-sm text-gray-500 max-w-xs truncate" title="${c.summary}">${c.summary}</td>
-                <td class="p-4 whitespace-nowrap text-sm font-semibold">
-                    <i class="fas ${c.rating === 'Positive' ? 'fa-face-smile text-green-500' : c.rating === 'Negative' ? 'fa-face-frown text-red-500' : 'fa-face-meh text-gray-500'}"></i>
-                </td>
-                <td class="p-4 whitespace-nowrap text-sm font-medium">
-                    <button onclick="viewCommunicationDetails(${c.id})" class="text-indigo-600 hover:text-indigo-900 mr-4"><i class="fas fa-eye"></i> View</button>
-                    <button onclick="deleteCommunication(${c.id})" class="text-red-600 hover:text-red-900"><i class="fas fa-trash"></i> Delete</button>
-                </td>
-            </tr>
-        `).join('');
-
-        document.getElementById('communicationTableBody').innerHTML = commRows;
-    }
-
-
-    // ======================================================================
-    // 9. NEW COMMUNICATION MODAL 
-    // ======================================================================
-
-    function renderNewCommunicationModal() {
-        const customerOptions = crmData.customers.map(c => 
-            `<option value="${c.id}">${c.name} (${c.email})</option>`
-        ).join('');
-
-        const modalHTML = `
-            <form onsubmit="handleNewCommunicationSubmission(event)" class="p-8 space-y-8">
-                <div class="flex justify-between items-center border-b pb-4">
-                    <h3 class="text-2xl font-bold text-gray-800"><i class="fas fa-comment-dots mr-2"></i> Log New Communication</h3>
-                    <button type="button" onclick="hideModal()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="commCustomerId" class="block text-sm font-medium text-gray-700">Customer *</label>
-                        <select id="commCustomerId" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg" required>
-                            <option value="">Select Customer...</option>
-                            ${customerOptions}
-                        </select>
-                    </div>
-                    <div>
-                        <label for="commDate" class="block text-sm font-medium text-gray-700">Date *</label>
-                        <input type="date" id="commDate" value="${new Date().toISOString().substring(0, 10)}" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg" required>
-                    </div>
-                    <div>
-                        <label for="commType" class="block text-sm font-medium text-gray-700">Type *</label>
-                        <select id="commType" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg" required>
-                            <option value="Email">Email</option>
-                            <option value="Phone Call">Phone Call</option>
-                            <option value="SMS">SMS/Text</option>
-                            <option value="In-Person">In-Person</option>
-                            <option value="Social Media">Social Media</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="commDirection" class="block text-sm font-medium text-gray-700">Direction *</label>
-                        <select id="commDirection" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg" required>
-                            <option value="Outbound">Outbound (You contacted them)</option>
-                            <option value="Inbound">Inbound (They contacted you)</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="commRating" class="block text-sm font-medium text-gray-700">Sentiment Rating *</label>
-                        <select id="commRating" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg" required>
-                            <option value="Neutral">Neutral</option>
-                            <option value="Positive">Positive</option>
-                            <option value="Negative">Negative</option>
-                        </select>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <input type="checkbox" id="isFollowUp" class="form-checkbox h-4 w-4 text-red-600 border-gray-300 rounded focus:ring-red-500">
-                        <label for="isFollowUp" class="text-sm font-medium text-gray-700">Flag for Follow-up?</label>
-                    </div>
-                </div>
-
-                <div class="md:col-span-2">
-                    <label for="commSummary" class="block text-sm font-medium text-gray-700">Summary / Notes *</label>
-                    <textarea id="commSummary" rows="4" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg" required placeholder="Briefly summarize the conversation, key takeaways, and next steps."></textarea>
-                </div>
-
-                <div class="flex justify-end space-x-4 pt-6 border-t">
-                    <button type="button" onclick="hideModal()" class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition">Cancel</button>
-                    <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition"><i class="fas fa-save mr-2"></i> Log Communication</button>
-                </div>
-            </form>
-        `;
-        showModal(modalHTML);
-    }
-
-    function handleNewCommunicationSubmission(event) {
-        event.preventDefault();
-        const form = event.target;
-
-        const customerId = parseInt(form.commCustomerId.value);
-        const customer = crmData.customers.find(c => c.id === customerId);
-
-        if (!customer) {
-            alert('Please select a valid customer.');
-            return;
-        }
-
-        const newComm = {
-            id: nextCommId++,
-            customerId: customerId,
-            customerName: customer.name,
-            type: form.commType.value,
-            date: new Date(form.commDate.value),
-            direction: form.commDirection.value,
-            rating: form.commRating.value,
-            summary: form.commSummary.value,
-            isFollowUp: form.isFollowUp.checked,
-        };
-
-        crmData.communications.push(newComm);
-        
-        saveData();
-        hideModal();
-        renderView('communications');
-        alert('Communication successfully logged!');
-    }
-    
-    // ======================================================================
-    // 10. NEW CUSTOMER MODAL (All 38+ Fields) - (No change in this section)
-    // ======================================================================
-
-    function renderNewCustomerModal(customer = {}) {
-      const isEditing = !!customer.id;
-      const title = isEditing ? 'Edit Customer' : 'Add New Customer';
-
-      const modalHTML = `
-        <form onsubmit="handleCustomerSubmission(event, ${customer.id || 'null'})" class="p-8 space-y-8">
-          <div class="flex justify-between items-center border-b pb-4">
-            <h3 class="text-2xl font-bold text-gray-800">${title}</h3>
-            <button type="button" onclick="hideModal()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
-          </div>
-
-          <fieldset class="border p-6 rounded-lg shadow-sm space-y-4">
-            <legend class="text-lg font-semibold text-gray-800 px-2"><i class="fas fa-id-card mr-2"></i> I. Core Contact and Status</legend>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div>
-                <label for="fullName" class="block text-sm font-medium text-gray-700">Full Name *</label>
-                <input type="text" id="fullName" value="${customer.name || ''}" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg" required>
-              </div>
-              <div>
-                <label for="contactType" class="block text-sm font-medium text-gray-700">Contact Type *</label>
-                <select id="contactType" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg" required>
-                  <option value="">Select...</option>
-                  <option value="Email" ${customer.contactType === 'Email' ? 'selected' : ''}>Email</option>
-                  <option value="Home Number" ${customer.contactType === 'Home Number' ? 'selected' : ''}>Home Number</option>
-                  <option value="Mobile Number" ${customer.contactType === 'Mobile Number' ? 'selected' : ''}>Mobile Number</option>
-                </select>
-              </div>
-              <div>
-                <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-                <input type="email" id="email" value="${customer.email || ''}" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg">
-              </div>
-              <div>
-                <label for="homeNumber" class="block text-sm font-medium text-gray-700">Home Number</label>
-                <input type="tel" id="homeNumber" value="${customer.homeNumber || ''}" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg">
-              </div>
-              <div>
-                <label for="mobileNumber" class="block text-sm font-medium text-gray-700">Mobile Number</label>
-                <input type="tel" id="mobileNumber" value="${customer.mobileNumber || ''}" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg">
-              </div>
-              <div>
-                <label for="status" class="block text-sm font-medium text-gray-700">Status *</label>
-                <select id="status" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg" required>
-                  <option value="Prospect" ${customer.status === 'Prospect' ? 'selected' : ''}>Prospect</option>
-                  <option value="Active" ${customer.status === 'Active' ? 'selected' : ''}>Active</option>
-                  <option value="Inactive" ${customer.status === 'Inactive' ? 'selected' : ''}>Inactive</option>
-                </select>
-              </div>
-              <div>
-                <label for="industry" class="block text-sm font-medium text-gray-700">Industry (e.g., Tech)</label>
-                <input type="text" id="industry" value="${customer.industry || ''}" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg">
-              </div>
-              <div>
-                <label for="ageRange" class="block text-sm font-medium text-gray-700">Age Range</label>
-                <select id="ageRange" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg">
-                  <option value="">Select...</option>
-                  <option value="<20" ${customer.ageRange === '<20' ? 'selected' : ''}>&lt;20</option>
-                  <option value="20-30" ${customer.ageRange === '20-30' ? 'selected' : ''}>20-30</option>
-                  <option value="30-40" ${customer.ageRange === '30-40' ? 'selected' : ''}>30-40</option>
-                  <option value="40-50" ${customer.ageRange === '40-50' ? 'selected' : ''}>40-50</option>
-                  <option value="50+" ${customer.ageRange === '50+' ? 'selected' : ''}>50+</option>
-                </select>
-              </div>
-            </div>
-          </fieldset>
-
-          <fieldset class="border p-6 rounded-lg shadow-sm space-y-4">
-            <legend class="text-lg font-semibold text-gray-800 px-2"><i class="fas fa-map-marker-alt mr-2"></i> II. Address Information</legend>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div class="space-y-2 border p-4 rounded-lg bg-gray-50">
-                <h4 class="font-medium">Billing Address</h4>
-                <label for="billingStreet" class="block text-sm font-medium text-gray-700">Street Address</label>
-                <input type="text" id="billingStreet" value="${customer.billingStreet || ''}" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg" placeholder="123 Main St">
-                <div class="grid grid-cols-3 gap-2">
-                  <div class="col-span-1">
-                    <label for="billingCity" class="block text-sm font-medium text-gray-700">City</label>
-                    <input type="text" id="billingCity" value="${customer.billingCity || ''}" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg">
-                  </div>
-                  <div class="col-span-1">
-                    <label for="billingState" class="block text-sm font-medium text-gray-700">State</label>
-                    <select id="billingState" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg">
-                       <option value="">Select...</option>
-                       </select>
-                  </div>
-                  <div class="col-span-1">
-                    <label for="billingZip" class="block text-sm font-medium text-gray-700">Zip Code</label>
-                    <input type="text" id="billingZip" value="${customer.billingZip || ''}" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg" placeholder="12345">
-                  </div>
-                </div>
-              </div>
-
-              <div class="space-y-2 border p-4 rounded-lg bg-gray-50">
-                <div class="flex items-center mb-2">
-                  <h4 class="font-medium mr-4">Shipping Address</h4>
-                  <input type="checkbox" id="sameAsBilling" class="h-4 w-4 text-green-600 border-gray-300 rounded focus:ring-green-500">
-                  <label for="sameAsBilling" class="ml-2 block text-sm text-gray-700">Same as billing address</label>
-                </div>
-                <label for="shippingStreet" class="block text-sm font-medium text-gray-700">Street Address</label>
-                <input type="text" id="shippingStreet" value="${customer.shippingStreet || ''}" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg" placeholder="123 Main St">
-                <div class="grid grid-cols-3 gap-2">
-                  <div class="col-span-1">
-                    <label for="shippingCity" class="block text-sm font-medium text-gray-700">City</label>
-                    <input type="text" id="shippingCity" value="${customer.shippingCity || ''}" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg">
-                  </div>
-                  <div class="col-span-1">
-                    <label for="shippingState" class="block text-sm font-medium text-gray-700">State</label>
-                    <select id="shippingState" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg">
-                       <option value="">Select...</option>
-                       </select>
-                  </div>
-                  <div class="col-span-1">
-                    <label for="shippingZip" class="block text-sm font-medium text-gray-700">Zip Code</label>
-                    <input type="text" id="shippingZip" value="${customer.shippingZip || ''}" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg" placeholder="12345">
-                  </div>
-                </div>
-              </div>
-            </div>
-          </fieldset>
-
-          <fieldset class="border p-6 rounded-lg shadow-sm space-y-4">
-            <legend class="text-lg font-semibold text-gray-800 px-2"><i class="fas fa-satellite-dish mr-2"></i> III. Lead and Social Information</legend>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div>
-                <label for="leadSource" class="block text-sm font-medium text-gray-700">Lead Source</label>
-                <select id="leadSource" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg">
-                  <option value="">Select...</option>
-                  <option value="Google" ${customer.leadSource === 'Google' ? 'selected' : ''}>Google</option>
-                  <option value="Social Media" ${customer.leadSource === 'Social Media' ? 'selected' : ''}>Social Media</option>
-                  <option value="Referral" ${customer.leadSource === 'Referral' ? 'selected' : ''}>Referral</option>
-                  <option value="Trade Show" ${customer.leadSource === 'Trade Show' ? 'selected' : ''}>Trade Show</option>
-                </select>
-              </div>
-              <div class="col-span-1">
-                <label for="referredBy" class="block text-sm font-medium text-gray-700">Referred By (Customer Name)</label>
-                <input type="text" id="referredBy" value="${customer.referredBy || ''}" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg" placeholder="If applicable">
-              </div>
-              <div class="col-span-1">
-                <label for="socialEngagementLevel" class="block text-sm font-medium text-gray-700">Social Engagement Level</label>
-                <select id="socialEngagementLevel" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg">
-                  <option value="">Select...</option>
-                  <option value="Low" ${customer.socialEngagementLevel === 'Low' ? 'selected' : ''}>Low</option>
-                  <option value="Medium" ${customer.socialEngagementLevel === 'Medium' ? 'selected' : ''}>Medium</option>
-                  <option value="High" ${customer.socialEngagementLevel === 'High' ? 'selected' : ''}>High</option>
-                  <option value="Very High" ${customer.socialEngagementLevel === 'Very High' ? 'selected' : ''}>Very High</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
-              <div class="col-span-1">
-                <label for="primarySocialHandle" class="block text-sm font-medium text-gray-700">Primary Social Handle</label>
-                <input type="text" id="primarySocialHandle" value="${customer.primarySocialHandle || ''}" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg" placeholder="@username">
-              </div>
-              <div class="col-span-1">
-                <label class="block text-sm font-medium text-gray-700">Active Social Platforms</label>
-                <div class="flex flex-wrap gap-4 mt-1 p-3 border border-gray-300 rounded-lg bg-white">
-                    ${['Facebook', 'Instagram', 'Twitter/X', 'TikTok', 'YouTube', 'LinkedIn'].map(platform => `
-                        <label class="inline-flex items-center text-sm">
-                            <input type="checkbox" name="socialPlatforms" value="${platform}" class="form-checkbox h-4 w-4 text-green-600 rounded" ${customer.socialPlatforms && customer.socialPlatforms.includes(platform) ? 'checked' : ''}>
-                            <span class="ml-2">${platform}</span>
-                        </label>
-                    `).join('')}
-                </div>
-              </div>
-            </div>
-          </fieldset>
-
-          <fieldset class="border p-6 rounded-lg shadow-sm space-y-4">
-            <legend class="text-lg font-semibold text-gray-800 px-2"><i class="fas fa-table-tennis-paddle-ball mr-2"></i> IV. Pickleball & Product Profile</legend>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div>
-                <label for="skillLevel" class="block text-sm font-medium text-gray-700">Skill Level</label>
-                <select id="skillLevel" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg">
-                  <option value="">Select...</option>
-                  <option value="Beginner" ${customer.skillLevel === 'Beginner' ? 'selected' : ''}>Beginner</option>
-                  <option value="Intermediate" ${customer.skillLevel === 'Intermediate' ? 'selected' : ''}>Intermediate</option>
-                  <option value="Advanced" ${customer.skillLevel === 'Advanced' ? 'selected' : ''}>Advanced</option>
-                  <option value="Expert" ${customer.skillLevel === 'Expert' ? 'selected' : ''}>Expert</option>
-                  <option value="Professional" ${customer.skillLevel === 'Professional' ? 'selected' : ''}>Professional</option>
-                </select>
-              </div>
-              <div>
-                <label for="playFrequency" class="block text-sm font-medium text-gray-700">Play Frequency</label>
-                <select id="playFrequency" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg">
-                  <option value="">Select...</option>
-                  <option value="Daily" ${customer.playFrequency === 'Daily' ? 'selected' : ''}>Daily</option>
-                  <option value="Weekly" ${customer.playFrequency === 'Weekly' ? 'selected' : ''}>Weekly</option>
-                  <option value="Monthly" ${customer.playFrequency === 'Monthly' ? 'selected' : ''}>Monthly</option>
-                  <option value="Quarterly" ${customer.playFrequency === 'Quarterly' ? 'selected' : ''}>Quarterly</option>
-                  <option value="Less" ${customer.playFrequency === 'Less' ? 'selected' : ''}>Less than Quarterly</option>
-                </select>
-              </div>
-              <div>
-                <label for="currentPaddleBrand" class="block text-sm font-medium text-gray-700">Current Paddle Brand</label>
-                <select id="currentPaddleBrand" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg">
-                  <option value="">Select...</option>
-                  <option value="Bantam" ${customer.currentPaddleBrand === 'Bantam' ? 'selected' : ''}>Bantam</option>
-                  <option value="CRBN" ${customer.currentPaddleBrand === 'CRBN' ? 'selected' : ''}>CRBN</option>
-                  <option value="Diadem" ${customer.currentPaddleBrand === 'Diadem' ? 'selected' : ''}>Diadem</option>
-                  <option value="Electrum" ${customer.currentPaddleBrand === 'Electrum' ? 'selected' : ''}>Electrum</option>
-                  <option value="Other" ${customer.currentPaddleBrand === 'Other' ? 'selected' : ''}>Other</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="pt-4">
-              <label class="block text-sm font-medium text-gray-700">Interested In (Check all that apply)</label>
-              <div class="flex flex-wrap gap-6 mt-1 p-3 border border-gray-300 rounded-lg bg-white">
-                ${['Noise Reduction', 'Performance Enhancement', 'Durability', 'Customization', 'Gift Purchase'].map(interest => `
-                    <label class="inline-flex items-center text-sm">
-                        <input type="checkbox" name="productInterests" value="${interest}" class="form-checkbox h-4 w-4 text-green-600 rounded" ${customer.productInterests && customer.productInterests.includes(interest) ? 'checked' : ''}>
-                        <span class="ml-2">${interest}</span>
-                    </label>
-                `).join('')}
-              </div>
-            </div>
-          </fieldset>
-          
-          <fieldset class="border p-6 rounded-lg shadow-sm space-y-4">
-            <legend class="text-lg font-semibold text-gray-800 px-2"><i class="fas fa-bell mr-2"></i> V. Communication Preferences</legend>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div>
-                <label for="preferredContactMethod" class="block text-sm font-medium text-gray-700">Preferred Contact Method</label>
-                <select id="preferredContactMethod" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg">
-                  <option value="">Select...</option>
-                  <option value="Email" ${customer.preferredContactMethod === 'Email' ? 'selected' : ''}>Email</option>
-                  <option value="SMS" ${customer.preferredContactMethod === 'SMS' ? 'selected' : ''}>SMS</option>
-                  <option value="Phone" ${customer.preferredContactMethod === 'Phone' ? 'selected' : ''}>Phone Call</option>
-                </select>
-              </div>
-              <div>
-                <label for="bestTimeToContact" class="block text-sm font-medium text-gray-700">Best Time to Contact</label>
-                <select id="bestTimeToContact" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg">
-                  <option value="">Select...</option>
-                  <option value="Morning" ${customer.bestTimeToContact === 'Morning' ? 'selected' : ''}>Morning (9am - 12pm)</option>
-                  <option value="Afternoon" ${customer.bestTimeToContact === 'Afternoon' ? 'selected' : ''}>Afternoon (12pm - 5pm)</option>
-                  <option value="Evening" ${customer.bestTimeToContact === 'Evening' ? 'selected' : ''}>Evening (5pm - 8pm)</option>
-                </select>
-              </div>
-              <div class="flex items-center space-x-6">
-                <label class="inline-flex items-center text-sm font-medium text-gray-700 mt-4">
-                    <input type="checkbox" id="emailOptIn" class="form-checkbox h-4 w-4 text-green-600 rounded" ${customer.emailOptIn ? 'checked' : ''}>
-                    <span class="ml-2">Email Marketing Opt-in</span>
-                </label>
-                <label class="inline-flex items-center text-sm font-medium text-gray-700 mt-4">
-                    <input type="checkbox" id="smsOptIn" class="form-checkbox h-4 w-4 text-green-600 rounded" ${customer.smsOptIn ? 'checked' : ''}>
-                    <span class="ml-2">SMS Marketing Opt-in</span>
-                </label>
-              </div>
-            </div>
-          </fieldset>
-
-          <fieldset class="border p-6 rounded-lg shadow-sm space-y-4">
-            <legend class="text-lg font-semibold text-gray-800 px-2"><i class="fas fa-medal mr-2"></i> VI. Referral & Marketing Potential</legend>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div>
-                <label for="interestedInReferral" class="block text-sm font-medium text-gray-700">Interested in Referral Program?</label>
-                <select id="interestedInReferral" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg">
-                  <option value="">Select...</option>
-                  <option value="Yes" ${customer.interestedInReferral === 'Yes' ? 'selected' : ''}>Yes</option>
-                  <option value="No" ${customer.interestedInReferral === 'No' ? 'selected' : ''}>No</option>
-                  <option value="Maybe" ${customer.interestedInReferral === 'Maybe' ? 'selected' : ''}>Maybe</option>
-                </select>
-              </div>
-              <div>
-                <label for="interestedInDiscounts" class="block text-sm font-medium text-gray-700">Interested in Discounts/Promotions?</label>
-                <select id="interestedInDiscounts" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg">
-                  <option value="">Select...</option>
-                  <option value="Yes" ${customer.interestedInDiscounts === 'Yes' ? 'selected' : ''}>Yes</option>
-                  <option value="No" ${customer.interestedInDiscounts === 'No' ? 'selected' : ''}>No</option>
-                </select>
-              </div>
-              <div>
-                <label for="potentialReferrals" class="block text-sm font-medium text-gray-700">Potential Referrals (Estimated number)</label>
-                <input type="number" id="potentialReferrals" value="${customer.potentialReferrals || 0}" min="0" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg">
-              </div>
-            </div>
-          </fieldset>
-
-          <fieldset class="border p-6 rounded-lg shadow-sm space-y-4">
-            <legend class="text-lg font-semibold text-gray-800 px-2"><i class="fas fa-clipboard mr-2"></i> VII. Additional Notes</legend>
-            <div>
-              <label for="notes" class="sr-only">Notes</label>
-              <textarea id="notes" rows="3" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg" placeholder="Any additional information...">${customer.notes || ''}</textarea>
-            </div>
-          </fieldset>
-
-
-          <div class="flex justify-end space-x-4 pt-6 border-t">
-            <button type="button" onclick="hideModal()" class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition">Cancel</button>
-            <button type="submit" class="px-6 py-2 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 transition"><i class="fas fa-save mr-2"></i> Save Customer</button>
-          </div>
-        </form>
-      `;
-
-      showModal(modalHTML);
-      
-      // Auto-fill logic for "Same as billing address"
-      document.getElementById('sameAsBilling').addEventListener('change', function() {
-        if (this.checked) {
-          document.getElementById('shippingStreet').value = document.getElementById('billingStreet').value;
-          document.getElementById('shippingCity').value = document.getElementById('billingCity').value;
-          document.getElementById('shippingState').value = document.getElementById('billingState').value;
-          document.getElementById('shippingZip').value = document.getElementById('billingZip').value;
-        } else {
-          document.getElementById('shippingStreet').value = '';
-          document.getElementById('shippingCity').value = '';
-          document.getElementById('shippingState').value = '';
-          document.getElementById('shippingZip').value = '';
-        }
-      });
-    }
-
-    function handleCustomerSubmission(event, id) {
-      event.preventDefault();
-      const form = event.target;
-
-      // Helper function to get checked values from a checkbox group
-      const getCheckedValues = (name) => Array.from(form.querySelectorAll(`input[name="${name}"]:checked`)).map(el => el.value);
-
-      const newCustomer = {
-        id: id || nextCustomerId++,
-        name: form.fullName.value,
-        contactType: form.contactType.value,
-        email: form.email.value,
-        homeNumber: form.homeNumber.value,
-        mobileNumber: form.mobileNumber.value,
-        status: form.status.value,
-        industry: form.industry.value,
-        ageRange: form.ageRange.value,
-        
-        // Address Information
-        billingStreet: form.billingStreet.value,
-        billingCity: form.billingCity.value,
-        billingState: form.billingState.value,
-        billingZip: form.billingZip.value,
-        shippingStreet: form.shippingStreet.value,
-        shippingCity: form.shippingCity.value,
-        shippingState: form.shippingState.value,
-        shippingZip: form.shippingZip.value,
-
-        // Lead and Social Information
-        leadSource: form.leadSource.value,
-        referredBy: form.referredBy.value,
-        socialEngagementLevel: form.socialEngagementLevel.value,
-        primarySocialHandle: form.primarySocialHandle.value,
-        socialPlatforms: getCheckedValues('socialPlatforms'),
-
-        // Pickleball & Product Profile
-        skillLevel: form.skillLevel.value,
-        playFrequency: form.playFrequency.value,
-        currentPaddleBrand: form.currentPaddleBrand.value,
-        productInterests: getCheckedValues('productInterests'),
-
-        // Communication Preferences
-        preferredContactMethod: form.preferredContactMethod.value,
-        bestTimeToContact: form.bestTimeToContact.value,
-        emailOptIn: form.emailOptIn.checked,
-        smsOptIn: form.smsOptIn.checked,
-
-        // Referral & Marketing Potential
-        interestedInReferral: form.interestedInReferral.value,
-        interestedInDiscounts: form.interestedInDiscounts.value,
-        potentialReferrals: parseInt(form.potentialReferrals.value) || 0,
-
-        // Additional Notes
-        notes: form.notes.value,
-
-        // CRM-managed fields
-        aiScore: id ? crmData.customers.find(c => c.id === id).aiScore : 70, 
-        referralsMade: id ? crmData.customers.find(c => c.id === id).referralsMade : 0,
-        createdAt: id ? crmData.customers.find(c => c.id === id).createdAt : new Date(),
-      };
-
-      if (id) {
-        // Edit existing customer
-        const index = crmData.customers.findIndex(c => c.id === id);
-        crmData.customers[index] = newCustomer;
-      } else {
-        // Add new customer
-        crmData.customers.push(newCustomer);
-      }
-
-      saveData();
-      hideModal();
-      renderView('customers');
-    }
-
-    // ======================================================================
-    // 11. NEW ORDER MODAL (Referral Code Implemented) - (No change in this section)
-    // ======================================================================
-
-    function renderNewOrderModal() {
-      // Ensure customer list is fresh
-      const customerOptions = crmData.customers.map(c => 
-        `<option value="${c.id}">${c.name} (${c.email})</option>`
-      ).join('');
-
-      const modalHTML = `
-        <form onsubmit="handleNewOrderSubmission(event)" class="p-8 space-y-8">
-          <div class="flex justify-between items-center border-b pb-4">
-            <h3 class="text-2xl font-bold text-gray-800"><i class="fas fa-plus-square mr-2"></i> New Order</h3>
-            <button type="button" onclick="hideModal()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label for="customerId" class="block text-sm font-medium text-gray-700">Customer Name *</label>
-              <select id="customerId" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg" required>
-                <option value="">Select Customer...</option>
-                ${customerOptions}
-              </select>
-            </div>
-            
-            <div>
-              <label for="product" class="block text-sm font-medium text-gray-700">Product *</label>
-              <input type="text" id="product" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg" required placeholder="e.g., Performance Cover - Blue">
-            </div>
-
-            <div>
-              <label for="quantity" class="block text-sm font-medium text-gray-700">Quantity *</label>
-              <input type="number" id="quantity" min="1" value="1" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg" required>
-            </div>
-            
-            <div>
-              <label for="price" class="block text-sm font-medium text-gray-700">Unit Price *</label>
-              <input type="number" id="price" min="0.01" step="0.01" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg" required placeholder="e.g., 69.99">
-            </div>
-
-            <div>
-              <label for="orderDate" class="block text-sm font-medium text-gray-700">Order Date</label>
-              <input type="date" id="orderDate" value="${new Date().toISOString().substring(0, 10)}" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg">
-            </div>
-
-            <div>
-              <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
-              <select id="status" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg">
-                <option value="Pending">Pending</option>
-                <option value="Processing">Processing</option>
-                <option value="Shipped">Shipped</option>
-                <option value="Delivered">Delivered</option>
-                <option value="Cancelled">Cancelled</option>
-              </select>
-            </div>
-            
-            <div class="md:col-span-2">
-              <label for="referralCode" class="block text-sm font-medium text-gray-700"><i class="fas fa-gift mr-2"></i> Referral Code (Optional)</label>
-              <input type="text" id="referralCode" 
-                class="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 uppercase tracking-widest"
-                placeholder="Enter 8-digit code (e.g., AS-USER1)" maxlength="10">
-            </div>
-
-            <div class="md:col-span-2">
-              <label for="notes" class="block text-sm font-medium text-gray-700">Notes</label>
-              <textarea id="notes" rows="3" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg"></textarea>
-            </div>
-          </div>
-
-          <div class="flex justify-end space-x-4 pt-6 border-t">
-            <button type="button" onclick="hideModal()" class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition">Cancel</button>
-            <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition"><i class="fas fa-save mr-2"></i> Save Order</button>
-          </div>
-        </form>
-      `;
-
-      showModal(modalHTML);
-    }
-
-    function handleNewOrderSubmission(event) {
-      event.preventDefault();
-      const form = event.target;
-
-      const customerId = parseInt(form.customerId.value);
-      const product = form.product.value;
-      const quantity = parseInt(form.quantity.value);
-      const price = parseFloat(form.price.value);
-      const orderDate = new Date(form.orderDate.value);
-      const status = form.status.value;
-      const notes = form.notes.value;
-      
-      const referralCode = form.referralCode.value.trim().toUpperCase() || null; 
-
-      if (!customerId || isNaN(quantity) || quantity <= 0 || isNaN(price) || price <= 0) {
-        alert('Please fill out all required fields (Customer, Product, Quantity, Price).');
-        return;
-      }
-
-      const customer = crmData.customers.find(c => c.id === customerId);
-      if (!customer) {
-        alert('Selected customer not found.');
-        return;
-      }
-
-      const newOrder = {
-        id: nextOrderId++,
-        customerName: customer.name,
-        customerId: customer.id,
-        product,
-        quantity,
-        price,
-        orderDate,
-        status,
-        notes,
-        referralCode: referralCode, 
-        totalValue: price * quantity,
-        createdAt: new Date(),
-      };
-
-      crmData.orders.push(newOrder);
-
-      if (referralCode && status === 'Delivered') {
-          console.log(`Order placed by ${customer.name} using code ${referralCode}. Triggering reward logic.`);
-          alert(`Order saved! System is processing referral code: ${referralCode}. Reward will be issued upon system verification.`);
-      } else {
-           alert('New Order saved successfully!');
-      }
-
-      saveData();
-      updateDashboard();
-
-      hideModal();
-      renderView('orders'); 
-    }
-    
-    // ======================================================================
-    // 12. REFERRAL PROGRAM VIEW - (No change in this section)
-    // ======================================================================
-
-    function renderReferralProgramView(container) {
-      const topReferrers = crmData.customers
-          .filter(c => c.referralsMade > 0)
-          .sort((a, b) => b.referralsMade - a.referralsMade)
-          .slice(0, 5);
-
-      const referrerList = topReferrers.map((c, index) => {
-          let tier;
-          if (c.referralsMade >= 11) tier = 'Platinum';
-          else if (c.referralsMade >= 6) tier = 'Gold';
-          else if (c.referralsMade >= 3) tier = 'Silver';
-          else tier = 'Bronze';
-
-          const tierData = crmData.referralSettings.tiers.find(t => t.name === tier);
-          // Simple code generation for demo
-          const referralCode = `AS-USER${c.id}`;
-
-          return `
-              <tr class="border-b">
-                  <td class="p-4 text-sm font-medium text-gray-900">${index + 1}. ${c.name}</td>
-                  <td class="p-4 text-sm text-gray-500">${c.referralsMade}</td>
-                  <td class="p-4 whitespace-nowrap text-sm font-semibold">
-                      <span class="px-3 py-1 inline-flex text-xs leading-5 rounded-full bg-indigo-100 text-indigo-800 flex items-center">
-                          <i class="${tierData.icon} mr-2"></i> ${tier}
-                      </span>
-                  </td>
-                  <td class="p-4 text-sm text-gray-500">${referralCode}</td>
-              </tr>
-          `;
-      }).join('') || '<tr><td colspan="4" class="p-4 text-center text-gray-500">No successful referrals yet.</td></tr>';
-
-      container.innerHTML = `
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div class="p-6 bg-white rounded-xl shadow-lg lg:col-span-2">
-                  <h2 class="text-2xl font-bold mb-4 text-gray-800 flex items-center"><i class="fas fa-trophy mr-3 text-yellow-500"></i> Referral Program Overview</h2>
-                  <p class="text-gray-600 mb-6">Incentivize your most loyal customers to become your best marketers.</p>
-
-                  <div class="space-y-4">
-                      <div class="flex justify-between p-4 bg-green-50 rounded-lg">
-                          <span class="font-medium text-green-800">Reward per Referral:</span>
-                          <span class="font-bold text-green-800">$${crmData.referralSettings.creditAmount.toFixed(2)} Store Credit</span>
-                      </div>
-                      <div class="flex justify-between p-4 bg-blue-50 rounded-lg">
-                          <span class="font-medium text-blue-800">Minimum Referred Order Value:</span>
-                          <span class="font-bold text-blue-800">$${crmData.referralSettings.minOrderValue.toFixed(2)}</span>
-                      </div>
-                  </div>
-
-                  <h3 class="text-xl font-semibold mt-8 mb-4 border-b pb-2 text-gray-800">Referral Tiers</h3>
-                  <div class="grid grid-cols-4 gap-4">
-                      ${crmData.referralSettings.tiers.map(t => `
-                          <div class="p-4 text-center rounded-lg shadow-md bg-gray-50">
-                              <i class="${t.icon} text-3xl mb-2"></i>
-                              <div class="font-bold text-gray-900">${t.name}</div>
-                              <div class="text-sm text-gray-600">${t.referrals} Referrals</div>
-                          </div>
-                      `).join('')}
-                  </div>
-              </div>
-
-              <div class="p-6 bg-white rounded-xl shadow-lg lg:col-span-1">
-                  <h3 class="text-xl font-bold mb-4 text-gray-800 flex items-center"><i class="fas fa-ranking-star mr-2 text-red-500"></i> Top Advocates</h3>
-                  <div class="overflow-x-auto">
-                      <table class="min-w-full divide-y divide-gray-200">
-                          <thead>
-                              <tr class="bg-gray-50">
-                                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Advocate</th>
-                                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Referrals</th>
-                                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tier</th>
-                                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Code</th>
-                              </tr>
-                          </thead>
-                          <tbody class="bg-white divide-y divide-gray-200">
-                              ${referrerList}
-                          </tbody>
-                      </table>
-                  </div>
-              </div>
-          </div>
-      `;
-    }
-
-    // ======================================================================
-    // 13. UTILITY AND PLACEHOLDER FUNCTIONS (INCLUDING NEW CALENDAR HELPERS)
-    // ======================================================================
-
+    function renderScheduleEventModal() { showModal(`<h3>Schedule New Event (Stub)</h3><p>Form to create a new calendar event.</p><button onclick="hideModal()">Close</button>`); }
+
+
+    function renderCalendarView(container) {
+      // Use the global state for the current month being viewed (initial is today's date)
+      const targetDate = currentCalendarDate;
+      container.innerHTML = `
+        <div class="p-6 bg-white rounded-xl shadow-lg h-full">
+            <h2 class="text-2xl font-bold mb-4 text-gray-800">Sales & Team Calendar</h2>
+            ${generateCalendarHTML(targetDate)}
+        </div>
+      `;
+    }
+
+    // Navigation function to change the month
     function changeMonth(delta) {
-        // Move the global state date forward or backward by 'delta' months
         currentCalendarDate.setMonth(currentCalendarDate.getMonth() + delta);
-        renderView('calendar'); // Re-render the calendar view with the new month
-    }
-
-    function renderScheduleEventModal(defaultDate = '') {
-      const customerOptions = crmData.customers.map(c => 
-        `<option value="${c.id}">${c.name} (${c.email})</option>`
-      ).join('');
-      
-      const modalHTML = `
-        <form onsubmit="handleNewEventSubmission(event)" class="p-8 space-y-8">
-            <div class="flex justify-between items-center border-b pb-4">
-                <h3 class="text-2xl font-bold text-gray-800"><i class="fas fa-calendar-plus mr-2"></i> Schedule Event</h3>
-                <button type="button" onclick="hideModal()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label for="eventTitle" class="block text-sm font-medium text-gray-700">Event Title *</label>
-                    <input type="text" id="eventTitle" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg" required placeholder="e.g., Follow-up Call">
-                </div>
-                <div>
-                    <label for="eventDate" class="block text-sm font-medium text-gray-700">Date *</label>
-                    <input type="date" id="eventDate" value="${defaultDate || new Date().toISOString().substring(0, 10)}" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg" required>
-                </div>
-                <div>
-                    <label for="eventType" class="block text-sm font-medium text-gray-700">Type *</label>
-                    <select id="eventType" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg" required>
-                        <option value="Internal">Internal Meeting</option>
-                        <option value="Customer">Customer Interaction</option>
-                        <option value="Task">Task/To-Do</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="eventCustomer" class="block text-sm font-medium text-gray-700">Associated Customer (Optional)</label>
-                    <select id="eventCustomer" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg">
-                        <option value="">None</option>
-                        ${customerOptions}
-                    </select>
-                </div>
-                <div class="md:col-span-2">
-                    <label for="eventNotes" class="block text-sm font-medium text-gray-700">Notes</label>
-                    <textarea id="eventNotes" rows="3" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg"></textarea>
-                </div>
-            </div>
-
-            <div class="flex justify-end space-x-4 pt-6 border-t">
-                <button type="button" onclick="hideModal()" class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition">Cancel</button>
-                <button type="submit" class="px-6 py-2 bg-gray-600 text-white rounded-lg shadow-md hover:bg-gray-700 transition"><i class="fas fa-calendar-check mr-2"></i> Save Event</button>
-            </div>
-        </form>
-      `;
-      showModal(modalHTML);
-    }
-    
-    function handleNewEventSubmission(event) {
-        event.preventDefault();
-        const form = event.target;
-        
-        const newEvent = {
-            id: nextEventId++,
-            title: form.eventTitle.value,
-            date: new Date(form.eventDate.value),
-            type: form.eventType.value,
-            customerId: form.eventCustomer.value ? parseInt(form.eventCustomer.value) : null,
-            notes: form.eventNotes.value,
-        };
-
-        crmData.events.push(newEvent);
-        
-        saveData();
-        updateDashboard();
-        hideModal();
+        // Ensure to re-render the view
         renderView('calendar');
-        alert('New event scheduled successfully!');
     }
 
-    function downloadBackup() {
-      const dataStr = JSON.stringify(crmData, null, 2);
-      const blob = new Blob([dataStr], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'AcoustiSkin_CRM_Backup_' + new Date().toISOString().substring(0, 10) + '.json';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      alert('Data backup downloaded successfully!');
-    }
+    // Helper to generate the core calendar structure
+    function generateCalendarHTML(date) {
+        const year = date.getFullYear();
+        const month = date.getMonth();
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+        const today = new Date();
 
-    function emailBackup() {
-      alert('Simulating email backup... (This requires server-side logic in a real app).');
-    }
-    
-    function importData(event) {
-        const file = event.target.files[0];
-        if (!file) return;
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                const importedData = JSON.parse(e.target.result);
-                // Simple merge for demonstration
-                const confirmed = confirm("Do you want to MERGE the imported data with existing records, or REPLACE ALL existing data?");
-                if (confirmed) {
-                    // Logic to handle merge or replace goes here (Simplified for demo)
-                    crmData.customers = [...crmData.customers, ...importedData.customers];
-                    crmData.orders = [...crmData.orders, ...importedData.orders];
-                    crmData.communications = [...crmData.communications, ...importedData.communications]; // Include communications
-                    crmData.events = [...crmData.events, ...importedData.events]; // Include events
-                    saveData();
-                    updateDashboard();
-                    renderView('customers');
-                    alert("Import successful! Data was merged.");
-                } else {
-                    alert("Import cancelled.");
-                }
-            } catch (error) {
-                alert('Error importing data. Please ensure the file is a valid JSON format.');
+        let calendarHTML = `
+            <div class="flex justify-between items-center mb-4">
+                <button onclick="changeMonth(-1)" class="text-xl font-bold text-gray-600 hover:text-green-600"><i class="fas fa-arrow-left"></i></button>
+                <h3 class="text-xl font-bold text-gray-800">${monthNames[month]} ${year}</h3>
+                <button onclick="changeMonth(1)" class="text-xl font-bold text-gray-600 hover:text-green-600"><i class="fas fa-arrow-right"></i></button>
+            </div>
+            <div class="grid grid-cols-7 text-center font-semibold text-gray-600 border-b pb-2">
+                ${dayNames.map(day => `<div class="p-2">${day}</div>`).join('')}
+            </div>
+            <div class="grid grid-cols-7 gap-px border border-gray-200 rounded-lg overflow-hidden min-h-[600px]">
+        `;
+
+        let currentDay = new Date(firstDay);
+        currentDay.setDate(currentDay.getDate() - currentDay.getDay()); // Start on the first Sunday
+
+        // Generate cells for up to 6 weeks
+        for (let i = 0; i < 42; i++) {
+            const dayOfMonth = currentDay.getDate();
+            const isCurrentMonth = currentDay.getMonth() === month;
+            const isToday = currentDay.toDateString() === today.toDateString();
+            
+            // FIX: Holiday lookup was missing the year
+            const holidayKey = `${currentDay.getMonth() + 1}/${dayOfMonth}`;
+            const holidayName = (currentDay.getFullYear() === year) ? crmData.holidays[holidayKey] : null; 
+            
+            // Filter events for this specific date, ensuring comparison is made with Date objects
+            const events = crmData.events.filter(e => e.date.toDateString() === currentDay.toDateString());
+
+            // Determine cell styling
+            let cellClasses = `calendar-cell p-2 border-r border-b relative group transition duration-100 `;
+            if (isCurrentMonth) {
+                cellClasses += 'bg-white hover:bg-gray-100';
+            } else {
+                cellClasses += 'bg-gray-50 text-gray-400';
+            }
+            if (isToday) {
+                cellClasses += ' ring-2 ring-green-500 z-10';
+            }
+            if (holidayName) {
+                cellClasses += ' bg-red-50/50';
             }
-        };
-        reader.readAsText(file);
+            
+            // Adjust border for the last column and row
+            if ((i + 1) % 7 === 0) cellClasses = cellClasses.replace('border-r', '');
+            if (i >= 35) cellClasses = cellClasses.replace('border-b', '');
+
+
+            // Generate content
+            let contentHTML = `
+                <div class="text-right text-sm font-bold ${isToday ? 'text-green-700' : isCurrentMonth ? 'text-gray-900' : 'text-gray-400'}">${dayOfMonth}</div>
+                <div class="space-y-1 mt-1 text-left">
+            `;
+
+            if (holidayName) {
+                contentHTML += `<div class="text-xs font-medium text-red-700 bg-red-100 px-1 rounded-sm truncate" title="${holidayName}"><i class="fas fa-star mr-1"></i> ${holidayName}</div>`;
+            }
+
+            events.forEach(event => {
+                const customer = crmData.customers.find(c => c.id === event.customerId);
+                const title = customer ? `${event.title} (${customer.name.split(' ')[0]})` : event.title;
+                contentHTML += `<div class="text-xs font-medium text-blue-800 bg-blue-100 px-1 rounded-sm truncate cursor-pointer hover:bg-blue-200" title="${event.title}" onclick="showEventDetails(${event.id})"><i class="fas fa-circle-dot mr-1 text-xs"></i> ${title}</div>`;
+            });
+
+            contentHTML += `</div>`; // Close space-y-1 div
+
+            calendarHTML += `<div class="${cellClasses}">${contentHTML}</div>`;
+
+            currentDay.setDate(currentDay.getDate() + 1); // Move to the next day
+
+            // Stop if we've moved past the target month AND completed the week
+            if (i > 6 && currentDay.getDay() === 0 && currentDay.getMonth() !== month) break;
+        }
+        
+        calendarHTML += `</div>`; // Close grid container
+        return calendarHTML;
+    }
+
+
+    // ======================================================================
+    // 8. COMMUNICATIONS VIEW (NEW)
+    // ======================================================================
+
+    function renderCommunicationsView(container) {
+      // Sort communications by date descending (most recent first)
+      const sortedComms = [...crmData.communications].sort((a, b) => b.date.getTime() - a.date.getTime());
+
+      const commRows = sortedComms.map(c => {
+          // Determine icon and color based on channel
+          let iconClass = 'fas fa-envelope text-blue-500'; // Default: Email
+          let colorClass = 'bg-blue-100 text-blue-800';
+          if (c.channel === 'Phone') {
+              iconClass = 'fas fa-phone text-green-500';
+              colorClass = 'bg-green-100 text-green-800';
+          } else if (c.channel === 'SMS') {
+              iconClass = 'fas fa-message text-yellow-500';
+              colorClass = 'bg-yellow-100 text-yellow-800';
+          }
+          
+          // Determine rating chip color
+          let ratingClass = 'bg-gray-200 text-gray-800';
+          if (c.rating === 'Positive') {
+              ratingClass = 'bg-teal-100 text-teal-800';
+          } else if (c.rating === 'Negative') {
+              ratingClass = 'bg-red-100 text-red-800';
+          }
+
+          return `
+            <tr class="hover:bg-gray-50 transition duration-150">
+              <td class="p-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${colorClass}">
+                  <i class="${iconClass.split(' ')[1]} mr-1"></i> ${c.channel}
+                </span>
+              </td>
+              <td class="p-4 whitespace-nowrap text-sm text-gray-500">${c.customerName}</td>
+              <td class="p-4 whitespace-nowrap text-sm text-gray-500">${c.date.toLocaleDateString()}</td>
+              <td class="p-4 text-sm text-gray-700">${c.summary}</td>
+              <td class="p-4 whitespace-nowrap text-sm text-gray-500">
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${ratingClass}">
+                  ${c.rating}
+                </span>
+              </td>
+              <td class="p-4 whitespace-nowrap text-sm text-gray-500">${c.direction}</td>
+              <td class="p-4 whitespace-nowrap text-sm font-medium">
+                <button onclick="viewCommunicationDetails(${c.id})" class="text-indigo-600 hover:text-indigo-900 mr-4"><i class="fas fa-eye"></i> View</button>
+              </td>
+            </tr>
+          `;
+      }).join('');
+
+      container.innerHTML = `
+        <div class="p-6 bg-white rounded-xl shadow-lg">
+          <h2 class="text-2xl font-bold mb-4 text-gray-800">Communication History</h2>
+          <div class="flex justify-between items-center mb-6">
+            <button onclick="renderNewCommunicationModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg shadow-sm hover:bg-indigo-700 transition flex items-center"><i class="fas fa-plus-circle mr-2"></i> Log New Communication</button>
+            <div class="relative">
+              <input type="text" placeholder="Search interactions..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" onkeyup="filterCommunications(this.value)">
+              <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            </div>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Channel</th>
+                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Summary</th>
+                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rating</th>
+                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Direction</th>
+                  <th class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="communicationTableBody" class="bg-white divide-y divide-gray-200">
+                ${commRows}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    // Stubs for Communication actions
+    function renderNewCommunicationModal() { showModal(`<h3>Log New Communication (Stub)</h3><p>Form to log a new interaction with a customer.</p><button onclick="hideModal()">Close</button>`); }
+    function viewCommunicationDetails(id) { 
+        const comm = crmData.communications.find(c => c.id === id);
+        showModal(`
+            <div class="p-6">
+                <h3 class="text-2xl font-bold text-gray-800">${comm.channel} with ${comm.customerName}</h3>
+                <button onclick="hideModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700"><i class="fas fa-times"></i></button>
+                <div class="mt-4 space-y-2">
+                    <p class="text-md text-gray-700"><i class="fas fa-calendar-day mr-2 text-green-600"></i> Date: <span class="font-semibold">${comm.date.toLocaleDateString()}</span></p>
+                    <p class="text-md text-gray-700"><i class="fas fa-arrow-right-arrow-left mr-2 text-blue-600"></i> Direction: <span class="font-semibold">${comm.direction}</span></p>
+                    <p class="text-md text-gray-700"><i class="fas fa-face-smile-wink mr-2 text-yellow-600"></i> Rating: <span class="font-semibold">${comm.rating}</span></p>
+                    <p class="text-md text-gray-700 mt-4"><i class="fas fa-quote-left mr-2 text-gray-500"></i> Summary: ${comm.summary}</p>
+                </div>
+            </div>
+        `); 
     }
-    
-    function filterCustomers(searchTerm) {
-      const lowerCaseSearch = searchTerm.toLowerCase();
-      const filteredCustomers = crmData.customers.filter(c => 
-          Object.values(c).some(value => 
-              (typeof value === 'string' || typeof value === 'number') && String(value).toLowerCase().includes(lowerCaseSearch)
-          )
-      );
+    function filterCommunications(searchTerm) {
+        // Simple client-side search for demo purposes
+        const filteredComms = crmData.communications.filter(c => 
+            c.customerName.toLowerCase().includes(searchTerm.toLowerCase()) || 
+            c.summary.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            c.channel.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        
+        const tableBody = document.getElementById('communicationTableBody');
+        if (tableBody) {
+            // Re-render table body with filtered results (abbreviated content for brevity)
+            tableBody.innerHTML = filteredComms.map(c => {
+                let iconClass = c.channel === 'Phone' ? 'fas fa-phone text-green-500' : c.channel === 'SMS' ? 'fas fa-message text-yellow-500' : 'fas fa-envelope text-blue-500';
+                let colorClass = c.channel === 'Phone' ? 'bg-green-100 text-green-800' : c.channel === 'SMS' ? 'bg-yellow-100 text-yellow-800' : 'bg-blue-100 text-blue-800';
+                let ratingClass = c.rating === 'Positive' ? 'bg-teal-100 text-teal-800' : c.rating === 'Negative' ? 'bg-red-100 text-red-800' : 'bg-gray-200 text-gray-800';
 
-      const customerRows = filteredCustomers.map(c => `
-        <tr class="hover:bg-gray-50 transition duration-150">
-          <td class="p-4 whitespace-nowrap text-sm font-medium text-gray-900">${c.name}</td>
-          <td class="p-4 whitespace-nowrap text-sm text-gray-500">${c.email}</td>
-          <td class="p-4 whitespace-nowrap text-sm">
-            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${c.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">
-              ${c.status}
-            </span>
-          </td>
-          <td class="p-4 whitespace-nowrap text-sm text-gray-500">${c.aiScore}/100</td>
-          <td class="p-4 whitespace-nowrap text-sm text-gray-500">${c.leadSource}</td>
-          <td class="p-4 whitespace-nowrap text-sm text-gray-500">${c.referralsMade}</td>
-          <td class="p-4 whitespace-nowrap text-sm text-gray-500">${c.potentialReferrals}</td>
-          <td class="p-4 whitespace-nowrap text-sm font-medium">
-            <button onclick="renderCustomerDetailModal(${c.id})" class="text-indigo-600 hover:text-indigo-900 mr-4"><i class="fas fa-eye"></i> View</button>
-            <button onclick="editCustomer(${c.id})" class="text-yellow-600 hover:text-yellow-900 mr-4"><i class="fas fa-edit"></i> Edit</button>
-            <button onclick="deleteCustomer(${c.id})" class="text-red-600 hover:text-red-900"><i class="fas fa-trash"></i> Delete</button>
-          </td>
-        </tr>
-      `).join('');
-
-      document.getElementById('customerTableBody').innerHTML = customerRows;
-    }
-
-    function editCustomer(id) {
-        const customer = crmData.customers.find(c => c.id === id);
-        if (customer) {
-            renderNewCustomerModal(customer);
+                return `
+                    <tr class="hover:bg-gray-50 transition duration-150">
+                        <td class="p-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${colorClass}">
+                                <i class="${iconClass.split(' ')[1]} mr-1"></i> ${c.channel}
+                            </span>
+                        </td>
+                        <td class="p-4 whitespace-nowrap text-sm text-gray-500">${c.customerName}</td>
+                        <td class="p-4 whitespace-nowrap text-sm text-gray-500">${c.date.toLocaleDateString()}</td>
+                        <td class="p-4 text-sm text-gray-700">${c.summary}</td>
+                        <td class="p-4 whitespace-nowrap text-sm text-gray-500">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${ratingClass}">
+                                ${c.rating}
+                            </span>
+                        </td>
+                        <td class="p-4 whitespace-nowrap text-sm text-gray-500">${c.direction}</td>
+                        <td class="p-4 whitespace-nowrap text-sm font-medium">
+                            <button onclick="viewCommunicationDetails(${c.id})" class="text-indigo-600 hover:text-indigo-900 mr-4"><i class="fas fa-eye"></i> View</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
         }
     }
 
-    function renderCustomerDetailModal(id) {
-        // Placeholder for detailed customer view
-        const customer = crmData.customers.find(c => c.id === id);
-        if (!customer) return;
+    // ======================================================================
+    // 9. REFERRAL PROGRAM VIEW
+    // ======================================================================
 
-        const detailHTML = `
-            <div class="p-8">
-                <div class="flex justify-between items-center border-b pb-4 mb-6">
-                    <h3 class="text-2xl font-bold text-gray-800 flex items-center"><i class="fas fa-user-circle mr-2"></i> Customer Profile: ${customer.name}</h3>
-                    <button type="button" onclick="hideModal()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
-                </div>
-                <div class="grid grid-cols-2 gap-x-12 gap-y-4">
-                    <div class="col-span-2 text-lg font-semibold border-b pb-2 mb-4 text-green-700"><i class="fas fa-id-card mr-2"></i> Core Info</div>
-                    <div><span class="font-medium">Email:</span> ${customer.email}</div>
-                    <div><span class="font-medium">Mobile:</span> ${customer.mobileNumber}</div>
-                    <div><span class="font-medium">Status:</span> ${customer.status}</div>
-                    <div><span class="font-medium">AI Score:</span> ${customer.aiScore}/100</div>
+    function renderReferralProgramView(container) {
+      const settings = crmData.referralSettings;
+      const tiersHTML = settings.tiers.map(t => `
+        <div class="p-4 border rounded-lg flex items-center bg-white shadow-sm">
+          <i class="${t.icon} text-3xl mr-4"></i>
+          <div>
+            <div class="text-lg font-bold text-gray-800">${t.name} Tier</div>
+            <div class="text-sm text-gray-600">Referrals: ${t.referrals}</div>
+          </div>
+        </div>
+      `).join('');
 
-                    <div class="col-span-2 text-lg font-semibold border-b pb-2 mt-4 mb-4 text-green-700"><i class="fas fa-table-tennis-paddle-ball mr-2"></i> Pickleball Profile</div>
-                    <div><span class="font-medium">Skill Level:</span> ${customer.skillLevel}</div>
-                    <div><span class="font-medium">Play Frequency:</span> ${customer.playFrequency}</div>
-                    <div><span class="font-medium">Paddle Brand:</span> ${customer.currentPaddleBrand}</div>
-                    <div><span class="font-medium">Interests:</span> ${(customer.productInterests || []).join(', ') || 'N/A'}</div>
+      container.innerHTML = `
+        <div class="p-6 bg-white rounded-xl shadow-lg">
+          <h2 class="text-2xl font-bold mb-6 text-gray-800">Referral Program Management</h2>
+          <div class="grid grid-cols-2 gap-6 mb-8">
+            <div class="p-4 bg-green-50 rounded-lg border border-green-200">
+              <div class="text-sm font-medium text-green-800">Referral Credit Amount:</div>
+              <div class="text-2xl font-bold text-green-900">$${settings.creditAmount}</div>
+            </div>
+            <div class="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+              <div class="text-sm font-medium text-yellow-800">Min. Order Value for Credit:</div>
+              <div class="text-2xl font-bold text-yellow-900">$${settings.minOrderValue}</div>
+            </div>
+          </div>
 
-                    <div class="col-span-2 text-lg font-semibold border-b pb-2 mt-4 mb-4 text-green-700"><i class="fas fa-share-alt mr-2"></i> Referral Status</div>
-                    <div><span class="font-medium">Referrals Made:</span> ${customer.referralsMade}</div>
-                    <div><span class="font-medium">Potential:</span> ${customer.potentialReferrals}</div>
-                </div>
-                
-                <div class="mt-8 border-t pt-4">
-                    <h4 class="text-lg font-semibold mb-3">Customer History <i class="fas fa-history ml-2"></i></h4>
-                    <div class="flex space-x-4">
-                        <button onclick="renderView('communications'); hideModal();" class="px-4 py-2 bg-gray-200 rounded-lg text-gray-700 hover:bg-gray-300"><i class="fas fa-envelope-open-text mr-2"></i> Communications (${crmData.communications.filter(c => c.customerId === id).length})</button>
-                        <button class="px-4 py-2 bg-gray-200 rounded-lg text-gray-700 hover:bg-gray-300"><i class="fas fa-check-circle mr-2"></i> Tasks (Placeholder)</button>
-                        <button onclick="renderView('orders'); hideModal();" class="px-4 py-2 bg-gray-200 rounded-lg text-gray-700 hover:bg-gray-300"><i class="fas fa-receipt mr-2"></i> Purchases (${crmData.orders.filter(o => o.customerId === id).length})</button>
-                    </div>
-                </div>
+          <h3 class="text-xl font-bold mb-4 text-gray-800">Referral Tiers</h3>
+          <div class="grid grid-cols-4 gap-4">
+            ${tiersHTML}
+          </div>
 
-            </div>
-        `;
-        showModal(detailHTML);
-    }
-    
-    function viewOrderDetails(id) {
-        const order = crmData.orders.find(o => o.id === id);
-        if (!order) return;
+          <div class="mt-8">
+            <h3 class="text-xl font-bold mb-4 text-gray-800">Active Referrers (Mock)</h3>
+            <div class="grid grid-cols-3 gap-4">
+              <div class="p-4 bg-gray-100 rounded-lg">Reed Kimmel: <span class="font-semibold">2 Referrals</span></div>
+              <div class="p-4 bg-gray-100 rounded-lg">Jane Doe: <span class="font-semibold">6 Referrals</span></div>
+              <div class="p-4 bg-gray-100 rounded-lg">John Smith: <span class="font-semibold">1 Referral</span></div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
 
-        // Ensure orderDate is a Date object for correct formatting
-        const orderDate = order.orderDate instanceof Date ? order.orderDate : new Date(order.orderDate);
+    // ======================================================================
+    // 10. BACKUP/IMPORT UTILITIES (STUBS)
+    // ======================================================================
 
-        const detailHTML = `
-            <div class="p-8">
-                <div class="flex justify-between items-center border-b pb-4 mb-6">
-                    <h3 class="text-2xl font-bold text-gray-800 flex items-center"><i class="fas fa-receipt mr-2"></i> Order #${order.id} Details</h3>
-                    <button type="button" onclick="hideModal()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
-                </div>
-                <div class="grid grid-cols-2 gap-x-12 gap-y-4 text-gray-700">
-                    <div><span class="font-medium text-gray-900">Customer:</span> ${order.customerName}</div>
-                    <div><span class="font-medium text-gray-900">Order Date:</span> ${orderDate.toLocaleDateString()}</div>
-                    <div><span class="font-medium text-gray-900">Product:</span> ${order.product} (x${order.quantity})</div>
-                    <div><span class="font-medium text-gray-900">Unit Price:</span> $${order.price.toFixed(2)}</div>
-                    <div><span class="font-medium text-gray-900">Total Value:</span> <span class="text-green-600 font-bold">$${order.totalValue.toFixed(2)}</span></div>
-                    <div><span class="font-medium text-gray-900">Status:</span> ${order.status}</div>
-                    <div class="col-span-2"><span class="font-medium text-gray-900">Referral Code Used:</span> ${order.referralCode || 'None'}</div>
-                    <div class="col-span-2"><span class="font-medium text-gray-900">Notes:</span> ${order.notes || 'N/A'}</div>
-                </div>
-                <div class="flex justify-end space-x-4 pt-6 border-t mt-8">
-                    <button type="button" onclick="hideModal(); editOrder(${order.id})" class="px-6 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition"><i class="fas fa-edit mr-2"></i> Edit Order (Placeholder)</button>
-                    <button type="button" onclick="hideModal(); deleteOrder(${order.id})" class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"><i class="fas fa-trash mr-2"></i> Delete Order</button>
-                </div>
-            </div>
-        `;
-        showModal(detailHTML);
-    }
-    
-    function deleteOrder(id) { 
-      if (confirm('Are you sure you want to delete this order? This action cannot be undone.')) { 
-        crmData.orders = crmData.orders.filter(o => o.id !== id); 
-        saveData();
-        updateDashboard();
-        renderView('orders');
-        alert('Order deleted successfully.');
-      }
-    }
+    function emailBackup() { alert('Simulating emailing backup data...'); }
+    function downloadBackup() { 
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(crmData, null, 2));
+        const downloadAnchorNode = document.createElement('a');
+        downloadAnchorNode.setAttribute("href", dataStr);
+        downloadAnchorNode.setAttribute("download", "acoustiskin_crm_backup_" + new Date().toISOString().slice(0, 10) + ".json");
+        document.body.appendChild(downloadAnchorNode); 
+        downloadAnchorNode.click();
+        downloadAnchorNode.remove();
+        alert('Backup download initiated.');
+    }
+    function importData(event) { alert('Simulating importing data from selected file...'); }
 
-    function filterOrders(searchTerm) {
-      const lowerCaseSearch = searchTerm.toLowerCase();
-      const orderTableBody = document.getElementById('orderTableBody');
-      
-      if (!orderTableBody) {
-        // If the order view is not currently rendered, do nothing
-        return;
-      }
-      
-      const filteredOrders = crmData.orders.filter(o => {
-          const orderDate = o.orderDate instanceof Date ? o.orderDate.toLocaleDateString() : new Date(o.orderDate).toLocaleDateString();
-          return o.customerName.toLowerCase().includes(lowerCaseSearch) ||
-              o.product.toLowerCase().includes(lowerCaseSearch) ||
-              String(o.id).includes(lowerCaseSearch) ||
-              (o.referralCode && o.referralCode.toLowerCase().includes(lowerCaseSearch)) ||
-              orderDate.includes(lowerCaseSearch);
-      });
-
-      const orderRows = filteredOrders.map(o => `
-        <tr class="hover:bg-gray-50 transition duration-150">
-          <td class="p-4 whitespace-nowrap text-sm font-medium text-gray-900">${o.id}</td>
-          <td class="p-4 whitespace-nowrap text-sm text-gray-500">${o.customerName}</td>
-          <td class="p-4 whitespace-nowrap text-sm text-gray-500">${o.product}</td>
-          <td class="p-4 whitespace-nowrap text-sm text-gray-500">$${o.totalValue.toFixed(2)}</td>
-          <td class="p-4 whitespace-nowrap text-sm text-gray-500">${o.orderDate.toLocaleDateString()}</td>
-          <td class="p-4 whitespace-nowrap text-sm">
-            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-              ${o.status === 'Delivered' ? 'bg-green-100 text-green-800' : o.status === 'Shipped' ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800'}">
-              ${o.status}
-            </span>
-          </td>
-          <td class="p-4 whitespace-nowrap text-sm text-gray-500">${o.referralCode || 'N/A'}</td>
-          <td class="p-4 whitespace-nowrap text-sm font-medium">
-            <button onclick="viewOrderDetails(${o.id})" class="text-indigo-600 hover:text-indigo-900 mr-4"><i class="fas fa-eye"></i> View</button>
-            <button onclick="deleteOrder(${o.id})" class="text-red-600 hover:text-red-900"><i class="fas fa-trash"></i> Delete</button>
-          </td>
-        </tr>
-      `).join('');
-
-      orderTableBody.innerHTML = orderRows;
-    }
-    
-    function editOrder(id) {
-        alert('Order editing functionality is currently a placeholder. Please delete and re-add for changes.');
-    }
-  </script>
+  </script>
 
 </body>
 </html>
