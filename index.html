@@ -2463,6 +2463,8 @@
 
     // Navigation
     function showView(viewName) {
+      console.log('👁️ showView called for:', viewName);
+      
       document.querySelectorAll('.view').forEach(v => v.style.display = 'none');
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
       const viewMap = {
@@ -2471,7 +2473,16 @@
         'marketing': 'marketingView', 'referrals': 'referralsView', 'reports': 'reportsView',
         'import': 'importView'
       };
-      document.getElementById(viewMap[viewName]).style.display = 'block';
+      
+      const targetViewId = viewMap[viewName];
+      const targetViewElement = document.getElementById(targetViewId);
+      
+      if (targetViewElement) {
+        targetViewElement.style.display = 'block';
+        console.log('✅ View switched to:', targetViewId);
+      } else {
+        console.error('❌ Could not find view element:', targetViewId);
+      }
       
       // Handle nav-item activation safely (works from both nav clicks and dashboard cards)
       if (typeof event !== 'undefined' && event && event.target) {
@@ -3433,30 +3444,56 @@
     }
 
     function updateOrdersView() {
+      console.log('📋 updateOrdersView called');
+      console.log('Orders in data:', crmData.orders.length);
+      console.log('Order data:', crmData.orders);
+      
       const tbody = document.getElementById('ordersTable');
-      const html = crmData.orders.map(o => {
-        const customer = crmData.customers.find(c => c.id === o.customerId);
-        return `
-          <tr>
-            <td><strong>${o.id}</strong></td>
-            <td>${customer ? customer.name : 'Unknown'}</td>
-            <td>${new Date(o.date).toLocaleDateString()}</td>
-            <td>${o.product}${o.manufacturer ? ' (' + o.manufacturer + ')' : ''}</td>
-            <td>${o.orderTakenBy || 'N/A'}</td>
-            <td><strong>$${o.total.toFixed(2)}</strong></td>
-            <td><span class="status-badge status-${o.status.toLowerCase()}">${o.status}</span></td>
-            <td>
-              <button class="btn-secondary" style="padding: 6px 12px; margin-right: 5px;" onclick="openOrderModal('${o.id}')">
-                <i class="fas fa-edit"></i>
-              </button>
-              <button class="btn-danger" style="padding: 6px 12px;" onclick="deleteOrder('${o.id}')">
-                <i class="fas fa-trash"></i>
-              </button>
-            </td>
-          </tr>
-        `;
-      }).join('');
-      tbody.innerHTML = html || '<tr><td colspan="8" style="text-align: center; padding: 40px; color: #999;">No orders yet. Click "New Order" to create one.</td></tr>';
+      
+      try {
+        const html = crmData.orders.map((o, index) => {
+          console.log(`Processing order ${index + 1}:`, o);
+          
+          const customer = crmData.customers.find(c => c.id === o.customerId);
+          
+          // Safe handling of potentially missing fields
+          const orderId = o.id || 'N/A';
+          const customerName = customer ? customer.name : 'Unknown';
+          const orderDate = o.date ? new Date(o.date).toLocaleDateString() : 'No date';
+          const product = o.product || 'No product';
+          const manufacturer = o.manufacturer ? ' (' + o.manufacturer + ')' : '';
+          const takenBy = o.orderTakenBy || 'N/A';
+          const total = (o.total !== undefined && o.total !== null) ? o.total.toFixed(2) : '0.00';
+          const status = o.status || 'Pending';
+          const statusLower = status.toLowerCase();
+          
+          return `
+            <tr>
+              <td><strong>${orderId}</strong></td>
+              <td>${customerName}</td>
+              <td>${orderDate}</td>
+              <td>${product}${manufacturer}</td>
+              <td>${takenBy}</td>
+              <td><strong>$${total}</strong></td>
+              <td><span class="status-badge status-${statusLower}">${status}</span></td>
+              <td>
+                <button class="btn-secondary" style="padding: 6px 12px; margin-right: 5px;" onclick="openOrderModal('${orderId}')">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn-danger" style="padding: 6px 12px;" onclick="deleteOrder('${orderId}')">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+          `;
+        }).join('');
+        
+        tbody.innerHTML = html || '<tr><td colspan="8" style="text-align: center; padding: 40px; color: #999;">No orders yet. Click "New Order" to create one.</td></tr>';
+        console.log('✅ Orders table updated successfully');
+      } catch (error) {
+        console.error('❌ Error updating orders view:', error);
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 40px; color: #e53935;">Error loading orders. Check console for details.</td></tr>';
+      }
     }
 
     function deleteOrder(id) {
@@ -4378,6 +4415,7 @@
     }
 
     function showAllOrders() {
+      console.log('🛒 showAllOrders clicked - switching to orders view');
       showView('orders');
     }
 
