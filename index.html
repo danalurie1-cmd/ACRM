@@ -2081,7 +2081,68 @@
           <button type="button" class="btn-secondary" onclick="closeModal('eventModal')">Cancel</button>
           <button type="submit" class="btn-primary">
             <i class="fas fa-save"></i> Save Event
-          </button>
+            function deleteEvent(id) {
+  if (!id) {
+    showNotification('Error: Event ID not found', 'error');
+    console.error('deleteEvent called with no ID');
+    return;
+  }
+  
+  const eventId = String(id);
+  
+  if (confirm('Are you sure you want to delete this event?')) {
+    const event = crmData.events.find(e => String(e.id) === eventId);
+    if (!event) {
+      showNotification('Event not found', 'error');
+      console.error('Event not found with ID:', eventId);
+      return;
+    }
+    
+    const eventTitle = event.title;
+    const initialCount = crmData.events.length;
+    
+    console.log('Before deletion:', initialCount, 'events');
+    console.log('Deleting event:', eventTitle, 'with ID:', eventId);
+    
+    crmData.events = crmData.events.filter(e => String(e.id) !== eventId);
+    
+    const finalCount = crmData.events.length;
+    console.log('After deletion:', finalCount, 'events');
+    
+    if (finalCount === initialCount) {
+      showNotification('Error: Event deletion failed', 'error');
+      console.error('Deletion failed - counts match');
+      return;
+    }
+    
+    try {
+      saveData();
+      console.log('Data saved to localStorage');
+      
+      const verification = localStorage.getItem('acoustiskinCRM_AI');
+      if (verification) {
+        const parsed = JSON.parse(verification);
+        const stillExists = parsed.events.find(e => String(e.id) === eventId);
+        if (stillExists) {
+          console.error('CRITICAL: Event still in localStorage after save!');
+          showNotification('Error: Deletion not persisted', 'error');
+          return;
+        }
+        console.log('Verified: Event removed from localStorage');
+      }
+    } catch (error) {
+      console.error('Error saving data:', error);
+      showNotification('Error: Could not save changes', 'error');
+      return;
+    }
+    
+    updateDashboard();
+    renderCalendar();
+    
+    showNotification(`Event "${eventTitle}" has been permanently deleted`);
+    console.log('Deletion complete for:', eventTitle);
+  }
+}          </button>
         </div>
       </form>
     </div>
@@ -3675,65 +3736,64 @@
       renderCalendar();
     }
 
-    // Pipeline View
-    function updatePipelineView() {
-      // Group orders by status
-      const pending = crmData.orders.filter(o => o.status === 'Pending');
-      const processing = crmData.orders.filter(o => o.status === 'Processing');
-      const shipped = crmData.orders.filter(o => o.status === 'Shipped');
-      const completed = crmData.orders.filter(o => o.status === 'Completed');
-      
-      // Helper function to render order card
-      const renderOrderCard = (order) => {
-        const customer = crmData.customers.find(c => c.id === order.customerId);
-        const customerName = customer ? customer.name : 'Unknown Customer';
-        const statusColors = {
-          'Pending': '#ff9800',
-          'Processing': '#2196f3',
-          'Shipped': '#9c27b0',
-          'Completed': '#4caf50'
-        };
-        
-        return `
-          <div style="padding: 12px; background: #f1f8e9; border-radius: 8px; margin-bottom: 10px; cursor: pointer; border-left: 4px solid ${statusColors[order.status] || '#ccc'};" onclick="openOrderModal('${order.id}')">
-            <div style="font-weight: 600; color: #2e5940; margin-bottom: 5px;">${order.id}</div>
-            <div style="font-size: 13px; color: #666; margin-bottom: 3px;">
-              <i class="fas fa-user"></i> ${customerName}
-            </div>
-            <div style="font-size: 13px; color: #666; margin-bottom: 3px;">
-              <i class="fas fa-box"></i> ${order.product}
-            </div>
-            <div style="font-size: 12px; color: #999; margin-bottom: 5px;">
-              <i class="fas fa-calendar"></i> ${new Date(order.date).toLocaleDateString()}
-            </div>
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-              <span style="font-weight: 700; color: #2e5940;">$${order.total.toFixed(2)}</span>
-              ${order.tracking ? `<span style="font-size: 11px; color: #666;"><i class="fas fa-truck"></i> ${order.tracking}</span>` : ''}
-            </div>
-          </div>
-        `;
-      };
-      
-      // Render Pending Orders
-      document.getElementById('pendingOrdersList').innerHTML = pending.length > 0 
-        ? pending.map(renderOrderCard).join('')
-        : '<p style="color: #999; text-align: center; padding: 20px; font-size: 14px;">No pending orders</p>';
-      
-      // Render Processing Orders
-      document.getElementById('processingOrdersList').innerHTML = processing.length > 0
-        ? processing.map(renderOrderCard).join('')
-        : '<p style="color: #999; text-align: center; padding: 20px; font-size: 14px;">No orders in processing</p>';
-      
-      // Render Shipped Orders
-      document.getElementById('shippedOrdersList').innerHTML = shipped.length > 0
-        ? shipped.map(renderOrderCard).join('')
-        : '<p style="color: #999; text-align: center; padding: 20px; font-size: 14px;">No shipped orders</p>';
-      
-      // Render Completed Orders
-      document.getElementById('completedOrdersList').innerHTML = completed.length > 0
-        ? completed.map(renderOrderCard).join('')
-        : '<p style="color: #999; text-align: center; padding: 20px; font-size: 14px;">No completed orders</p>';
-    }
+function updatePipelineView() {
+  // Group orders by status
+  const pending = crmData.orders.filter(o => o.status === 'Pending');
+  const processing = crmData.orders.filter(o => o.status === 'Processing');
+  const shipped = crmData.orders.filter(o => o.status === 'Shipped');
+  const completed = crmData.orders.filter(o => o.status === 'Completed');
+  
+  // Helper function to render order card
+  const renderOrderCard = (order) => {
+    const customer = crmData.customers.find(c => c.id === order.customerId);
+    const customerName = customer ? customer.name : 'Unknown Customer';
+    const statusColors = {
+      'Pending': '#ff9800',
+      'Processing': '#2196f3',
+      'Shipped': '#9c27b0',
+      'Completed': '#4caf50'
+    };
+    
+    // CRITICAL FIX: Safe handling of total
+    const orderTotal = (order.total !== undefined && order.total !== null) ? order.total : 0;
+    
+    return `
+      <div style="padding: 12px; background: #f1f8e9; border-radius: 8px; margin-bottom: 10px; cursor: pointer; border-left: 4px solid ${statusColors[order.status] || '#ccc'};" onclick="openOrderModal('${order.id}')">
+        <div style="font-weight: 600; color: #2e5940; margin-bottom: 5px;">${order.id}</div>
+        <div style="font-size: 13px; color: #666; margin-bottom: 3px;">
+          <i class="fas fa-user"></i> ${customerName}
+        </div>
+        <div style="font-size: 13px; color: #666; margin-bottom: 3px;">
+          <i class="fas fa-box"></i> ${order.product || 'No product'}
+        </div>
+        <div style="font-size: 12px; color: #999; margin-bottom: 5px;">
+          <i class="fas fa-calendar"></i> ${order.date ? new Date(order.date).toLocaleDateString() : 'No date'}
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-weight: 700; color: #2e5940;">$${orderTotal.toFixed(2)}</span>
+          ${order.tracking ? `<span style="font-size: 11px; color: #666;"><i class="fas fa-truck"></i> ${order.tracking}</span>` : ''}
+        </div>
+      </div>
+    `;
+  };
+  
+  // Render each status column
+  document.getElementById('pendingOrdersList').innerHTML = pending.length > 0 
+    ? pending.map(renderOrderCard).join('')
+    : '<p style="color: #999; text-align: center; padding: 20px; font-size: 14px;">No pending orders</p>';
+  
+  document.getElementById('processingOrdersList').innerHTML = processing.length > 0
+    ? processing.map(renderOrderCard).join('')
+    : '<p style="color: #999; text-align: center; padding: 20px; font-size: 14px;">No orders in processing</p>';
+  
+  document.getElementById('shippedOrdersList').innerHTML = shipped.length > 0
+    ? shipped.map(renderOrderCard).join('')
+    : '<p style="color: #999; text-align: center; padding: 20px; font-size: 14px;">No shipped orders</p>';
+  
+  document.getElementById('completedOrdersList').innerHTML = completed.length > 0
+    ? completed.map(renderOrderCard).join('')
+    : '<p style="color: #999; text-align: center; padding: 20px; font-size: 14px;">No completed orders</p>';
+}
 
     // Analytics View
     function updateAnalyticsView() {
@@ -3743,36 +3803,58 @@
       generateAIInsights();
     }
 
-    function renderLeadSourceChart() {
-      const ctx = document.getElementById('leadSourceChart');
-      if (!ctx) return;
-      const sources = {};
-      crmData.customers.forEach(c => {
-        const source = c.leadSource || 'Unknown';
-        sources[source] = (sources[source] || 0) + 1;
-      });
-      if (window.leadSourceChartInstance) {
-        window.leadSourceChartInstance.destroy();
-      }
-      window.leadSourceChartInstance = new Chart(ctx, {
-        type: 'pie',
-        data: {
-          labels: Object.keys(sources),
-          datasets: [{
-            data: Object.values(sources),
-            backgroundColor: ['#66bb6a', '#42a5f5', '#ffa726', '#ab47bc', '#ef5350', '#26c6da', '#ffee58', '#ec407a', '#7e57c2', '#26a69a']
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: {
-              position: 'bottom'
+function renderRevenueChart() {
+  const ctx = document.getElementById('revenueChart');
+  if (!ctx) return;
+  
+  const monthlyRevenue = {};
+  crmData.orders.forEach(o => {
+    // CRITICAL FIX: Safe date handling
+    if (o.date && typeof o.date === 'string' && o.date.length >= 7) {
+      const month = o.date.substring(0, 7);
+      const orderTotal = (o.total !== undefined && o.total !== null) ? o.total : 0;
+      monthlyRevenue[month] = (monthlyRevenue[month] || 0) + orderTotal;
+    }
+  });
+  
+  const sortedMonths = Object.keys(monthlyRevenue).sort();
+  const revenues = sortedMonths.map(m => monthlyRevenue[m]);
+  
+  if (window.revenueChartInstance) {
+    window.revenueChartInstance.destroy();
+  }
+  
+  window.revenueChartInstance = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: sortedMonths.map(m => {
+        const [year, month] = m.split('-');
+        return new Date(year, month - 1).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+      }),
+      datasets: [{
+        label: 'Revenue',
+        data: revenues,
+        borderColor: '#66bb6a',
+        backgroundColor: 'rgba(102, 187, 106, 0.1)',
+        tension: 0.4,
+        fill: true
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            callback: function(value) {
+              return '$' + value.toFixed(2);
             }
           }
         }
-      });
+      }
     }
+  });
+}
 
     function renderSocialChart() {
       const ctx = document.getElementById('socialChart');
