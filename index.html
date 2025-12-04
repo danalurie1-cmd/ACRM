@@ -4990,6 +4990,339 @@
       document.getElementById('platformImportFile').value = '';
       document.getElementById('selectedFileName').textContent = '';
     }
+
+    // ═══════════════════════════════════════════════════════════════
+    // COMPREHENSIVE DIAGNOSTICS SYSTEM
+    // ═══════════════════════════════════════════════════════════════
+    // This section can be removed for production
+    // ═══════════════════════════════════════════════════════════════
+
+    function runComprehensiveDiagnostics() {
+      console.log('%c═══════════════════════════════════════════════════════════════', 'color: #66bb6a; font-weight: bold');
+      console.log('%c    ACOUSTISKIN CRM - COMPREHENSIVE DIAGNOSTICS', 'color: #66bb6a; font-weight: bold; font-size: 16px');
+      console.log('%c═══════════════════════════════════════════════════════════════', 'color: #66bb6a; font-weight: bold');
+      console.log('');
+      
+      const issues = [];
+      const warnings = [];
+      const passed = [];
+      
+      // TEST 1: DATA INTEGRITY
+      console.log('%c📊 TEST 1: DATA INTEGRITY', 'color: #42a5f5; font-weight: bold; font-size: 14px');
+      
+      try {
+        if (!crmData) {
+          issues.push('CRITICAL: crmData object does not exist');
+        } else {
+          passed.push('crmData object exists');
+          
+          const requiredArrays = ['customers', 'orders', 'events', 'communications', 'tasks'];
+          requiredArrays.forEach(arr => {
+            if (!Array.isArray(crmData[arr])) {
+              issues.push(`CRITICAL: crmData.${arr} is not an array`);
+            } else {
+              passed.push(`crmData.${arr} is valid array with ${crmData[arr].length} items`);
+            }
+          });
+        }
+      } catch (e) {
+        issues.push(`CRITICAL: Data integrity check failed - ${e.message}`);
+      }
+      
+      // TEST 2: CUSTOMER DATA VALIDATION
+      console.log('%c👥 TEST 2: CUSTOMER DATA VALIDATION', 'color: #42a5f5; font-weight: bold; font-size: 14px');
+      
+      try {
+        crmData.customers.forEach((customer, index) => {
+          const requiredFields = ['id', 'name', 'email', 'status'];
+          const missingFields = requiredFields.filter(field => !customer[field]);
+          
+          if (missingFields.length > 0) {
+            warnings.push(`Customer #${index + 1} (${customer.name || 'Unknown'}) missing fields: ${missingFields.join(', ')}`);
+          } else {
+            passed.push(`Customer #${index + 1} (${customer.name}) has all required fields`);
+          }
+          
+          if (customer.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customer.email)) {
+            warnings.push(`Customer ${customer.name} has invalid email format: ${customer.email}`);
+          }
+        });
+        
+        if (crmData.customers.length === 0) {
+          warnings.push('No customers in database (this is OK if starting fresh)');
+        }
+      } catch (e) {
+        issues.push(`Customer validation failed - ${e.message}`);
+      }
+      
+      // TEST 3: ORDER DATA VALIDATION
+      console.log('%c🛒 TEST 3: ORDER DATA VALIDATION', 'color: #42a5f5; font-weight: bold; font-size: 14px');
+      
+      try {
+        crmData.orders.forEach((order, index) => {
+          const requiredFields = ['id', 'customerId', 'product', 'date', 'total', 'status'];
+          const missingFields = requiredFields.filter(field => order[field] === undefined || order[field] === null || order[field] === '');
+          
+          if (missingFields.length > 0) {
+            warnings.push(`Order #${order.id || index + 1} missing fields: ${missingFields.join(', ')}`);
+          } else {
+            passed.push(`Order #${order.id} has all required fields`);
+          }
+          
+          if (order.customerId) {
+            const customerExists = crmData.customers.some(c => c.id === order.customerId);
+            if (!customerExists) {
+              warnings.push(`Order #${order.id} references non-existent customer ID: ${order.customerId}`);
+            }
+          }
+          
+          if (order.total !== undefined && isNaN(parseFloat(order.total))) {
+            warnings.push(`Order #${order.id} has invalid total: ${order.total}`);
+          }
+        });
+        
+        if (crmData.orders.length === 0) {
+          warnings.push('No orders in database (this is OK if starting fresh)');
+        }
+      } catch (e) {
+        issues.push(`Order validation failed - ${e.message}`);
+      }
+      
+      // TEST 4: EVENT DATA VALIDATION
+      console.log('%c📅 TEST 4: EVENT DATA VALIDATION', 'color: #42a5f5; font-weight: bold; font-size: 14px');
+      
+      try {
+        crmData.events.forEach((event, index) => {
+          const requiredFields = ['id', 'title', 'date', 'type'];
+          const missingFields = requiredFields.filter(field => !event[field]);
+          
+          if (missingFields.length > 0) {
+            warnings.push(`Event #${index + 1} (${event.title || 'Unknown'}) missing fields: ${missingFields.join(', ')}`);
+          } else {
+            passed.push(`Event #${index + 1} (${event.title}) has all required fields`);
+          }
+          
+          if (event.customerId) {
+            const customerExists = crmData.customers.some(c => c.id === event.customerId);
+            if (!customerExists) {
+              warnings.push(`Event "${event.title}" references non-existent customer ID: ${event.customerId}`);
+            }
+          }
+        });
+      } catch (e) {
+        issues.push(`Event validation failed - ${e.message}`);
+      }
+      
+      // TEST 5: DOM ELEMENTS EXISTENCE
+      console.log('%c🎨 TEST 5: DOM ELEMENTS EXISTENCE', 'color: #42a5f5; font-weight: bold; font-size: 14px');
+      
+      const criticalElements = [
+        'dashboardView', 'customersView', 'ordersView', 'calendarView',
+        'pipelineView', 'analyticsView', 'marketingView', 'referralsView',
+        'reportsView', 'importView', 'customersTable', 'ordersTable',
+        'customerModal', 'orderModal', 'eventModal'
+      ];
+      
+      criticalElements.forEach(elementId => {
+        const element = document.getElementById(elementId);
+        if (!element) {
+          issues.push(`CRITICAL: DOM element missing - #${elementId}`);
+        } else {
+          passed.push(`DOM element exists - #${elementId}`);
+        }
+      });
+      
+      // TEST 6: FUNCTION EXISTENCE
+      console.log('%c⚙️ TEST 6: CRITICAL FUNCTIONS EXISTENCE', 'color: #42a5f5; font-weight: bold; font-size: 14px');
+      
+      const criticalFunctions = [
+        'showView', 'updateDashboard', 'updateCustomersView', 'updateOrdersView',
+        'saveCustomer', 'deleteCustomer', 'saveOrder', 'deleteOrder',
+        'saveEvent', 'deleteEvent', 'saveData', 'loadData',
+        'openCustomerModal', 'openOrderModal', 'openEventModal'
+      ];
+      
+      criticalFunctions.forEach(funcName => {
+        if (typeof window[funcName] !== 'function') {
+          issues.push(`CRITICAL: Function missing - ${funcName}()`);
+        } else {
+          passed.push(`Function exists - ${funcName}()`);
+        }
+      });
+      
+      // TEST 7: LOCALSTORAGE ACCESS
+      console.log('%c💾 TEST 7: LOCALSTORAGE ACCESS', 'color: #42a5f5; font-weight: bold; font-size: 14px');
+      
+      try {
+        localStorage.setItem('test_key', 'test_value');
+        const testValue = localStorage.getItem('test_key');
+        localStorage.removeItem('test_key');
+        
+        if (testValue === 'test_value') {
+          passed.push('localStorage is accessible and working');
+        } else {
+          issues.push('CRITICAL: localStorage read/write test failed');
+        }
+        
+        const crmDataStr = localStorage.getItem('acoustiskinCRM_AI');
+        if (crmDataStr) {
+          const sizeKB = (new Blob([crmDataStr]).size / 1024).toFixed(2);
+          passed.push(`CRM data in localStorage: ${sizeKB} KB`);
+          
+          if (sizeKB > 5000) {
+            warnings.push('localStorage data is quite large (>5MB) - consider archiving old data');
+          }
+        } else {
+          warnings.push('No CRM data in localStorage yet (OK if first run)');
+        }
+      } catch (e) {
+        issues.push(`CRITICAL: localStorage access error - ${e.message}`);
+      }
+      
+      // TEST 8: VIEW SWITCHING
+      console.log('%c👁️ TEST 8: VIEW SWITCHING', 'color: #42a5f5; font-weight: bold; font-size: 14px');
+      
+      try {
+        const currentView = document.querySelector('.view[style*="display: block"]');
+        const views = ['dashboard', 'customers', 'orders', 'calendar', 'pipeline', 'analytics', 'marketing', 'referrals', 'reports', 'import'];
+        
+        views.forEach(view => {
+          try {
+            showView(view);
+            const viewElement = document.getElementById(`${view}View`);
+            if (viewElement && viewElement.style.display === 'block') {
+              passed.push(`View switching works - ${view}`);
+            } else {
+              warnings.push(`View switching issue - ${view} view not displaying`);
+            }
+          } catch (e) {
+            issues.push(`View switching failed for ${view} - ${e.message}`);
+          }
+        });
+        
+        showView('dashboard');
+      } catch (e) {
+        issues.push(`View switching test failed - ${e.message}`);
+      }
+      
+      // TEST 9: RENDERING FUNCTIONS
+      console.log('%c🎬 TEST 9: RENDERING FUNCTIONS', 'color: #42a5f5; font-weight: bold; font-size: 14px');
+      
+      try {
+        updateDashboard();
+        passed.push('updateDashboard() executed without errors');
+        
+        if (typeof updateCustomersView === 'function') {
+          updateCustomersView();
+          passed.push('updateCustomersView() executed without errors');
+        }
+        
+        if (typeof updateOrdersView === 'function') {
+          updateOrdersView();
+          passed.push('updateOrdersView() executed without errors');
+        }
+        
+        if (typeof renderCalendar === 'function') {
+          renderCalendar();
+          passed.push('renderCalendar() executed without errors');
+        }
+      } catch (e) {
+        issues.push(`Rendering function test failed - ${e.message}`);
+      }
+      
+      // TEST 10: DATA RELATIONSHIPS
+      console.log('%c🔗 TEST 10: DATA RELATIONSHIPS', 'color: #42a5f5; font-weight: bold; font-size: 14px');
+      
+      try {
+        const orphanedOrders = crmData.orders.filter(order => {
+          return order.customerId && !crmData.customers.some(c => c.id === order.customerId);
+        });
+        
+        if (orphanedOrders.length > 0) {
+          warnings.push(`${orphanedOrders.length} order(s) reference non-existent customers`);
+        } else if (crmData.orders.length > 0) {
+          passed.push('All orders have valid customer references');
+        }
+        
+        if (crmData.communications && crmData.communications.length > 0) {
+          const orphanedComms = crmData.communications.filter(comm => {
+            return comm.customerId && !crmData.customers.some(c => c.id === comm.customerId);
+          });
+          
+          if (orphanedComms.length > 0) {
+            warnings.push(`${orphanedComms.length} communication(s) reference non-existent customers`);
+          } else {
+            passed.push('All communications have valid customer references');
+          }
+        }
+        
+        if (crmData.tasks && crmData.tasks.length > 0) {
+          const orphanedTasks = crmData.tasks.filter(task => {
+            return task.customerId && !crmData.customers.some(c => c.id === task.customerId);
+          });
+          
+          if (orphanedTasks.length > 0) {
+            warnings.push(`${orphanedTasks.length} task(s) reference non-existent customers`);
+          } else {
+            passed.push('All tasks have valid customer references');
+          }
+        }
+      } catch (e) {
+        issues.push(`Data relationship test failed - ${e.message}`);
+      }
+      
+      // FINAL REPORT
+      console.log('');
+      console.log('%c═══════════════════════════════════════════════════════════════', 'color: #66bb6a; font-weight: bold');
+      console.log('%c                    DIAGNOSTIC RESULTS', 'color: #66bb6a; font-weight: bold; font-size: 16px');
+      console.log('%c═══════════════════════════════════════════════════════════════', 'color: #66bb6a; font-weight: bold');
+      console.log('');
+      
+      console.log(`%c✅ PASSED: ${passed.length} checks`, 'color: #66bb6a; font-weight: bold; font-size: 14px');
+      console.log(`%c⚠️ WARNINGS: ${warnings.length} issues`, 'color: #ffa726; font-weight: bold; font-size: 14px');
+      console.log(`%c❌ CRITICAL: ${issues.length} failures`, 'color: #e53935; font-weight: bold; font-size: 14px');
+      console.log('');
+      
+      if (issues.length > 0) {
+        console.log('%c❌ CRITICAL ISSUES (must fix):', 'color: #e53935; font-weight: bold');
+        issues.forEach(issue => console.log(`   • ${issue}`));
+        console.log('');
+      }
+      
+      if (warnings.length > 0) {
+        console.log('%c⚠️ WARNINGS (should review):', 'color: #ffa726; font-weight: bold');
+        warnings.forEach(warning => console.log(`   • ${warning}`));
+        console.log('');
+      }
+      
+      if (passed.length > 0 && issues.length === 0) {
+        console.log('%c🎉 ALL CRITICAL CHECKS PASSED!', 'color: #66bb6a; font-weight: bold; font-size: 14px');
+        console.log('');
+      }
+      
+      console.log('%c═══════════════════════════════════════════════════════════════', 'color: #66bb6a; font-weight: bold');
+      console.log('');
+      
+      return {
+        passed: passed.length,
+        warnings: warnings.length,
+        critical: issues.length,
+        passedItems: passed,
+        warningItems: warnings,
+        criticalItems: issues
+      };
+    }
+
+    // Run diagnostics automatically after 2 seconds
+    setTimeout(() => {
+      console.log('%c🚀 AUTO-RUNNING COMPREHENSIVE DIAGNOSTICS...', 'color: #66bb6a; font-weight: bold; font-size: 16px');
+      console.log('');
+      runComprehensiveDiagnostics();
+    }, 2000);
+
+    // ═══════════════════════════════════════════════════════════════
+    // END OF COMPREHENSIVE DIAGNOSTICS
+    // ═══════════════════════════════════════════════════════════════
   </script>
 </body>
 </html>
