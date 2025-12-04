@@ -2790,6 +2790,14 @@
       const notification = document.getElementById('notification');
       const text = document.getElementById('notificationText');
       text.textContent = message;
+      
+      // Change border color based on type
+      if (type === 'error') {
+        notification.style.borderLeftColor = '#e53935';
+      } else {
+        notification.style.borderLeftColor = '#66bb6a';
+      }
+      
       notification.style.display = 'block';
       setTimeout(() => {
         notification.style.display = 'none';
@@ -3441,15 +3449,36 @@
     }
 
     function deleteCustomer(id) {
-      if (confirm('Are you sure you want to delete this customer?')) {
+      if (!id) {
+        showNotification('Error: Customer ID not found', 'error');
+        return;
+      }
+      
+      if (confirm('Are you sure you want to delete this customer? This action cannot be undone.')) {
+        // Find customer before deletion for confirmation
+        const customer = crmData.customers.find(c => c.id === id);
+        if (!customer) {
+          showNotification('Customer not found', 'error');
+          return;
+        }
+        
+        const customerName = customer.name;
+        
+        // Remove customer and related data
         crmData.customers = crmData.customers.filter(c => c.id !== id);
         crmData.communications = crmData.communications.filter(c => c.customerId !== id);
         crmData.tasks = crmData.tasks.filter(t => t.customerId !== id);
+        
+        // Save immediately
         saveData();
+        
+        // Update all views
         updateDashboard();
         updateCustomersView();
         populateCustomerDropdowns();
-        showNotification('Customer deleted');
+        
+        // Show success notification
+        showNotification(`Customer "${customerName}" has been permanently deleted`);
       }
     }
 
