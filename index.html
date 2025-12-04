@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AcoustiSkin CRM - AI-Powered Enterprise Edition</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
@@ -179,6 +179,8 @@
       margin-right: 12px;
       min-width: 20px;
       text-align: center;
+      display: inline-block;
+      font-style: normal;
     }
     .modal {
       display: none;
@@ -924,34 +926,34 @@
     
     <nav style="padding: 20px 0;">
       <div class="nav-item active" onclick="showView('dashboard')">
-        <i class="fas fa-chart-pie"></i>Dashboard
+        <i class="fas fa-chart-line"></i>Dashboard
       </div>
       <div class="nav-item" onclick="showView('customers')">
-        <i class="fas fa-user-friends"></i>Customers
+        <i class="fas fa-users"></i>Customers
       </div>
       <div class="nav-item" onclick="showView('orders')">
-        <i class="fas fa-shopping-bag"></i>Orders
+        <i class="fas fa-shopping-cart"></i>Orders
       </div>
       <div class="nav-item" onclick="showView('calendar')">
-        <i class="fas fa-calendar-alt"></i>Calendar
+        <i class="fas fa-calendar"></i>Calendar
       </div>
       <div class="nav-item" onclick="showView('pipeline')">
         <i class="fas fa-filter"></i>Pipeline
       </div>
       <div class="nav-item" onclick="showView('analytics')">
-        <i class="fas fa-chart-line"></i>Analytics
+        <i class="fas fa-chart-bar"></i>Analytics
       </div>
       <div class="nav-item" onclick="showView('marketing')">
         <i class="fas fa-bullhorn"></i>Marketing
       </div>
       <div class="nav-item" onclick="showView('referrals')">
-        <i class="fas fa-share-alt"></i>Referral Program
+        <i class="fas fa-gift"></i>Referral Program
       </div>
       <div class="nav-item" onclick="showView('reports')">
-        <i class="fas fa-file-chart-line"></i>Reports & Tracking
+        <i class="fas fa-file-alt"></i>Reports & Tracking
       </div>
       <div class="nav-item" onclick="showView('import')">
-        <i class="fas fa-cloud-upload-alt"></i>Import Data
+        <i class="fas fa-upload"></i>Import Data
       </div>
     </nav>
 
