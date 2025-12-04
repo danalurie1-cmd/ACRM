@@ -1697,7 +1697,12 @@
           <i class="fas fa-sticky-note"></i> Additional Notes
         </div>
         <div class="form-group">
-          <label>Notes</label>
+          <label style="display: flex; justify-content: space-between; align-items: center;">
+            <span>Notes</span>
+            <button type="button" class="btn-secondary" style="padding: 4px 10px; font-size: 12px;" onclick="insertTimestamp()" title="Insert current date and time">
+              <i class="fas fa-clock"></i> Insert Timestamp
+            </button>
+          </label>
           <textarea id="customerNotes" rows="4" placeholder="Any additional information..."></textarea>
         </div>
 
@@ -3006,6 +3011,23 @@
         document.getElementById('customerModalTitle').textContent = 'Add New Customer';
         document.getElementById('customerId').value = '';
       }
+    }
+
+    // Insert Timestamp Function
+    function insertTimestamp() {
+      const notesField = document.getElementById('customerNotes');
+      const now = new Date();
+      const timestamp = `[${now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} - ${now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}] `;
+      
+      // Insert at cursor position or at the end
+      const cursorPos = notesField.selectionStart;
+      const textBefore = notesField.value.substring(0, cursorPos);
+      const textAfter = notesField.value.substring(cursorPos);
+      notesField.value = textBefore + timestamp + textAfter;
+      
+      // Move cursor after timestamp
+      notesField.selectionStart = notesField.selectionEnd = cursorPos + timestamp.length;
+      notesField.focus();
     }
 
     function saveCustomer(event) {
