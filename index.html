@@ -3,61 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AcoustiSkin Enterprise ERP</title>
+    <title>AcoustiSkin ERP - V14 Enterprise</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        /* ENTERPRISE THEME */
-        :root { --sidebar-bg: #0f172a; --accent: #3b82f6; --bg: #f1f5f9; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: #334155; height: 100vh; overflow: hidden; }
-
-        /* SCROLLBAR */
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-
-        /* NAVIGATION */
+        :root { --bg: #f8fafc; --sidebar: #0f172a; --primary: #3b82f6; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: #334155; height: 100vh; overflow: hidden; }
+        
+        /* Navigation */
         .nav-item { padding: 10px 16px; margin-bottom: 2px; cursor: pointer; color: #94a3b8; display: flex; align-items: center; gap: 12px; font-size: 0.85rem; font-weight: 500; border-radius: 6px; transition: 0.15s; }
         .nav-item:hover { background: rgba(255,255,255,0.08); color: white; }
         .nav-item.active { background: #3b82f6; color: white; font-weight: 600; box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.4); }
 
-        /* UI COMPONENTS */
+        /* Components */
         .card { background: white; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05); }
         .btn { padding: 8px 16px; border-radius: 6px; font-weight: 600; font-size: 0.85rem; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
         .btn-primary { background: #3b82f6; color: white; } .btn-primary:hover { background: #2563eb; }
-        .btn-success { background: #10b981; color: white; } .btn-success:hover { background: #059669; }
-        .btn-danger { background: #ef4444; color: white; } .btn-danger:hover { background: #dc2626; }
         .btn-secondary { background: white; border: 1px solid #cbd5e1; color: #475569; } .btn-secondary:hover { background: #f8fafc; }
+        .btn-danger { background: #ef4444; color: white; } .btn-danger:hover { background: #dc2626; }
 
-        /* FORMS & INPUTS (DENSE ENTERPRISE STYLE) */
-        .form-section { margin-bottom: 24px; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; background: #fff; }
-        .form-header { font-size: 0.75rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #f1f5f9; }
+        /* Inputs */
+        .inp-label { display: block; font-size: 0.7rem; font-weight: 700; color: #64748b; margin-bottom: 4px; text-transform: uppercase; }
+        .inp-field { width: 100%; border: 1px solid #cbd5e1; border-radius: 4px; padding: 8px 10px; font-size: 0.875rem; outline: none; }
+        .inp-field:focus { border-color: #3b82f6; ring: 1px solid #3b82f6; }
+
+        /* Modal */
+        .modal-backdrop { position: fixed; inset: 0; background: rgba(15,23,42,0.75); z-index: 50; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
+        .modal-panel { background: #f8fafc; width: 95%; max-width: 1100px; height: 90vh; border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
         
-        .inp-group { margin-bottom: 12px; }
-        .inp-label { display: block; font-size: 0.75rem; font-weight: 700; color: #475569; margin-bottom: 4px; }
-        .inp-field { width: 100%; border: 1px solid #cbd5e1; border-radius: 4px; padding: 8px 10px; font-size: 0.875rem; transition: border 0.2s; outline: none; }
-        .inp-field:focus { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1); }
-        .inp-field[readonly] { background-color: #f1f5f9; color: #64748b; cursor: not-allowed; }
-
-        /* TABS */
-        .tab-header { display: flex; border-bottom: 1px solid #e2e8f0; margin-bottom: 16px; }
-        .tab-btn { padding: 10px 20px; font-size: 0.875rem; font-weight: 600; color: #64748b; border-bottom: 2px solid transparent; cursor: pointer; }
+        /* Tabs */
+        .tab-header { display: flex; border-bottom: 1px solid #e2e8f0; background: white; padding: 0 16px; }
+        .tab-btn { padding: 12px 20px; font-size: 0.875rem; font-weight: 600; color: #64748b; border-bottom: 2px solid transparent; cursor: pointer; }
         .tab-btn.active { color: #3b82f6; border-bottom-color: #3b82f6; }
-        .tab-pane { display: none; }
+        .tab-pane { display: none; padding: 20px; overflow-y: auto; height: 100%; }
         .tab-pane.active { display: block; }
 
-        /* MODALS */
-        .modal-backdrop { position: fixed; inset: 0; background: rgba(15,23,42,0.75); z-index: 50; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
-        .modal-panel { background: #f8fafc; width: 95%; max-width: 1200px; height: 95vh; border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); animation: zoomIn 0.2s ease-out; }
-        @keyframes zoomIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
-        /* DATA TABLES */
-        .dt-table { width: 100%; text-align: left; border-collapse: collapse; }
-        .dt-table th { background: #f1f5f9; padding: 10px 16px; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; border-bottom: 1px solid #e2e8f0; }
-        .dt-table td { padding: 10px 16px; border-bottom: 1px solid #f1f5f9; font-size: 0.875rem; color: #334155; }
-        .dt-table tr:hover { background: #f8fafc; }
+        /* Calendar */
+        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: #e2e8f0; border: 1px solid #e2e8f0; border-radius: 0 0 8px 8px; }
+        .cal-day { background: white; min-height: 100px; padding: 6px; font-size: 0.85rem; cursor: pointer; position: relative; }
+        .cal-day:hover { background: #f8fafc; }
+        .is-today { background: #eff6ff; }
+        .event-pill { font-size: 0.7rem; padding: 2px 4px; border-radius: 4px; background: #dbeafe; color: #1e40af; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }
     </style>
 </head>
 <body class="flex">
@@ -65,31 +54,25 @@
     <aside class="w-64 bg-slate-900 text-white flex flex-col shadow-2xl z-20 flex-shrink-0">
         <div class="h-14 flex items-center px-6 border-b border-slate-800 bg-slate-950 gap-3">
             <div class="h-8 w-8 bg-blue-600 rounded flex items-center justify-center font-bold">AS</div>
-            <div><h1 class="font-bold text-sm tracking-tight">AcoustiSkin ERP</h1><p class="text-[10px] text-slate-400">Enterprise V13</p></div>
+            <div><h1 class="font-bold text-sm tracking-tight">AcoustiSkin ERP</h1><p class="text-[10px] text-slate-400">Enterprise V14</p></div>
         </div>
-        <div class="flex-1 overflow-y-auto py-6 px-3">
-            <div class="px-3 pb-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Operations</div>
+        <div class="flex-1 overflow-y-auto py-6 px-3 space-y-1">
             <div onclick="router('dashboard')" class="nav-item active" id="nav-dashboard"><i class="fa-solid fa-gauge-high w-5 text-center"></i> Dashboard</div>
-            <div onclick="router('customers')" class="nav-item" id="nav-customers"><i class="fa-solid fa-building w-5 text-center"></i> Accounts</div>
+            <div onclick="router('customers')" class="nav-item" id="nav-customers"><i class="fa-solid fa-building w-5 text-center"></i> Customers</div>
             <div onclick="router('orders')" class="nav-item" id="nav-orders"><i class="fa-solid fa-file-invoice-dollar w-5 text-center"></i> Orders</div>
             <div onclick="router('inventory')" class="nav-item" id="nav-inventory"><i class="fa-solid fa-boxes-stacked w-5 text-center"></i> Inventory</div>
             <div onclick="router('calendar')" class="nav-item" id="nav-calendar"><i class="fa-solid fa-calendar-days w-5 text-center"></i> Calendar</div>
-            
-            <div class="px-3 pt-6 pb-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">System</div>
-            <div onclick="router('reports')" class="nav-item" id="nav-reports"><i class="fa-solid fa-chart-area w-5 text-center"></i> Reporting</div>
-            <div onclick="router('settings')" class="nav-item" id="nav-settings"><i class="fa-solid fa-sliders w-5 text-center"></i> Config</div>
-        </div>
-        <div class="p-4 bg-slate-900 border-t border-slate-800">
-            <button onclick="ui.modal('customer')" class="w-full btn btn-primary justify-center"><i class="fa-solid fa-plus"></i> New Account</button>
+            <div onclick="router('pipeline')" class="nav-item" id="nav-pipeline"><i class="fa-solid fa-filter w-5 text-center"></i> Pipeline</div>
+            <div onclick="router('settings')" class="nav-item mt-4" id="nav-settings"><i class="fa-solid fa-sliders w-5 text-center"></i> Settings</div>
         </div>
     </aside>
 
     <main class="flex-1 flex flex-col relative overflow-hidden">
         <header class="h-14 bg-white border-b border-slate-200 flex items-center justify-between px-6 z-10">
-            <h2 id="page-title" class="text-lg font-bold text-slate-800">Executive Dashboard</h2>
-            <div class="flex items-center gap-4">
-                <button class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-bell"></i></button>
-                <div class="h-8 w-8 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center font-bold text-xs">DL</div>
+            <h2 id="page-title" class="text-lg font-bold text-slate-800">Dashboard</h2>
+            <div class="flex gap-2">
+                <button onclick="ui.modal('customer')" class="btn btn-primary text-xs"><i class="fa-solid fa-plus"></i> Account</button>
+                <button onclick="ui.modal('order')" class="btn btn-secondary text-xs"><i class="fa-solid fa-plus"></i> Order</button>
             </div>
         </header>
         <div id="view-container" class="flex-1 overflow-y-auto p-6"></div>
@@ -98,166 +81,91 @@
     <div id="modal-customer" class="modal-backdrop">
         <div class="modal-panel">
             <div class="h-14 bg-white border-b px-6 flex justify-between items-center">
-                <h3 class="font-bold text-lg text-slate-800">Account Profile</h3>
-                <div class="flex gap-2">
-                    <button onclick="ui.close()" class="btn btn-secondary">Cancel</button>
-                    <button onclick="act.saveCustomer()" class="btn btn-primary">Save Profile</button>
+                <h3 class="font-bold text-lg">Customer Profile</h3>
+                <div class="flex gap-2"><button onclick="ui.close()" class="btn btn-secondary">Cancel</button><button onclick="act.saveCustomer()" class="btn btn-primary">Save Profile</button></div>
+            </div>
+            <form id="form-customer" class="flex-1 flex flex-col overflow-hidden bg-slate-50">
+                <input type="hidden" name="id">
+                <div class="tab-header">
+                    <div onclick="ui.tab('cust', 1)" class="tab-btn active" id="tb-cust-1">Overview</div>
+                    <div onclick="ui.tab('cust', 2)" class="tab-btn" id="tb-cust-2">Addresses</div>
+                    <div onclick="ui.tab('cust', 3)" class="tab-btn" id="tb-cust-3">Financials</div>
                 </div>
-            </div>
-            <div class="flex-1 overflow-hidden flex bg-slate-50">
-                <form id="form-customer" class="flex-1 overflow-y-auto p-8 w-full">
-                    <input type="hidden" name="id">
-                    
-                    <div class="tab-header">
-                        <div onclick="ui.tab('cust', 1)" class="tab-btn active" id="tb-cust-1">General Info</div>
-                        <div onclick="ui.tab('cust', 2)" class="tab-btn" id="tb-cust-2">Addresses</div>
-                        <div onclick="ui.tab('cust', 3)" class="tab-btn" id="tb-cust-3">Financials</div>
-                        <div onclick="ui.tab('cust', 4)" class="tab-btn" id="tb-cust-4">System Data</div>
-                    </div>
-
-                    <div id="pane-cust-1" class="tab-pane active">
-                        <div class="grid grid-cols-2 gap-6">
-                            <div class="form-section">
-                                <div class="form-header">Account Details</div>
-                                <div class="inp-group"><label class="inp-label">Company Name *</label><input name="company" class="inp-field" required placeholder="e.g. Amazon Inc."></div>
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div class="inp-group"><label class="inp-label">Account Type</label><select name="type" class="inp-field"><option>Corporation</option><option>LLC</option><option>Individual</option></select></div>
-                                    <div class="inp-group"><label class="inp-label">Industry</label><select name="industry" class="inp-field"><option>Retail</option><option>Technology</option><option>Manufacturing</option></select></div>
-                                </div>
-                                <div class="inp-group"><label class="inp-label">Website</label><input name="website" class="inp-field"></div>
+                
+                <div id="pane-cust-1" class="tab-pane active">
+                    <div class="card p-6 grid grid-cols-2 gap-6">
+                        <div>
+                            <div class="mb-4 font-bold text-slate-700 uppercase text-xs border-b pb-2">Identity</div>
+                            <div class="mb-3"><label class="inp-label">Company Name *</label><input name="company" class="inp-field" required></div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div><label class="inp-label">First Name</label><input name="fName" class="inp-field"></div>
+                                <div><label class="inp-label">Last Name</label><input name="lName" class="inp-field"></div>
                             </div>
-                            <div class="form-section">
-                                <div class="form-header">Primary Contact</div>
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div class="inp-group"><label class="inp-label">First Name</label><input name="fName" class="inp-field"></div>
-                                    <div class="inp-group"><label class="inp-label">Last Name</label><input name="lName" class="inp-field"></div>
-                                </div>
-                                <div class="inp-group"><label class="inp-label">Job Title</label><input name="title" class="inp-field"></div>
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div class="inp-group"><label class="inp-label">Email</label><input name="email" class="inp-field"></div>
-                                    <div class="inp-group"><label class="inp-label">Phone</label><input name="phone" class="inp-field"></div>
-                                </div>
+                        </div>
+                        <div>
+                            <div class="mb-4 font-bold text-slate-700 uppercase text-xs border-b pb-2">Contact</div>
+                            <div class="mb-3"><label class="inp-label">Email *</label><input name="email" class="inp-field" required></div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div><label class="inp-label">Phone</label><input name="phone" class="inp-field"></div>
+                                <div><label class="inp-label">Website</label><input name="website" class="inp-field"></div>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <div id="pane-cust-2" class="tab-pane">
-                        <div class="grid grid-cols-2 gap-6">
-                            <div class="form-section">
-                                <div class="form-header">Billing Address</div>
-                                <div class="inp-group"><label class="inp-label">Street</label><input name="b_addr" id="b_addr" class="inp-field"></div>
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div class="inp-group"><label class="inp-label">City</label><input name="b_city" id="b_city" class="inp-field"></div>
-                                    <div class="inp-group"><label class="inp-label">State</label><input name="b_state" id="b_state" class="inp-field"></div>
-                                </div>
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div class="inp-group"><label class="inp-label">Zip</label><input name="b_zip" id="b_zip" class="inp-field"></div>
-                                    <div class="inp-group"><label class="inp-label">Country</label><input name="b_country" id="b_country" class="inp-field" value="USA"></div>
-                                </div>
-                            </div>
-                            <div class="form-section">
-                                <div class="flex justify-between items-center border-b border-slate-100 pb-2 mb-3">
-                                    <div class="form-header mb-0 border-0 pb-0">Shipping Address</div>
-                                    <button type="button" onclick="ui.copyAddr()" class="text-xs text-blue-600 hover:underline">Copy Billing</button>
-                                </div>
-                                <div class="inp-group"><label class="inp-label">Street</label><input name="s_addr" id="s_addr" class="inp-field"></div>
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div class="inp-group"><label class="inp-label">City</label><input name="s_city" id="s_city" class="inp-field"></div>
-                                    <div class="inp-group"><label class="inp-label">State</label><input name="s_state" id="s_state" class="inp-field"></div>
-                                </div>
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div class="inp-group"><label class="inp-label">Zip</label><input name="s_zip" id="s_zip" class="inp-field"></div>
-                                    <div class="inp-group"><label class="inp-label">Country</label><input name="s_country" id="s_country" class="inp-field" value="USA"></div>
-                                </div>
-                            </div>
+                <div id="pane-cust-2" class="tab-pane">
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="card p-6">
+                            <h4 class="font-bold text-xs uppercase mb-4">Billing Address</h4>
+                            <input name="b_addr" id="b_addr" class="inp-field mb-2" placeholder="Street">
+                            <div class="grid grid-cols-3 gap-2"><input name="b_city" id="b_city" class="inp-field" placeholder="City"><input name="b_state" id="b_state" class="inp-field" placeholder="State"><input name="b_zip" id="b_zip" class="inp-field" placeholder="Zip"></div>
+                        </div>
+                        <div class="card p-6">
+                            <div class="flex justify-between mb-4"><h4 class="font-bold text-xs uppercase">Shipping Address</h4><button type="button" onclick="ui.copyAddr()" class="text-xs text-blue-600 font-bold">Copy Billing</button></div>
+                            <input name="s_addr" id="s_addr" class="inp-field mb-2" placeholder="Street">
+                            <div class="grid grid-cols-3 gap-2"><input name="s_city" id="s_city" class="inp-field" placeholder="City"><input name="s_state" id="s_state" class="inp-field" placeholder="State"><input name="s_zip" id="s_zip" class="inp-field" placeholder="Zip"></div>
                         </div>
                     </div>
+                </div>
 
-                    <div id="pane-cust-3" class="tab-pane">
-                        <div class="grid grid-cols-2 gap-6">
-                            <div class="form-section">
-                                <div class="form-header">Credit & Terms</div>
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div class="inp-group"><label class="inp-label">Payment Terms</label><select name="terms" class="inp-field"><option>Net 30</option><option>Net 60</option><option>Due on Receipt</option></select></div>
-                                    <div class="inp-group"><label class="inp-label">Currency</label><select name="currency" class="inp-field"><option>USD</option><option>EUR</option></select></div>
-                                </div>
-                                <div class="inp-group"><label class="inp-label">Credit Limit ($)</label><input name="creditLimit" type="number" class="inp-field" placeholder="0.00"></div>
-                                <div class="inp-group"><label class="inp-label">Tax ID / VAT</label><input name="taxId" class="inp-field"></div>
-                            </div>
-                            <div class="form-section">
-                                <div class="form-header">Logistics Preferences</div>
-                                <div class="inp-group"><label class="inp-label">Preferred Carrier</label><select name="carrier" class="inp-field"><option>FedEx</option><option>UPS</option><option>DHL</option><option>USPS</option></select></div>
-                                <div class="inp-group"><label class="inp-label">Carrier Account #</label><input name="carrierAcct" class="inp-field"></div>
-                                <div class="inp-group"><label class="inp-label">FOB Terms</label><select name="fob" class="inp-field"><option>Origin</option><option>Destination</option></select></div>
-                            </div>
-                        </div>
+                <div id="pane-cust-3" class="tab-pane">
+                    <div class="card p-6 grid grid-cols-3 gap-6">
+                        <div><label class="inp-label">Payment Terms</label><select name="terms" class="inp-field"><option>Net 30</option><option>Net 60</option><option>Due on Receipt</option></select></div>
+                        <div><label class="inp-label">Credit Limit ($)</label><input name="credit" type="number" class="inp-field"></div>
+                        <div><label class="inp-label">Tax ID / EIN</label><input name="taxId" class="inp-field"></div>
+                        <div><label class="inp-label">Preferred Carrier</label><select name="carrier" class="inp-field"><option>FedEx</option><option>UPS</option></select></div>
+                        <div><label class="inp-label">Carrier Account #</label><input name="carrierAcct" class="inp-field"></div>
+                        <div><label class="inp-label">Discount Tier</label><select name="tier" class="inp-field"><option>Retail</option><option>Wholesale</option><option>Distributor</option></select></div>
                     </div>
-
-                    <div id="pane-cust-4" class="tab-pane">
-                        <div class="form-section">
-                            <div class="form-header">Internal Data</div>
-                            <div class="grid grid-cols-3 gap-4">
-                                <div class="inp-group"><label class="inp-label">Status</label><select name="status" class="inp-field"><option>Active</option><option>On Hold</option><option>Inactive</option></select></div>
-                                <div class="inp-group"><label class="inp-label">Account Owner</label><input name="owner" class="inp-field" value="Dana Lurie"></div>
-                                <div class="inp-group"><label class="inp-label">Lead Source</label><input name="source" class="inp-field"></div>
-                            </div>
-                            <div class="inp-group"><label class="inp-label">Internal Notes</label><textarea name="notes" class="inp-field" rows="4"></textarea></div>
-                        </div>
-                    </div>
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
     </div>
 
     <div id="modal-order" class="modal-backdrop">
         <div class="modal-panel">
             <div class="h-14 bg-white border-b px-6 flex justify-between items-center">
-                <h3 class="font-bold text-lg text-slate-800">Sales Order Entry</h3>
-                <div class="flex gap-2">
-                    <button onclick="ui.close()" class="btn btn-secondary">Close</button>
-                    <button onclick="act.saveOrder()" class="btn btn-success">Process Order</button>
-                </div>
+                <h3 class="font-bold text-lg">Sales Order</h3>
+                <div class="flex gap-2"><button onclick="ui.close()" class="btn btn-secondary">Close</button><button onclick="act.saveOrder()" class="btn btn-primary">Process Order</button></div>
             </div>
             <form id="form-order" class="flex-1 flex flex-col overflow-hidden bg-slate-50">
-                <div class="flex-1 overflow-y-auto p-8">
-                    <div class="card p-6 mb-6">
-                        <div class="grid grid-cols-4 gap-6">
-                            <div class="col-span-1">
-                                <label class="inp-label">Customer</label>
-                                <select id="ord-cust" name="custId" class="inp-field bg-white font-bold" onchange="logic.loadCustDefaults(this.value)"></select>
-                            </div>
-                            <div class="col-span-1"><label class="inp-label">PO Number</label><input name="po" class="inp-field"></div>
-                            <div class="col-span-1"><label class="inp-label">Order Date</label><input type="date" name="date" class="inp-field" required></div>
-                            <div class="col-span-1"><label class="inp-label">Req. Ship Date</label><input type="date" name="shipDate" class="inp-field"></div>
-                        </div>
-                        <div class="grid grid-cols-4 gap-6 mt-4">
-                            <div class="col-span-1"><label class="inp-label">Carrier</label><select name="carrier" id="ord-carrier" class="inp-field"><option>FedEx</option><option>UPS</option></select></div>
-                            <div class="col-span-1"><label class="inp-label">Terms</label><input name="terms" id="ord-terms" class="inp-field" readonly></div>
-                            <div class="col-span-1"><label class="inp-label">Sales Rep</label><input name="rep" value="Dana Lurie" class="inp-field"></div>
-                            <div class="col-span-1"><label class="inp-label">Status</label><select name="status" class="inp-field"><option>Draft</option><option>Pending</option><option>Approved</option></select></div>
-                        </div>
+                <input type="hidden" name="id">
+                <div class="flex-1 overflow-y-auto p-6">
+                    <div class="card p-6 mb-6 grid grid-cols-4 gap-4">
+                        <div class="col-span-1"><label class="inp-label">Customer</label><select id="ord-cust" name="custId" class="inp-field font-bold" onchange="logic.setTerms(this.value)"></select></div>
+                        <div class="col-span-1"><label class="inp-label">PO Number</label><input name="po" class="inp-field"></div>
+                        <div class="col-span-1"><label class="inp-label">Date</label><input type="date" name="date" class="inp-field" required></div>
+                        <div class="col-span-1"><label class="inp-label">Status</label><select name="status" class="inp-field"><option>Draft</option><option>Pending</option><option>Paid</option><option>Shipped</option></select></div>
                     </div>
-
-                    <div class="card overflow-hidden mb-6">
-                        <div class="px-6 py-3 bg-slate-100 border-b border-slate-200 flex justify-between items-center">
-                            <h4 class="text-xs font-bold uppercase text-slate-500">Line Items</h4>
-                            <button type="button" onclick="logic.addLine()" class="text-xs text-blue-600 font-bold hover:underline">+ Add Product</button>
-                        </div>
-                        <table class="w-full text-left text-sm">
-                            <thead class="bg-slate-50 text-xs text-slate-500 uppercase font-bold border-b">
-                                <tr><th class="p-3 w-12">#</th><th class="p-3">SKU / Product</th><th class="p-3 w-24 text-right">Qty</th><th class="p-3 w-32 text-right">Unit Price</th><th class="p-3 w-24 text-right">Disc %</th><th class="p-3 w-32 text-right">Total</th><th class="p-3 w-10"></th></tr>
-                            </thead>
-                            <tbody id="ord-lines">
-                                </tbody>
-                        </table>
+                    <div class="card mb-6 overflow-hidden">
+                        <div class="bg-slate-100 p-3 border-b flex justify-between"><h4 class="text-xs font-bold uppercase">Line Items</h4><button type="button" onclick="logic.addLine()" class="text-blue-600 text-xs font-bold">+ Add Line</button></div>
+                        <table class="w-full text-left text-sm"><thead class="bg-slate-50 border-b"><tr><th class="p-3">Product / Description</th><th class="p-3 w-24">Qty</th><th class="p-3 w-32">Price</th><th class="p-3 w-32 text-right">Total</th><th class="p-3 w-10"></th></tr></thead><tbody id="ord-lines"></tbody></table>
                     </div>
-
                     <div class="flex justify-end">
-                        <div class="w-1/3 card p-6">
+                        <div class="card p-4 w-64">
                             <div class="flex justify-between mb-2 text-sm"><span>Subtotal:</span><span id="txt-sub" class="font-bold">$0.00</span></div>
-                            <div class="flex justify-between mb-2 text-sm items-center"><span>Shipping:</span><input type="number" id="inp-ship" class="border rounded w-20 text-right p-1 text-sm" value="0" oninput="logic.calcTotals()"></div>
                             <div class="flex justify-between mb-2 text-sm"><span>Tax (6%):</span><span id="txt-tax">$0.00</span></div>
-                            <div class="flex justify-between pt-3 border-t border-slate-200 text-lg font-bold text-slate-800"><span>Grand Total:</span><span id="txt-total">$0.00</span></div>
+                            <div class="flex justify-between pt-2 border-t font-bold text-lg"><span>Total:</span><span id="txt-total" class="text-green-600">$0.00</span></div>
                         </div>
                     </div>
                 </div>
@@ -265,146 +173,200 @@
         </div>
     </div>
 
+    <div id="modal-inv" class="modal-backdrop">
+        <div class="modal-panel max-w-lg h-auto">
+            <div class="h-14 bg-white border-b px-6 flex justify-between items-center"><h3 class="font-bold">Inventory Item</h3><button onclick="ui.close()" class="text-gray-400">x</button></div>
+            <form onsubmit="act.saveInv(event)" class="p-6">
+                <input type="hidden" name="id">
+                <div class="mb-3"><label class="inp-label">Item Name</label><input name="name" class="inp-field" required></div>
+                <div class="mb-3"><label class="inp-label">SKU</label><input name="sku" class="inp-field"></div>
+                <div class="grid grid-cols-2 gap-4 mb-3">
+                    <div><label class="inp-label">Price ($)</label><input name="price" type="number" step="0.01" class="inp-field" required></div>
+                    <div><label class="inp-label">Stock Qty</label><input name="stock" type="number" class="inp-field" required></div>
+                </div>
+                <button class="btn btn-primary w-full justify-center">Save Item</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-event" class="modal-backdrop">
+        <div class="modal-panel max-w-lg h-auto">
+            <div class="h-14 bg-white border-b px-6 flex justify-between items-center"><h3 class="font-bold">Event</h3><button onclick="ui.close()" class="text-gray-400">x</button></div>
+            <form onsubmit="act.saveEvent(event)" class="p-6">
+                <input type="hidden" name="id">
+                <div class="mb-3"><label class="inp-label">Title</label><input name="title" class="inp-field" required></div>
+                <div class="grid grid-cols-2 gap-4 mb-3">
+                    <div><label class="inp-label">Date</label><input name="date" type="date" class="inp-field" required></div>
+                    <div><label class="inp-label">Time</label><input name="time" type="time" class="inp-field"></div>
+                </div>
+                <div class="mb-3"><label class="inp-label">Type</label><select name="type" class="inp-field"><option>Meeting</option><option>Call</option><option>Task</option></select></div>
+                <button class="btn btn-primary w-full justify-center">Save Event</button>
+            </form>
+        </div>
+    </div>
+
     <script>
-        const state = { customers: [], orders: [] };
+        const db = { customers:[], orders:[], inventory:[], events:[], pipeline:[] };
+        const holidays = {"01-01":"New Year","07-04":"Independence","11-27":"Thanksgiving","12-25":"Christmas"};
 
         window.onload = () => {
-            const d = localStorage.getItem('erp_v13');
-            if(d) Object.assign(state, JSON.parse(d));
-            else seed();
+            const d = localStorage.getItem('as_erp_v14');
+            if(d) Object.assign(db, JSON.parse(d)); else seed();
             router('dashboard');
         };
 
         function seed() {
-            state.customers = [
-                { id: 'c1', company: 'Amazon Inc.', type: 'Corporation', fName: 'Jeff', lName: 'Bezos', email: 'purchasing@amazon.com', b_city: 'Seattle', b_state: 'WA', terms: 'Net 60', creditLimit: 100000, carrier: 'UPS' },
-                { id: 'c2', company: 'Oracle Corp', type: 'Corporation', fName: 'Larry', lName: 'Ellison', email: 'ap@oracle.com', b_city: 'Austin', b_state: 'TX', terms: 'Net 30', creditLimit: 50000, carrier: 'FedEx' }
-            ];
-            state.orders = [];
+            db.customers = [{id:'c1', company:'Amazon Inc.', fName:'Jeff', lName:'Bezos', email:'ap@amazon.com', terms:'Net 60'}, {id:'c2', company:'Oracle', fName:'Larry', lName:'Ellison', email:'ap@oracle.com', terms:'Net 30'}];
+            db.inventory = [{id:'i1', name:'AcoustiSkin Panel', sku:'ASP-001', price:29.95, stock:500}, {id:'i2', name:'Install Kit', sku:'KIT-002', price:15.00, stock:200}];
+            db.orders = [{id:'o1', custId:'c1', custName:'Amazon Inc.', date:'2025-11-20', total:1500, status:'Shipped', items:[{desc:'AcoustiSkin Panel', qty:50, price:29.95}]}];
+            db.events = [{id:'e1', title:'Q4 Review', date:new Date().toISOString().split('T')[0], time:'14:00', type:'Meeting'}];
+            db.pipeline = [{id:'p1', title:'Global Dist Deal', value:50000, stage:'Negotiation'}];
             save();
         }
-        function save() { localStorage.setItem('erp_v13', JSON.stringify(state)); }
+        function save() { localStorage.setItem('as_erp_v14', JSON.stringify(db)); }
 
-        function router(page) {
+        function router(view) {
             document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
-            document.getElementById(`nav-${page}`).classList.add('active');
-            document.getElementById('page-title').innerText = page.charAt(0).toUpperCase() + page.slice(1);
-            
-            const v = document.getElementById('view-container');
-            if(page === 'dashboard') renderDashboard(v);
-            if(page === 'customers') renderCustomers(v);
-            if(page === 'orders') renderOrders(v);
-            if(page === 'calendar') v.innerHTML = `<div class="p-10 text-center text-slate-400">Calendar Module Active (See V12 for full logic)</div>`;
-            if(page === 'settings') v.innerHTML = `<div class="p-10 text-center"><button onclick="act.reset()" class="btn btn-danger">System Factory Reset</button></div>`;
+            document.getElementById('nav-'+view).classList.add('active');
+            const c = document.getElementById('view-container');
+            if(view==='dashboard') renderDashboard(c);
+            else if(view==='customers') renderCustomers(c);
+            else if(view==='orders') renderOrders(c);
+            else if(view==='inventory') renderInventory(c);
+            else if(view==='calendar') renderCalendar(c);
+            else if(view==='pipeline') renderPipeline(c);
+            else if(view==='settings') c.innerHTML = `<div class="p-10 text-center"><button onclick="act.reset()" class="btn btn-danger">System Factory Reset</button></div>`;
+            else c.innerHTML = `<div class="text-center p-10 text-gray-400">Module under construction</div>`;
         }
 
         // RENDERERS
-        function renderDashboard(v) {
-            v.innerHTML = `
-                <div class="grid grid-cols-4 gap-6 mb-8">
-                    <div class="card p-6 border-l-4 border-blue-500"><div class="text-xs font-bold text-slate-400 uppercase">Revenue</div><div class="text-2xl font-bold mt-1">$${state.orders.reduce((a,b)=>a+b.total,0).toLocaleString()}</div></div>
-                    <div class="card p-6 border-l-4 border-green-500"><div class="text-xs font-bold text-slate-400 uppercase">Active Accounts</div><div class="text-2xl font-bold mt-1">${state.customers.length}</div></div>
-                </div>
-            `;
+        function renderDashboard(c) {
+            c.innerHTML = `<div class="grid grid-cols-4 gap-6 mb-6"><div class="card p-6 border-l-4 border-blue-500"><div>REVENUE</div><div class="text-2xl font-bold">$${db.orders.reduce((a,b)=>a+b.total,0).toLocaleString()}</div></div><div class="card p-6 border-l-4 border-green-500"><div>CUSTOMERS</div><div class="text-2xl font-bold">${db.customers.length}</div></div></div>`;
+        }
+        function renderCustomers(c) {
+            c.innerHTML = `<div class="flex justify-between mb-4"><h2 class="font-bold text-lg">Accounts</h2><button onclick="ui.modal('customer')" class="btn btn-primary">+ Add</button></div><div class="card overflow-hidden"><table class="w-full text-left text-sm"><thead class="bg-slate-50 border-b"><tr><th class="p-3">Company</th><th class="p-3">Contact</th><th class="p-3">Terms</th><th class="p-3">Action</th></tr></thead><tbody>${db.customers.map(x=>`<tr class="border-b hover:bg-slate-50"><td class="p-3 font-bold">${x.company}</td><td class="p-3">${x.fName} ${x.lName}</td><td class="p-3">${x.terms||'-'}</td><td class="p-3"><button onclick="ui.editCust('${x.id}')" class="text-blue-600">Edit</button></td></tr>`).join('')}</tbody></table></div>`;
+        }
+        function renderOrders(c) {
+            c.innerHTML = `<div class="flex justify-between mb-4"><h2 class="font-bold text-lg">Orders</h2><button onclick="ui.modal('order')" class="btn btn-primary">+ Create</button></div><div class="card overflow-hidden"><table class="w-full text-left text-sm"><thead class="bg-slate-50 border-b"><tr><th class="p-3">Order #</th><th class="p-3">Date</th><th class="p-3">Customer</th><th class="p-3">Total</th><th class="p-3">Status</th><th class="p-3">Action</th></tr></thead><tbody>${db.orders.map(x=>`<tr class="border-b hover:bg-slate-50"><td class="p-3">#${x.id}</td><td class="p-3">${x.date}</td><td class="p-3 font-bold">${x.custName}</td><td class="p-3 font-bold text-green-600">$${x.total.toFixed(2)}</td><td class="p-3"><span class="bg-slate-100 px-2 rounded">${x.status}</span></td><td class="p-3"><button onclick="ui.editOrder('${x.id}')" class="text-blue-600">Edit</button></td></tr>`).join('')}</tbody></table></div>`;
+        }
+        function renderInventory(c) {
+            c.innerHTML = `<div class="flex justify-between mb-4"><h2 class="font-bold text-lg">Inventory</h2><button onclick="ui.modal('inv')" class="btn btn-primary">+ Add Item</button></div><div class="card overflow-hidden"><table class="w-full text-left text-sm"><thead class="bg-slate-50 border-b"><tr><th class="p-3">SKU</th><th class="p-3">Name</th><th class="p-3">Price</th><th class="p-3">Stock</th><th class="p-3">Action</th></tr></thead><tbody>${db.inventory.map(x=>`<tr class="border-b hover:bg-slate-50"><td class="p-3 font-mono">${x.sku}</td><td class="p-3 font-bold">${x.name}</td><td class="p-3">$${x.price}</td><td class="p-3 font-bold">${x.stock}</td><td class="p-3"><button onclick="ui.editInv('${x.id}')" class="text-blue-600">Edit</button> <button onclick="act.del('inventory','${x.id}')" class="text-red-500 ml-2">Del</button></td></tr>`).join('')}</tbody></table></div>`;
+        }
+        function renderCalendar(c) {
+            const d=new Date(), m=d.getMonth(), y=d.getFullYear();
+            const daysInM = new Date(y, m+1, 0).getDate();
+            const startDay = new Date(y, m, 1).getDay();
+            const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+            
+            let html = '';
+            for(let i=0;i<startDay;i++) html+=`<div class="cal-day bg-slate-50"></div>`;
+            for(let i=1;i<=daysInM;i++) {
+                const dateStr = `${y}-${String(m+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
+                const evs = db.events.filter(e=>e.date===dateStr);
+                const hol = holidays[dateStr.slice(5)]; // simple check MM-DD
+                html += `<div class="cal-day ${i===d.getDate()?'is-today':''}" onclick="ui.editEvent(null, '${dateStr}')"><div class="flex justify-between"><span class="font-bold text-xs text-slate-400">${i}</span>${hol?'<i class="fa-solid fa-star text-purple-500 text-xs"></i>':''}</div>
+                ${hol?`<div class="text-[10px] text-purple-600 font-bold truncate">${hol}</div>`:''}
+                ${evs.map(e=>`<div onclick="event.stopPropagation();ui.editEvent('${e.id}')" class="event-pill">${e.time} ${e.title}</div>`).join('')}</div>`;
+            }
+            c.innerHTML = `<div class="flex justify-between items-center mb-4"><h2 class="font-bold text-lg">Calendar</h2><div class="font-bold text-slate-500 text-xl">${monthNames[m]} ${y}</div></div><div class="card overflow-hidden"><div class="grid grid-cols-7 text-center text-xs font-bold text-slate-400 py-2 bg-slate-50 border-b"><div>SUN</div><div>MON</div><div>TUE</div><div>WED</div><div>THU</div><div>FRI</div><div>SAT</div></div><div class="cal-grid">${html}</div></div>`;
+        }
+        function renderPipeline(c) {
+            const stages = ['Lead','Negotiation','Closed'];
+            c.innerHTML = `<div class="flex gap-4 h-full overflow-x-auto pb-4">${stages.map(s=>`<div class="min-w-[300px] bg-slate-100 p-4 rounded-lg flex flex-col"><div class="font-bold text-slate-500 text-xs uppercase mb-4 flex justify-between">${s} <span>${db.pipeline.filter(p=>p.stage===s).length}</span></div>${db.pipeline.filter(p=>p.stage===s).map(d=>`<div class="bg-white p-4 rounded shadow mb-2 border-l-4 border-blue-500"><div class="font-bold text-slate-700">${d.title}</div><div class="text-xs text-slate-400 mt-1">$${d.value.toLocaleString()}</div></div>`).join('')}</div>`).join('')}</div>`;
         }
 
-        function renderCustomers(v) {
-            v.innerHTML = `
-                <div class="card overflow-hidden">
-                    <table class="dt-table">
-                        <thead><tr><th>Company</th><th>Contact</th><th>City/State</th><th>Terms</th><th>Credit Limit</th><th>Actions</th></tr></thead>
-                        <tbody>${state.customers.map(c => `<tr>
-                            <td class="font-bold">${c.company}</td><td>${c.fName} ${c.lName}<br><span class="text-xs text-slate-400">${c.email}</span></td>
-                            <td>${c.b_city}, ${c.b_state}</td><td><span class="bg-blue-100 text-blue-700 px-2 rounded text-xs font-bold">${c.terms}</span></td>
-                            <td>$${(parseInt(c.creditLimit)||0).toLocaleString()}</td>
-                            <td><button onclick="ui.editCust('${c.id}')" class="text-blue-600 hover:underline">Edit</button></td>
-                        </tr>`).join('')}</tbody>
-                    </table>
-                </div>`;
-        }
-
-        function renderOrders(v) {
-            v.innerHTML = `
-                <div class="card overflow-hidden">
-                    <table class="dt-table">
-                        <thead><tr><th>Order #</th><th>Date</th><th>Customer</th><th>PO #</th><th>Total</th><th>Status</th></tr></thead>
-                        <tbody>${state.orders.map(o => `<tr>
-                            <td class="font-mono text-slate-500">#${o.id}</td><td>${o.date}</td><td class="font-bold">${o.custName}</td><td>${o.po||'-'}</td>
-                            <td class="font-bold text-green-600">$${o.total.toFixed(2)}</td>
-                            <td><span class="bg-slate-100 px-2 rounded text-xs font-bold">${o.status}</span></td>
-                        </tr>`).join('')}</tbody>
-                    </table>
-                </div>`;
-        }
-
-        // LOGIC & ACTIONS
+        // LOGIC
         const ui = {
             modal(id) { 
-                document.getElementById(`modal-${id}`).style.display = 'flex';
-                if(id==='order') {
-                    const sel = document.getElementById('ord-cust');
-                    sel.innerHTML = `<option value="">Select Customer...</option>` + state.customers.map(c=>`<option value="${c.id}">${c.company}</option>`).join('');
+                document.getElementById('modal-'+id).style.display='flex'; 
+                if(id==='order' && !document.querySelector('#form-order [name=id]').value) {
+                    logic.popCust(); 
                     document.getElementById('ord-lines').innerHTML = '';
-                    logic.addLine();
+                    logic.addLine(); 
                 }
             },
-            close() { document.querySelectorAll('.modal-backdrop').forEach(m=>m.style.display='none'); document.querySelectorAll('form').forEach(f=>f.reset()); },
-            tab(ctx, idx) {
+            close() { document.querySelectorAll('.modal-backdrop').forEach(e=>e.style.display='none'); document.querySelectorAll('form').forEach(f=>f.reset()); },
+            tab(g, i) { 
                 document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
                 document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
-                document.getElementById(`tb-${ctx}-${idx}`).classList.add('active');
-                document.getElementById(`pane-${ctx}-${idx}`).classList.add('active');
+                document.getElementById(`tb-${g}-${i}`).classList.add('active');
+                document.getElementById(`pane-${g}-${i}`).classList.add('active');
             },
-            copyAddr() {
-                ['addr','city','state','zip','country'].forEach(k => document.getElementById(`s_${k}`).value = document.getElementById(`b_${k}`).value);
-            },
+            copyAddr() { ['addr','city','state','zip'].forEach(k=>document.getElementById('s_'+k).value = document.getElementById('b_'+k).value); },
             editCust(id) {
-                const c = state.customers.find(x=>x.id===id);
-                if(!c) return;
+                const c = db.customers.find(x=>x.id===id);
                 const f = document.getElementById('form-customer');
-                Object.keys(c).forEach(k => {
-                    const el = f.querySelector(`[name="${k}"]`);
-                    if(el) el.value = c[k];
-                });
+                Object.keys(c).forEach(k=>{ if(f.elements[k]) f.elements[k].value=c[k]; });
+                f.elements['id'].value = id;
                 ui.modal('customer');
+            },
+            editOrder(id) {
+                const o = db.orders.find(x=>x.id===id);
+                const f = document.getElementById('form-order');
+                f.elements['id'].value = id;
+                f.elements['po'].value = o.po || '';
+                f.elements['date'].value = o.date;
+                f.elements['status'].value = o.status;
+                logic.popCust(o.custId);
+                
+                const tbody = document.getElementById('ord-lines');
+                tbody.innerHTML = '';
+                if(o.items && o.items.length) {
+                    o.items.forEach(i => logic.addLine(i));
+                } else {
+                    logic.addLine();
+                }
+                logic.calcTotal();
+                ui.modal('order');
+            },
+            editInv(id) {
+                const i = db.inventory.find(x=>x.id===id);
+                const f = document.querySelector('#modal-inv form');
+                f.elements['id'].value=id; f.elements['name'].value=i.name; f.elements['sku'].value=i.sku; f.elements['price'].value=i.price; f.elements['stock'].value=i.stock;
+                ui.modal('inv');
+            },
+            editEvent(id, datePrefill) {
+                const f = document.querySelector('#modal-event form');
+                if(id) {
+                    const e = db.events.find(x=>x.id===id);
+                    f.elements['id'].value=id; f.elements['title'].value=e.title; f.elements['date'].value=e.date; f.elements['time'].value=e.time; f.elements['type'].value=e.type;
+                } else {
+                    f.elements['date'].value = datePrefill;
+                }
+                ui.modal('event');
             }
         };
 
         const logic = {
-            loadCustDefaults(id) {
-                const c = state.customers.find(x=>x.id===id);
-                if(c) {
-                    document.getElementById('ord-terms').value = c.terms || '';
-                    document.getElementById('ord-carrier').value = c.carrier || 'FedEx';
-                }
+            popCust(selId) {
+                const sel = document.getElementById('ord-cust');
+                sel.innerHTML = `<option value="">Select Customer</option>` + db.customers.map(c=>`<option value="${c.id}" ${c.id===selId?'selected':''}>${c.company}</option>`).join('');
             },
-            addLine() {
+            setTerms(id) { /* placeholder for filling terms based on customer */ },
+            addLine(data) {
                 const row = document.createElement('tr');
-                row.innerHTML = `<td class="p-2 text-center text-slate-400">#</td>
-                <td class="p-2"><input class="inp-field" placeholder="Product / SKU"></td>
-                <td class="p-2"><input type="number" class="inp-field text-right" value="1" oninput="logic.calcTotals()"></td>
-                <td class="p-2"><input type="number" class="inp-field text-right" placeholder="0.00" oninput="logic.calcTotals()"></td>
-                <td class="p-2"><input type="number" class="inp-field text-right" placeholder="0" oninput="logic.calcTotals()"></td>
-                <td class="p-2 text-right font-bold text-slate-700 line-total">$0.00</td>
-                <td class="p-2 text-center"><i class="fa-solid fa-trash text-red-400 cursor-pointer" onclick="this.closest('tr').remove();logic.calcTotals()"></i></td>`;
+                row.className = 'border-b';
+                row.innerHTML = `<td class="p-2"><input class="inp-field" name="desc" placeholder="Product" value="${data?data.desc:''}"></td>
+                <td class="p-2 w-24"><input type="number" class="inp-field" name="qty" value="${data?data.qty:1}" oninput="logic.calcTotal()"></td>
+                <td class="p-2 w-32"><input type="number" class="inp-field" name="price" value="${data?data.price:0}" oninput="logic.calcTotal()"></td>
+                <td class="p-2 w-32 text-right font-bold line-tot">$0.00</td>
+                <td class="p-2 w-10 text-center"><i class="fa-solid fa-trash text-red-400 cursor-pointer" onclick="this.closest('tr').remove();logic.calcTotal()"></i></td>`;
                 document.getElementById('ord-lines').appendChild(row);
+                if(data) logic.calcTotal();
             },
-            calcTotals() {
+            calcTotal() {
                 let sub = 0;
                 document.querySelectorAll('#ord-lines tr').forEach(r => {
-                    const inps = r.querySelectorAll('input');
-                    const qty = parseFloat(inps[1].value)||0;
-                    const price = parseFloat(inps[2].value)||0;
-                    const disc = parseFloat(inps[3].value)||0;
-                    const line = (qty * price) * (1 - disc/100);
-                    r.querySelector('.line-total').innerText = '$'+line.toFixed(2);
-                    sub += line;
+                    const q = parseFloat(r.querySelector('[name=qty]').value)||0;
+                    const p = parseFloat(r.querySelector('[name=price]').value)||0;
+                    const t = q*p;
+                    r.querySelector('.line-tot').innerText = '$'+t.toFixed(2);
+                    sub += t;
                 });
-                const ship = parseFloat(document.getElementById('inp-ship').value)||0;
-                const tax = sub * 0.06;
+                const tax = sub*0.06;
                 document.getElementById('txt-sub').innerText = '$'+sub.toFixed(2);
                 document.getElementById('txt-tax').innerText = '$'+tax.toFixed(2);
-                document.getElementById('txt-total').innerText = '$'+(sub+ship+tax).toFixed(2);
+                document.getElementById('txt-total').innerText = '$'+(sub+tax).toFixed(2);
             }
         };
 
@@ -413,8 +375,8 @@
                 const f = new FormData(document.getElementById('form-customer'));
                 const obj = Object.fromEntries(f.entries());
                 if(!obj.id) obj.id = 'c'+Date.now();
-                const idx = state.customers.findIndex(x=>x.id===obj.id);
-                if(idx >= 0) state.customers[idx] = obj; else state.customers.push(obj);
+                const idx = db.customers.findIndex(x=>x.id===obj.id);
+                if(idx>=0) db.customers[idx]=obj; else db.customers.push(obj);
                 save(); ui.close(); router('customers');
             },
             saveOrder() {
@@ -422,13 +384,44 @@
                 const obj = Object.fromEntries(f.entries());
                 const sel = document.getElementById('ord-cust');
                 obj.custName = sel.options[sel.selectedIndex].text;
+                // Capture lines
+                obj.items = [];
+                document.querySelectorAll('#ord-lines tr').forEach(r => {
+                    obj.items.push({
+                        desc: r.querySelector('[name=desc]').value,
+                        qty: parseFloat(r.querySelector('[name=qty]').value),
+                        price: parseFloat(r.querySelector('[name=price]').value)
+                    });
+                });
                 obj.total = parseFloat(document.getElementById('txt-total').innerText.replace('$',''));
-                obj.id = Math.floor(Math.random()*90000)+10000;
-                state.orders.unshift(obj);
+                if(!obj.id) obj.id = Math.floor(Math.random()*90000)+10000;
+                
+                const idx = db.orders.findIndex(x=>x.id==obj.id);
+                if(idx>=0) db.orders[idx]=obj; else db.orders.unshift(obj);
+                
                 save(); ui.close(); router('orders');
             },
-            reset() { localStorage.removeItem('erp_v13'); location.reload(); }
+            saveInv(e) {
+                e.preventDefault(); const f=new FormData(e.target); const obj=Object.fromEntries(f.entries());
+                if(!obj.id) obj.id='i'+Date.now();
+                const idx=db.inventory.findIndex(x=>x.id===obj.id); if(idx>=0) db.inventory[idx]=obj; else db.inventory.push(obj);
+                save(); ui.close(); router('inventory');
+            },
+            saveEvent(e) {
+                e.preventDefault(); const f=new FormData(e.target); const obj=Object.fromEntries(f.entries());
+                if(!obj.id) obj.id='e'+Date.now();
+                const idx=db.events.findIndex(x=>x.id===obj.id); if(idx>=0) db.events[idx]=obj; else db.events.push(obj);
+                save(); ui.close(); router('calendar');
+            },
+            del(col, id) { if(confirm('Delete?')) { db[col]=db[col].filter(x=>x.id!==id); save(); router(col); } },
+            reset() { localStorage.removeItem('as_erp_v14'); location.reload(); }
         };
     </script>
 </body>
 </html>
+
+
+
+
+
+
