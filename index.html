@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AcoustiSkin Enterprise CRM</title>
+    <title>AcoustiSkin Enterprise V12</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -12,537 +12,318 @@
 
     <style>
         /* --- DESIGN SYSTEM --- */
-        :root { --primary: #4f46e5; --bg-main: #f8fafc; --sidebar: #0f172a; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-main); color: #334155; overflow: hidden; }
-        
-        /* Transitions */
-        .transition-all { transition-property: all; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 200ms; }
-        .fade-in { animation: fadeIn 0.3s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        :root { --primary: #0f172a; --accent: #16a34a; --bg: #f8fafc; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: #334155; height: 100vh; overflow: hidden; }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
-        /* Sidebar */
-        .nav-item { display: flex; align-items: center; padding: 12px 24px; color: #94a3b8; border-left: 3px solid transparent; cursor: pointer; transition: 0.2s; font-size: 0.9rem; font-weight: 500; }
-        .nav-item:hover { background: rgba(255,255,255,0.05); color: #f8fafc; }
-        .nav-item.active { background: rgba(99, 102, 241, 0.1); color: #fff; border-left-color: #6366f1; }
-        .nav-icon { width: 20px; text-align: center; margin-right: 12px; }
+        /* Navigation */
+        .nav-item { display: flex; align-items: center; padding: 12px 20px; color: #94a3b8; border-left: 3px solid transparent; cursor: pointer; transition: 0.2s; font-size: 0.9rem; font-weight: 500; }
+        .nav-item:hover { background: rgba(255,255,255,0.05); color: white; }
+        .nav-item.active { background: rgba(255,255,255,0.1); color: white; border-left-color: #22c55e; }
+        .nav-icon { width: 24px; text-align: center; margin-right: 12px; }
 
-        /* Components */
-        .ent-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1); overflow: hidden; }
-        .ent-btn { display: inline-flex; align-items: center; justify-content: center; padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 600; border-radius: 0.5rem; transition: 0.2s; cursor: pointer; }
-        .btn-primary { background: #4f46e5; color: white; box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2); }
-        .btn-primary:hover { background: #4338ca; transform: translateY(-1px); }
+        /* UI Elements */
+        .ent-card { background: white; border-radius: 8px; border: 1px solid #e2e8f0; box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05); }
+        .btn { display: inline-flex; align-items: center; justify-content: center; padding: 8px 16px; border-radius: 6px; font-weight: 600; font-size: 0.875rem; transition: 0.2s; cursor: pointer; gap: 8px; }
+        .btn-primary { background: #16a34a; color: white; box-shadow: 0 2px 4px rgba(22,163,74,0.2); }
+        .btn-primary:hover { background: #15803d; transform: translateY(-1px); }
         .btn-secondary { background: white; border: 1px solid #cbd5e1; color: #475569; }
         .btn-secondary:hover { background: #f1f5f9; }
-        
+        .btn-danger { background: #ef4444; color: white; }
+        .btn-danger:hover { background: #dc2626; }
+
+        /* Inputs & Tables */
+        .data-table th { background: #f8fafc; font-weight: 600; text-transform: uppercase; font-size: 0.75rem; color: #64748b; padding: 12px 16px; border-bottom: 1px solid #e2e8f0; text-align: left; }
+        .data-table td { padding: 12px 16px; border-bottom: 1px solid #f1f5f9; font-size: 0.875rem; }
+        .input-field { width: 100%; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px 12px; font-size: 0.875rem; outline: none; transition: border 0.2s; }
+        .input-field:focus { border-color: #16a34a; ring: 1px solid #16a34a; }
+        .label-text { display: block; font-size: 0.75rem; font-weight: 700; color: #475569; margin-bottom: 4px; text-transform: uppercase; }
+
+        /* Modal */
+        .modal-backdrop { position: fixed; inset: 0; background: rgba(15,23,42,0.6); z-index: 50; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
+        .modal-panel { background: white; width: 95%; max-width: 1000px; max-height: 95vh; border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
         /* Calendar */
-        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); background: #e2e8f0; gap: 1px; border: 1px solid #e2e8f0; border-radius: 0 0 8px 8px; }
-        .cal-day { background: white; min-height: 120px; padding: 8px; font-size: 0.85rem; cursor: pointer; position: relative; }
+        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: #e2e8f0; border: 1px solid #e2e8f0; border-radius: 0 0 8px 8px; }
+        .cal-day { background: white; min-height: 100px; padding: 6px; font-size: 0.85rem; cursor: pointer; position: relative; }
         .cal-day:hover { background: #f8fafc; }
         .cal-today { background: #f0fdfa; }
-        .holiday-badge { font-size: 0.7rem; color: #7c3aed; font-weight: 700; display: block; margin-bottom: 2px; }
+        .event-pill { font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; background: #dcfce7; color: #166534; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-left: 3px solid #16a34a; }
         
-        /* Modal & Toast */
-        .modal-backdrop { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 50; display: none; align-items: center; justify-content: center; }
-        .modal-panel { background: white; width: 100%; max-width: 900px; max-height: 90vh; border-radius: 16px; box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25); overflow: hidden; display: flex; flex-direction: column; transform: scale(0.95); opacity: 0; transition: all 0.2s; }
-        .modal-backdrop.open { display: flex; }
-        .modal-backdrop.open .modal-panel { transform: scale(1); opacity: 1; }
-        
-        #toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 100; display: flex; flex-direction: column; gap: 10px; }
-        .toast { background: white; border-left: 4px solid #10b981; padding: 16px; border-radius: 8px; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1); display: flex; align-items: center; gap: 12px; min-width: 300px; animation: slideIn 0.3s ease-out; }
-        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        /* Order Line Table */
+        .line-item-grid { display: grid; grid-template-columns: 1fr 4rem 6rem 6rem 2rem; gap: 8px; align-items: center; margin-bottom: 8px; }
     </style>
 </head>
-<body class="flex h-screen">
+<body class="flex">
 
-    <aside class="w-64 bg-slate-900 text-white flex flex-col shadow-xl z-20 flex-shrink-0">
-        <div class="h-16 flex items-center px-6 border-b border-slate-800 gap-3">
-            <div class="h-8 w-8 bg-indigo-600 rounded-lg flex items-center justify-center font-bold text-white shadow-lg shadow-indigo-500/30">AS</div>
+    <aside class="w-64 bg-slate-900 text-white flex flex-col shadow-2xl z-20 flex-shrink-0">
+        <div class="h-16 flex items-center px-6 border-b border-slate-800 gap-3 bg-slate-950">
+            <div class="h-8 w-8 bg-green-600 rounded flex items-center justify-center font-bold text-white">AS</div>
             <div>
                 <h1 class="font-bold text-lg tracking-tight">AcoustiSkin</h1>
-                <p class="text-[10px] text-slate-400 uppercase tracking-widest font-semibold">Enterprise</p>
+                <p class="text-[10px] text-slate-400 uppercase font-bold tracking-widest">Enterprise V12</p>
             </div>
         </div>
 
-        <div class="flex-1 overflow-y-auto py-6 space-y-1">
+        <nav class="flex-1 overflow-y-auto py-6 space-y-1">
             <div class="px-6 pb-2 text-xs font-bold text-slate-500 uppercase tracking-widest">Modules</div>
             <div onclick="CRM.router('dashboard')" class="nav-item active" id="nav-dashboard"><i class="fa-solid fa-chart-line nav-icon"></i> Dashboard</div>
             <div onclick="CRM.router('customers')" class="nav-item" id="nav-customers"><i class="fa-solid fa-users nav-icon"></i> Customers</div>
-            <div onclick="CRM.router('orders')" class="nav-item" id="nav-orders"><i class="fa-solid fa-box-open nav-icon"></i> Orders</div>
+            <div onclick="CRM.router('orders')" class="nav-item" id="nav-orders"><i class="fa-solid fa-file-invoice-dollar nav-icon"></i> Orders</div>
             <div onclick="CRM.router('calendar')" class="nav-item" id="nav-calendar"><i class="fa-solid fa-calendar-days nav-icon"></i> Calendar</div>
-            <div onclick="CRM.router('pipeline')" class="nav-item" id="nav-pipeline"><i class="fa-solid fa-kanban nav-icon"></i> Pipeline</div>
-            
-            <div class="px-6 pt-6 pb-2 text-xs font-bold text-slate-500 uppercase tracking-widest">Management</div>
-            <div onclick="CRM.router('reports')" class="nav-item" id="nav-reports"><i class="fa-solid fa-file-invoice nav-icon"></i> Reports</div>
+            <div onclick="CRM.router('pipeline')" class="nav-item" id="nav-pipeline"><i class="fa-solid fa-filter nav-icon"></i> Pipeline</div>
             <div onclick="CRM.router('settings')" class="nav-item" id="nav-settings"><i class="fa-solid fa-sliders nav-icon"></i> Settings</div>
-        </div>
+        </nav>
 
-        <div class="p-4 border-t border-slate-800 bg-slate-900">
-            <button onclick="CRM.ui.openModal('customer')" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2 rounded-lg transition shadow-lg shadow-indigo-900/20 flex items-center justify-center gap-2">
-                <i class="fa-solid fa-plus"></i> New Customer
-            </button>
+        <div class="p-4 border-t border-slate-800 bg-slate-900 space-y-2">
+            <button onclick="CRM.ui.openModal('customer')" class="w-full btn btn-primary"><i class="fa-solid fa-user-plus"></i> New Customer</button>
+            <button onclick="CRM.ui.openModal('event')" class="w-full btn bg-slate-700 hover:bg-slate-600 text-white border-none"><i class="fa-solid fa-clock"></i> Schedule Event</button>
         </div>
     </aside>
 
-    <main class="flex-1 flex flex-col min-w-0 bg-slate-50 relative">
+    <main class="flex-1 flex flex-col relative bg-slate-50">
         <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 z-10 sticky top-0">
             <h2 id="page-title" class="text-xl font-bold text-slate-800">Dashboard</h2>
-            
-            <div class="flex items-center gap-6">
-                <div class="relative">
-                    <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                    <input type="text" placeholder="Global Search..." class="pl-10 pr-4 py-2 border border-slate-200 rounded-lg text-sm w-64 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
+            <div class="flex items-center gap-4">
+                <div class="text-right hidden md:block">
+                    <div class="text-sm font-bold text-slate-700">Dana Lurie</div>
+                    <div class="text-xs text-green-600 font-bold bg-green-50 px-2 rounded-full inline-block">Admin</div>
                 </div>
-                <div class="h-8 w-px bg-slate-200"></div>
-                <div class="flex items-center gap-3">
-                    <div class="text-right hidden md:block">
-                        <div class="text-sm font-bold text-slate-700">Dana Lurie</div>
-                        <div class="text-xs text-slate-500">Administrator</div>
-                    </div>
-                    <div class="h-10 w-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold shadow-md">DL</div>
-                </div>
+                <div class="h-10 w-10 bg-slate-200 rounded-full flex items-center justify-center font-bold text-slate-600">DL</div>
             </div>
         </header>
-
-        <div id="app-view" class="flex-1 overflow-y-auto p-8 fade-in">
-            </div>
+        <div id="app-view" class="flex-1 overflow-y-auto p-8"></div>
     </main>
 
-    <div id="modal-container" class="modal-backdrop">
-        <div class="modal-panel">
-            <div class="px-8 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                <h3 id="modal-title" class="text-lg font-bold text-slate-800">Edit Record</h3>
-                <button onclick="CRM.ui.closeModal()" class="text-slate-400 hover:text-red-500 transition"><i class="fa-solid fa-times text-xl"></i></button>
+    <div id="modal-event" class="modal-backdrop">
+        <div class="modal-panel max-w-lg">
+            <div class="px-6 py-4 border-b flex justify-between items-center bg-slate-50">
+                <h3 class="font-bold text-lg">Schedule Event</h3>
+                <button onclick="CRM.ui.closeModal('event')" class="text-slate-400 hover:text-red-500"><i class="fa-solid fa-times"></i></button>
             </div>
-            <div id="modal-body" class="p-8 overflow-y-auto flex-1 bg-white"></div>
+            <form onsubmit="CRM.actions.saveEvent(event)" class="p-6">
+                <div class="mb-4">
+                    <label class="label-text">Event Title / Task</label>
+                    <input name="title" class="input-field" placeholder="Meeting with Client..." required>
+                </div>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div><label class="label-text">Date</label><input type="date" name="date" class="input-field" required></div>
+                    <div>
+                        <label class="label-text">Start Time</label>
+                        <select name="time" class="input-field">
+                            <option>08:00 AM</option><option>09:00 AM</option><option>10:00 AM</option><option>11:00 AM</option>
+                            <option>12:00 PM</option><option>01:00 PM</option><option>02:00 PM</option><option>03:00 PM</option>
+                            <option>04:00 PM</option><option>05:00 PM</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div><label class="label-text">Type</label><select name="type" class="input-field"><option>Meeting</option><option>Call</option><option>Task</option></select></div>
+                    <div><label class="label-text">Priority</label><select name="priority" class="input-field"><option>Normal</option><option>High</option><option>Low</option></select></div>
+                </div>
+                <div class="flex justify-end gap-2">
+                    <button type="button" onclick="CRM.ui.closeModal('event')" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save to Calendar</button>
+                </div>
+            </form>
         </div>
     </div>
 
-    <div id="toast-container"></div>
+    <div id="modal-order" class="modal-backdrop">
+        <div class="modal-panel h-full">
+            <div class="px-8 py-4 border-b bg-slate-50 flex justify-between items-center">
+                <h3 class="text-xl font-bold text-slate-800">New Order</h3>
+                <button onclick="CRM.ui.closeModal('order')" class="text-slate-400 hover:text-red-500"><i class="fa-solid fa-times text-xl"></i></button>
+            </div>
+            <form onsubmit="CRM.actions.saveOrder(event)" class="flex flex-col flex-1 overflow-hidden">
+                <div class="flex-1 overflow-y-auto p-8 bg-white">
+                    <div class="grid grid-cols-3 gap-6 mb-8">
+                        <div><label class="label-text">Customer</label><select id="ord-cust-select" name="custId" class="input-field bg-slate-50 font-semibold"></select></div>
+                        <div><label class="label-text">Date</label><input type="date" name="date" class="input-field" required></div>
+                        <div><label class="label-text">Status</label><select name="status" class="input-field"><option>Draft</option><option>Sent</option><option>Paid</option></select></div>
+                    </div>
+                    
+                    <div class="mb-8">
+                        <div class="flex justify-between items-center mb-2">
+                            <h4 class="font-bold text-sm text-slate-700">Line Items</h4>
+                            <button type="button" onclick="CRM.logic.addOrderLine()" class="text-xs font-bold text-green-600 hover:underline">+ Add Item</button>
+                        </div>
+                        <div class="bg-slate-50 p-2 rounded border border-slate-200">
+                            <div class="grid grid-cols-[1fr_4rem_6rem_6rem_2rem] gap-2 px-2 py-1 text-xs font-bold text-slate-500 uppercase">
+                                <div>Description</div><div class="text-right">Qty</div><div class="text-right">Price</div><div class="text-right">Total</div><div></div>
+                            </div>
+                            <div id="ord-lines-body"></div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end">
+                        <div class="w-64 bg-slate-50 p-4 rounded border border-slate-200">
+                            <div class="flex justify-between mb-2"><span>Subtotal:</span> <span id="ord-subtotal">$0.00</span></div>
+                            <div class="flex justify-between mb-2"><span>Tax (6%):</span> <span id="ord-tax">$0.00</span></div>
+                            <div class="flex justify-between font-bold text-lg border-t pt-2 mt-2"><span>Total:</span> <span id="ord-grand" class="text-green-600">$0.00</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-4 border-t bg-slate-50 flex justify-end gap-3">
+                    <button type="button" onclick="CRM.ui.closeModal('order')" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Order</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-customer" class="modal-backdrop">
+        <div class="modal-panel max-w-2xl">
+            <div class="px-6 py-4 border-b flex justify-between items-center bg-slate-50">
+                <h3 class="font-bold text-lg">Customer Profile</h3>
+                <button onclick="CRM.ui.closeModal('customer')" class="text-slate-400 hover:text-red-500"><i class="fa-solid fa-times"></i></button>
+            </div>
+            <form onsubmit="CRM.actions.saveCustomer(event)" class="p-6 overflow-y-auto">
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div><label class="label-text">First Name</label><input name="fName" class="input-field" required></div>
+                    <div><label class="label-text">Last Name</label><input name="lName" class="input-field" required></div>
+                    <div><label class="label-text">Company</label><input name="company" class="input-field"></div>
+                    <div><label class="label-text">Email</label><input name="email" type="email" class="input-field" required></div>
+                </div>
+                <div class="mb-4"><label class="label-text">Address</label><input name="address" class="input-field mb-2" placeholder="Street"><div class="grid grid-cols-3 gap-2"><input name="city" placeholder="City" class="input-field"><input name="state" placeholder="State" class="input-field"><input name="zip" placeholder="Zip" class="input-field"></div></div>
+                <div class="flex justify-end gap-2"><button type="button" onclick="CRM.ui.closeModal('customer')" class="btn btn-secondary">Cancel</button><button type="submit" class="btn btn-primary">Save Customer</button></div>
+            </form>
+        </div>
+    </div>
 
     <script>
-        /**
-         * ACOUSTISKIN CRM CORE ENGINE V9
-         * Features: State Management, LocalStorage Persistence, Dynamic Rendering
-         */
         const CRM = {
-            state: {
-                customers: [],
-                orders: [],
-                events: [],
-                pipeline: [],
-                settings: { taxRate: 0.06 }
-            },
-
+            state: { customers: [], orders: [], events: [], pipeline: [] },
+            
             init() {
-                this.storage.load();
-                if (this.state.customers.length === 0) this.storage.seed();
+                const data = localStorage.getItem('as_crm_v12');
+                if (data) this.state = JSON.parse(data);
+                else this.seed();
                 this.router('dashboard');
             },
 
-            storage: {
-                load() {
-                    const data = localStorage.getItem('acoustiskin_enterprise_v9');
-                    if (data) CRM.state = JSON.parse(data);
-                },
-                save() {
-                    localStorage.setItem('acoustiskin_enterprise_v9', JSON.stringify(CRM.state));
-                },
-                seed() {
-                    CRM.state.customers = [
-                        { id: 'c1', fName: 'Lance', lName: 'Ochs', company: 'CleanRoom Tape', email: 'lance@cleanroom.com', status: 'Active', ship_addr: '123 Tech Blvd', ship_city: 'Austin', ship_state: 'TX', credits: 150 },
-                        { id: 'c2', fName: 'Dana', lName: 'Lurie', company: 'AcoustiSkin', email: 'dana@acoustiskin.com', status: 'VIP', ship_addr: '456 Innovation Dr', ship_city: 'Boston', ship_state: 'MA', credits: 500 }
-                    ];
-                    CRM.state.orders = [
-                        { id: 'o1001', custId: 'c1', date: '2025-11-20', total: 2450.00, status: 'Shipped', items: 'Bulk Adhesive x50' },
-                        { id: 'o1002', custId: 'c2', date: '2025-12-01', total: 125.50, status: 'Processing', items: 'Sample Pack' }
-                    ];
-                    CRM.state.pipeline = [
-                        { id: 'p1', title: 'Q1 Distribution Deal', value: 15000, stage: 'Negotiation', custName: 'CleanRoom Tape' }
-                    ];
-                    CRM.storage.save();
-                }
+            seed() {
+                this.state.customers = [{ id: 'c1', fName: 'Lance', lName: 'Ochs', company: 'CleanRoom', email: 'lance@cr.com', city: 'Falmouth', state: 'MA' }];
+                this.state.orders = [];
+                this.state.events = [{id:'e1', title:'Kickoff', date: new Date().toISOString().split('T')[0], time:'10:00 AM', type:'Meeting'}];
+                this.save();
             },
 
-            router(view) {
-                // UI Update
-                document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-                const navBtn = document.getElementById(`nav-${view}`);
-                if(navBtn) navBtn.classList.add('active');
-                
-                document.getElementById('page-title').innerText = view.charAt(0).toUpperCase() + view.slice(1);
-                
-                const container = document.getElementById('app-view');
-                container.innerHTML = ''; // Clear
-                container.classList.remove('fade-in');
-                void container.offsetWidth; // Trigger reflow
-                container.classList.add('fade-in');
+            save() { localStorage.setItem('as_crm_v12', JSON.stringify(this.state)); },
 
-                // Route Logic
-                switch(view) {
-                    case 'dashboard': CRM.views.dashboard(container); break;
-                    case 'customers': CRM.views.customers(container); break;
-                    case 'orders': CRM.views.orders(container); break;
-                    case 'calendar': CRM.views.calendar(container); break;
-                    case 'pipeline': CRM.views.pipeline(container); break;
-                    default: container.innerHTML = `<div class="p-10 text-center text-slate-400">Module Loaded: ${view}</div>`;
-                }
+            router(view) {
+                document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+                document.getElementById(`nav-${view}`).classList.add('active');
+                const c = document.getElementById('app-view');
+                if(view==='dashboard') this.views.dashboard(c);
+                else if(view==='customers') this.views.customers(c);
+                else if(view==='orders') this.views.orders(c);
+                else if(view==='calendar') this.views.calendar(c);
+                else c.innerHTML = `<div class="p-10 text-center text-slate-400">Module Ready</div>`;
             },
 
             views: {
-                dashboard(container) {
-                    const totalRev = CRM.state.orders.reduce((acc, o) => acc + parseFloat(o.total), 0);
-                    const pendingOrders = CRM.state.orders.filter(o => o.status === 'Processing').length;
-
-                    container.innerHTML = `
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                            <div class="ent-card p-6 border-l-4 border-indigo-500">
-                                <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Revenue</div>
-                                <div class="text-2xl font-bold text-slate-800 mt-2">$${totalRev.toLocaleString()}</div>
-                            </div>
-                            <div class="ent-card p-6 border-l-4 border-emerald-500">
-                                <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">Active Customers</div>
-                                <div class="text-2xl font-bold text-slate-800 mt-2">${CRM.state.customers.length}</div>
-                            </div>
-                            <div class="ent-card p-6 border-l-4 border-amber-500">
-                                <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">Pending Orders</div>
-                                <div class="text-2xl font-bold text-slate-800 mt-2">${pendingOrders}</div>
-                            </div>
-                            <div class="ent-card p-6 border-l-4 border-purple-500">
-                                <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">Pipeline Value</div>
-                                <div class="text-2xl font-bold text-slate-800 mt-2">$${CRM.state.pipeline.reduce((a,b)=>a+b.value,0).toLocaleString()}</div>
-                            </div>
+                dashboard(c) {
+                    const rev = CRM.state.orders.reduce((a,o)=>a+o.grandTotal,0);
+                    c.innerHTML = `
+                        <div class="grid grid-cols-4 gap-6 mb-8">
+                            <div class="ent-card p-6 border-l-4 border-green-500"><div class="text-xs font-bold text-slate-400 uppercase">Revenue</div><div class="text-2xl font-bold text-slate-800">$${rev.toLocaleString()}</div></div>
+                            <div class="ent-card p-6 border-l-4 border-blue-500"><div class="text-xs font-bold text-slate-400 uppercase">Orders</div><div class="text-2xl font-bold text-slate-800">${CRM.state.orders.length}</div></div>
                         </div>
-
-                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                            <div class="ent-card lg:col-span-2 p-6">
-                                <h3 class="font-bold text-slate-800 mb-4">Revenue Analytics</h3>
-                                <canvas id="revChart" height="100"></canvas>
-                            </div>
-                            <div class="ent-card p-6">
-                                <h3 class="font-bold text-slate-800 mb-4">Recent Activity</h3>
-                                <div class="space-y-4">
-                                    ${CRM.state.orders.slice(0, 5).map(o => `
-                                        <div class="flex items-center justify-between border-b border-slate-50 pb-3 last:border-0">
-                                            <div class="flex items-center gap-3">
-                                                <div class="bg-indigo-50 text-indigo-600 h-8 w-8 rounded flex items-center justify-center text-xs font-bold"><i class="fa-solid fa-receipt"></i></div>
-                                                <div>
-                                                    <div class="text-sm font-bold text-slate-700">Order #${o.id}</div>
-                                                    <div class="text-xs text-slate-400">${o.date}</div>
-                                                </div>
-                                            </div>
-                                            <div class="text-right">
-                                                <div class="text-sm font-bold text-slate-700">$${Number(o.total).toFixed(2)}</div>
-                                                <div class="text-[10px] uppercase font-bold text-emerald-600">${o.status}</div>
-                                            </div>
-                                        </div>
-                                    `).join('')}
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    
-                    // Init Chart
-                    new Chart(document.getElementById('revChart'), {
-                        type: 'line',
-                        data: {
-                            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                            datasets: [{
-                                label: 'Revenue ($)',
-                                data: [1200, 1900, 3000, 5000, 2400, 4500],
-                                borderColor: '#4f46e5',
-                                tension: 0.4,
-                                fill: true,
-                                backgroundColor: 'rgba(79, 70, 229, 0.05)'
-                            }]
-                        },
-                        options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { borderDash: [2, 4] } }, x: { grid: { display: false } } } }
-                    });
-                },
-
-                customers(container) {
-                    container.innerHTML = `
-                        <div class="flex justify-between items-center mb-6">
-                            <h2 class="text-xl font-bold text-slate-800">Customer Database</h2>
-                            <button onclick="CRM.ui.openModal('customer')" class="ent-btn btn-primary"><i class="fa-solid fa-plus mr-2"></i> Add Customer</button>
-                        </div>
-                        <div class="ent-card overflow-hidden">
-                            <table class="w-full text-left text-sm text-slate-600">
-                                <thead class="bg-slate-50 text-xs uppercase font-bold text-slate-400 border-b border-slate-200">
-                                    <tr>
-                                        <th class="p-4">Customer</th>
-                                        <th class="p-4">Contact</th>
-                                        <th class="p-4">Location</th>
-                                        <th class="p-4">Status</th>
-                                        <th class="p-4 text-right">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-slate-100">
-                                    ${CRM.state.customers.map(c => `
-                                        <tr class="hover:bg-slate-50 transition">
-                                            <td class="p-4">
-                                                <div class="font-bold text-slate-800">${c.fName} ${c.lName}</div>
-                                                <div class="text-xs text-slate-400">${c.company || 'Individual'}</div>
-                                            </td>
-                                            <td class="p-4">${c.email}</td>
-                                            <td class="p-4">${c.ship_city}, ${c.ship_state}</td>
-                                            <td class="p-4"><span class="px-2 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700">${c.status}</span></td>
-                                            <td class="p-4 text-right">
-                                                <button onclick="CRM.ui.editCustomer('${c.id}')" class="text-indigo-600 hover:text-indigo-800 mr-3"><i class="fa-solid fa-pen-to-square"></i></button>
-                                                <button onclick="CRM.actions.delete('customers','${c.id}')" class="text-rose-500 hover:text-rose-700"><i class="fa-solid fa-trash"></i></button>
-                                            </td>
-                                        </tr>
-                                    `).join('')}
-                                </tbody>
-                            </table>
-                        </div>
+                        <div class="ent-card p-6"><h3 class="font-bold mb-4">Upcoming Events</h3>${CRM.state.events.slice(0,5).map(e=>`<div class="flex justify-between border-b py-2 text-sm"><span>${e.title}</span><span class="text-slate-500">${e.date} @ ${e.time}</span></div>`).join('')}</div>
                     `;
                 },
-
-                orders(container) {
-                    container.innerHTML = `
-                        <div class="flex justify-between items-center mb-6">
-                            <h2 class="text-xl font-bold text-slate-800">Order Management</h2>
-                            <button onclick="CRM.ui.openModal('order')" class="ent-btn btn-primary"><i class="fa-solid fa-plus mr-2"></i> Create Order</button>
-                        </div>
-                        <div class="ent-card overflow-hidden">
-                            <table class="w-full text-left text-sm text-slate-600">
-                                <thead class="bg-slate-50 text-xs uppercase font-bold text-slate-400 border-b border-slate-200">
-                                    <tr><th class="p-4">Order ID</th><th class="p-4">Date</th><th class="p-4">Customer</th><th class="p-4">Total</th><th class="p-4">Status</th><th class="p-4 text-right">Actions</th></tr>
-                                </thead>
-                                <tbody class="divide-y divide-slate-100">
-                                    ${CRM.state.orders.map(o => {
-                                        const cust = CRM.state.customers.find(c => c.id === o.custId);
-                                        const name = cust ? `${cust.fName} ${cust.lName}` : 'Unknown';
-                                        return `
-                                        <tr class="hover:bg-slate-50 transition">
-                                            <td class="p-4 font-mono font-bold text-slate-700">#${o.id}</td>
-                                            <td class="p-4">${o.date}</td>
-                                            <td class="p-4 font-bold text-slate-800">${name}</td>
-                                            <td class="p-4 font-bold text-emerald-600">$${Number(o.total).toLocaleString()}</td>
-                                            <td class="p-4"><span class="px-2 py-1 rounded text-xs font-bold ${o.status==='Shipped'?'bg-emerald-100 text-emerald-700':'bg-amber-100 text-amber-700'}">${o.status}</span></td>
-                                            <td class="p-4 text-right">
-                                                <button onclick="CRM.ui.editOrder('${o.id}')" class="text-indigo-600 hover:text-indigo-800 mr-3"><i class="fa-solid fa-pen-to-square"></i></button>
-                                                <button onclick="CRM.actions.delete('orders','${o.id}')" class="text-rose-500 hover:text-rose-700"><i class="fa-solid fa-trash"></i></button>
-                                            </td>
-                                        </tr>`
-                                    }).join('')}
-                                </tbody>
-                            </table>
-                        </div>
-                    `;
-                },
-
-                calendar(container) {
-                    const date = new Date();
-                    const year = date.getFullYear();
-                    const month = date.getMonth();
-                    const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-                    const firstDay = new Date(year, month, 1).getDay();
-                    const daysInMonth = new Date(year, month + 1, 0).getDate();
-                    
-                    // US Holidays 2025 (Simplified)
-                    const holidays = {
-                        "2025-01-01": "New Year's Day", "2025-07-04": "Independence Day", "2025-11-27": "Thanksgiving", "2025-12-25": "Christmas"
-                    };
-
-                    let html = `
-                        <div class="flex justify-between items-center mb-6">
-                            <h2 class="text-xl font-bold text-slate-800">Calendar</h2>
-                            <div class="text-lg font-bold text-indigo-600">${monthNames[month]} ${year}</div>
-                        </div>
-                        <div class="ent-card overflow-hidden p-0">
-                            <div class="grid grid-cols-7 bg-slate-50 text-slate-400 text-xs font-bold uppercase text-center py-3 border-b border-slate-200">
-                                <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
-                            </div>
-                            <div class="cal-grid">
-                    `;
-
-                    for(let i=0; i<firstDay; i++) html += `<div class="cal-day bg-slate-50"></div>`;
-
-                    for(let d=1; d<=daysInMonth; d++) {
-                        const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-                        const isToday = d === date.getDate();
-                        const h = holidays[dateStr];
-                        
-                        html += `
-                            <div class="cal-day ${isToday ? 'cal-today' : ''}" onclick="alert('Day View: ${dateStr}')">
-                                <div class="flex justify-between">
-                                    <span class="font-bold ${isToday ? 'text-indigo-600' : 'text-slate-500'}">${d}</span>
-                                    ${h ? '<i class="fa-solid fa-star text-amber-400 text-xs"></i>' : ''}
-                                </div>
-                                ${h ? `<span class="holiday-badge">${h}</span>` : ''}
-                            </div>
-                        `;
+                calendar(c) {
+                    const d = new Date(), m = d.getMonth(), y = d.getFullYear();
+                    const days = new Date(y, m+1, 0).getDate();
+                    const start = new Date(y, m, 1).getDay();
+                    let html = '';
+                    for(let i=0;i<start;i++) html+=`<div class="cal-day bg-slate-50"></div>`;
+                    for(let i=1;i<=days;i++) {
+                        const dateStr = `${y}-${String(m+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
+                        const evs = CRM.state.events.filter(e=>e.date===dateStr);
+                        html+=`<div class="cal-day ${i===d.getDate()?'cal-today':''}"><div class="font-bold text-xs text-slate-400 mb-1">${i}</div>
+                        ${evs.map(e=>`<div class="event-pill">${e.time.split(' ')[0]} ${e.title}</div>`).join('')}</div>`;
                     }
-                    html += `</div></div>`;
-                    container.innerHTML = html;
+                    c.innerHTML = `<div class="flex justify-between mb-4"><h2 class="text-xl font-bold">Calendar</h2><button onclick="CRM.ui.openModal('event')" class="btn btn-primary">Add Event</button></div>
+                    <div class="ent-card overflow-hidden"><div class="grid grid-cols-7 text-center py-2 bg-slate-50 text-xs font-bold text-slate-400 border-b"><div>SUN</div><div>MON</div><div>TUE</div><div>WED</div><div>THU</div><div>FRI</div><div>SAT</div></div><div class="cal-grid">${html}</div></div>`;
+                },
+                customers(c) {
+                    c.innerHTML = `<div class="flex justify-between mb-6"><h2 class="text-xl font-bold">Customers</h2><button onclick="CRM.ui.openModal('customer')" class="btn btn-primary">Add Customer</button></div><div class="ent-card overflow-hidden"><table class="w-full text-left text-sm data-table"><thead><tr><th>Name</th><th>Email</th><th>Location</th><th>Action</th></tr></thead><tbody>${CRM.state.customers.map(cu=>`<tr><td class="font-bold">${cu.fName} ${cu.lName}</td><td>${cu.email}</td><td>${cu.city}, ${cu.state}</td><td><button onclick="CRM.actions.delete('customers','${cu.id}')" class="text-red-500"><i class="fa fa-trash"></i></button></td></tr>`).join('')}</tbody></table></div>`;
+                },
+                orders(c) {
+                    c.innerHTML = `<div class="flex justify-between mb-6"><h2 class="text-xl font-bold">Orders</h2><button onclick="CRM.ui.openModal('order')" class="btn btn-primary">New Order</button></div><div class="ent-card overflow-hidden"><table class="w-full text-left text-sm data-table"><thead><tr><th>Order #</th><th>Date</th><th>Customer</th><th>Total</th><th>Status</th></tr></thead><tbody>${CRM.state.orders.map(o=>`<tr><td class="font-mono">#${o.id}</td><td>${o.date}</td><td class="font-bold">${o.custName}</td><td class="font-bold text-green-600">$${o.grandTotal.toFixed(2)}</td><td>${o.status}</td></tr>`).join('')}</tbody></table></div>`;
                 }
             },
 
             ui: {
-                openModal(type) {
-                    const modal = document.getElementById('modal-container');
-                    const title = document.getElementById('modal-title');
-                    const body = document.getElementById('modal-body');
-                    
-                    modal.classList.add('open');
-                    
-                    if(type === 'customer') {
-                        title.innerText = 'New Customer Profile';
-                        body.innerHTML = CRM.forms.customer();
-                    } else if (type === 'order') {
-                        title.innerText = 'Create New Order';
-                        body.innerHTML = CRM.forms.order();
+                openModal(id) { 
+                    document.getElementById(`modal-${id}`).style.display = 'flex';
+                    if(id==='order') {
+                        document.getElementById('ord-cust-select').innerHTML = CRM.state.customers.map(c=>`<option value="${c.fName} ${c.lName}">${c.fName} ${c.lName}</option>`).join('');
+                        document.getElementById('ord-lines-body').innerHTML = '';
+                        CRM.logic.addOrderLine(); // Add initial line
                     }
                 },
-                closeModal() {
-                    document.getElementById('modal-container').classList.remove('open');
-                },
-                toast(msg) {
-                    const el = document.createElement('div');
-                    el.className = 'toast';
-                    el.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600 text-xl"></i><div><h4 class="font-bold text-sm text-slate-800">Success</h4><p class="text-xs text-slate-500">${msg}</p></div>`;
-                    document.getElementById('toast-container').appendChild(el);
-                    setTimeout(() => el.remove(), 3000);
-                },
-                editCustomer(id) {
-                    const c = CRM.state.customers.find(x => x.id === id);
-                    if(!c) return;
-                    this.openModal('customer');
-                    setTimeout(() => {
-                        const f = document.getElementById('form-customer');
-                        Object.keys(c).forEach(k => {
-                            const inp = f.querySelector(`[name="${k}"]`);
-                            if(inp) inp.value = c[k];
-                        });
-                        f.querySelector('[name="id"]').value = c.id; // Ensure ID is set for update
-                    }, 50);
-                },
-                toggleBilling(cb) {
-                    if(cb.checked) {
-                        ['addr','city','state','zip'].forEach(f => {
-                            document.getElementById(`bill_${f}`).value = document.getElementById(`ship_${f}`).value;
-                        });
-                    }
-                }
+                closeModal(id) { document.getElementById(`modal-${id}`).style.display = 'none'; }
             },
 
-            forms: {
-                customer() {
-                    return `
-                        <form id="form-customer" onsubmit="CRM.actions.saveCustomer(event)">
-                            <input type="hidden" name="id">
-                            <div class="grid grid-cols-12 gap-6 mb-6">
-                                <div class="col-span-8 grid grid-cols-2 gap-4">
-                                    <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">First Name</label><input name="fName" class="w-full border border-slate-300 rounded-md p-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none" required></div>
-                                    <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Last Name</label><input name="lName" class="w-full border border-slate-300 rounded-md p-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none" required></div>
-                                    <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Email</label><input name="email" type="email" class="w-full border border-slate-300 rounded-md p-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none" required></div>
-                                    <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Company</label><input name="company" class="w-full border border-slate-300 rounded-md p-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"></div>
-                                </div>
-                                <div class="col-span-4 bg-slate-50 p-4 rounded-lg border border-slate-200">
-                                    <div class="text-xs font-bold text-slate-400 uppercase mb-2">Metadata</div>
-                                    <div class="mb-2"><label class="text-xs block mb-1">Status</label><select name="status" class="w-full border rounded p-1 text-sm"><option>Active</option><option>Lead</option></select></div>
-                                    <div><label class="text-xs block mb-1">Lead Source</label><input name="source" class="w-full border rounded p-1 text-sm"></div>
-                                </div>
-                            </div>
-                            
-                            <div class="grid grid-cols-2 gap-8 border-t border-slate-100 pt-6">
-                                <div>
-                                    <h4 class="font-bold text-slate-800 mb-3 text-sm">Shipping Address</h4>
-                                    <input name="ship_addr" id="ship_addr" placeholder="Street Address" class="w-full mb-2 border rounded p-2 text-sm">
-                                    <div class="grid grid-cols-3 gap-2">
-                                        <input name="ship_city" id="ship_city" placeholder="City" class="w-full border rounded p-2 text-sm">
-                                        <input name="ship_state" id="ship_state" placeholder="State" class="w-full border rounded p-2 text-sm">
-                                        <input name="ship_zip" id="ship_zip" placeholder="Zip" class="w-full border rounded p-2 text-sm">
-                                    </div>
-                                </div>
-                                <div>
-                                    <div class="flex justify-between items-center mb-3">
-                                        <h4 class="font-bold text-slate-800 text-sm">Billing Address</h4>
-                                        <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" onchange="CRM.ui.toggleBilling(this)" class="accent-indigo-600"><span class="text-xs text-slate-500">Same as Shipping</span></label>
-                                    </div>
-                                    <input name="bill_addr" id="bill_addr" placeholder="Street Address" class="w-full mb-2 border rounded p-2 text-sm">
-                                    <div class="grid grid-cols-3 gap-2">
-                                        <input name="bill_city" id="bill_city" placeholder="City" class="w-full border rounded p-2 text-sm">
-                                        <input name="bill_state" id="bill_state" placeholder="State" class="w-full border rounded p-2 text-sm">
-                                        <input name="bill_zip" id="bill_zip" placeholder="Zip" class="w-full border rounded p-2 text-sm">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="flex justify-end gap-3 mt-8 pt-4 border-t border-slate-100">
-                                <button type="button" onclick="CRM.ui.closeModal()" class="ent-btn btn-secondary">Cancel</button>
-                                <button type="submit" class="ent-btn btn-primary">Save Customer Profile</button>
-                            </div>
-                        </form>
-                    `;
+            logic: {
+                addOrderLine() {
+                    const row = document.createElement('div');
+                    row.className = 'line-item-grid';
+                    row.innerHTML = `<input class="input-field" placeholder="Item Name"><input type="number" class="input-field text-right" value="1" oninput="CRM.logic.calcOrderTotals()"><input type="number" class="input-field text-right" placeholder="0.00" oninput="CRM.logic.calcOrderTotals()"><div class="text-right font-bold text-slate-700 line-total">$0.00</div><button type="button" onclick="this.parentElement.remove();CRM.logic.calcOrderTotals()" class="text-red-500"><i class="fa fa-times"></i></button>`;
+                    document.getElementById('ord-lines-body').appendChild(row);
                 },
-                order() {
-                    const custOpts = CRM.state.customers.map(c => `<option value="${c.id}">${c.fName} ${c.lName}</option>`).join('');
-                    return `
-                        <form onsubmit="CRM.actions.saveOrder(event)">
-                            <div class="grid grid-cols-2 gap-6 mb-4">
-                                <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Customer</label><select name="custId" class="w-full border p-2 rounded text-sm bg-slate-50">${custOpts}</select></div>
-                                <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Date</label><input type="date" name="date" class="w-full border p-2 rounded text-sm" required></div>
-                            </div>
-                            <div class="mb-4"><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Line Items</label><textarea name="items" class="w-full border p-2 rounded text-sm h-20" placeholder="Product details..."></textarea></div>
-                            <div class="grid grid-cols-2 gap-6 mb-6">
-                                <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Total ($)</label><input type="number" step="0.01" name="total" class="w-full border p-2 rounded text-sm font-bold text-emerald-600"></div>
-                                <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Status</label><select name="status" class="w-full border p-2 rounded text-sm"><option>Processing</option><option>Shipped</option></select></div>
-                            </div>
-                            <div class="flex justify-end gap-3"><button type="button" onclick="CRM.ui.closeModal()" class="ent-btn btn-secondary">Cancel</button><button type="submit" class="ent-btn btn-primary">Create Order</button></div>
-                        </form>
-                    `;
+                calcOrderTotals() {
+                    let sub = 0;
+                    document.querySelectorAll('.line-item-grid').forEach(r => {
+                        const inputs = r.getElementsByTagName('input');
+                        const total = (parseFloat(inputs[1].value)||0) * (parseFloat(inputs[2].value)||0);
+                        r.querySelector('.line-total').innerText = '$'+total.toFixed(2);
+                        sub += total;
+                    });
+                    const tax = sub * 0.06;
+                    document.getElementById('ord-subtotal').innerText = '$'+sub.toFixed(2);
+                    document.getElementById('ord-tax').innerText = '$'+tax.toFixed(2);
+                    document.getElementById('ord-grand').innerText = '$'+(sub+tax).toFixed(2);
+                    return { sub, tax, grand: sub+tax };
                 }
             },
 
             actions: {
+                saveEvent(e) {
+                    e.preventDefault();
+                    const f = new FormData(e.target);
+                    CRM.state.events.push({id:'e'+Date.now(), title:f.get('title'), date:f.get('date'), time:f.get('time'), type:f.get('type')});
+                    CRM.save(); CRM.ui.closeModal('event'); CRM.router('calendar');
+                },
                 saveCustomer(e) {
                     e.preventDefault();
                     const f = new FormData(e.target);
-                    const id = f.get('id') || 'c' + Date.now();
                     const obj = Object.fromEntries(f.entries());
-                    obj.id = id;
-                    
-                    const idx = CRM.state.customers.findIndex(c => c.id === id);
-                    if(idx > -1) CRM.state.customers[idx] = obj;
-                    else CRM.state.customers.push(obj);
-                    
-                    CRM.storage.save();
-                    CRM.ui.closeModal();
-                    CRM.ui.toast('Customer profile saved successfully.');
-                    CRM.router('customers');
+                    obj.id = 'c'+Date.now();
+                    CRM.state.customers.push(obj);
+                    CRM.save(); CRM.ui.closeModal('customer'); CRM.router('customers');
                 },
                 saveOrder(e) {
                     e.preventDefault();
-                    const f = new FormData(e.target);
-                    const obj = Object.fromEntries(f.entries());
-                    obj.id = 'ord' + Math.floor(Math.random() * 10000);
-                    
-                    CRM.state.orders.unshift(obj);
-                    CRM.storage.save();
-                    CRM.ui.closeModal();
-                    CRM.ui.toast('Order created successfully.');
-                    CRM.router('orders');
+                    const totals = CRM.logic.calcOrderTotals();
+                    const cust = document.getElementById('ord-cust-select').value;
+                    const date = e.target.querySelector('[name=date]').value;
+                    CRM.state.orders.unshift({id:Math.floor(Math.random()*9000), custName:cust, date:date, grandTotal:totals.grand, status:'Draft'});
+                    CRM.save(); CRM.ui.closeModal('order'); CRM.router('orders');
                 },
-                delete(col, id) {
-                    if(confirm('Are you sure? This action is irreversible.')) {
-                        CRM.state[col] = CRM.state[col].filter(x => x.id !== id);
-                        CRM.storage.save();
-                        CRM.router(CRM.state[col] ? col : 'dashboard');
-                        CRM.ui.toast('Record deleted.');
-                    }
-                }
+                delete(col, id) { if(confirm('Delete?')) { CRM.state[col] = CRM.state[col].filter(x=>x.id!==id); CRM.save(); CRM.router(col); } }
             }
         };
 
-        // Init App
         CRM.init();
     </script>
 </body>
