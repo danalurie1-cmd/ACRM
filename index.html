@@ -2712,3 +2712,1664 @@ value="ME">Maine</option>
         `;
       }).join('');
       tbody.innerHTML = html || '<tr><td colspan
+<td colspan="8" style="text-align: center; padding: 40px; color: #999;">No orders yet. Click "New Order" to create one.</td></tr>';
+    }
+
+    function deleteOrder(id) {
+      if (confirm('Are you sure you want to delete this order?')) {
+        crmData.orders = crmData.orders.filter(o => o.id !== id);
+        saveData();
+        updateDashboard();
+        updateOrdersView();
+        showNotification('Order deleted');
+      }
+    }
+
+    // Event Functions
+    function openEventModal(eventId = null, date = null) {
+      document.getElementById('eventModal').style.display = 'block';
+      document.getElementById('eventForm').reset();
+      populateCustomerDropdowns();
+      
+      if (eventId) {
+        const event = crmData.events.find(e => e.id === eventId);
+        if (event) {
+          document.getElementById('eventModalTitle').textContent = 'Edit Event';
+          document.getElementById('eventId').value = event.id;
+          document.getElementById('eventTitle').value = event.title;
+          document.getElementById('eventType').value = event.type;
+          document.getElementById('eventCustomer').value = event.customerId || '';
+          document.getElementById('eventDate').value = event.date;
+          document.getElementById('eventTime').value = event.time || '';
+          document.getElementById('eventDuration').value = event.duration || 30;
+          document.getElementById('eventLocation').value = event.location || '';
+          document.getElementById('eventDescription').value = event.description || '';
+          document.getElementById('eventReminder').checked = event.reminder || false;
+        }
+      } else {
+        document.getElementById('eventModalTitle').textContent = 'New Event';
+        document.getElementById('eventId').value = '';
+        if (date) {
+          document.getElementById('eventDate').value = date;
+        } else {
+          // Set default date to today for new events
+          document.getElementById('eventDate').value = new Date().toISOString().split('T')[0];
+        }
+      }
+    }
+
+    function saveEvent(event) {
+      event.preventDefault();
+      
+      const eventId = document.getElementById('eventId').value;
+      const isNew = !eventId;
+      
+      const eventData = {
+        id: eventId || 'EVT' + Date.now(),
+        title: document.getElementById('eventTitle').value,
+        type: document.getElementById('eventType').value,
+        customerId: document.getElementById('eventCustomer').value || null,
+        date: document.getElementById('eventDate').value,
+        time: document.getElementById('eventTime').value,
+        duration: parseInt(document.getElementById('eventDuration').value),
+        location: document.getElementById('eventLocation').value,
+        description: document.getElementById('eventDescription').value,
+        reminder: document.getElementById('eventReminder').checked,
+        createdAt: isNew ? new Date().toISOString() : (crmData.events.find(e => e.id === eventId)?.createdAt || new Date().toISOString())
+      };
+      
+      if (isNew) {
+        crmData.events.push(eventData);
+        showNotification('Event created successfully!');
+      } else {
+        const index = crmData.events.findIndex(e => e.id === eventId);
+        crmData.events[index] = eventData;
+        showNotification('Event updated successfully!');
+      }
+      
+      saveData();
+      closeModal('eventModal');
+      renderCalendar();
+      updateDashboard();
+    }
+
+    function deleteEvent(id) {
+      if (confirm('Are you sure you want to delete this event?')) {
+        crmData.events = crmData.events.filter(e => e.id !== id);
+        saveData();
+        renderCalendar();
+        updateDashboard();
+        showNotification('Event deleted');
+      }
+    }
+
+    // --- Calendar Helper Functions for US Holidays ---
+    // Helper function to find the Nth weekday of a month (e.g., 2nd Monday)
+    function findNthDay(year, month, n, dayOfWeek) {
+      const firstOfMonth = new Date(year, month, 1);
+      let count = 0;
+      let date = 1;
+      while (count < n) {
+        const current = new Date(year, month, date);
+        if (current.getDay() === dayOfWeek) {
+          count++;
+          if (count === n) return current;
+        }
+        date++;
+        if (date > 31) return null; // Safety break
+      }
+    }
+
+    // Helper function to find the last weekday of a month (e.g., last Monday)
+    function findLastDay(year, month, dayOfWeek) {
+      let date = new Date(year, month + 1, 0).getDate(); // Last day of month
+      while (true) {
+        const current = new Date(year, month, date);
+        if (current.getDay() === dayOfWeek) return current;
+        date--;
+        if (date < 1) return null;
+      }
+    }
+
+    // Function to generate a list of US Public Holidays for a specific month and year
+    function getUSPublicHolidays(year, month) {
+      const holidays = [];
+      // Helper to format date as YYYY-MM-DD string
+      const formatDate = (date) => date.toISOString().split('T')[0];
+
+      // Fixed date holidays (Adjust for weekend observation if needed, but for display, use base date)
+      const fixedHolidays = [
+        { name: "New Year's Day", month: 0, day: 1 },
+        { name: "Juneteenth", month: 5, day: 19 },
+        { name: "Independence Day", month: 6, day: 4 },
+        { name: "Veterans Day", month: 10, day: 11 },
+        { name: "Christmas Day", month: 11, day: 25 },
+      ];
+
+      fixedHolidays.forEach(h => {
+        if (h.month === month) {
+          holidays.push({
+            name: h.name,
+            date: formatDate(new Date(year, h.month, h.day))
+          });
+        }
+      });
+
+      // Floating date holidays (Month is 0-indexed: 0=Jan, 11=Dec)
+      // 1. Martin Luther King, Jr.'s Birthday (3rd Monday in January)
+      if (month === 0) {
+        const mlkDay = findNthDay(year, 0, 3, 1); // 1 = Monday
+        holidays.push({ name: "MLK Day", date: formatDate(mlkDay) });
+      }
+
+      // 2. Washington's Birthday/Presidents' Day (3rd Monday in February)
+      if (month === 1) {
+        const presidentsDay = findNthDay(year, 1, 3, 1); // 1 = Monday
+        holidays.push({ name: "Presidents' Day", date: formatDate(presidentsDay) });
+      }
+
+      // 3. Memorial Day (Last Monday in May)
+      if (month === 4) {
+        const memorialDay = findLastDay(year, 4, 1); // 1 = Monday
+        holidays.push({ name: "Memorial Day", date: formatDate(memorialDay) });
+      }
+
+      // 4. Labor Day (1st Monday in September)
+      if (month === 8) {
+        const laborDay = findNthDay(year, 8, 1, 1); // 1 = Monday
+        holidays.push({ name: "Labor Day", date: formatDate(laborDay) });
+      }
+
+      // 5. Columbus Day (2nd Monday in October)
+      if (month === 9) {
+        const columbusDay = findNthDay(year, 9, 2, 1); // 1 = Monday
+        holidays.push({ name: "Columbus Day", date: formatDate(columbusDay) });
+      }
+
+      // 6. Thanksgiving Day (4th Thursday in November)
+      if (month === 10) {
+        const thanksgiving = findNthDay(year, 10, 4, 4); // 4 = Thursday
+        holidays.push({ name: "Thanksgiving Day", date: formatDate(thanksgiving) });
+      }
+
+      return holidays.reduce((acc, h) => {
+        acc[h.date] = h.name;
+        return acc;
+      }, {});
+    }
+    // --- End Calendar Helper Functions ---
+
+
+    // Calendar Functions
+    function renderCalendar() {
+      const calendarDays = document.getElementById('calendarDays');
+      const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+      
+      document.getElementById('calendarTitle').textContent = `${monthNames[currentMonth]} ${currentYear}`;
+      
+      const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
+      const firstDay = firstDayOfMonth.getDay(); // 0 (Sunday) to 6 (Saturday)
+      const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+      const today = new Date();
+      const todayDateString = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+      
+      // Fetch holidays for the current month/year
+      const holidaysInMonth = getUSPublicHolidays(currentYear, currentMonth);
+      
+      let html = '';
+      
+      // Empty cells for days before month starts
+      for (let i = 0; i < firstDay; i++) {
+        html += '<div class="calendar-day" style="visibility: hidden;"></div>';
+      }
+      
+      // Days of the month
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const isToday = dateStr === todayDateString;
+        
+        const dayEvents = crmData.events.filter(e => e.date === dateStr);
+        const holidayName = holidaysInMonth[dateStr];
+        
+        let content = '';
+        
+        if (holidayName) {
+          content += `<div class="holiday-item"><i class="fas fa-flag"></i> ${holidayName}</div>`;
+        }
+      
+        content += dayEvents.map(e => {
+          const customer = e.customerId ? crmData.customers.find(c => c.id === e.customerId) : null;
+          return `
+            <div class="event-item" onclick="event.stopPropagation(); openEventModal('${e.id}')">
+              <i class="fas fa-${getEventIcon(e.type)}"></i> ${e.title}
+              ${customer ? '<br><small>' + customer.name + '</small>' : ''}
+            </div>
+          `;
+        }).join('');
+      
+        html += `
+          <div class="calendar-day ${isToday ? 'today' : ''}" onclick="openEventModal(null, '${dateStr}')">
+            <div style="font-weight: 600; margin-bottom: 8px;">${day}</div>
+            ${content}
+          </div>
+        `;
+      }
+      
+      calendarDays.innerHTML = html;
+    }
+
+    function getEventIcon(type) {
+      const icons = {
+        'Meeting': 'handshake',
+        'Call': 'phone',
+        'Demo': 'laptop',
+        'Follow-up': 'tasks',
+        'Tournament': 'trophy',
+        'Clinic': 'graduation-cap',
+        'Other': 'calendar-check'
+      };
+      return icons[type] || 'calendar-check';
+    }
+
+    function changeMonth(delta) {
+      currentMonth += delta;
+      if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear++;
+      } else if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear--;
+      }
+      renderCalendar();
+    }
+    // Dashboard Functions
+    function updateDashboard() {
+      updateDashboardDate();
+      // Total customers
+      document.getElementById('totalCustomers').textContent = crmData.customers.length;
+      
+      // Total orders
+      document.getElementById('totalOrders').textContent = crmData.orders.length;
+      
+      // Total revenue
+      const totalRevenue = crmData.orders.reduce((sum, o) => sum + o.total, 0);
+      document.getElementById('totalRevenue').textContent = '$' + totalRevenue.toFixed(2);
+      
+      // Events today
+      const today = new Date().toISOString().split('T')[0];
+      const todayEvents = crmData.events.filter(e => e.date === today);
+      document.getElementById('eventsToday').textContent = todayEvents.length;
+      
+      // Recent customers
+      const recentCustomers = [...crmData.customers]
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        .slice(0, 5);
+      
+      const recentCustomersHtml = recentCustomers.length > 0 ? recentCustomers.map(c => `
+        <div style="padding: 12px; border-bottom: 1px solid #f1f8e9; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <strong>${c.name}</strong><br>
+            <small style="color: #666;">${c.email || c.homePhone || c.mobilePhone || 'No contact info'}</small>
+          </div>
+          <button class="btn-secondary" style="padding: 6px 12px;" onclick="openCustomerModal('${c.id}')">
+            <i class="fas fa-edit"></i>
+          </button>
+        </div>
+      `).join('') : '<p style="text-align: center; color: #999; padding: 20px;">No customers yet</p>';
+      
+      document.getElementById('recentCustomers').innerHTML = recentCustomersHtml;
+      
+      // Today's tasks
+      const todayTasks = [];
+      crmData.customers.forEach(customer => {
+        if (customer.tasks) {
+          customer.tasks.forEach(task => {
+            if (task.dueDate === today && task.status !== 'Completed') {
+              todayTasks.push({...task, customerName: customer.name, customerId: customer.id});
+            }
+          });
+        }
+      });
+      
+      const todayTasksHtml = todayTasks.length > 0 ? todayTasks.map(t => {
+        const priorityColors = {
+          'High': '#ef5350',
+          'Medium': '#ffa726',
+          'Low': '#66bb6a'
+        };
+        return `
+          <div style="padding: 12px; border-bottom: 1px solid #f1f8e9; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                <div style="width: 8px; height: 8px; border-radius: 50%; background: ${priorityColors[t.priority]};"></div>
+                <strong>${t.description}</strong>
+              </div>
+              <small style="color: #666;"><i class="fas fa-user"></i> ${t.customerName}</small>
+            </div>
+            <button class="btn-secondary" style="padding: 6px 12px;" onclick="openCustomerModal('${t.customerId}')">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+        `;
+      }).join('') : '<p style="text-align: center; color: #999; padding: 20px;">No tasks for today</p>';
+      
+      document.getElementById('todaysTasks').innerHTML = todayTasksHtml;
+    }
+
+    // Pipeline Functions
+    function updatePipelineView() {
+      const statusGroups = {
+        pending: crmData.orders.filter(o => o.status === 'Pending'),
+        processing: crmData.orders.filter(o => o.status === 'Processing'),
+        shipped: crmData.orders.filter(o => o.status === 'Shipped'),
+        completed: crmData.orders.filter(o => o.status === 'Completed')
+      };
+      
+      // Update counts and values
+      Object.keys(statusGroups).forEach(status => {
+        const orders = statusGroups[status];
+        const value = orders.reduce((sum, o) => sum + o.total, 0);
+        document.getElementById(`${status}Count`).textContent = `${orders.length} order${orders.length !== 1 ? 's' : ''}`;
+        document.getElementById(`${status}Value`).textContent = '$' + value.toFixed(2);
+        
+        // Update order lists
+        const html = orders.map(o => {
+          const customer = crmData.customers.find(c => c.id === o.customerId);
+          return `
+            <div style="background: white; padding: 12px; border-radius: 8px; margin-bottom: 8px; border-left: 4px solid #66bb6a; cursor: pointer;" onclick="openOrderModal('${o.id}')">
+              <div style="font-weight: 600; margin-bottom: 4px;">${o.id}</div>
+              <div style="font-size: 13px; color: #666; margin-bottom: 4px;">${customer ? customer.name : 'Unknown'}</div>
+              <div style="font-weight: 600; color: #43a047;">$${o.total.toFixed(2)}</div>
+            </div>
+          `;
+        }).join('');
+        
+        document.getElementById(`${status}OrdersList`).innerHTML = html || '<p style="color: #999; font-size: 13px;">No orders</p>';
+      });
+      
+      // Calculate metrics
+      const allOrders = crmData.orders;
+      const pipelineValue = allOrders.filter(o => o.status !== 'Completed').reduce((sum, o) => sum + o.total, 0);
+      const avgDeal = allOrders.length > 0 ? allOrders.reduce((sum, o) => sum + o.total, 0) / allOrders.length : 0;
+      const completedOrders = statusGroups.completed.length;
+      const conversionRate = allOrders.length > 0 ? (completedOrders / allOrders.length) * 100 : 0;
+      
+      // Calculate average close time
+      let totalDays = 0;
+      let closedCount = 0;
+      statusGroups.completed.forEach(o => {
+        const created = new Date(o.createdAt);
+        const completed = new Date(); // Simplified - in real app would track completion date
+        const days = Math.floor((completed - created) / (1000 * 60 * 60 * 24));
+        totalDays += days;
+        closedCount++;
+      });
+      const avgCloseTime = closedCount > 0 ? Math.round(totalDays / closedCount) : 0;
+      
+      document.getElementById('pipelineValue').textContent = '$' + pipelineValue.toFixed(2);
+      document.getElementById('avgDealSize').textContent = '$' + avgDeal.toFixed(2);
+      document.getElementById('conversionRate').textContent = conversionRate.toFixed(1) + '%';
+      document.getElementById('avgCloseTime').textContent = avgCloseTime + ' days';
+    }
+
+    // Analytics Functions
+    function updateAnalyticsView() {
+      updateLeadSourceChart();
+      updateSocialChart();
+      updateRevenueChart();
+      generateAIInsights();
+    }
+
+    function updateLeadSourceChart() {
+      const ctx = document.getElementById('leadSourceChart');
+      if (!ctx) return;
+      
+      const leadSources = {};
+      crmData.customers.forEach(c => {
+        const source = c.leadSource || 'Unknown';
+        leadSources[source] = (leadSources[source] || 0) + 1;
+      });
+      
+      if (window.leadSourceChartInstance) {
+        window.leadSourceChartInstance.destroy();
+      }
+      
+      window.leadSourceChartInstance = new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: Object.keys(leadSources),
+          datasets: [{
+            data: Object.values(leadSources),
+            backgroundColor: [
+              '#66bb6a', '#42a5f5', '#ffa726', '#ab47bc', '#ef5350', '#26c6da', '#ffee58'
+            ]
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'bottom'
+            }
+          }
+        }
+      });
+    }
+
+    function updateSocialChart() {
+      const ctx = document.getElementById('socialChart');
+      if (!ctx) return;
+      
+      const socialCounts = {};
+      crmData.customers.forEach(c => {
+        if (c.socialMedia && Array.isArray(c.socialMedia)) {
+          c.socialMedia.forEach(platform => {
+            socialCounts[platform] = (socialCounts[platform] || 0) + 1;
+          });
+        }
+      });
+      
+      if (window.socialChartInstance) {
+        window.socialChartInstance.destroy();
+      }
+      
+      window.socialChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: Object.keys(socialCounts),
+          datasets: [{
+            label: 'Active Users',
+            data: Object.values(socialCounts),
+            backgroundColor: '#42a5f5'
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                stepSize: 1
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function updateRevenueChart() {
+      const ctx = document.getElementById('revenueChart');
+      if (!ctx) return;
+      
+      // Group orders by month
+      const monthlyRevenue = {};
+      crmData.orders.forEach(o => {
+        const month = o.date.substring(0, 7); // YYYY-MM
+        monthlyRevenue[month] = (monthlyRevenue[month] || 0) + o.total;
+      });
+      
+      const sortedMonths = Object.keys(monthlyRevenue).sort();
+      const revenues = sortedMonths.map(m => monthlyRevenue[m]);
+      
+      if (window.revenueChartInstance) {
+        window.revenueChartInstance.destroy();
+      }
+      
+      window.revenueChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: sortedMonths.map(m => {
+            const [year, month] = m.split('-');
+            return new Date(year, month - 1).toLocaleDateString('en-US', {month: 'short', year: 'numeric'});
+          }),
+          datasets: [{
+            label: 'Revenue',
+            data: revenues,
+            borderColor: '#66bb6a',
+            backgroundColor: 'rgba(102, 187, 106, 0.1)',
+            tension: 0.4,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function(value) {
+                  return '$' + value.toFixed(0);
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function generateAIInsights() {
+      const insights = [];
+      
+      // High-value customers
+      const highValueCustomers = crmData.customers.filter(c => c.aiScore >= 75);
+      if (highValueCustomers.length > 0) {
+        insights.push({
+          icon: 'star',
+          color: '#ffa726',
+          text: `You have ${highValueCustomers.length} high-value customer${highValueCustomers.length !== 1 ? 's' : ''} with AI scores above 75. Focus on nurturing these relationships.`
+        });
+      }
+      
+      // Conversion opportunities
+      const leads = crmData.customers.filter(c => c.status === 'Lead');
+      if (leads.length > 0) {
+        insights.push({
+          icon: 'user-plus',
+          color: '#42a5f5',
+          text: `${leads.length} lead${leads.length !== 1 ? 's' : ''} waiting for conversion. Consider reaching out with personalized offers.`
+        });
+      }
+      
+      // Social media potential
+      const highSocialEngagement = crmData.customers.filter(c => 
+        c.socialEngagement === 'Very High' || c.socialEngagement === 'High'
+      );
+      if (highSocialEngagement.length > 0) {
+        insights.push({
+          icon: 'bullhorn',
+          color: '#ab47bc',
+          text: `${highSocialEngagement.length} customer${highSocialEngagement.length !== 1 ? 's have' : ' has'} high social media engagement. Great candidates for referral programs or brand ambassadors.`
+        });
+      }
+      
+      // Referral opportunities
+      const activeCustomers = crmData.customers.filter(c => c.status === 'Active');
+      const customersWithNoReferrals = activeCustomers.filter(c => !c.referralCount || c.referralCount === 0);
+      if (customersWithNoReferrals.length > 0) {
+        insights.push({
+          icon: 'gift',
+          color: '#66bb6a',
+          text: `${customersWithNoReferrals.length} active customer${customersWithNoReferrals.length !== 1 ? 's haven\'t' : ' hasn\'t'} made any referrals yet. Consider incentivizing referrals.`
+        });
+      }
+      
+      // Revenue trend
+      if (crmData.orders.length >= 2) {
+        const recentOrders = [...crmData.orders].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
+        const olderOrders = [...crmData.orders].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(5, 10);
+        
+        if (olderOrders.length > 0) {
+          const recentAvg = recentOrders.reduce((sum, o) => sum + o.total, 0) / recentOrders.length;
+          const olderAvg = olderOrders.reduce((sum, o) => sum + o.total, 0) / olderOrders.length;
+          const change = ((recentAvg - olderAvg) / olderAvg) * 100;
+          
+          if (change > 10) {
+            insights.push({
+              icon: 'chart-line',
+              color: '#66bb6a',
+              text: `Revenue trending up! Average order value increased by ${change.toFixed(1)}% recently.`
+            });
+          } else if (change < -10) {
+            insights.push({
+              icon: 'chart-line',
+              color: '#ef5350',
+              text: `Revenue trending down. Average order value decreased by ${Math.abs(change).toFixed(1)}%. Consider promotional campaigns.`
+            });
+          }
+        }
+      }
+      
+      const insightsHtml = insights.length > 0 ? insights.map(i => `
+        <div style="display: flex; gap: 15px; padding: 20px; background: #f9fdf9; border-radius: 12px; margin-bottom: 15px; border-left: 4px solid ${i.color};">
+          <div style="font-size: 32px; color: ${i.color};">
+            <i class="fas fa-${i.icon}"></i>
+          </div>
+          <div style="flex: 1;">
+            <p style="margin: 0; color: #2e5940; line-height: 1.6;">${i.text}</p>
+          </div>
+        </div>
+      `).join('') : '<p style="color: #999; text-align: center; padding: 40px;">Add more customer data to see AI-powered recommendations.</p>';
+      
+      document.getElementById('aiInsights').innerHTML = insightsHtml;
+    }
+    // Marketing Functions
+    function updateMarketingView() {
+      // Recommended campaigns
+      const campaigns = [];
+      
+      // Email campaign for leads
+      const emailOptInLeads = crmData.customers.filter(c => c.status === 'Lead' && c.emailOptIn);
+      if (emailOptInLeads.length > 0) {
+        campaigns.push({
+          title: 'Lead Nurture Email Campaign',
+          description: `${emailOptInLeads.length} leads have opted in to email. Send a welcome series with product highlights.`,
+          icon: 'envelope',
+          color: '#42a5f5',
+          action: 'Launch Email Campaign',
+          audience: emailOptInLeads.length
+        });
+      }
+      
+      // SMS campaign for high engagement
+      const smsOptIn = crmData.customers.filter(c => c.smsOptIn && c.status === 'Active');
+      if (smsOptIn.length > 0) {
+        campaigns.push({
+          title: 'SMS Flash Sale',
+          description: `${smsOptIn.length} active customers opted in for SMS. Perfect for time-sensitive promotions.`,
+          icon: 'mobile-alt',
+          color: '#66bb6a',
+          action: 'Send SMS Campaign',
+          audience: smsOptIn.length
+        });
+      }
+      
+      // Social media campaign
+      const highSocial = crmData.customers.filter(c => 
+        c.socialEngagement === 'Very High' || c.socialEngagement === 'High'
+      );
+      if (highSocial.length > 0) {
+        campaigns.push({
+          title: 'Social Media Influencer Program',
+          description: `${highSocial.length} customers with high social engagement. Create a brand ambassador program.`,
+          icon: 'share-alt',
+          color: '#ab47bc',
+          action: 'Create Ambassador Program',
+          audience: highSocial.length
+        });
+      }
+      
+      // Re-engagement campaign
+      const inactive = crmData.customers.filter(c => c.status === 'Inactive');
+      if (inactive.length > 0) {
+        campaigns.push({
+          title: 'Win-Back Campaign',
+          description: `${inactive.length} inactive customers. Re-engage with special "we miss you" offers.`,
+          icon: 'redo',
+          color: '#ffa726',
+          action: 'Launch Win-Back',
+          audience: inactive.length
+        });
+      }
+      
+      const campaignsHtml = campaigns.length > 0 ? campaigns.map(c => `
+        <div style="padding: 20px; background: #f9fdf9; border-radius: 12px; margin-bottom: 15px; border-left: 4px solid ${c.color};">
+          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+            <div style="display: flex; gap: 15px; flex: 1;">
+              <div style="font-size: 32px; color: ${c.color};">
+                <i class="fas fa-${c.icon}"></i>
+              </div>
+              <div style="flex: 1;">
+                <h4 style="color: #2e5940; margin: 0 0 8px 0;">${c.title}</h4>
+                <p style="margin: 0; color: #666; line-height: 1.6;">${c.description}</p>
+                <div style="margin-top: 10px; font-size: 13px; color: #999;">
+                  <i class="fas fa-users"></i> Target Audience: ${c.audience} customers
+                </div>
+              </div>
+            </div>
+            <button class="btn-primary" style="white-space: nowrap;">
+              ${c.action}
+            </button>
+          </div>
+        </div>
+      `).join('') : '<p style="color: #999; text-align: center; padding: 40px;">Add more customer data to see campaign recommendations.</p>';
+      
+      document.getElementById('marketingRecommendations').innerHTML = campaignsHtml;
+      
+      // High-value customers
+      const highValue = [...crmData.customers]
+        .filter(c => c.aiScore >= 75)
+        .sort((a, b) => b.aiScore - a.aiScore)
+        .slice(0, 5);
+      
+      const highValueHtml = highValue.length > 0 ? highValue.map(c => `
+        <div style="padding: 15px; border-bottom: 1px solid #f1f8e9; display: flex; justify-content: space-between; align-items: center;">
+          <div style="flex: 1;">
+            <div style="font-weight: 600; color: #2e5940; margin-bottom: 4px;">${c.name}</div>
+            <div style="font-size: 13px; color: #666;">${c.leadSource || 'Unknown source'}</div>
+          </div>
+          <div style="text-align: right;">
+            <div class="score-badge score-high" style="margin-bottom: 5px;">${c.aiScore}/100</div>
+            <button class="btn-secondary" style="padding: 4px 8px; font-size: 12px;" onclick="openCustomerModal('${c.id}')">
+              View
+            </button>
+          </div>
+        </div>
+      `).join('') : '<p style="color: #999; text-align: center; padding: 20px;">No high-value customers yet</p>';
+      
+      document.getElementById('highValueCustomers').innerHTML = highValueHtml;
+      
+      // Referral opportunities
+      const referralOpps = [...crmData.customers]
+        .filter(c => c.status === 'Active' && (!c.referralCount || c.referralCount === 0))
+        .slice(0, 5);
+      
+      const referralOppsHtml = referralOpps.length > 0 ? referralOpps.map(c => `
+        <div style="padding: 15px; border-bottom: 1px solid #f1f8e9; display: flex; justify-content: space-between; align-items: center;">
+          <div style="flex: 1;">
+            <div style="font-weight: 600; color: #2e5940; margin-bottom: 4px;">${c.name}</div>
+            <div style="font-size: 13px; color: #666;">
+              ${c.socialEngagement ? c.socialEngagement + ' engagement' : 'Active customer'}
+            </div>
+          </div>
+          <button class="btn-primary" style="padding: 6px 12px; font-size: 13px;" onclick="openCustomerModal('${c.id}')">
+            <i class="fas fa-gift"></i> Invite
+          </button>
+        </div>
+      `).join('') : '<p style="color: #999; text-align: center; padding: 20px;">All active customers are in referral program</p>';
+      
+      document.getElementById('referralOpportunities').innerHTML = referralOppsHtml;
+    }
+
+    // Referral Functions
+    function updateReferralsView() {
+      // Update display settings
+      const settings = crmData.referralSettings;
+      document.getElementById('displayCreditAmount').textContent = '$' + settings.creditPerReferral;
+      document.getElementById('displayBronzeThreshold').textContent = settings.tiers.bronze + '+';
+      document.getElementById('displaySilverThreshold').textContent = settings.tiers.silver + '+';
+      document.getElementById('displayGoldThreshold').textContent = settings.tiers.gold + '+';
+      
+      // Leaderboard
+      const referrers = [...crmData.customers]
+        .filter(c => c.referralCount > 0)
+        .sort((a, b) => b.referralCount - a.referralCount);
+      
+      const leaderboardHtml = referrers.length > 0 ? `
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Customer</th>
+              <th>Referrals</th>
+              <th>Tier</th>
+              <th>Credits Earned</th>
+              <th>Credits Used</th>
+              <th>Balance</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${referrers.map((c, index) => {
+              const balance = (c.creditsEarned || 0) - (c.creditsUsed || 0);
+              const tierColors = {
+                'Platinum': '#e1bee7',
+                'Gold': '#fff9c4',
+                'Silver': '#f5f5f5',
+                'Bronze': '#ffccbc',
+                'None': '#e0e0e0'
+              };
+              return `
+                <tr>
+                  <td><strong>#${index + 1}</strong></td>
+                  <td>${c.name}</td>
+                  <td><strong>${c.referralCount}</strong></td>
+                  <td><span class="status-badge" style="background: ${tierColors[c.referralTier || 'None']};">${c.referralTier || 'None'}</span></td>
+                  <td>$${(c.creditsEarned || 0).toFixed(2)}</td>
+                  <td>$${(c.creditsUsed || 0).toFixed(2)}</td>
+                  <td><strong style="color: #43a047;">$${balance.toFixed(2)}</strong></td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      ` : '<p style="color: #999; text-align: center; padding: 40px;">No referrals yet. Start tracking customer referrals to see your top performers here.</p>';
+      
+      document.getElementById('referralLeaderboard').innerHTML = leaderboardHtml;
+    }
+
+    function openReferralSettings() {
+      document.getElementById('referralSettingsModal').style.display = 'block';
+      const settings = crmData.referralSettings;
+      document.getElementById('creditPerReferral').value = settings.creditPerReferral;
+      document.getElementById('bronzeTier').value = settings.tiers.bronze;
+      document.getElementById('silverTier').value = settings.tiers.silver;
+      document.getElementById('goldTier').value = settings.tiers.gold;
+      document.getElementById('platinumTier').value = settings.tiers.platinum;
+    }
+
+    function saveReferralSettings(event) {
+      event.preventDefault();
+      
+      crmData.referralSettings = {
+        creditPerReferral: parseFloat(document.getElementById('creditPerReferral').value),
+        tiers: {
+          bronze: parseInt(document.getElementById('bronzeTier').value),
+          silver: parseInt(document.getElementById('silverTier').value),
+          gold: parseInt(document.getElementById('goldTier').value),
+          platinum: parseInt(document.getElementById('platinumTier').value)
+        }
+      };
+      
+      saveData();
+      closeModal('referralSettingsModal');
+      updateReferralsView();
+      showNotification('Referral settings updated!');
+    }
+
+    // Customer History Functions
+    function loadCustomerHistory(customerId) {
+      const customer = crmData.customers.find(c => c.id === customerId);
+      if (!customer) return;
+      
+      // Load communications
+      const communications = customer.communications || [];
+      const commsHtml = communications.length > 0 ? communications.map((comm, index) => `
+        <div style="padding: 15px; border-bottom: 1px solid #f1f8e9; display: flex; justify-content: space-between;">
+          <div style="flex: 1;">
+            <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 8px;">
+              <span class="status-badge" style="background: #e3f2fd;">${comm.type}</span>
+              <span style="color: #666; font-size: 13px;">${new Date(comm.date).toLocaleDateString()}</span>
+            </div>
+            ${comm.subject ? `<div style="font-weight: 600; margin-bottom: 4px;">${comm.subject}</div>` : ''}
+            <div style="color: #666; font-size: 14px;">${comm.notes}</div>
+          </div>
+          <button class="btn-danger" style="padding: 6px 12px;" onclick="deleteCommunication('${customerId}', ${index})">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      `).join('') : '<p style="color: #999; text-align: center; padding: 20px;">No communications recorded yet.</p>';
+      
+      document.getElementById('communicationsList').innerHTML = commsHtml;
+      
+      // Load tasks
+      const tasks = customer.tasks || [];
+      const tasksHtml = tasks.length > 0 ? tasks.map((task, index) => {
+        const priorityColors = {
+          'High': '#ef5350',
+          'Medium': '#ffa726',
+          'Low': '#66bb6a'
+        };
+        const statusColors = {
+          'Completed': '#66bb6a',
+          'In Progress': '#42a5f5',
+          'Pending': '#ffa726'
+        };
+        return `
+          <div style="padding: 15px; border-bottom: 1px solid #f1f8e9; display: flex; justify-content: space-between; align-items: start;">
+            <div style="flex: 1;">
+              <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px;">
+                <div style="width: 8px; height: 8px; border-radius: 50%; background: ${priorityColors[task.priority]};"></div>
+                <strong>${task.description}</strong>
+              </div>
+              <div style="display: flex; gap: 10px; font-size: 13px; color: #666; margin-bottom: 4px;">
+                <span><i class="fas fa-calendar"></i> Due: ${new Date(task.dueDate).toLocaleDateString()}</span>
+                <span class="status-badge" style="background: ${statusColors[task.status]}; color: white;">${task.status}</span>
+              </div>
+              ${task.notes ? `<div style="font-size: 13px; color: #666;">${task.notes}</div>` : ''}
+            </div>
+            <div style="display: flex; gap: 5px;">
+              <button class="btn-secondary" style="padding: 6px 12px;" onclick="editTask('${customerId}', ${index})">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn-danger" style="padding: 6px 12px;" onclick="deleteTask('${customerId}', ${index})">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('') : '<p style="color: #999; text-align: center; padding: 20px;">No tasks created yet.</p>';
+      
+      document.getElementById('tasksList').innerHTML = tasksHtml;
+      
+      // Load purchases
+      const customerOrders = crmData.orders.filter(o => o.customerId === customerId);
+      const totalSpent = customerOrders.reduce((sum, o) => sum + o.total, 0);
+      const ltv = totalSpent * 1.5; // Simple LTV calculation (adjust as needed)
+      
+      document.getElementById('customerTotalOrders').textContent = customerOrders.length;
+      document.getElementById('customerTotalSpent').textContent = '$' + totalSpent.toFixed(2);
+      document.getElementById('customerLTV').textContent = '$' + ltv.toFixed(2);
+      
+      const purchasesHtml = customerOrders.length > 0 ? customerOrders.map(o => `
+        <div style="padding: 15px; border-bottom: 1px solid #f1f8e9; display: flex; justify-content: space-between; align-items: center;">
+          <div style="flex: 1;">
+            <div style="font-weight: 600; margin-bottom: 4px;">${o.product}</div>
+            <div style="font-size: 13px; color: #666;">
+              ${new Date(o.date).toLocaleDateString()} • ${o.id}
+            </div>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-weight: 600; color: #43a047; margin-bottom: 4px;">$${o.total.toFixed(2)}</div>
+            <span class="status-badge status-${o.status.toLowerCase()}">${o.status}</span>
+          </div>
+        </div>
+      `).join('') : '<p style="color: #999; text-align: center; padding: 20px;">No purchases yet.</p>';
+      
+      document.getElementById('purchasesList').innerHTML = purchasesHtml;
+    }
+
+    // Communication & Task Functions
+    function addCommunication() {
+      const customerId = document.getElementById('customerId').value;
+      if (!customerId) {
+        showNotification('Please save the customer first');
+        return;
+      }
+      document.getElementById('communicationCustomerId').value = customerId;
+      document.getElementById('communicationModal').style.display = 'block';
+      document.getElementById('communicationForm').reset();
+      document.getElementById('communicationDate').value = new Date().toISOString().split('T')[0];
+    }
+
+    function saveCommunication(event) {
+      event.preventDefault();
+      
+      const customerId = document.getElementById('communicationCustomerId').value;
+      const customer = crmData.customers.find(c => c.id === customerId);
+      
+      if (!customer) return;
+      
+      if (!customer.communications) {
+        customer.communications = [];
+      }
+      
+      customer.communications.push({
+        type: document.getElementById('communicationType').value,
+        date: document.getElementById('communicationDate').value,
+        subject: document.getElementById('communicationSubject').value,
+        notes: document.getElementById('communicationNotes').value,
+        createdAt: new Date().toISOString()
+      });
+      
+      saveData();
+      closeModal('communicationModal');
+      loadCustomerHistory(customerId);
+      showNotification('Communication logged successfully!');
+    }
+
+    function deleteCommunication(customerId, index) {
+      if (confirm('Delete this communication?')) {
+        const customer = crmData.customers.find(c => c.id === customerId);
+        if (customer && customer.communications) {
+          customer.communications.splice(index, 1);
+          saveData();
+          loadCustomerHistory(customerId);
+          showNotification('Communication deleted');
+        }
+      }
+    }
+
+    function addTask() {
+      const customerId = document.getElementById('customerId').value;
+      if (!customerId) {
+        showNotification('Please save the customer first');
+        return;
+      }
+      document.getElementById('taskCustomerId').value = customerId;
+      document.getElementById('taskModal').style.display = 'block';
+      document.getElementById('taskForm').reset();
+      document.getElementById('taskDueDate').value = new Date().toISOString().split('T')[0];
+    }
+
+    function saveTask(event) {
+      event.preventDefault();
+      
+      const customerId = document.getElementById('taskCustomerId').value;
+      const customer = crmData.customers.find(c => c.id === customerId);
+      
+      if (!customer) return;
+      
+      if (!customer.tasks) {
+        customer.tasks = [];
+      }
+      
+      customer.tasks.push({
+        description: document.getElementById('taskDescription').value,
+        dueDate: document.getElementById('taskDueDate').value,
+        priority: document.getElementById('taskPriority').value,
+        status: document.getElementById('taskStatus').value,
+        notes: document.getElementById('taskNotes').value,
+        createdAt: new Date().toISOString()
+      });
+      
+      saveData();
+      closeModal('taskModal');
+      loadCustomerHistory(customerId);
+      updateDashboard();
+      showNotification('Task created successfully!');
+    }
+
+    function editTask(customerId, index) {
+      const customer = crmData.customers.find(c => c.id === customerId);
+      if (!customer || !customer.tasks || !customer.tasks[index]) return;
+      
+      const task = customer.tasks[index];
+      document.getElementById('taskCustomerId').value = customerId;
+      document.getElementById('taskDescription').value = task.description;
+      document.getElementById('taskDueDate').value = task.dueDate;
+      document.getElementById('taskPriority').value = task.priority;
+      document.getElementById('taskStatus').value = task.status;
+      document.getElementById('taskNotes').value = task.notes || '';
+      
+      document.getElementById('taskModal').style.display = 'block';
+      
+      // Delete old task after saving (logic moved to saveTask, but keeping placeholder here for potential future update logic if needed)
+      // For now, we rely on user manually deleting after editing is complete, or user overwriting in an external system.
+    }
+
+    function deleteTask(customerId, index) {
+      if (confirm('Delete this task?')) {
+        const customer = crmData.customers.find(c => c.id === customerId);
+        if (customer && customer.tasks) {
+          customer.tasks.splice(index, 1);
+          saveData();
+          loadCustomerHistory(customerId);
+          updateDashboard();
+          showNotification('Task deleted');
+        }
+      }
+    }
+    // Reports Functions
+    function setReportDateRange(range) {
+      const today = new Date();
+      let startDate, endDate;
+      
+      // Ensure a fresh copy of today is used for multi-step calculations like last week/month
+      const dateUtil = new Date();
+      
+      switch(range) {
+        case 'today':
+          startDate = endDate = dateUtil;
+          break;
+        case 'yesterday':
+          startDate = endDate = new Date(dateUtil.setDate(dateUtil.getDate() - 1));
+          break;
+        case 'thisWeek':
+          startDate = new Date(dateUtil.setDate(dateUtil.getDate() - dateUtil.getDay()));
+          endDate = new Date();
+          break;
+        case 'lastWeek':
+          // Start of this week, then go back 7 days for the end of last week
+          dateUtil.setDate(dateUtil.getDate() - dateUtil.getDay()); // Start of current week (Sun)
+          endDate = new Date(dateUtil.setDate(dateUtil.getDate() - 1)); // End of last week (Sat)
+          startDate = new Date(endDate);
+          startDate.setDate(endDate.getDate() - 6); // Start of last week (Sun)
+          break;
+        case 'thisMonth':
+          startDate = new Date(dateUtil.getFullYear(), dateUtil.getMonth(), 1);
+          endDate = new Date();
+          break;
+        case 'lastMonth':
+          startDate = new Date(dateUtil.getFullYear(), dateUtil.getMonth() - 1, 1);
+          endDate = new Date(dateUtil.getFullYear(), dateUtil.getMonth(), 0);
+          break;
+        case 'thisYear':
+          startDate = new Date(dateUtil.getFullYear(), 0, 1);
+          endDate = new Date();
+          break;
+        case 'lastYear':
+          startDate = new Date(dateUtil.getFullYear() - 1, 0, 1);
+          endDate = new Date(dateUtil.getFullYear() - 1, 11, 31);
+          break;
+        default:
+          return;
+      }
+      
+      document.getElementById('reportStartDate').value = startDate.toISOString().split('T')[0];
+      document.getElementById('reportEndDate').value = endDate.toISOString().split('T')[0];
+    }
+
+    function generateReport() {
+      const startDate = document.getElementById('reportStartDate').value;
+      const endDate = document.getElementById('reportEndDate').value;
+      
+      if (!startDate || !endDate) {
+        showNotification('Please select a date range');
+        return;
+      }
+      
+      // Filter data by date range
+      const ordersInRange = crmData.orders.filter(o => o.date >= startDate && o.date <= endDate);
+      const customersInRange = crmData.customers.filter(c => c.createdAt.split('T')[0] >= startDate && c.createdAt.split('T')[0] <= endDate);
+      const eventsInRange = crmData.events.filter(e => e.date >= startDate && e.date <= endDate);
+      
+      // Calculate metrics
+      const totalRevenue = ordersInRange.reduce((sum, o) => sum + o.total, 0);
+      const avgOrderValue = ordersInRange.length > 0 ? totalRevenue / ordersInRange.length : 0;
+      const completedOrders = ordersInRange.filter(o => o.status === 'Completed').length;
+      const conversionRate = ordersInRange.length > 0 ? (completedOrders / ordersInRange.length) * 100 : 0;
+      
+      // Lead sources breakdown
+      const leadSourceBreakdown = {};
+      customersInRange.forEach(c => {
+        const source = c.leadSource || 'Unknown';
+        leadSourceBreakdown[source] = (leadSourceBreakdown[source] || 0) + 1;
+      });
+      
+      // Product breakdown
+      const productBreakdown = {};
+      ordersInRange.forEach(o => {
+        productBreakdown[o.product] = (productBreakdown[o.product] || 0) + 1;
+      });
+      
+      const reportHtml = `
+        <div class="card">
+          <h3 style="margin-bottom: 20px; color: #2e5940;">
+            <i class="fas fa-chart-pie"></i> Report: ${new Date(startDate).toLocaleDateString()} - ${new Date(endDate).toLocaleDateString()}
+          </h3>
+          
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px;">
+            <div style="background: #f1f8e9; padding: 20px; border-radius: 12px; text-align: center;">
+              <div style="font-size: 14px; color: #666; margin-bottom: 5px;">Total Revenue</div>
+              <div style="font-size: 32px; font-weight: 700; color: #43a047;">$${totalRevenue.toFixed(2)}</div>
+            </div>
+            <div style="background: #f1f8e9; padding: 20px; border-radius: 12px; text-align: center;">
+              <div style="font-size: 14px; color: #666; margin-bottom: 5px;">Orders</div>
+              <div style="font-size: 32px; font-weight: 700; color: #2e5940;">${ordersInRange.length}</div>
+            </div>
+            <div style="background: #f1f8e9; padding: 20px; border-radius: 12px; text-align: center;">
+              <div style="font-size: 14px; color: #666; margin-bottom: 5px;">Avg Order Value</div>
+              <div style="font-size: 32px; font-weight: 700; color: #2e5940;">$${avgOrderValue.toFixed(2)}</div>
+            </div>
+            <div style="background: #f1f8e9; padding: 20px; border-radius: 12px; text-align: center;">
+              <div style="font-size: 14px; color: #666; margin-bottom: 5px;">New Customers</div>
+              <div style="font-size: 32px; font-weight: 700; color: #2e5940;">${customersInRange.length}</div>
+            </div>
+            <div style="background: #f1f8e9; padding: 20px; border-radius: 12px; text-align: center;">
+              <div style="font-size: 14px; color: #666; margin-bottom: 5px;">Events</div>
+              <div style="font-size: 32px; font-weight: 700; color: #2e5940;">${eventsInRange.length}</div>
+            </div>
+            <div style="background: #f1f8e9; padding: 20px; border-radius: 12px; text-align: center;">
+              <div style="font-size: 14px; color: #666; margin-bottom: 5px;">Conversion Rate</div>
+              <div style="font-size: 32px; font-weight: 700; color: #2e5940;">${conversionRate.toFixed(1)}%</div>
+            </div>
+          </div>
+          
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div>
+              <h4 style="color: #2e5940; margin-bottom: 15px;">Lead Sources</h4>
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Source</th>
+                    <th>Count</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${Object.entries(leadSourceBreakdown).map(([source, count]) => `
+                    <tr>
+                      <td>${source}</td>
+                      <td><strong>${count}</strong></td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+            
+            <div>
+              <h4 style="color: #2e5940; margin-bottom: 15px;">Top Products</h4>
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>Orders</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${Object.entries(productBreakdown)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 5)
+                    .map(([product, count]) => `
+                      <tr>
+                        <td>${product}</td>
+                        <td><strong>${count}</strong></td>
+                      </tr>
+                    `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          
+          <div style="margin-top: 20px; text-align: center;">
+            <button class="btn-primary" onclick="exportReportCSV()">
+              <i class="fas fa-download"></i> Export as CSV
+            </button>
+          </div>
+        </div>
+      `;
+      
+      document.getElementById('reportResults').innerHTML = reportHtml;
+    }
+
+    function exportReportCSV() {
+      const startDate = document.getElementById('reportStartDate').value;
+      const endDate = document.getElementById('reportEndDate').value;
+      
+      const ordersInRange = crmData.orders.filter(o => o.date >= startDate && o.date <= endDate);
+      
+      let csv = 'Order ID,Customer,Date,Product,Status,Total\n';
+      ordersInRange.forEach(o => {
+        const customer = crmData.customers.find(c => c.id === o.customerId);
+        csv += `${o.id},"${customer ? customer.name : 'Unknown'}",${o.date},"${o.product}",${o.status},${o.total}\n`;
+      });
+      
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `report-${startDate}-to-${endDate}.csv`;
+      link.click();
+      showNotification('Report exported successfully!');
+    }
+
+    // Import Functions
+    let pendingImport = null;
+
+    function selectImportPlatform(platform) {
+      document.getElementById('importInstructions').style.display = 'block';
+      document.getElementById('importPreview').style.display = 'none';
+      
+      const instructions = {
+        amazon: {
+          title: 'Amazon FBA Import',
+          content: `
+            <div class="info-box">
+              <strong>How to get your Amazon FBA data:</strong>
+              <ol style="margin: 10px 0 0 20px;">
+                <li>Log into Amazon Seller Central</li>
+                <li>Go to Reports → Fulfillment</li>
+                <li>Download "All Orders" report as CSV</li>
+                <li>Upload the CSV file here</li>
+              </ol>
+            </div>
+          `
+        },
+        shopify: {
+          title: 'Shopify Import',
+          content: `
+            <div class="info-box">
+              <strong>How to get your Shopify data:</strong>
+              <ol style="margin: 10px 0 0 20px;">
+                <li>Log into your Shopify admin</li>
+                <li>Go to Orders</li>
+                <li>Click "Export" and select CSV format</li>
+                <li>Upload the CSV file here</li>
+              </ol>
+            </div>
+          `
+        },
+        ebay: {
+          title: 'eBay Import',
+          content: `
+            <div class="info-box">
+              <strong>How to get your eBay data:</strong>
+              <ol style="margin: 10px 0 0 20px;">
+                <li>Log into eBay Seller Hub</li>
+                <li>Go to Orders → Download orders</li>
+                <li>Select date range and download as CSV</li>
+                <li>Upload the CSV file here</li>
+              </ol>
+            </div>
+          `
+        },
+        csv: {
+          title: 'Generic CSV Import',
+          content: `
+            <div class="info-box">
+              <strong>CSV Format Requirements:</strong>
+              <p style="margin: 10px 0;">Your CSV should have these columns (in any order):</p>
+              <ul style="margin: 10px 0 0 20px;">
+                <li><strong>customer_name</strong> - Customer full name</li>
+                <li><strong>customer_email</strong> - Email address</li>
+                <li><strong>order_date</strong> - Order date (YYYY-MM-DD)</li>
+                <li><strong>product</strong> - Product name</li>
+                <li><strong>price</strong> - Order total</li>
+                <li><strong>status</strong> - Order status (Pending, Processing, Shipped, Completed)</li>
+              </ul>
+            </div>
+          `
+        }
+      };
+      
+      document.getElementById('importPlatformTitle').textContent = instructions[platform].title;
+      document.getElementById('importInstructionsContent').innerHTML = instructions[platform].content;
+    }
+
+    function handlePlatformImport(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      
+      document.getElementById('selectedFileName').textContent = file.name;
+      
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const csv = e.target.result;
+        const lines = csv.split('\n');
+        const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+        
+        const orders = [];
+        for (let i = 1; i < lines.length; i++) {
+          if (!lines[i].trim()) continue;
+          
+          const values = lines[i].split(',');
+          const order = {};
+          headers.forEach((header, index) => {
+            order[header] = values[index] ? values[index].trim().replace(/['"]/g, '') : '';
+          });
+          
+          if (order.customer_name || order['customer name']) {
+            orders.push(order);
+          }
+        }
+        
+        pendingImport = orders;
+        showImportPreview(orders);
+      };
+      
+      reader.readAsText(file);
+    }
+
+    function showImportPreview(orders) {
+      document.getElementById('importPreview').style.display = 'block';
+      
+      const previewHtml = `
+        <p style="margin-bottom: 15px;"><strong>${orders.length} orders</strong> ready to import</p>
+        <div style="max-height: 400px; overflow-y: auto;">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Customer</th>
+                <th>Email</th>
+                <th>Date</th>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${orders.slice(0, 10).map(o => `
+                <tr>
+                  <td>${o.customer_name || o['customer name'] || 'N/A'}</td>
+                  <td>${o.customer_email || o['customer email'] || 'N/A'}</td>
+                  <td>${o.order_date || o['order date'] || 'N/A'}</td>
+                  <td>${o.product || o['product name'] || 'N/A'}</td>
+                  <td>$${parseFloat(o.price || o.total || 0).toFixed(2)}</td>
+                  <td>${o.status || 'Completed'}</td>
+                </tr>
+              `).join('')}
+              ${orders.length > 10 ? `<tr><td colspan="6" style="text-align: center; color: #666;">... and ${orders.length - 10} more</td></tr>` : ''}
+            </tbody>
+          </table>
+        </div>
+      `;
+      
+      document.getElementById('importPreviewContent').innerHTML = previewHtml;
+    }
+
+    function confirmImport() {
+      if (!pendingImport || pendingImport.length === 0) return;
+      
+      let customersAdded = 0;
+      let ordersAdded = 0;
+      
+      pendingImport.forEach(item => {
+        const customerName = item.customer_name || item['customer name'];
+        const customerEmail = item.customer_email || item['customer email'];
+        
+        if (!customerName) return;
+        
+        // Check if customer exists
+        let customer = crmData.customers.find(c => 
+          c.name.toLowerCase() === customerName.toLowerCase() || 
+          (c.email && customerEmail && c.email.toLowerCase() === customerEmail.toLowerCase())
+        );
+        
+        // Create customer if doesn't exist
+        if (!customer) {
+          customer = {
+            id: 'CUST' + Date.now() + Math.random().toString(36).substr(2, 9),
+            name: customerName,
+            email: customerEmail || '',
+            status: 'Active',
+            contactType: 'Individual',
+            leadSource: 'Import',
+            aiScore: 50,
+            referralCount: 0,
+            creditsEarned: 0,
+            creditsUsed: 0,
+            createdAt: new Date().toISOString(),
+            communications: [],
+            tasks: []
+          };
+          crmData.customers.push(customer);
+          customersAdded++;
+        }
+        
+        // Create order
+        const order = {
+          id: 'ORD' + Date.now() + Math.random().toString(36).substr(2, 9),
+          customerId: customer.id,
+          date: item.order_date || item['order date'] || new Date().toISOString().split('T')[0],
+          product: item.product || item['product name'] || 'Imported Product',
+          manufacturer: item.manufacturer || '',
+          quantity: parseInt(item.quantity || 1),
+          price: parseFloat(item.price || item.total || 0),
+          discount: 0,
+          taxRate: 0,
+          shippingCost: 0,
+          subtotal: parseFloat(item.price || item.total || 0),
+          tax: 0,
+          total: parseFloat(item.price || item.total || 0),
+          status: item.status || 'Completed',
+          takenBy: 'Import',
+          billTo: {},
+          shipTo: {},
+          notes: 'Imported from CSV',
+          createdAt: new Date().toISOString()
+        };
+        crmData.orders.push(order);
+        ordersAdded++;
+      });
+      
+      saveData();
+      cancelImport();
+      updateAllViews();
+      populateCustomerDropdowns();
+      showNotification(`Import complete! Added ${customersAdded} customers and ${ordersAdded} orders.`);
+    }
+
+    function cancelImport() {
+      pendingImport = null;
+      document.getElementById('importInstructions').style.display = 'none';
+      document.getElementById('importPreview').style.display = 'none';
+      document.getElementById('platformImportFile').value = '';
+      document.getElementById('selectedFileName').textContent = '';
+    }
+
+    // Search Functions
+    function performGlobalSearch() {
+      const query = document.getElementById('searchInput').value.toLowerCase().trim();
+      const filter = document.getElementById('searchFilter').value;
+      
+      if (!query) {
+        document.getElementById('searchResults').style.display = 'none';
+        return;
+      }
+      
+      const results = {
+        customers: [],
+        orders: [],
+        locations: []
+      };
+      
+      // Search customers
+      if (filter === 'all' || filter === 'customers') {
+        results.customers = crmData.customers.filter(c => 
+          c.name.toLowerCase().includes(query) ||
+          (c.email && c.email.toLowerCase().includes(query)) ||
+          (c.homePhone && c.homePhone.includes(query)) ||
+          (c.mobilePhone && c.mobilePhone.includes(query)) ||
+          (c.industry && c.industry.toLowerCase().includes(query))
+        ).slice(0, 5);
+      }
+      
+      // Search orders
+      if (filter === 'all' || filter === 'orders') {
+        results.orders = crmData.orders.filter(o => 
+          o.id.toLowerCase().includes(query) ||
+          o.product.toLowerCase().includes(query) ||
+          (o.manufacturer && o.manufacturer.toLowerCase().includes(query))
+        ).slice(0, 5);
+      }
+      
+      // Search locations (from customer addresses)
+      if (filter === 'all' || filter === 'locations') {
+        results.locations = crmData.customers.filter(c => 
+          (c.billing?.city && c.billing.city.toLowerCase().includes(query)) ||
+          (c.billing?.state && c.billing.state.toLowerCase().includes(query)) ||
+          (c.shipping?.city && c.shipping.city.toLowerCase().includes(query)) ||
+          (c.shipping?.state && c.shipping.state.toLowerCase().includes(query))
+        ).slice(0, 5);
+      }
+      
+      displaySearchResults(results);
+    }
+
+    function displaySearchResults(results) {
+      const resultsDiv = document.getElementById('searchResults');
+      let html = '';
+      
+      if (results.customers.length > 0) {
+        html += '<div style="padding: 10px; background: #f1f8e9; font-weight: 600;">Customers</div>';
+        results.customers.forEach(c => {
+          html += `
+            <div style="padding: 12px; border-bottom: 1px solid #f1f8e9; cursor: pointer;" onclick="showCustomerFromSearch('${c.id}')">
+              <div style="font-weight: 600;">${c.name}</div>
+              <div style="font-size: 13px; color: #666;">${c.email || c.homePhone || c.mobilePhone || 'No contact'}</div>
+            </div>
+          `;
+        });
+      }
+      
+      if (results.orders.length > 0) {
+        html += '<div style="padding: 10px; background: #f1f8e9; font-weight: 600; border-top: 2px solid #e8f5e9;">Orders</div>';
+        results.orders.forEach(o => {
+          const customer = crmData.customers.find(c => c.id === o.customerId);
+          html += `
+            <div style="padding: 12px; border-bottom: 1px solid #f1f8e9; cursor: pointer;" onclick="showOrderFromSearch('${o.id}')">
+              <div style="font-weight: 600;">${o.id} - ${o.product}</div>
+              <div style="font-size: 13px; color: #666;">${customer ? customer.name : 'Unknown'} • $${o.total.toFixed(2)}</div>
+            </div>
+          `;
+        });
+      }
+      
+      if (results.locations.length > 0) {
+        html += '<div style="padding: 10px; background: #f1f8e9; font-weight: 600; border-top: 2px solid #e8f5e9;">Locations</div>';
+        results.locations.forEach(c => {
+          const location = c.billing?.city && c.billing?.state ? 
+            `${c.billing.city}, ${c.billing.state}` : 
+            (c.shipping?.city && c.shipping?.state ? `${c.shipping.city}, ${c.shipping.state}` : 'Unknown');
+          html += `
+            <div style="padding: 12px; border-bottom: 1px solid #f1f8e9; cursor: pointer;" onclick="showCustomerFromSearch('${c.id}')">
+              <div style="font-weight: 600;">${c.name}</div>
+              <div style="font-size: 13px; color: #666;"><i class="fas fa-map-marker-alt"></i> ${location}</div>
+            </div>
+          `;
+        });
+      }
+      
+      if (html === '') {
+        html = '<div style="padding: 20px; text-align: center; color: #999;">No results found</div>';
+      }
+      
+      resultsDiv.innerHTML = html;
+      resultsDiv.style.display = 'block';
+    }
+
+    function showCustomerFromSearch(customerId) {
+      document.getElementById('searchResults').style.display = 'none';
+      document.getElementById('searchInput').value = '';
+      showView('customers', document.getElementById('nav-customers'));
+      openCustomerModal(customerId);
+    }
+
+    function showOrderFromSearch(orderId) {
+      document.getElementById('searchResults').style.display = 'none';
+      document.getElementById('searchInput').value = '';
+      showView('orders', document.getElementById('nav-orders'));
+      openOrderModal(orderId);
+    }
+
+    // Dashboard click handlers
+    function showAllCustomers() {
+      showView('customers', document.getElementById('nav-customers'));
+    }
+
+    function showAllOrders() {
+      showView('orders', document.getElementById('nav-orders'));
+    }
+
+    function showRevenueBreakdown() {
+      showView('analytics', document.getElementById('nav-analytics'));
+    }
+
+    function showTodaysEvents() {
+      showView('calendar', document.getElementById('nav-calendar'));
+    }
+
+    // Utility Functions
+    function closeModal(modalId) {
+      document.getElementById(modalId).style.display = 'none';
+    }
+
+    function showNotification(message) {
+      const notification = document.getElementById('notification');
+      notification.textContent = message;
+      notification.style.display = 'block';
+      setTimeout(() => {
+        notification.style.display = 'none';
+      }, 3000);
+    }
+
+    function populateCustomerDropdowns() {
+      const customerSelects = ['orderCustomer', 'eventCustomer'];
+      
+      customerSelects.forEach(selectId => {
+        const select = document.getElementById(selectId);
+        if (!select) return;
+        
+        const currentValue = select.value;
+        const options = crmData.customers.map(c => 
+          `<option value="${c.id}">${c.name}</option>`
+        ).join('');
+        
+        if (selectId === 'orderCustomer') {
+          select.innerHTML = '<option value="">Select Customer...</option>' + options;
+        } else if (selectId === 'eventCustomer') {
+          select.innerHTML = '<option value="">No customer (general event)</option>' + options;
+        }
+        
+        if (currentValue) {
+          select.value = currentValue;
+        }
+      });
+    }
+
+    function updateAllViews() {
+      updateDashboard();
+      updateCustomersView();
+      updateOrdersView();
+      updatePipelineView();
+      updateAnalyticsView();
+      updateMarketingView();
+      updateReferralsView();
+    }
+
+    // Close search results when clicking outside
+    document.addEventListener('click', function(e) {
+      const searchContainer = document.querySelector('.search-container');
+      const searchResults = document.getElementById('searchResults');
+      if (searchResults && !searchContainer.contains(e.target)) {
+        searchResults.style.display = 'none';
+      }
+    });
+
+    // Close modals when clicking outside
+    window.onclick = function(event) {
+      if (event.target.classList.contains('modal')) {
+        event.target.style.display = 'none';
+      }
+    };
+  </script>
+</body>
+</html>
