@@ -755,8 +755,7 @@
             </div>
         </div>
       </div>
-      
-      </div>
+    </div>
 
             <div id="customers" class="view">
         <div class="page-header">
@@ -896,7 +895,6 @@
               <div style="font-size: 14px; color: #666; margin-bottom: 5px;">Avg Close Time</div>
               <div id="avgCloseTime" style="font-size: 28px; font-weight: 700; color: #2e5940;">0 days</div>
             </div>
-          </div>
         </div>
         
         <div class="pipeline-grid">
@@ -940,7 +938,7 @@
           <div class="card">
             <h3 style="margin-bottom: 20px; color: #2e5940;">
               <i class="fas fa-chart-pie"></i> Lead Sources
-            </h3>
+            </b>
             <canvas id="leadSourceChart"></canvas>
           </div>
           
@@ -949,20 +947,19 @@
               <i class="fas fa-share-alt"></i> Social Media Reach
             </h3>
             <canvas id="socialChart"></canvas>
-          </div>
         </div>
         
         <div class="card">
           <h3 style="margin-bottom: 20px; color: #2e5940;">
             <i class="fas fa-chart-line"></i> Revenue Trend
-          </h3>
+          </b>
           <canvas id="revenueChart"></canvas>
         </div>
         
         <div class="card">
           <h3 style="margin-bottom: 20px; color: #2e5940;">
             <i class="fas fa-lightbulb"></i> AI-Powered Insights
-          </h3>
+          </b>
           <div id="aiInsights">
             <p style="color: #999; text-align: center; padding: 40px;">
               Gathering insights... Add more customer data to see AI-powered recommendations.
@@ -980,7 +977,7 @@
         <div class="card">
           <h3 style="margin-bottom: 20px; color: #2e5940;">
             <i class="fas fa-bullseye"></i> Recommended Campaigns
-          </h3>
+          </b>
           <div id="marketingRecommendations"></div>
         </div>
         
@@ -988,7 +985,7 @@
           <div class="card">
             <h3 style="margin-bottom: 20px; color: #2e5940;">
               <i class="fas fa-star"></i> High-Value Customers
-            </h3>
+            </b>
             <div id="highValueCustomers"></div>
           </div>
           
@@ -1038,7 +1035,7 @@
         <div class="card">
           <h3 style="margin-bottom: 20px; color: #2e5940;">
             <i class="fas fa-trophy"></i> Top Referrers
-          </h3>
+          </b>
           <div id="referralLeaderboard">
             <p style="color: #999; text-align: center; padding: 40px;">
               No referrals yet. Start tracking customer referrals to see your top performers here.
@@ -1056,7 +1053,7 @@
         <div class="card">
           <h3 style="margin-bottom: 20px; color: #2e5940;">
             <i class="fas fa-calendar-alt"></i> Select Date Range
-          </h3>
+          </b>
           
           <div style="display: flex; gap: 15px; align-items: end; margin-bottom: 20px;">
             <div class="form-group" style="flex: 1;">
@@ -1099,7 +1096,7 @@
         <div class="card">
           <h3 style="margin-bottom: 20px; color: #2e5940;">
             <i class="fas fa-cloud-upload-alt"></i> Select Platform
-          </h3>
+          </b>
           
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px;">
             <div class="stat-card" onclick="selectImportPlatform('amazon')" style="cursor: pointer; border: 3px solid transparent; transition: all 0.3s;">
@@ -1142,9 +1139,9 @@
               </label>
               <span id="selectedFileName" style="margin-left: 15px; color: #666;"></span>
             </div>
-          </div>
-          
-          <div id="importPreview" style="display: none; margin-top: 30px;">
+        </div>
+        
+        <div id="importPreview" style="display: none; margin-top: 30px;">
             <h4 style="color: #2e5940; margin-bottom: 15px;">Preview</h4>
             <div id="importPreviewContent"></div>
             <div style="margin-top: 20px; display: flex; gap: 10px;">
@@ -1155,7 +1152,6 @@
                 <i class="fas fa-times"></i> Cancel
               </button>
             </div>
-          </div>
         </div>
       </div>
 
@@ -1193,7 +1189,7 @@
                   <option value="Individual">Individual</option>
                   <option value="Business">Business</option>
                 </select>
-              </div>
+            </div>
               <div class="form-group">
                 <label>Status *</label>
                 <select id="customerStatus" required>
@@ -1307,7 +1303,7 @@
               <div class="form-group">
                 <label>Social Media Handle</label>
                 <input type="text" id="customerSocialHandle" placeholder="@username">
-              </div>
+            </div>
               <div class="form-group">
                 <label>Social Media Engagement Level</label>
                 <select id="customerSocialEngagement">
@@ -1345,7 +1341,7 @@
               <div class="form-group">
                 <label>City</label>
                 <input type="text" id="customerBillingCity">
-              </div>
+            </div>
               <div class="form-group">
                 <label>State</label>
                 <select id="customerBillingState">
@@ -1422,11 +1418,11 @@ value="ME">Maine</option>
                 <div class="form-group">
                   <label>Street Address</label>
                   <input type="text" id="customerShippingStreet">
-                </div>
+              </div>
                 <div class="form-group">
                   <label>City</label>
                   <input type="text" id="customerShippingCity">
-                </div>
+              </div>
                 <div class="form-group">
                   <label>State</label>
                   <select id="customerShippingState">
@@ -1486,7 +1482,7 @@ value="ME">Maine</option>
                 <div class="form-group">
                   <label>Zip Code</label>
                   <input type="text" id="customerShippingZip">
-                </div>
+              </div>
               </div>
             </div>
           </div>
@@ -1620,7 +1616,6 @@ value="ME">Maine</option>
             <div class="form-group">
               <label>Special Requirements/Notes</label>
               <textarea id="customerNotes" placeholder="Any special needs, preferences, or important information..."></textarea>
-            </div>
           </div>
           
           <div id="referralTab" class="tab-content">
@@ -1668,10 +1663,9 @@ value="ME">Maine</option>
                 <button type="button" class="btn-primary" onclick="addCommunication()">
                   <i class="fas fa-plus"></i> Add Communication
                 </button>
-              </div>
+            </div>
               <div id="communicationsList">
                 <p style="color: #999; text-align: center; padding: 20px;">No communications recorded yet.</p>
-              </div>
             </div>
             
             <div id="tasksHistoryTab" class="tab-content">
@@ -1680,10 +1674,9 @@ value="ME">Maine</option>
                 <button type="button" class="btn-primary" onclick="addTask()">
                   <i class="fas fa-plus"></i> Add Task
                 </button>
-              </div>
+            </div>
               <div id="tasksList">
                 <p style="color: #999; text-align: center; padding: 20px;">No tasks created yet.</p>
-              </div>
             </div>
             
             <div id="purchasesHistoryTab" class="tab-content">
@@ -1693,20 +1686,20 @@ value="ME">Maine</option>
                   <div style="background: #f1f8e9; padding: 15px; border-radius: 8px; text-align: center;">
                     <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Total Orders</div>
                     <div id="customerTotalOrders" style="font-size: 24px; font-weight: 700; color: #2e5940;">0</div>
-                  </div>
+                </div>
                   <div style="background: #f1f8e9; padding: 15px; border-radius: 8px; text-align: center;">
                     <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Total Spent</div>
                     <div id="customerTotalSpent" style="font-size: 24px; font-weight: 700; color: #2e5940;">$0.00</div>
-                  </div>
+                </div>
                   <div style="background: #f1f8e9; padding: 15px; border-radius: 8px; text-align: center;">
                     <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Lifetime Value</div>
                     <div id="customerLTV" style="font-size: 24px; font-weight: 700; color: #43a047;">$0.00</div>
-                  </div>
                 </div>
               </div>
+            </div>
               <div id="purchasesList">
                 <p style="color: #999; text-align: center; padding: 20px;">No purchases yet.</p>
-              </div>
+            </div>
             </div>
           </div>
         </div>
@@ -2034,7 +2027,6 @@ value="ME">Maine</option>
           <div class="form-group">
             <label>Notes</label>
             <textarea id="taskNotes" placeholder="Additional details..."></textarea>
-          </div>
         </div>
         
         <div class="modal-footer">
@@ -2052,7 +2044,7 @@ value="ME">Maine</option>
       <div class="modal-header">
         <h2>Referral Program Settings</h2>
         <span class="close" onclick="closeModal('referralSettingsModal')">&times;</span>
-        </div>
+      </div>
       <form id="referralSettingsForm" onsubmit="saveReferralSettings(event)">
         <div class="modal-body">
           <div class="form-group">
@@ -2116,11 +2108,10 @@ value="ME">Maine</option>
     // Initialize on page load
     document.addEventListener('DOMContentLoaded', function() {
       loadData();
-      updateDashboardDate(); // New function call
+      updateDashboardDate();
       populateCustomerDropdowns();
-      // Use showView to correctly initialize the first view
+      // Explicitly call showView on the element to ensure activation
       showView('dashboard', document.getElementById('nav-dashboard'));
-      // updateAllViews(); // This is now handled within showView('dashboard')
       
       // Set default dates
       const today = new Date().toISOString().split('T')[0];
@@ -2711,15 +2702,14 @@ value="ME">Maine</option>
           </tr>
         `;
       }).join('');
-      tbody.innerHTML = html || '<tr><td colspan
-<td colspan="8" style="text-align: center; padding: 40px; color: #999;">No orders yet. Click "New Order" to create one.</td></tr>';
+      tbody.innerHTML = html || '<tr><td colspan="8" style="text-align: center; padding: 40px; color: #999;">No orders yet. Click "New Order" to create one.</td></tr>';
     }
 
     function deleteOrder(id) {
       if (confirm('Are you sure you want to delete this order?')) {
         crmData.orders = crmData.orders.filter(o => o.id !== id);
         saveData();
-        updateDashboard();
+        updateDashboard();
         updateOrdersView();
         showNotification('Order deleted');
       }
@@ -4371,5 +4361,5 @@ value="ME">Maine</option>
       }
     };
   </script>
-</body>
+  </body>
 </html>
