@@ -3,518 +3,984 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AcoustiSkin CRM - V5 (Fully Functional)</title>
+    <title>AcoustiSkin CRM - V8 (Full Enterprise Edition)</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
     <style>
+        /* --- CORE STYLING --- */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f0fdf4; }
         
-        /* Green Theme */
-        .sidebar { background-color: #14532d; color: white; }
-        .sidebar-btn { padding: 12px 20px; color: #dcfce7; cursor: pointer; border-left: 4px solid transparent; display: flex; align-items: center; gap: 10px; }
-        .sidebar-btn:hover, .sidebar-btn.active { background-color: #166534; border-left-color: #4ade80; color: white; font-weight: 600; }
-        
-        .card { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .btn { padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 6px; }
-        .btn-green { background: #16a34a; color: white; } .btn-green:hover { background: #15803d; }
-        .btn-blue { background: #2563eb; color: white; } .btn-blue:hover { background: #1d4ed8; }
-        .btn-red { background: #dc2626; color: white; } .btn-red:hover { background: #b91c1c; }
-        .btn-gray { background: #e5e7eb; color: #374151; } .btn-gray:hover { background: #d1d5db; }
-        
-        .icon-btn { padding: 6px; border-radius: 4px; cursor: pointer; }
-        .icon-btn:hover { background-color: #f3f4f6; }
-        .edit-icon { color: #2563eb; }
-        .del-icon { color: #dc2626; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #f0fdf4; /* Green-50 */
+            color: #1e293b;
+        }
 
-        /* Modal */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; place-items: center; z-index: 50; }
-        .modal-content { background: white; border-radius: 12px; width: 95%; max-width: 800px; max-height: 90vh; overflow-y: auto; padding: 25px; }
+        /* --- SIDEBAR THEME --- */
+        .sidebar { 
+            background-color: #14532d; /* Green-900 */
+            color: white; 
+            transition: all 0.3s ease; 
+        }
         
-        /* Inputs */
-        .inp-group label { display: block; font-size: 0.75rem; font-weight: 700; color: #4b5563; margin-bottom: 4px; uppercase; }
-        .inp-group input, .inp-group select, .inp-group textarea { width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; }
-        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+        .sidebar-btn { 
+            padding: 12px 24px; 
+            color: #dcfce7; 
+            cursor: pointer; 
+            border-left: 4px solid transparent; 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            font-size: 0.95rem; 
+            transition: all 0.2s;
+        }
+        
+        .sidebar-btn:hover, .sidebar-btn.active { 
+            background-color: #166534; /* Green-800 */
+            border-left-color: #4ade80; /* Green-400 */
+            color: white; 
+            font-weight: 600; 
+        }
+
+        /* --- CARDS & BUTTONS --- */
+        .card { 
+            background: white; 
+            border-radius: 12px; 
+            padding: 24px; 
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); 
+            border: 1px solid #e2e8f0;
+        }
+        
+        .btn { 
+            padding: 10px 20px; 
+            border-radius: 8px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            transition: 0.2s; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px; 
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+        
+        .btn-green { background: #16a34a; color: white; } 
+        .btn-green:hover { background: #15803d; shadow: lg; }
+        
+        .btn-blue { background: #2563eb; color: white; } 
+        .btn-blue:hover { background: #1d4ed8; shadow: lg; }
+        
+        .btn-red { background: #dc2626; color: white; } 
+        .btn-red:hover { background: #b91c1c; }
+
+        .btn-purple { background: #9333ea; color: white; }
+        .btn-purple:hover { background: #7e22ce; }
+
+        /* --- CALENDAR --- */
+        .cal-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #e5e7eb;
+            gap: 1px;
+        }
+
+        .cal-day {
+            background: white;
+            min-height: 120px;
+            padding: 8px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .cal-day:hover {
+            background-color: #f9fafb;
+        }
+
+        .is-today {
+            background-color: #ecfccb !important; /* Lime-100 */
+        }
+
+        .event-badge {
+            font-size: 0.75rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-top: 4px;
+            color: white;
+            background-color: #16a34a; /* Green-600 */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .holiday-badge {
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background-color: #9333ea; /* Purple-600 */
+            color: white;
+            margin-bottom: 4px;
+            display: inline-block;
+            font-weight: bold;
+        }
+
+        /* --- MODAL --- */
+        .modal-overlay { 
+            position: fixed; 
+            inset: 0; 
+            background: rgba(0,0,0,0.6); 
+            display: none; 
+            place-items: center; 
+            z-index: 50; 
+            backdrop-filter: blur(4px); 
+        }
+        
+        .modal-content { 
+            background: white; 
+            border-radius: 16px; 
+            width: 95%; 
+            max-width: 800px; 
+            max-height: 90vh; 
+            overflow-y: auto; 
+            padding: 32px; 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); 
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- FORM STYLES --- */
+        .form-section-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #15803d; /* Green-700 */
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid #dcfce7;
+            padding-bottom: 8px;
+            margin-bottom: 16px;
+            margin-top: 24px;
+        }
+
+        .inp-group label { 
+            display: block; 
+            font-size: 0.8rem; 
+            font-weight: 600; 
+            color: #4b5563; 
+            margin-bottom: 6px; 
+        }
+        
+        .inp-group input, .inp-group select { 
+            width: 100%; 
+            padding: 10px; 
+            border: 1px solid #cbd5e1; 
+            border-radius: 8px; 
+            outline: none; 
+            transition: all 0.2s;
+        }
+        
+        .inp-group input:focus, .inp-group select:focus { 
+            border-color: #16a34a; 
+            box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.2); 
+        }
+        
+        .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+
     </style>
 </head>
 <body class="flex h-screen overflow-hidden text-slate-800">
 
-<aside class="sidebar w-64 flex flex-col h-full shadow-xl">
-    <div class="p-6 flex items-center gap-3 border-b border-green-800">
-        <div class="w-8 h-8 bg-green-500 rounded flex items-center justify-center font-bold text-white">AS</div>
-        <h1 class="font-bold text-lg">AcoustiSkin</h1>
-    </div>
-    <div class="flex-1 overflow-y-auto py-2">
-        <div onclick="nav('dashboard')" class="sidebar-btn active" id="btn-dashboard"><i class="fa fa-home"></i> Dashboard</div>
-        <div onclick="nav('customers')" class="sidebar-btn" id="btn-customers"><i class="fa fa-users"></i> Customers</div>
-        <div onclick="nav('orders')" class="sidebar-btn" id="btn-orders"><i class="fa fa-shopping-cart"></i> Orders</div>
-        <div onclick="nav('calendar')" class="sidebar-btn" id="btn-calendar"><i class="fa fa-calendar"></i> Calendar</div>
-        <div onclick="nav('pipeline')" class="sidebar-btn" id="btn-pipeline"><i class="fa fa-chart-simple"></i> Pipeline</div>
-        <div onclick="nav('marketing')" class="sidebar-btn" id="btn-marketing"><i class="fa fa-bullhorn"></i> Marketing</div>
-        <div onclick="nav('vendors')" class="sidebar-btn" id="btn-vendors"><i class="fa fa-truck"></i> Vendors</div>
-        <div onclick="nav('referral')" class="sidebar-btn" id="btn-referral"><i class="fa fa-gift"></i> Referrals</div>
-        <div onclick="nav('settings')" class="sidebar-btn" id="btn-settings"><i class="fa fa-cog"></i> Settings/Data</div>
-    </div>
-    <div class="p-4 border-t border-green-800 space-y-2">
-        <button onclick="editItem('customer', null)" class="w-full btn btn-green justify-center"><i class="fa fa-plus"></i> Customer</button>
-        <button onclick="editItem('order', null)" class="w-full btn btn-blue justify-center"><i class="fa fa-plus"></i> Order</button>
-    </div>
-</aside>
-
-<main class="flex-1 flex flex-col h-full">
-    <header class="bg-white p-4 shadow-sm flex justify-between items-center z-10">
-        <div class="flex items-center bg-gray-100 rounded-lg px-3 py-2 w-96">
-            <i class="fa fa-search text-gray-400 mr-2"></i>
-            <input id="globalSearch" type="text" placeholder="Search current view..." class="bg-transparent outline-none w-full text-sm" onkeyup="renderCurrentView()">
-        </div>
-        <div class="flex items-center gap-3">
-            <div class="text-right hidden md:block">
-                <div class="font-bold text-sm">Dana Lurie</div>
-                <div class="text-xs text-green-600">Admin</div>
+    <aside class="sidebar w-72 flex flex-col h-full shadow-2xl z-20">
+        <div class="p-8 flex items-center gap-4 border-b border-green-800 bg-green-900">
+            <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center font-bold text-white shadow-lg text-xl">AS</div>
+            <div>
+                <h1 class="font-bold text-xl text-white tracking-tight">AcoustiSkin</h1>
+                <div class="text-xs text-green-300 uppercase tracking-widest font-semibold mt-1">Enterprise V8</div>
             </div>
-            <div class="h-10 w-10 bg-green-100 text-green-700 rounded-full flex items-center justify-center font-bold">DL</div>
         </div>
-    </header>
 
-    <div id="app" class="flex-1 overflow-y-auto p-6 bg-slate-50 relative">
+        <div class="flex-1 overflow-y-auto py-6 space-y-1">
+            <div onclick="nav('dashboard')" class="sidebar-btn active" id="btn-dashboard">
+                <i class="fa fa-chart-pie w-6 text-center"></i> Dashboard
+            </div>
+            <div onclick="nav('customers')" class="sidebar-btn" id="btn-customers">
+                <i class="fa fa-users w-6 text-center"></i> Customers
+            </div>
+            <div onclick="nav('orders')" class="sidebar-btn" id="btn-orders">
+                <i class="fa fa-shopping-cart w-6 text-center"></i> Orders
+            </div>
+            <div onclick="nav('calendar')" class="sidebar-btn" id="btn-calendar">
+                <i class="fa fa-calendar-alt w-6 text-center"></i> Calendar
+            </div>
+            <div onclick="nav('pipeline')" class="sidebar-btn" id="btn-pipeline">
+                <i class="fa fa-funnel-dollar w-6 text-center"></i> Pipeline
+            </div>
+            <div onclick="nav('marketing')" class="sidebar-btn" id="btn-marketing">
+                <i class="fa fa-bullhorn w-6 text-center"></i> Marketing
+            </div>
+            <div onclick="nav('referral')" class="sidebar-btn" id="btn-referral">
+                <i class="fa fa-gift w-6 text-center"></i> Referrals
+            </div>
+            <div onclick="nav('vendors')" class="sidebar-btn" id="btn-vendors">
+                <i class="fa fa-truck w-6 text-center"></i> Vendors
+            </div>
+            <div onclick="nav('settings')" class="sidebar-btn" id="btn-settings">
+                <i class="fa fa-sliders-h w-6 text-center"></i> Settings
+            </div>
         </div>
-</main>
 
-<div id="modal" class="modal-overlay">
-    <div class="modal-content">
-        <div class="flex justify-between items-center mb-4 border-b pb-2">
-            <h2 id="modalTitle" class="text-xl font-bold">Edit</h2>
-            <button onclick="closeModal()" class="text-gray-400 hover:text-red-500"><i class="fa fa-times text-xl"></i></button>
+        <div class="p-6 bg-green-900 border-t border-green-800 space-y-3">
+            <button onclick="editItem('customer', null)" class="w-full btn btn-green shadow-lg">
+                <i class="fa fa-user-plus"></i> Add Customer
+            </button>
+            <button onclick="editItem('order', null)" class="w-full btn btn-blue shadow-lg">
+                <i class="fa fa-cart-plus"></i> Create Order
+            </button>
         </div>
-        <div id="modalBody"></div>
+    </aside>
+
+    <main class="flex-1 flex flex-col h-full relative bg-slate-50">
+        <header class="bg-white px-8 py-4 shadow-sm flex justify-between items-center z-10 border-b border-slate-200">
+            <div class="flex items-center bg-slate-100 rounded-full px-4 py-2 w-96 border border-slate-200 focus-within:ring-2 focus-within:ring-green-500 focus-within:bg-white transition">
+                <i class="fa fa-search text-slate-400 mr-3"></i>
+                <input id="globalSearch" type="text" placeholder="Search customers, orders, events..." class="bg-transparent outline-none w-full text-sm text-slate-700" onkeyup="renderCurrentView()">
+            </div>
+
+            <div class="flex items-center gap-4">
+                <div class="text-right hidden md:block">
+                    <div class="font-bold text-sm text-slate-800">Dana Lurie</div>
+                    <div class="text-xs text-green-700 font-bold bg-green-100 px-2 py-0.5 rounded-full inline-block">Administrator</div>
+                </div>
+                <div class="h-10 w-10 bg-gradient-to-br from-green-500 to-green-700 text-white rounded-full flex items-center justify-center font-bold shadow-md border-2 border-white">
+                    DL
+                </div>
+            </div>
+        </header>
+
+        <div id="app" class="flex-1 overflow-y-auto p-8">
+            </div>
+    </main>
+
+    <div id="modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6 border-b pb-4">
+                <h2 id="modalTitle" class="text-2xl font-bold text-gray-800">Edit Record</h2>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-red-500 w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition">
+                    <i class="fa fa-times text-xl"></i>
+                </button>
+            </div>
+            <div id="modalBody">
+                </div>
+        </div>
     </div>
-</div>
 
-<script>
-    // --- DATABASE ---
-    let db = { customers: [], orders: [], events: [], pipeline: [], vendors: [] };
-    let currentView = 'dashboard';
+    <script>
+        // === GLOBAL STATE ===
+        let db = { 
+            customers: [], 
+            orders: [], 
+            events: [], 
+            pipeline: [], 
+            vendors: [] 
+        };
+        let currentView = 'dashboard';
 
-    // --- INITIALIZATION ---
-    window.onload = () => {
-        if(localStorage.getItem('as_crm_v5')) {
-            db = JSON.parse(localStorage.getItem('as_crm_v5'));
-        } else {
-            seedData(); // Load dummy data if empty
+        // === 2025 US HOLIDAY DATA ===
+        const holidays = {
+            "2025-01-01": "New Year's Day",
+            "2025-01-20": "Martin Luther King Jr. Day",
+            "2025-02-14": "Valentine's Day",
+            "2025-02-17": "Presidents' Day",
+            "2025-03-17": "St. Patrick's Day",
+            "2025-05-11": "Mother's Day",
+            "2025-05-26": "Memorial Day",
+            "2025-06-19": "Juneteenth",
+            "2025-06-15": "Father's Day",
+            "2025-07-04": "Independence Day",
+            "2025-09-01": "Labor Day",
+            "2025-10-13": "Columbus Day",
+            "2025-10-31": "Halloween",
+            "2025-11-11": "Veterans Day",
+            "2025-11-27": "Thanksgiving Day",
+            "2025-12-25": "Christmas Day"
+        };
+
+        // === INITIALIZATION ===
+        window.onload = () => {
+            const saved = localStorage.getItem('as_crm_v8');
+            if(saved) {
+                db = JSON.parse(saved);
+            } else {
+                seedData();
+            }
+            // Start on Dashboard
+            nav('dashboard');
+        };
+
+        function seedData() {
+            db.customers = [
+                { id: 'c1', fName: 'Lance', lName: 'Ochs', email: 'lance@cleanroom.com', phone: '555-0101', company: 'CleanRoom Tape', source: 'Website', address: '123 Main St', city: 'Falmouth', state: 'MA', zip: '02540', credits: 20, refCode: 'LANOCH25', status: 'Active' },
+                { id: 'c2', fName: 'Dana', lName: 'Lurie', email: 'dana@acoustiskin.com', phone: '555-0102', company: 'AcoustiSkin', source: 'Internal', address: '456 Oak Ave', city: 'Boston', state: 'MA', zip: '02110', credits: 50, refCode: 'DANLUR10', status: 'VIP' }
+            ];
+            db.orders = [
+                { id: '1001', custId: 'c1', custName: 'Lance Ochs', date: '2025-12-01', total: 39.70, status: 'Shipped' },
+                { id: '1002', custId: 'c2', custName: 'Dana Lurie', date: '2025-12-05', total: 150.00, status: 'Processing' }
+            ];
+            db.events = [
+                { id: 'e1', title: 'Strategy Call with Lance', date: new Date().toISOString().split('T')[0], type: 'Call' }
+            ];
+            db.pipeline = [
+                { id: 'p1', title: 'Q4 Bulk Order', custName: 'CleanRoom Tape', value: 5000, stage: 'Negotiation' }
+            ];
+            save();
         }
-        nav('dashboard');
-    };
 
-    function seedData() {
-        db.customers = [
-            { id: 'c1', fName: 'Lance', lName: 'Ochs', email: 'lance@cleanroom.com', phone: '555-0101', company: 'CleanRoom', source: 'Web', address: '123 Main St', city: 'Falmouth', state: 'MA', zip: '02540', credits: 20, refCode: 'LANOCH25', status: 'Active' },
-            { id: 'c2', fName: 'Dana', lName: 'Lurie', email: 'dana@acoustiskin.com', phone: '555-0102', company: 'AcoustiSkin', source: 'Internal', address: '456 Oak Ave', city: 'Boston', state: 'MA', zip: '02110', credits: 50, refCode: 'DANLUR10', status: 'VIP' }
-        ];
-        db.orders = [
-            { id: 'o1', custId: 'c1', custName: 'Lance Ochs', date: '2025-12-01', total: 39.70, status: 'Shipped', items: 'Skin x1' },
-            { id: 'o2', custId: 'c2', custName: 'Dana Lurie', date: '2025-12-05', total: 150.00, status: 'Processing', items: 'Wholesale Pack' }
-        ];
-        db.events = [
-            { id: 'e1', title: 'Follow up with Lance', date: '2025-12-07', type: 'Call' }
-        ];
-        db.pipeline = [
-            { id: 'p1', title: 'Bulk Order Discussion', custName: 'CleanRoom', value: 5000, stage: 'Negotiation' }
-        ];
-        db.vendors = [
-            { id: 'v1', name: '3M Adhesive', type: 'Supplier', contact: 'Jim' }
-        ];
-        save();
-    }
+        function save() { 
+            localStorage.setItem('as_crm_v8', JSON.stringify(db)); 
+        }
 
-    function save() { localStorage.setItem('as_crm_v5', JSON.stringify(db)); }
+        // === NAVIGATION ROUTER ===
+        function nav(view) {
+            currentView = view;
+            
+            // Update Sidebar UI
+            document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
+            const btn = document.getElementById('btn-' + view);
+            if(btn) btn.classList.add('active');
+            
+            // Clear search when switching views
+            document.getElementById('globalSearch').value = '';
+            
+            renderCurrentView();
+        }
 
-    // --- NAVIGATION ---
-    function nav(view) {
-        currentView = view;
-        document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
-        const btn = document.getElementById('btn-' + view);
-        if(btn) btn.classList.add('active');
-        document.getElementById('globalSearch').value = ''; // clear search
-        renderCurrentView();
-    }
+        function renderCurrentView() {
+            const app = document.getElementById('app');
+            const term = document.getElementById('globalSearch').value.toLowerCase();
+            
+            if (currentView === 'dashboard') renderDashboard(app);
+            else if (currentView === 'customers') renderCustomers(app, term);
+            else if (currentView === 'orders') renderOrders(app, term);
+            else if (currentView === 'calendar') renderCalendar(app);
+            else if (currentView === 'pipeline') renderPipeline(app);
+            else if (currentView === 'marketing') renderMarketing(app, term);
+            else if (currentView === 'referral') renderReferral(app);
+            else if (currentView === 'vendors') renderVendors(app, term);
+            else if (currentView === 'settings') renderSettings(app);
+        }
 
-    function renderCurrentView() {
-        const app = document.getElementById('app');
-        const term = document.getElementById('globalSearch').value.toLowerCase();
-        
-        if (currentView === 'dashboard') renderDashboard(app);
-        else if (currentView === 'customers') renderCustomers(app, term);
-        else if (currentView === 'orders') renderOrders(app, term);
-        else if (currentView === 'calendar') renderCalendar(app, term);
-        else if (currentView === 'pipeline') renderPipeline(app);
-        else if (currentView === 'marketing') renderMarketing(app, term);
-        else if (currentView === 'vendors') renderVendors(app, term);
-        else if (currentView === 'referral') renderReferral(app);
-        else if (currentView === 'settings') renderSettings(app);
-    }
+        // === RENDERERS ===
 
-    // --- RENDERERS ---
-
-    function renderDashboard(c) {
-        const rev = db.orders.reduce((a, b) => a + (parseFloat(b.total)||0), 0);
-        c.innerHTML = `
-            <h2 class="text-2xl font-bold mb-6">Dashboard</h2>
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                <div class="card bg-green-600 text-white cursor-pointer hover:opacity-90" onclick="nav('customers')">
-                    <div class="text-xs uppercase font-bold opacity-75">Customers</div>
-                    <div class="text-3xl font-bold">${db.customers.length}</div>
+        function renderDashboard(c) {
+            const rev = db.orders.reduce((a, b) => a + (parseFloat(b.total)||0), 0);
+            
+            c.innerHTML = `
+                <div class="mb-8">
+                    <h2 class="text-3xl font-bold text-slate-800">Dashboard</h2>
+                    <p class="text-slate-500 mt-1">Overview of business performance.</p>
                 </div>
-                <div class="card bg-blue-600 text-white cursor-pointer hover:opacity-90" onclick="nav('orders')">
-                    <div class="text-xs uppercase font-bold opacity-75">Orders</div>
-                    <div class="text-3xl font-bold">${db.orders.length}</div>
-                </div>
-                <div class="card bg-orange-500 text-white">
-                    <div class="text-xs uppercase font-bold opacity-75">Revenue</div>
-                    <div class="text-3xl font-bold">$${rev.toFixed(2)}</div>
-                </div>
-                <div class="card bg-purple-600 text-white cursor-pointer hover:opacity-90" onclick="nav('pipeline')">
-                    <div class="text-xs uppercase font-bold opacity-75">Pipeline</div>
-                    <div class="text-3xl font-bold">${db.pipeline.length}</div>
-                </div>
-            </div>
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div class="card">
-                    <h3 class="font-bold mb-4">Recent Customers</h3>
-                    <div class="space-y-2">
-                        ${db.customers.slice(0,5).map(c => `
-                            <div class="flex justify-between items-center border-b pb-2">
-                                <div><div class="font-bold">${c.fName} ${c.lName}</div><div class="text-xs text-gray-500">${c.email}</div></div>
-                                <button onclick="editItem('customer','${c.id}')" class="text-xs bg-gray-100 px-2 py-1 rounded">View</button>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-                <div class="card">
-                    <h3 class="font-bold mb-4">Recent Orders</h3>
-                    <div class="space-y-2">
-                        ${db.orders.slice(0,5).map(o => `
-                            <div class="flex justify-between items-center border-b pb-2">
-                                <div><div class="font-bold">#${o.id} - ${o.custName}</div><div class="text-xs text-gray-500">${o.status}</div></div>
-                                <div class="font-bold text-green-600">$${parseFloat(o.total).toFixed(2)}</div>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-            </div>
-        `;
-    }
 
-    function renderCustomers(c, term) {
-        const list = db.customers.filter(x => (x.fName+x.lName+x.email).toLowerCase().includes(term));
-        c.innerHTML = `
-            <div class="flex justify-between mb-4"><h2 class="text-2xl font-bold">Customers</h2><button onclick="editItem('customer', null)" class="btn btn-green">+ New Customer</button></div>
-            <div class="card overflow-x-auto">
-                <table class="w-full text-left text-sm">
-                    <thead class="bg-gray-100 border-b"><tr><th class="p-3">Name</th><th class="p-3">Email</th><th class="p-3">Phone</th><th class="p-3">Status</th><th class="p-3 text-right">Actions</th></tr></thead>
-                    <tbody class="divide-y">
-                        ${list.map(i => `
-                            <tr class="hover:bg-gray-50">
-                                <td class="p-3 font-bold">${i.fName} ${i.lName}</td>
-                                <td class="p-3">${i.email}</td>
-                                <td class="p-3">${i.phone}</td>
-                                <td class="p-3"><span class="bg-green-100 text-green-800 px-2 rounded text-xs">${i.status}</span></td>
-                                <td class="p-3 text-right">
-                                    <button onclick="editItem('customer','${i.id}')" class="icon-btn edit-icon"><i class="fa fa-edit"></i></button>
-                                    <button onclick="deleteItem('customers','${i.id}')" class="icon-btn del-icon"><i class="fa fa-trash"></i></button>
-                                </td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            </div>`;
-    }
-
-    function renderOrders(c, term) {
-        const list = db.orders.filter(x => (x.id+x.custName).toLowerCase().includes(term));
-        c.innerHTML = `
-            <div class="flex justify-between mb-4"><h2 class="text-2xl font-bold">Orders</h2><button onclick="editItem('order', null)" class="btn btn-blue">+ New Order</button></div>
-            <div class="card overflow-x-auto">
-                <table class="w-full text-left text-sm">
-                    <thead class="bg-gray-100 border-b"><tr><th class="p-3">ID</th><th class="p-3">Customer</th><th class="p-3">Date</th><th class="p-3">Total</th><th class="p-3">Status</th><th class="p-3 text-right">Actions</th></tr></thead>
-                    <tbody class="divide-y">
-                        ${list.map(i => `
-                            <tr>
-                                <td class="p-3 font-mono">#${i.id}</td>
-                                <td class="p-3 font-bold">${i.custName}</td>
-                                <td class="p-3">${i.date}</td>
-                                <td class="p-3 text-green-600 font-bold">$${parseFloat(i.total).toFixed(2)}</td>
-                                <td class="p-3"><span class="bg-yellow-100 text-yellow-800 px-2 rounded text-xs">${i.status}</span></td>
-                                <td class="p-3 text-right">
-                                    <button onclick="editItem('order','${i.id}')" class="icon-btn edit-icon"><i class="fa fa-edit"></i></button>
-                                    <button onclick="deleteItem('orders','${i.id}')" class="icon-btn del-icon"><i class="fa fa-trash"></i></button>
-                                </td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            </div>`;
-    }
-
-    function renderCalendar(c, term) {
-        c.innerHTML = `
-            <div class="flex justify-between mb-4"><h2 class="text-2xl font-bold">Calendar</h2><button onclick="editItem('event', null)" class="btn btn-green">+ Add Event</button></div>
-            <div class="card">
-                <div class="space-y-2">
-                    ${db.events.map(e => `
-                        <div class="flex justify-between items-center border p-3 rounded hover:bg-gray-50">
-                            <div><div class="font-bold">${e.title}</div><div class="text-xs text-gray-500">${e.date} • ${e.type}</div></div>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div class="card bg-green-600 text-white cursor-pointer hover:scale-[1.02] transition duration-200 border-none" onclick="nav('customers')">
+                        <div class="flex justify-between items-start">
                             <div>
-                                <button onclick="editItem('event','${e.id}')" class="icon-btn edit-icon"><i class="fa fa-edit"></i></button>
-                                <button onclick="deleteItem('events','${e.id}')" class="icon-btn del-icon"><i class="fa fa-trash"></i></button>
+                                <div class="text-xs uppercase font-bold text-green-100 tracking-wider">Total Customers</div>
+                                <div class="text-4xl font-bold mt-2">${db.customers.length}</div>
+                            </div>
+                            <i class="fa fa-users text-green-400 text-3xl opacity-50"></i>
+                        </div>
+                    </div>
+
+                    <div class="card bg-blue-600 text-white cursor-pointer hover:scale-[1.02] transition duration-200 border-none" onclick="nav('orders')">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <div class="text-xs uppercase font-bold text-blue-100 tracking-wider">Total Orders</div>
+                                <div class="text-4xl font-bold mt-2">${db.orders.length}</div>
+                            </div>
+                            <i class="fa fa-shopping-cart text-blue-400 text-3xl opacity-50"></i>
+                        </div>
+                    </div>
+
+                    <div class="card bg-orange-500 text-white border-none">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <div class="text-xs uppercase font-bold text-orange-100 tracking-wider">Total Revenue</div>
+                                <div class="text-4xl font-bold mt-2">$${rev.toFixed(2)}</div>
+                            </div>
+                            <i class="fa fa-chart-line text-orange-300 text-3xl opacity-50"></i>
+                        </div>
+                    </div>
+
+                    <div class="card bg-purple-600 text-white cursor-pointer hover:scale-[1.02] transition duration-200 border-none" onclick="nav('pipeline')">
+                         <div class="flex justify-between items-start">
+                            <div>
+                                <div class="text-xs uppercase font-bold text-purple-200 tracking-wider">Pipeline Value</div>
+                                <div class="text-4xl font-bold mt-2">$${db.pipeline.reduce((a,b)=>a+(parseInt(b.value)||0),0).toLocaleString()}</div>
+                            </div>
+                            <i class="fa fa-funnel-dollar text-purple-400 text-3xl opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="card">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="font-bold text-slate-700 text-lg">Recent Orders</h3>
+                            <button onclick="nav('orders')" class="text-sm text-blue-600 font-semibold hover:underline">View All</button>
+                        </div>
+                        <div class="space-y-4">
+                            ${db.orders.slice(0, 5).map(o => `
+                                <div class="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-100">
+                                    <div class="flex items-center gap-3">
+                                        <div class="bg-blue-100 text-blue-600 w-10 h-10 rounded-full flex items-center justify-center font-bold">
+                                            <i class="fa fa-receipt"></i>
+                                        </div>
+                                        <div>
+                                            <div class="font-bold text-sm text-slate-800">Order #${o.id}</div>
+                                            <div class="text-xs text-slate-500">${o.custName}</div>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="font-bold text-green-600">$${parseFloat(o.total).toFixed(2)}</div>
+                                        <div class="text-[10px] uppercase font-bold text-slate-400">${o.status}</div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="font-bold text-slate-700 text-lg">Upcoming Tasks</h3>
+                            <button onclick="editItem('event', null)" class="text-sm text-green-600 font-semibold hover:underline">+ Add Task</button>
+                        </div>
+                        <div class="space-y-3">
+                             ${db.events.length === 0 ? '<p class="text-slate-400 italic">No tasks scheduled.</p>' : ''}
+                             ${db.events.slice(0, 5).map(e => `
+                                <div class="flex justify-between items-center p-3 border border-slate-100 rounded-lg hover:bg-slate-50 transition">
+                                    <div class="flex gap-3 items-center">
+                                        <div class="w-1 h-8 bg-green-500 rounded-full"></div>
+                                        <div>
+                                            <div class="font-bold text-slate-800 text-sm">${e.title}</div>
+                                            <div class="text-xs text-slate-500">${e.date} • ${e.type}</div>
+                                        </div>
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <button onclick="editItem('event','${e.id}')" class="text-blue-400 hover:text-blue-600"><i class="fa fa-pen"></i></button>
+                                        <button onclick="deleteItem('events','${e.id}')" class="text-red-400 hover:text-red-600"><i class="fa fa-trash"></i></button>
+                                    </div>
+                                </div>
+                             `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderCustomers(c, term) {
+            const list = db.customers.filter(x => (x.fName+x.lName+x.email).toLowerCase().includes(term));
+            c.innerHTML = `
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-slate-800">Customers</h2>
+                    <button onclick="editItem('customer', null)" class="btn btn-green shadow-md"><i class="fa fa-plus"></i> New Customer</button>
+                </div>
+                <div class="card p-0 overflow-hidden">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-50 text-slate-600 border-b">
+                            <tr>
+                                <th class="p-4 font-semibold">Name</th>
+                                <th class="p-4 font-semibold">Email</th>
+                                <th class="p-4 font-semibold">Company</th>
+                                <th class="p-4 font-semibold">Status</th>
+                                <th class="p-4 text-right font-semibold">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            ${list.map(i => `
+                                <tr class="hover:bg-slate-50 transition">
+                                    <td class="p-4 font-bold text-slate-700">${i.fName} ${i.lName}</td>
+                                    <td class="p-4 text-slate-600">${i.email}</td>
+                                    <td class="p-4 text-slate-600">${i.company || '-'}</td>
+                                    <td class="p-4"><span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-bold uppercase tracking-wide">${i.status}</span></td>
+                                    <td class="p-4 text-right space-x-2">
+                                        <button onclick="editItem('customer','${i.id}')" class="text-blue-600 hover:bg-blue-100 p-2 rounded transition"><i class="fa fa-pen"></i></button>
+                                        <button onclick="deleteItem('customers','${i.id}')" class="text-red-600 hover:bg-red-100 p-2 rounded transition"><i class="fa fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>`;
+        }
+
+        function renderOrders(c, term) {
+            const list = db.orders.filter(x => (x.id+x.custName).toLowerCase().includes(term));
+            c.innerHTML = `
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-slate-800">Orders</h2>
+                    <button onclick="editItem('order', null)" class="btn btn-blue shadow-md"><i class="fa fa-plus"></i> New Order</button>
+                </div>
+                <div class="card p-0 overflow-hidden">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-50 text-slate-600 border-b">
+                            <tr>
+                                <th class="p-4 font-semibold">ID</th>
+                                <th class="p-4 font-semibold">Customer</th>
+                                <th class="p-4 font-semibold">Date</th>
+                                <th class="p-4 font-semibold">Total</th>
+                                <th class="p-4 font-semibold">Status</th>
+                                <th class="p-4 text-right font-semibold">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            ${list.map(i => `
+                                <tr class="hover:bg-slate-50 transition">
+                                    <td class="p-4 font-mono font-bold text-slate-600">#${i.id}</td>
+                                    <td class="p-4 font-bold text-slate-700">${i.custName}</td>
+                                    <td class="p-4 text-slate-500">${i.date}</td>
+                                    <td class="p-4 font-bold text-green-600">$${parseFloat(i.total).toFixed(2)}</td>
+                                    <td class="p-4"><span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-bold">${i.status}</span></td>
+                                    <td class="p-4 text-right space-x-2">
+                                        <button onclick="editItem('order','${i.id}')" class="text-blue-600 hover:bg-blue-100 p-2 rounded"><i class="fa fa-pen"></i></button>
+                                        <button onclick="deleteItem('orders','${i.id}')" class="text-red-600 hover:bg-red-100 p-2 rounded"><i class="fa fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>`;
+        }
+
+        function renderCalendar(c) {
+            const date = new Date();
+            const year = date.getFullYear();
+            const month = date.getMonth();
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            
+            // Calendar Logic
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            
+            let gridHtml = '';
+            
+            // Empty slots for previous month
+            for(let i=0; i<firstDay; i++) {
+                gridHtml += `<div class="bg-slate-50 min-h-[120px]"></div>`;
+            }
+
+            // Days
+            for(let day=1; day<=daysInMonth; day++) {
+                const dayStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+                const isToday = (day === date.getDate());
+                const dayEvents = db.events.filter(e => e.date === dayStr);
+                const isHoliday = holidays[dayStr];
+
+                gridHtml += `
+                    <div class="cal-day ${isToday ? 'is-today' : ''}" onclick="editItem('event', null, '${dayStr}')">
+                        <div class="flex justify-between items-start mb-1">
+                            <span class="font-bold text-sm ${isToday ? 'text-green-700' : 'text-slate-400'}">${day}</span>
+                            ${isHoliday ? `<i class="fa fa-star text-purple-500 text-xs" title="${isHoliday}"></i>` : ''}
+                        </div>
+                        
+                        ${isHoliday ? `<div class="holiday-badge w-full text-center truncate">${isHoliday}</div>` : ''}
+                        
+                        ${dayEvents.map(e => `
+                            <div onclick="event.stopPropagation(); editItem('event', '${e.id}')" class="event-badge bg-green-600 hover:bg-green-700 transition">
+                                ${e.title}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            c.innerHTML = `
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-slate-800">Calendar</h2>
+                    <div class="flex items-center gap-4">
+                        <span class="text-xl font-bold text-slate-500">${monthNames[month]} ${year}</span>
+                        <button onclick="editItem('event', null)" class="btn btn-green shadow-sm">+ Add Event</button>
+                    </div>
+                </div>
+                <div class="card p-0 overflow-hidden shadow-md">
+                    <div class="grid grid-cols-7 bg-green-900 text-white text-center font-bold py-3 text-sm">
+                        <div>SUN</div><div>MON</div><div>TUE</div><div>WED</div><div>THU</div><div>FRI</div><div>SAT</div>
+                    </div>
+                    <div class="cal-grid">
+                        ${gridHtml}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderPipeline(c) {
+            const stages = ['Lead', 'Negotiation', 'Closed'];
+            c.innerHTML = `
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-slate-800">Sales Pipeline</h2>
+                    <button onclick="editItem('deal', null)" class="btn btn-purple shadow">+ Add Deal</button>
+                </div>
+                <div class="flex gap-6 overflow-x-auto pb-4">
+                    ${stages.map(s => `
+                        <div class="min-w-[320px] bg-slate-100 p-4 rounded-xl border border-slate-200">
+                            <div class="font-bold text-slate-500 uppercase text-xs mb-4 flex justify-between items-center">
+                                ${s} 
+                                <span class="bg-white px-2 py-1 rounded-full shadow-sm text-slate-700 border border-slate-200">
+                                    ${db.pipeline.filter(p=>p.stage===s).length}
+                                </span>
+                            </div>
+                            <div class="space-y-3">
+                                ${db.pipeline.filter(p=>p.stage===s).map(d => `
+                                    <div class="bg-white p-4 rounded-lg shadow-sm border-l-4 border-purple-500 group relative hover:shadow-md transition">
+                                        <div class="font-bold text-slate-800">${d.title}</div>
+                                        <div class="text-xs text-slate-500 mb-2">${d.custName}</div>
+                                        <div class="flex justify-between items-center">
+                                            <span class="font-bold text-green-600 text-sm">$${d.value}</span>
+                                        </div>
+                                        <div class="absolute top-3 right-3 hidden group-hover:flex gap-2">
+                                            <button onclick="editItem('deal','${d.id}')" class="text-blue-500 hover:text-blue-700"><i class="fa fa-pen"></i></button>
+                                            <button onclick="deleteItem('pipeline','${d.id}')" class="text-red-500 hover:text-red-700"><i class="fa fa-trash"></i></button>
+                                        </div>
+                                    </div>
+                                `).join('')}
                             </div>
                         </div>
                     `).join('')}
                 </div>
-            </div>`;
-    }
+            `;
+        }
 
-    function renderPipeline(c) {
-        const stages = ['Lead', 'Negotiation', 'Closed'];
-        c.innerHTML = `
-            <div class="flex justify-between mb-4"><h2 class="text-2xl font-bold">Pipeline</h2><button onclick="editItem('deal', null)" class="btn btn-purple bg-purple-600 text-white hover:bg-purple-700">+ Add Deal</button></div>
-            <div class="flex gap-4 overflow-x-auto pb-4">
-                ${stages.map(s => `
-                    <div class="min-w-[300px] bg-gray-200 p-3 rounded-lg">
-                        <div class="font-bold text-gray-500 uppercase text-xs mb-3">${s} (${db.pipeline.filter(p=>p.stage===s).length})</div>
-                        ${db.pipeline.filter(p=>p.stage===s).map(d => `
-                            <div class="bg-white p-3 rounded shadow mb-2 border-l-4 border-purple-500">
-                                <div class="font-bold">${d.title}</div>
-                                <div class="text-xs text-gray-500">${d.custName}</div>
-                                <div class="flex justify-between mt-2">
-                                    <span class="font-bold text-green-600">$${d.value}</span>
-                                    <div>
-                                        <button onclick="editItem('deal','${d.id}')" class="text-blue-500 px-1"><i class="fa fa-edit"></i></button>
-                                        <button onclick="deleteItem('pipeline','${d.id}')" class="text-red-500 px-1"><i class="fa fa-trash"></i></button>
-                                    </div>
+        function renderMarketing(c, term) {
+            c.innerHTML = `
+                <h2 class="text-2xl font-bold text-slate-800 mb-6">Marketing Hub</h2>
+                <div class="card overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-50">
+                            <tr>
+                                <th class="p-3">Customer</th>
+                                <th class="p-3">Email</th>
+                                <th class="p-3">Source</th>
+                                <th class="p-3">Quick Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y">
+                            ${db.customers.map(cust => `
+                                <tr>
+                                    <td class="p-3 font-bold">${cust.fName} ${cust.lName}</td>
+                                    <td class="p-3">${cust.email}</td>
+                                    <td class="p-3"><span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">${cust.source || 'Unknown'}</span></td>
+                                    <td class="p-3 flex gap-2">
+                                        <button onclick="alert('Simulated: Sending Marketing Email to ${cust.email}')" class="btn btn-blue text-xs"><i class="fa fa-envelope"></i> Email</button>
+                                        <button onclick="alert('Simulated: Sending SMS to ${cust.phone}')" class="btn btn-green text-xs"><i class="fa fa-comment"></i> SMS</button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        function renderReferral(c) {
+            const totalCredits = db.customers.reduce((a,b)=>a+(parseInt(b.credits)||0),0);
+            c.innerHTML = `
+                <h2 class="text-2xl font-bold text-slate-800 mb-6">Referral Program</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="card border-l-4 border-purple-500">
+                        <h3 class="font-bold text-purple-900">Total Credits Issued</h3>
+                        <div class="text-4xl font-bold text-purple-700 mt-2">$${totalCredits}</div>
+                        <p class="text-xs text-purple-400 mt-1">Lifetime value</p>
+                    </div>
+                     <div class="card bg-slate-800 text-white">
+                        <h3 class="font-bold">Code Generator</h3>
+                        <p class="text-sm opacity-75 mt-2 mb-4">Codes are automatically generated when you create a new customer.</p>
+                        <div class="text-xs font-mono bg-black p-2 rounded">Format: [First3][Last3]25</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3 class="font-bold mb-4">Active Referral Codes</h3>
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-50"><tr><th class="p-3">Customer</th><th class="p-3">Code</th><th class="p-3">Current Credits</th></tr></thead>
+                        <tbody class="divide-y">
+                            ${db.customers.map(cu => `
+                                <tr>
+                                    <td class="p-3 font-bold">${cu.fName} ${cu.lName}</td>
+                                    <td class="p-3 font-mono text-purple-600 font-bold bg-purple-50 inline-block rounded px-2 mt-1">${cu.refCode}</td>
+                                    <td class="p-3 font-bold text-green-600">$${cu.credits}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+        
+        function renderVendors(c, term) {
+            c.innerHTML = `
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">Vendors</h2>
+                    <button onclick="editItem('vendor', null)" class="btn btn-green shadow">+ New Vendor</button>
+                </div>
+                <div class="card">
+                    ${db.vendors.length === 0 ? '<p class="text-gray-400 italic">No vendors added yet.</p>' : ''}
+                    <div class="space-y-2">
+                        ${db.vendors.map(v => `
+                            <div class="flex justify-between items-center border-b p-3">
+                                <div>
+                                    <div class="font-bold">${v.name}</div>
+                                    <div class="text-xs text-gray-500">${v.type} • ${v.contact}</div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button onclick="editItem('vendor','${v.id}')" class="text-blue-500"><i class="fa fa-pen"></i></button>
+                                    <button onclick="deleteItem('vendors','${v.id}')" class="text-red-500"><i class="fa fa-trash"></i></button>
                                 </div>
                             </div>
                         `).join('')}
                     </div>
-                `).join('')}
-            </div>`;
-    }
-
-    function renderVendors(c) {
-        c.innerHTML = `
-            <div class="flex justify-between mb-4"><h2 class="text-2xl font-bold">Vendors</h2><button onclick="editItem('vendor', null)" class="btn btn-green">+ Add Vendor</button></div>
-            <div class="card">
-                ${db.vendors.map(v => `
-                    <div class="flex justify-between border-b p-3">
-                        <div><div class="font-bold">${v.name}</div><div class="text-xs text-gray-500">${v.type} • ${v.contact}</div></div>
-                        <div>
-                            <button onclick="editItem('vendor','${v.id}')" class="icon-btn edit-icon"><i class="fa fa-edit"></i></button>
-                            <button onclick="deleteItem('vendors','${v.id}')" class="icon-btn del-icon"><i class="fa fa-trash"></i></button>
-                        </div>
-                    </div>
-                `).join('')}
-            </div>`;
-    }
-
-    function renderMarketing(c) {
-        c.innerHTML = `
-            <h2 class="text-2xl font-bold mb-4">Marketing</h2>
-            <div class="card overflow-x-auto">
-                <table class="w-full text-left text-sm">
-                    <thead class="bg-gray-100"><tr><th class="p-3">Name</th><th class="p-3">Email</th><th class="p-3">Action</th></tr></thead>
-                    <tbody>
-                        ${db.customers.map(cust => `
-                            <tr class="border-b">
-                                <td class="p-3 font-bold">${cust.fName} ${cust.lName}</td>
-                                <td class="p-3">${cust.email}</td>
-                                <td class="p-3">
-                                    <button onclick="alert('Sending Email to ${cust.email}... Success!')" class="btn btn-blue text-xs"><i class="fa fa-envelope"></i> Email</button>
-                                    <button onclick="alert('Sending SMS to ${cust.phone}... Success!')" class="btn btn-green text-xs"><i class="fa fa-comment"></i> SMS</button>
-                                </td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            </div>`;
-    }
-
-    function renderReferral(c) {
-        c.innerHTML = `
-            <h2 class="text-2xl font-bold mb-4">Referral Program</h2>
-            <div class="grid grid-cols-2 gap-6 mb-6">
-                <div class="card border-l-4 border-purple-500">
-                    <h3 class="font-bold">Total Credits Issued</h3>
-                    <div class="text-3xl font-bold text-purple-700">$${db.customers.reduce((a,b)=>a+(parseInt(b.credits)||0),0)}</div>
                 </div>
-            </div>
-            <div class="card">
-                <h3 class="font-bold mb-4">Referral Codes</h3>
-                <table class="w-full text-left text-sm">
-                    <thead class="bg-gray-100"><tr><th class="p-3">Customer</th><th class="p-3">Code</th><th class="p-3">Credits</th></tr></thead>
-                    <tbody>
-                        ${db.customers.map(cu => `
-                            <tr class="border-b">
-                                <td class="p-3 font-bold">${cu.fName} ${cu.lName}</td>
-                                <td class="p-3 font-mono text-purple-600">${cu.refCode}</td>
-                                <td class="p-3 font-bold text-green-600">$${cu.credits}</td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            </div>`;
-    }
-
-    function renderSettings(c) {
-        c.innerHTML = `
-            <div class="max-w-xl mx-auto card text-center py-10">
-                <h2 class="text-2xl font-bold mb-4">Data Management</h2>
-                <div class="flex gap-4 justify-center">
-                    <button onclick="downloadBackup()" class="btn btn-blue">Download Backup</button>
-                    <label class="btn btn-green cursor-pointer">Restore Backup <input type="file" class="hidden" onchange="restoreBackup(this)"></label>
-                    <button onclick="resetSystem()" class="btn btn-red">Factory Reset</button>
-                </div>
-            </div>`;
-    }
-
-    // --- CRUD ACTIONS ---
-
-    function deleteItem(collection, id) {
-        if(confirm('Are you sure you want to delete this?')) {
-            db[collection] = db[collection].filter(x => x.id !== id);
-            save();
-            renderCurrentView();
-        }
-    }
-
-    function editItem(type, id) {
-        const modal = document.getElementById('modal');
-        const title = document.getElementById('modalTitle');
-        const body = document.getElementById('modalBody');
-        modal.style.display = 'grid';
-
-        let item = null;
-        if(id) {
-            if(type==='customer') item = db.customers.find(x=>x.id===id);
-            if(type==='order') item = db.orders.find(x=>x.id===id);
-            if(type==='event') item = db.events.find(x=>x.id===id);
-            if(type==='vendor') item = db.vendors.find(x=>x.id===id);
-            if(type==='deal') item = db.pipeline.find(x=>x.id===id);
-        }
-
-        title.innerText = (id ? 'Edit ' : 'New ') + type.charAt(0).toUpperCase() + type.slice(1);
-        
-        // DYNAMIC FORMS
-        if(type === 'customer') {
-            body.innerHTML = `
-                <form onsubmit="saveForm(event, 'customers', '${id || ''}')">
-                    <h3 class="text-sm font-bold text-green-700 uppercase mb-2 border-b">Details</h3>
-                    <div class="grid-3 mb-4">
-                        <div class="inp-group"><label>First Name</label><input name="fName" value="${item?.fName||''}" required></div>
-                        <div class="inp-group"><label>Last Name</label><input name="lName" value="${item?.lName||''}" required></div>
-                        <div class="inp-group"><label>Email</label><input name="email" value="${item?.email||''}" required></div>
-                        <div class="inp-group"><label>Phone</label><input name="phone" value="${item?.phone||''}"></div>
-                        <div class="inp-group"><label>Company</label><input name="company" value="${item?.company||''}"></div>
-                        <div class="inp-group"><label>Status</label><select name="status"><option ${item?.status==='Active'?'selected':''}>Active</option><option ${item?.status==='Lead'?'selected':''}>Lead</option></select></div>
-                    </div>
-                    <h3 class="text-sm font-bold text-green-700 uppercase mb-2 border-b">Address</h3>
-                    <div class="grid-3 mb-4">
-                        <div class="inp-group"><label>Address</label><input name="address" value="${item?.address||''}"></div>
-                        <div class="inp-group"><label>City</label><input name="city" value="${item?.city||''}"></div>
-                        <div class="inp-group"><label>State</label><input name="state" value="${item?.state||''}"></div>
-                        <div class="inp-group"><label>Zip</label><input name="zip" value="${item?.zip||''}"></div>
-                    </div>
-                    <h3 class="text-sm font-bold text-green-700 uppercase mb-2 border-b">Referral & Marketing</h3>
-                    <div class="grid-3 mb-4">
-                         <div class="inp-group"><label>Source</label><input name="source" value="${item?.source||''}"></div>
-                         <div class="inp-group"><label>Referral Code</label><input name="refCode" value="${item?.refCode || 'AUTO-GEN'}" readonly class="bg-gray-100"></div>
-                         <div class="inp-group"><label>Credits ($)</label><input type="number" name="credits" value="${item?.credits||0}"></div>
-                    </div>
-                    <button class="w-full btn btn-green justify-center py-3">Save Customer</button>
-                </form>
             `;
-        } else if (type === 'order') {
-            const custOptions = db.customers.map(c => `<option value="${c.id}" ${item?.custId===c.id?'selected':''}>${c.fName} ${c.lName}</option>`).join('');
-            body.innerHTML = `
-                <form onsubmit="saveForm(event, 'orders', '${id||''}')">
-                    <div class="mb-4 inp-group"><label>Customer</label><select name="custId" id="ordCustSelect" onchange="updateCustName()">${custOptions}</select> <input type="hidden" name="custName" id="ordCustName" value="${item?.custName||''}"></div>
-                    <div class="mb-4 inp-group"><label>Date</label><input type="date" name="date" value="${item?.date || new Date().toISOString().split('T')[0]}"></div>
-                    <div class="mb-4 inp-group"><label>Total ($)</label><input type="number" step="0.01" name="total" value="${item?.total||0}"></div>
-                    <div class="mb-4 inp-group"><label>Status</label><select name="status"><option>Processing</option><option>Shipped</option><option>Completed</option></select></div>
-                    <button class="w-full btn btn-blue justify-center">Save Order</button>
-                </form>`;
-        } else if (type === 'event') {
-            body.innerHTML = `
-                 <form onsubmit="saveForm(event, 'events', '${id||''}')">
-                    <div class="mb-4 inp-group"><label>Title</label><input name="title" value="${item?.title||''}" required></div>
-                    <div class="mb-4 inp-group"><label>Date</label><input type="date" name="date" value="${item?.date||''}" required></div>
-                    <div class="mb-4 inp-group"><label>Type</label><select name="type"><option>Call</option><option>Meeting</option></select></div>
-                    <button class="w-full btn btn-green justify-center">Save Event</button>
-                </form>`;
-        } else if (type === 'vendor') {
-             body.innerHTML = `
-                 <form onsubmit="saveForm(event, 'vendors', '${id||''}')">
-                    <div class="mb-4 inp-group"><label>Name</label><input name="name" value="${item?.name||''}" required></div>
-                    <div class="mb-4 inp-group"><label>Type</label><input name="type" value="${item?.type||''}"></div>
-                    <div class="mb-4 inp-group"><label>Contact</label><input name="contact" value="${item?.contact||''}"></div>
-                    <button class="w-full btn btn-green justify-center">Save Vendor</button>
-                </form>`;
-        } else if (type === 'deal') {
-             body.innerHTML = `
-                 <form onsubmit="saveForm(event, 'pipeline', '${id||''}')">
-                    <div class="mb-4 inp-group"><label>Deal Title</label><input name="title" value="${item?.title||''}" required></div>
-                    <div class="mb-4 inp-group"><label>Customer Name</label><input name="custName" value="${item?.custName||''}"></div>
-                    <div class="mb-4 inp-group"><label>Value ($)</label><input type="number" name="value" value="${item?.value||0}"></div>
-                    <div class="mb-4 inp-group"><label>Stage</label><select name="stage"><option>Lead</option><option>Negotiation</option><option>Closed</option></select></div>
-                    <button class="w-full btn btn-green justify-center">Save Deal</button>
-                </form>`;
-        }
-    }
-
-    function closeModal() { document.getElementById('modal').style.display = 'none'; }
-
-    function saveForm(e, collection, id) {
-        e.preventDefault();
-        const f = new FormData(e.target);
-        let obj = id ? db[collection].find(x=>x.id===id) : { id: (collection.charAt(0) + Date.now()) };
-        
-        f.forEach((val, key) => obj[key] = val);
-
-        // Special logic for new Customers (Ref Code)
-        if(collection === 'customers' && !id) {
-            obj.refCode = (obj.fName.substring(0,3) + obj.lName.substring(0,3) + '25').toUpperCase();
-        }
-        // Special logic for Orders (Customer Name lookup)
-        if(collection === 'orders') {
-            const sel = document.getElementById('ordCustSelect');
-            obj.custName = sel.options[sel.selectedIndex].text;
         }
 
-        if(!id) db[collection].push(obj); // If new, add to array
-        save();
-        closeModal();
-        renderCurrentView();
-    }
-    
-    // --- UTILS ---
-    function updateCustName() {
-         const sel = document.getElementById('ordCustSelect');
-         document.getElementById('ordCustName').value = sel.options[sel.selectedIndex].text;
-    }
+        function renderSettings(c) {
+            c.innerHTML = `
+                <div class="max-w-xl mx-auto card text-center py-12">
+                    <i class="fa fa-database text-4xl text-slate-300 mb-4"></i>
+                    <h2 class="text-2xl font-bold mb-2">Data Management</h2>
+                    <p class="text-slate-500 mb-8">Manage your local data securely.</p>
+                    
+                    <div class="flex gap-4 justify-center">
+                        <button onclick="downloadBackup()" class="btn btn-blue shadow-lg">
+                            <i class="fa fa-download"></i> Download Backup
+                        </button>
+                        
+                        <label class="btn btn-green shadow-lg cursor-pointer">
+                            <i class="fa fa-upload"></i> Restore Backup
+                            <input type="file" class="hidden" onchange="restoreBackup(this)">
+                        </label>
+                        
+                        <button onclick="resetSystem()" class="btn btn-red shadow-lg">
+                            <i class="fa fa-trash"></i> Factory Reset
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
 
-    function downloadBackup() {
-        const a = document.createElement('a');
-        a.href = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(db));
-        a.download = 'AcoustiSkin_Backup.json';
-        document.body.appendChild(a); a.click(); a.remove();
-    }
-    function restoreBackup(input) {
-        const file = input.files[0];
-        const reader = new FileReader();
-        reader.onload = (e) => { db = JSON.parse(e.target.result); save(); location.reload(); };
-        reader.readAsText(file);
-    }
-    function resetSystem() {
-        if(confirm('Delete all data and reset?')) { localStorage.removeItem('as_crm_v5'); location.reload(); }
-    }
-</script>
+        // --- CRUD & LOGIC ACTIONS ---
+
+        function deleteItem(collection, id) {
+            if(confirm('Are you sure you want to permanently delete this record?')) {
+                db[collection] = db[collection].filter(x => x.id !== id);
+                save();
+                renderCurrentView();
+            }
+        }
+
+        function editItem(type, id, datePrefill = '') {
+            const modal = document.getElementById('modal');
+            const title = document.getElementById('modalTitle');
+            const body = document.getElementById('modalBody');
+            
+            modal.style.display = 'grid';
+            
+            // Find item if editing
+            let item = null;
+            if(id) {
+                if(type === 'customer') item = db.customers.find(x => x.id === id);
+                if(type === 'order') item = db.orders.find(x => x.id === id);
+                if(type === 'event') item = db.events.find(x => x.id === id);
+                if(type === 'deal') item = db.pipeline.find(x => x.id === id);
+                if(type === 'vendor') item = db.vendors.find(x => x.id === id);
+            }
+
+            title.innerText = (id ? 'Edit ' : 'New ') + type.charAt(0).toUpperCase() + type.slice(1);
+
+            // --- FULL 30-FIELD FORMS (Expanded for V8) ---
+            
+            if(type === 'customer') {
+                body.innerHTML = `
+                    <form onsubmit="saveForm(event, 'customers', '${id||''}')">
+                        
+                        <div class="form-section-title">Identity</div>
+                        <div class="grid-3">
+                            <div class="inp-group"><label>First Name *</label><input name="fName" value="${item?.fName||''}" required></div>
+                            <div class="inp-group"><label>Last Name *</label><input name="lName" value="${item?.lName||''}" required></div>
+                            <div class="inp-group"><label>Company</label><input name="company" value="${item?.company||''}"></div>
+                        </div>
+
+                        <div class="form-section-title">Contact Information</div>
+                        <div class="grid-3">
+                            <div class="inp-group"><label>Email Address *</label><input type="email" name="email" value="${item?.email||''}" required></div>
+                            <div class="inp-group"><label>Phone (Mobile)</label><input name="phone" value="${item?.phone||''}"></div>
+                            <div class="inp-group"><label>Phone (Work)</label><input name="workPhone" value="${item?.workPhone||''}"></div>
+                        </div>
+
+                        <div class="form-section-title">Shipping Address</div>
+                        <div class="grid-2">
+                            <div class="inp-group"><label>Street Address</label><input name="address" value="${item?.address||''}"></div>
+                            <div class="inp-group"><label>City</label><input name="city" value="${item?.city||''}"></div>
+                            <div class="inp-group"><label>State</label><input name="state" value="${item?.state||''}"></div>
+                            <div class="inp-group"><label>Zip Code</label><input name="zip" value="${item?.zip||''}"></div>
+                        </div>
+
+                        <div class="form-section-title">Marketing & Referral Program</div>
+                        <div class="grid-3">
+                            <div class="inp-group"><label>Lead Source</label><select name="source">
+                                <option ${item?.source==='Web'?'selected':''}>Web</option>
+                                <option ${item?.source==='Referral'?'selected':''}>Referral</option>
+                                <option ${item?.source==='Social'?'selected':''}>Social</option>
+                            </select></div>
+                            <div class="inp-group"><label>Referral Code (Auto)</label><input name="refCode" value="${item?.refCode || 'Generated on Save'}" readonly class="bg-gray-100 cursor-not-allowed"></div>
+                            <div class="inp-group"><label>Credits Earned ($)</label><input type="number" name="credits" value="${item?.credits||0}"></div>
+                        </div>
+                        
+                        <div class="form-section-title">Status</div>
+                        <div class="grid-2">
+                             <div class="inp-group"><label>Customer Status</label><select name="status">
+                                <option ${item?.status==='Active'?'selected':''}>Active</option>
+                                <option ${item?.status==='Prospect'?'selected':''}>Prospect</option>
+                                <option ${item?.status==='VIP'?'selected':''}>VIP</option>
+                            </select></div>
+                             <div class="inp-group"><label>Notes</label><input name="notes" value="${item?.notes||''}" placeholder="Internal notes..."></div>
+                        </div>
+
+                        <div class="mt-8 pt-4 border-t flex justify-end gap-3">
+                            <button type="button" onclick="closeModal()" class="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded">Cancel</button>
+                            <button class="btn btn-green shadow">Save Customer</button>
+                        </div>
+                    </form>
+                `;
+            } 
+            else if (type === 'order') {
+                const custOpts = db.customers.map(c => `<option value="${c.id}" ${item?.custId===c.id?'selected':''}>${c.fName} ${c.lName}</option>`).join('');
+                body.innerHTML = `
+                    <form onsubmit="saveForm(event, 'orders', '${id||''}')">
+                         <div class="grid-2 mb-4">
+                            <div class="inp-group"><label>Customer</label><select name="custId" id="ordCustSelect" onchange="updateCustName()">${custOpts}</select><input type="hidden" name="custName" id="ordCustName" value="${item?.custName||''}"></div>
+                            <div class="inp-group"><label>Date</label><input type="date" name="date" value="${item?.date || new Date().toISOString().split('T')[0]}"></div>
+                         </div>
+                         <div class="grid-2 mb-6">
+                            <div class="inp-group"><label>Total Amount ($)</label><input type="number" step="0.01" name="total" value="${item?.total||0}"></div>
+                            <div class="inp-group"><label>Status</label><select name="status"><option>Processing</option><option>Shipped</option><option>Completed</option></select></div>
+                         </div>
+                         <button class="w-full btn btn-blue shadow">Save Order</button>
+                    </form>
+                `;
+            }
+            else if (type === 'event') {
+                 body.innerHTML = `
+                    <form onsubmit="saveForm(event, 'events', '${id||''}')">
+                         <div class="mb-4 inp-group"><label>Event Title</label><input name="title" value="${item?.title||''}" required></div>
+                         <div class="grid-2 mb-6">
+                            <div class="inp-group"><label>Date</label><input type="date" name="date" value="${item?.date || datePrefill || new Date().toISOString().split('T')[0]}" required></div>
+                            <div class="inp-group"><label>Type</label><select name="type"><option>Call</option><option>Meeting</option><option>Follow-up</option></select></div>
+                         </div>
+                         <button class="w-full btn btn-green shadow">Save Event</button>
+                    </form>
+                `;
+            }
+            else if (type === 'deal') {
+                 body.innerHTML = `
+                    <form onsubmit="saveForm(event, 'pipeline', '${id||''}')">
+                         <div class="mb-4 inp-group"><label>Deal Name</label><input name="title" value="${item?.title||''}" required></div>
+                         <div class="mb-4 inp-group"><label>Customer Name</label><input name="custName" value="${item?.custName||''}"></div>
+                         <div class="grid-2 mb-6">
+                            <div class="inp-group"><label>Value ($)</label><input type="number" name="value" value="${item?.value||0}"></div>
+                            <div class="inp-group"><label>Stage</label><select name="stage"><option>Lead</option><option>Negotiation</option><option>Closed</option></select></div>
+                         </div>
+                         <button class="w-full btn btn-purple shadow">Save Deal</button>
+                    </form>
+                `;
+            }
+             else if (type === 'vendor') {
+                 body.innerHTML = `
+                    <form onsubmit="saveForm(event, 'vendors', '${id||''}')">
+                         <div class="mb-4 inp-group"><label>Vendor Name</label><input name="name" value="${item?.name||''}" required></div>
+                         <div class="grid-2 mb-6">
+                            <div class="inp-group"><label>Type</label><input name="type" value="${item?.type||''}"></div>
+                            <div class="inp-group"><label>Contact Name</label><input name="contact" value="${item?.contact||''}"></div>
+                         </div>
+                         <button class="w-full btn btn-green shadow">Save Vendor</button>
+                    </form>
+                `;
+            }
+        }
+
+        function closeModal() { document.getElementById('modal').style.display = 'none'; }
+
+        function saveForm(e, collection, id) {
+            e.preventDefault();
+            const f = new FormData(e.target);
+            
+            // Create or Find
+            let obj = id ? db[collection].find(x => x.id === id) : { id: (collection.charAt(0) + Date.now()) };
+            
+            // Map form data to object
+            f.forEach((val, key) => obj[key] = val);
+
+            // AUTO-LOGIC:
+            // 1. Generate Referral Code if new customer
+            if (collection === 'customers' && !id) {
+                obj.refCode = (obj.fName.substring(0,3) + obj.lName.substring(0,3) + '25').toUpperCase();
+            }
+            // 2. Set Customer Name on Order
+            if (collection === 'orders') {
+                const s = document.getElementById('ordCustSelect');
+                if(s && s.selectedIndex >= 0) {
+                     obj.custName = s.options[s.selectedIndex].text;
+                }
+            }
+
+            // If new, push to DB
+            if (!id) db[collection].push(obj);
+
+            save();
+            closeModal();
+            renderCurrentView();
+            // If we just added an event from calendar, re-render might be needed if date changed
+            if (currentView === 'calendar') renderCalendar(document.getElementById('app')); 
+        }
+
+        function updateCustName() {
+            const s = document.getElementById('ordCustSelect');
+            document.getElementById('ordCustName').value = s.options[s.selectedIndex].text;
+        }
+
+        // --- BACKUP UTILS ---
+        function downloadBackup() {
+            const a = document.createElement('a');
+            a.href = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(db));
+            a.download = 'AcoustiSkin_Full_Backup.json';
+            document.body.appendChild(a); a.click(); a.remove();
+        }
+
+        function restoreBackup(input) {
+            const file = input.files[0];
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    db = JSON.parse(e.target.result);
+                    save();
+                    location.reload();
+                } catch (err) { alert('Invalid backup file'); }
+            };
+            reader.readAsText(file);
+        }
+
+        function resetSystem() {
+            if(confirm('WARNING: This will permanently delete all data. Continue?')) {
+                localStorage.removeItem('as_crm_v8');
+                location.reload();
+            }
+        }
+    </script>
 </body>
 </html>
